@@ -7,4 +7,5 @@ setup(
     author='Daniel E. Kaufman',
     author_email='daniel.kaufman@pnnl.gov',
     packages=find_packages(),  #['e3sm_co2_diag'],
+    include_package_data=True
     )
