@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def daily_anomalies(dataset: xr.Dataset) -> pd.DataFrame:
     varlist = ['time', 'time_decimal', 'value']
