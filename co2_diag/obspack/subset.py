@@ -2,7 +2,7 @@ import numpy as np
 import xarray as xr
 
 from co2_diag import _change_log_level
-from co2_diag.nums import numstr
+from co2_diag.formatters.nums import numstr
 
 import logging
 
