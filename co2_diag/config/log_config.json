@@ -2,34 +2,63 @@
     "version": 1,
     "disable_existing_loggers": "false",
     "formatters": {
+        "simplest": {
+            "class": "logging.Formatter",
+            "format": "%(message)s"
+        },
+        "simple": {
+            "datefmt": "%y%j-%H%M%S",
+            "format": "%(asctime)s - %(message)s"
+        },
         "basic": {
             "class": "logging.Formatter",
             "datefmt": "%I:%M:%S",
             "format": "%(asctime)s %(levelname)s %(name)s %(message)s"
+        },
+        "detailed": {
+            "format": "%(asctime)s - %(pathname):%(lineno) - %(message)s"
         }
     },
 
     "handlers": {
-        "console": {
+        "stderr": {
             "class": "logging.StreamHandler",
-            "level": "DEBUG",
+            "level": "INFO",
             "formatter": "basic",
+            "stream": "ext://sys.stderr"
+        },
+        "console": {
+            "level": "DEBUG",
+            "formatter": "simplest",
+            "class": "logging.StreamHandler",
             "stream": "ext://sys.stdout"
         },
-        "file": {
-            "class": "logging.FileHandler",
+        "rotating_file": {
             "level": "DEBUG",
             "formatter": "basic",
-            "filename": "test.log",
-            "mode": "w",
-            "encoding": "utf-8"
+            "class": "logging.handlers.RotatingFileHandler",
+            "encoding": "utf-8",
+            "maxBytes": 10485760,
+            "backupCount": 7,
+            "filename": "test.log"
         }
     },
 
-    "loggers": { },
+    "loggers": {
+        "co2_diag.obspack": {
+            "handlers": ["rotating_file", "console"],
+            "level": "DEBUG",
+            "propagate": false
+        },
+        "co2_diag.nums": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": false
+        }
+    },
 
     "root": {
-        "handlers": ["console", "file"],
-        "level": "DEBUG"
+        "handlers": ["console"],
+        "level": "INFO"
     }
 }

@@ -1,38 +1,37 @@
-import sys
 import numpy as np
 import xarray as xr
 
+from co2_diag import _change_log_level
 from co2_diag.nums import numstr
 
 import logging
-logFormatter = '%(message)s'  # %(asctime)s - %(levelname)s
-logging.basicConfig(format=logFormatter, level=logging.DEBUG, stream=sys.stdout)
-logger = logging.getLogger(__name__)
-
-
-def _change_log_level(level):
-    logger.setLevel(level)
-    for handler in logger.handlers:
-        handler.setLevel(level)
 
 
 def by_decimalyear(dataset: xr.Dataset,
                    start: float = 2017, end: float = 2018,
                    verbose: bool = False) -> xr.Dataset:
+    func_log = logging.getLogger("{0}.{1}".format(__name__, "by_decimalyear"))
     if verbose:
-        _change_log_level(logging.INFO)
+        orig_log_level = func_log.level
+        _change_log_level(func_log, logging.DEBUG)
 
     # We start with the passed-in dataset.
     orig_shape = dataset['time_decimal'].shape
     keep_mask = np.full(orig_shape, True)
-    logger.info(f"Original # data points: {numstr(orig_shape[0], 0)}")
+    func_log.debug("Original # data points: %s", numstr(orig_shape[0], 0))
 
     # The data are subsetted by year.
     keep_mask = keep_mask & (dataset['time_decimal'] >= start)
     keep_mask = keep_mask & (dataset['time_decimal'] < end)
     ds_year = dataset.where(keep_mask, drop=True)
     ds_year_shape = ds_year['time_decimal'].shape
-    logger.info(f" -- subset between <start={start} and end={end}> -- # data points: {numstr(ds_year_shape[0], 0)}")
+    func_log.debug(" -- subset between <start=%f and end=%f> -- # data points: %s",
+                start,
+                end,
+                numstr(ds_year_shape[0], 0))
+
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
 
     return ds_year
 
@@ -61,8 +60,10 @@ def binLonLat(dataset: xr.Dataset,
 def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
           n_latitude: int = 10, n_longitude: int = 10, units: str = 'ppm',
           verbose: bool = True) -> xr.Dataset:
+    func_log = logging.getLogger("{0}.{1}".format(__name__, "bin3d"))
     if verbose:
-        _change_log_level(logging.INFO)
+        orig_log_level = func_log.level
+        _change_log_level(func_log, logging.DEBUG)
 
     # We start with the passed-in dataset.
     orig_shape = dataset['time_decimal'].shape
@@ -77,15 +78,13 @@ def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
     value_arr = []
     lvl_pairs = []
     for i, (l0, l1) in enumerate(zip(lvls, lvls[1:])):
-        if verbose:
-            logger.info(f"-Vertical level {i+1}/{n_vertical-1}-")
+        func_log.debug("-Vertical level %d/%d-", i+1, n_vertical-1)
         lvl_pairs.append([l0, l1])
 
         # The data are subsetted by altitude.
         keep_mask = keep_mask_orig & (dataset['altitude'] > l0)
         keep_mask = keep_mask & (dataset['altitude'] <= l1)
-        if verbose:
-            logger.info(f"  subset # data points: {numstr(np.count_nonzero(keep_mask), 0)}")
+        func_log.debug(f"  subset # data points: %s", numstr(np.count_nonzero(keep_mask), 0))
 
         # The data are binned along the x and y directions.
         values, y_edges, x_edges = binLonLat(dataset.where(keep_mask, drop=True),
@@ -106,8 +105,8 @@ def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
     # x_arr = np.array(x_arr)
     # y_arr = np.array(y_arr)
 
-    logger.info(f"subset data shape: {z_arr.shape}")
-    logger.info("\nDone.")
+    func_log.debug(f"subset data shape: ", str(z_arr.shape))
+    func_log.debug("\nDone.")
 
     ds_sub = xr.Dataset({
         'value': xr.DataArray(
@@ -133,7 +132,8 @@ def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
                                   coords={'nbnds': [0, 1]}),
     }
     )
-
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
     return ds_sub
 
 # def bin_multiyear(dd)

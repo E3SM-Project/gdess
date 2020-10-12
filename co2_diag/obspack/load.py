@@ -1,6 +1,9 @@
 import numpy as np
 import xarray as xr
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def dataset_from_filelist(file_list: list,
                           vars_to_keep: list = None,
@@ -26,12 +29,11 @@ def dataset_from_filelist(file_list: list,
 
         # If the following variables are not present, continue loading and just make them blank DataArrays
         #    Otherwise, we will raise an error
-        if not ('qcflag' in thisds.keys()):
-            blankarray = xr.DataArray(data=[np.nan], dims='obs', name='qcflag').squeeze()
-            thisds = thisds.assign({'qcflag': blankarray})
-        if not ('value_std_dev' in thisds.keys()):
-            blankarray = xr.DataArray(data=[np.nan], dims='obs', name='value_std_dev').squeeze()
-            thisds = thisds.assign({'value_std_dev': blankarray})
+        possible_missing_vars = ['qcflag', 'value_std_dev', 'nvalue']
+        for pmv in possible_missing_vars:
+            if not (pmv in thisds.keys()):
+                blankarray = xr.DataArray(data=[np.nan], dims='obs', name=pmv).squeeze()
+                thisds = thisds.assign({pmv: blankarray})
 
         # Only the specified variables are retained.
         to_drop = []
