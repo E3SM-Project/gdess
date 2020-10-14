@@ -20,6 +20,9 @@ import matplotlib.pyplot as plt
 import scipy.stats
 from matplotlib.colors import LinearSegmentedColormap
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def where_am_i():
     return os.path.dirname(os.path.abspath(__file__))
@@ -44,10 +47,12 @@ def convert_co2_to_ppm(xr_ds_, co2_var_name='CO2'):
 
 
 def print_var_summary(xr_ds_, varname='CO2'):
-    print(f"min: {xr_ds_[varname].min().values.item()}")
-    print(f"mean: {xr_ds_[varname].mean().values.item()}")
-    print(f"max: {xr_ds_[varname].max().values.item()}")
-    print(f"shape: {xr_ds_[varname].mean(dim='lev').shape}")
+
+    logger.info("Summary for <%s>:", varname)
+    logger.info("  min: %s", str(xr_ds_[varname].min().values.item()))
+    logger.info("  mean: %s", str(xr_ds_[varname].mean().values.item()))
+    logger.info("  max: %s", str(xr_ds_[varname].max().values.item()))
+    logger.info("  shape: %s", str(xr_ds_[varname].mean(dim='lev').shape))
 
     return xr_ds_
 
@@ -58,6 +63,8 @@ def add_global_mean_vars(xr_ds_, variable_list, prefix='glmean_',
     """
     for var in variable_list:
         xr_ds_[prefix + var] = xr_ds_[var].weighted(xr_ds_[weighting_var]).mean(averaging_dims)
+        xr_ds_[prefix + var].attrs["units"] = xr_ds_[var].units
+        xr_ds_[prefix + var].attrs['long_name'] = xr_ds_[var].long_name + ' (globally averaged)'
         
     return xr_ds_
 
