@@ -8,16 +8,9 @@ This code is meant to serve as a collection of tools for use with the CO2 diagno
 Most of the routines are designed to work with xarray.DataArray types
 """
 
-import sys
-import platform
 import os
 
 import numpy as np
-import xarray as xr
-import pandas as pd
-from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
-import matplotlib.pyplot as plt
-import scipy.stats
 from matplotlib.colors import LinearSegmentedColormap
 
 import logging
@@ -28,33 +21,24 @@ def where_am_i():
     return os.path.dirname(os.path.abspath(__file__))
 
 
-def convert_co2_to_ppm(xr_ds_, co2_var_name='CO2'):
-    """ the CO2 variable of the input dataset is converted from kg/kg to ppm """
-    mwco2 = 44.01
-    mwdry = 28.9647
-    mwfac = mwdry / mwco2
-    ppmfac = mwfac * 1e6
-    
-    temp_long_name = xr_ds_[co2_var_name].long_name
-    
-    # do the conversion
-    xr_ds_[co2_var_name] = xr_ds_[co2_var_name]*ppmfac
-    
-    xr_ds_[co2_var_name].attrs["units"] = 'ppm'
-    xr_ds_[co2_var_name].attrs['long_name'] = temp_long_name
-    
-    return xr_ds_
+def print_var_summary(xr_ds_, varname='CO2', return_dataset=False):
+    """Brief stats for a dataset variable are printed.
+    """
+    # We check if there are units specified for this variable
+    vu = None
+    if 'units' in xr_ds_[varname].attrs:
+        vu = xr_ds_[varname].units
 
-
-def print_var_summary(xr_ds_, varname='CO2'):
-
-    logger.info("Summary for <%s>:", varname)
+    logger.info("Summary for <%s>%s:",
+                varname,
+                ' (units of ' + vu + ')' if vu else '')
     logger.info("  min: %s", str(xr_ds_[varname].min().values.item()))
     logger.info("  mean: %s", str(xr_ds_[varname].mean().values.item()))
     logger.info("  max: %s", str(xr_ds_[varname].max().values.item()))
-    logger.info("  shape: %s", str(xr_ds_[varname].mean(dim='lev').shape))
+    logger.info("  shape: %s", str(xr_ds_[varname].shape))
 
-    return xr_ds_
+    if return_dataset:
+        return xr_ds_
 
 
 def add_global_mean_vars(xr_ds_, variable_list, prefix='glmean_',
@@ -82,16 +66,6 @@ def add_global_mean_vars(xr_ds_, variable_list, prefix='glmean_',
 
 
 # %%
-def calc_var_deltas(xr_da_):
-    return np.insert(np.diff(xr_da_), 0, 0)  # backward difference
-
-
-# %%
-def calc_time_deltas(xr_ds_):
-    seconds_per_day = 24 * 60 * 60
-    return (xr_ds_['time_bnds'].diff('nbnd') * seconds_per_day).astype('float').isel(nbnd=0).round()
-
-
 def get_colormap(colormap):
     if not colormap:
         colormap = "WhiteBlueGreenYellowRed.rgb"
