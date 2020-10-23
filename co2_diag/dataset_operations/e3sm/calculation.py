@@ -1,10 +1,21 @@
 import numpy as np
 import xarray as xr
 
-from . import utils
+from .. import utils
 
 import logging
+
+from co2_diag.dataset_operations.geographic import closest
+
 logger = logging.getLogger(__name__)
+
+# Define functions to be imported by *, e.g. from the local __init__ file
+#   (also to avoid adding above imports to other namespaces)
+__all__ = ['calc_change_in_mass',
+           'calc_global_weighted_means', 'add_global_mean_vars',
+           'calc_time_integrated_fluxes',
+           'calc_var_deltas', 'calc_time_deltas',
+           'get_closest_mdl_cell_dict']
 
 
 def calc_change_in_mass(dataset, varname='glmean_TMCO2_FFF', prefix='deltas_'):
@@ -40,8 +51,8 @@ def calc_global_weighted_means(dataset,
     - the above multiplication by `area` ($m^2/m^2$) is taken care of in the xarray.DataArray.weighted() method.
 
     """
-    dataset = utils.add_global_mean_vars(dataset, variable_list=variable_list, prefix=prefix,
-                                         weighting_var=weighting_var, averaging_dims=averaging_dims)
+    dataset = add_global_mean_vars(dataset, variable_list=variable_list, prefix=prefix,
+                                   weighting_var=weighting_var, averaging_dims=averaging_dims)
     return dataset
 
 
@@ -80,22 +91,26 @@ def calc_time_deltas(xr_ds_):
     return (xr_ds_['time_bnds'].diff('nbnd') * seconds_per_day).astype('float').isel(nbnd=0).round()
 
 
-def convert_co2_to_ppm(xr_ds_, co2_var_name='CO2'):
-    """Convert E3SM $CO_2$ $kg/kg$ to $ppm$
+def get_closest_mdl_cell_dict(dataset, lat, lon):
+    """Find the nearest point in the model output"""
+    obs_station_lat_lon = {'lat': lat, 'lon': lon}
+    mdl_lat_lon_list = [{'lat': a, 'lon': o, 'index': i}
+                        for i, (a, o)
+                        in enumerate(zip(dataset['lat'].values, dataset['lon'].values))]
 
-    The CO2 variable of the input dataset is converted from kg/kg to ppm
+    # Find it.
+    closest_dict = closest(mdl_lat_lon_list, obs_station_lat_lon)
+
+    return closest_dict
+
+
+def add_global_mean_vars(xr_ds_, variable_list, prefix='glmean_',
+                         weighting_var='area_p', averaging_dims=('ncol')):
+    """ For each variable in the input list, we add an accompanying variable that represents a global mean
     """
-    mwco2 = 44.01
-    mwdry = 28.9647
-    mwfac = mwdry / mwco2
-    ppmfac = mwfac * 1e6
-
-    temp_long_name = xr_ds_[co2_var_name].long_name
-
-    # do the conversion
-    xr_ds_[co2_var_name] = xr_ds_[co2_var_name]*ppmfac
-
-    xr_ds_[co2_var_name].attrs["units"] = 'ppm'
-    xr_ds_[co2_var_name].attrs['long_name'] = temp_long_name
+    for var in variable_list:
+        xr_ds_[prefix + var] = xr_ds_[var].weighted(xr_ds_[weighting_var]).mean(averaging_dims)
+        xr_ds_[prefix + var].attrs["units"] = xr_ds_[var].units
+        xr_ds_[prefix + var].attrs['long_name'] = xr_ds_[var].long_name + ' (globally averaged)'
 
     return xr_ds_
