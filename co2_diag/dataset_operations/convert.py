@@ -1,10 +1,25 @@
+import xarray as xr
 
-def co2_molfrac_to_ppm(xr_ds_, co2_var_name='CO2'):
-    """Convert Obspack $CO_2$ $mol/mol$ to $ppm$
 
-    The CO2 variable of the input dataset is converted from mol/mol to ppm
+def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
+                       co2_var_name: str = 'CO2',
+                       ) -> xr.Dataset:
+    """Convert CO2 from units of mol/mol to ppm
 
-    Where $CO_2$ is converted from units of $mol/mol$ to $ppm$ by:
+    Parameters
+    ----------
+    xr_ds_
+        A dataset containing a CO2 variable
+    co2_var_name
+        Variable name for CO2 in the dataset
+
+    Returns
+    -------
+        The dataset with CO2 converted to units of <ppm>
+
+    Notes
+    _______
+    The $CO_2$ variable of the input dataset is converted from units of $mol/mol$ to $ppm$ by:
 
     \begin{array}{lllll}
         ppmfac = & \times \frac{1e6\,mol_{air}}{1\,mol_{CO_2}}
@@ -27,12 +42,25 @@ def co2_molfrac_to_ppm(xr_ds_, co2_var_name='CO2'):
     return xr_ds_
 
 
-def co2_kgfrac_to_ppm(xr_ds_, co2_var_name='CO2'):
-    """Convert E3SM $CO_2$ $kg/kg$ to $ppm$
+def co2_kgfrac_to_ppm(xr_ds_: xr.Dataset,
+                      co2_var_name: str = 'CO2',
+                      ) -> xr.Dataset:
+    """Convert CO2 from units of kg/kg to ppm
 
-    The CO2 variable of the input dataset is converted from kg/kg to ppm
+    Parameters
+    ----------
+    xr_ds_
+        A dataset containing a CO2 variable
+    co2_var_name
+        Variable name for CO2 in the dataset
 
-    Where conversion from $CO_2$ $kg/kg$ to $ppm$ by:
+    Returns
+    -------
+        The dataset with CO2 converted to units of <ppm>
+
+    Notes
+    ______
+    The $CO_2$ variable of the input dataset is converted from units of $kg/kg$ to $ppm$ by:
 
     \begin{array}{lllll}
         CO_2\,dry-air\,mass\,fraction  & \times CO_2\,molar\,mass & \times dry-air\,molar\,mass & \times ppm \\
