@@ -18,7 +18,9 @@ __all__ = ['calc_change_in_mass',
            'get_closest_mdl_cell_dict']
 
 
-def calc_change_in_mass(dataset, varname='glmean_TMCO2_FFF', prefix='deltas_'):
+def calc_change_in_mass(dataset: xr.Dataset,
+                        varname='glmean_TMCO2_FFF', prefix='deltas_'
+                        ) -> xr.Dataset:
     """Change in mass of $CO_2$ from timestep to timestep
     $\Delta{mass_{CO_2}}$ - using backwards difference
 
@@ -33,8 +35,10 @@ def calc_change_in_mass(dataset, varname='glmean_TMCO2_FFF', prefix='deltas_'):
     return dataset
 
 
-def calc_global_weighted_means(dataset,
-                               variable_list=None, prefix='glmean_', weighting_var='area_p', averaging_dims=('ncol')):
+def calc_global_weighted_means(dataset: xr.Dataset,
+                               variable_list=None,
+                               prefix='glmean_', weighting_var='area_p', averaging_dims=('ncol')
+                               ) -> xr.Dataset:
     """Global means with weighting by area
 
     xarray has recently introduced a weighting method (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
@@ -56,8 +60,9 @@ def calc_global_weighted_means(dataset,
     return dataset
 
 
-def calc_time_integrated_fluxes(dataset,
-                                prefix='timeint_'):
+def calc_time_integrated_fluxes(dataset: xr.Dataset,
+                                prefix='timeint_'
+                                ) -> xr.Dataset:
     """Time-integrated flux of $CO_2$ from surface emissions and aircraft
     $\int{flux_{CO_2}}$
 
@@ -80,19 +85,25 @@ def calc_time_integrated_fluxes(dataset,
     return dataset
 
 
-def calc_var_deltas(xr_da_):
-    """Backward difference calculation"""
+def calc_var_deltas(xr_da_: xr.DataArray
+                    ) -> np.ndarray:
+    """Backward difference calculation
+    """
     return np.insert(np.diff(xr_da_), 0, 0)
 
 
-def calc_time_deltas(xr_ds_):
-    """Time deltas in seconds"""
+def calc_time_deltas(xr_ds_: xr.Dataset
+                     ) -> xr.DataArray:
+    """Time deltas in seconds
+    """
     seconds_per_day = 24 * 60 * 60
     return (xr_ds_['time_bnds'].diff('nbnd') * seconds_per_day).astype('float').isel(nbnd=0).round()
 
 
-def get_closest_mdl_cell_dict(dataset, lat, lon):
-    """Find the nearest point in the model output"""
+def get_closest_mdl_cell_dict(dataset: xr.Dataset, lat, lon
+                              ) -> dict:
+    """Find the nearest point in the model output
+    """
     obs_station_lat_lon = {'lat': lat, 'lon': lon}
     mdl_lat_lon_list = [{'lat': a, 'lon': o, 'index': i}
                         for i, (a, o)
@@ -104,8 +115,10 @@ def get_closest_mdl_cell_dict(dataset, lat, lon):
     return closest_dict
 
 
-def add_global_mean_vars(xr_ds_, variable_list, prefix='glmean_',
-                         weighting_var='area_p', averaging_dims=('ncol')):
+def add_global_mean_vars(xr_ds_: xr.Dataset,
+                         variable_list,
+                         prefix='glmean_', weighting_var='area_p', averaging_dims=('ncol')
+                         ) -> xr.Dataset:
     """ For each variable in the input list, we add an accompanying variable that represents a global mean
     """
     for var in variable_list:
