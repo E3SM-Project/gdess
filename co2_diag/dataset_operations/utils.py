@@ -13,7 +13,7 @@ import numpy as np
 import xarray as xr
 
 import logging
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 # Define functions to be imported by *, e.g. from the local __init__ file
 #   (also to avoid adding above imports to other namespaces)
@@ -43,17 +43,17 @@ def print_var_summary(dataset: xr.Dataset, varname='CO2', return_dataset=False):
 
     stats_dict = get_var_stats(dataset[varname])
 
-    logger.info("Summary for <%s>%s%s:",
-                varname,
+    _logger.info("Summary for <%s>%s%s:",
+                 varname,
                 ' (units of ' + vu + ')' if vu else '',
                 ' (long_name: ' + ln + ')' if ln else '')
-    logger.info("  min: %s", str(stats_dict['min']))
-    logger.info("  mean: %s", str(stats_dict['mean']))
-    logger.info("  max: %s", str(stats_dict['max']))
+    _logger.info("  min: %s", str(stats_dict['min']))
+    _logger.info("  mean: %s", str(stats_dict['mean']))
+    _logger.info("  max: %s", str(stats_dict['max']))
 
     my_shape = dataset[varname].shape
     dim_strings = [f"{d}: {my_shape[i]}" for i, d in enumerate(dataset[varname].dims)]
-    logger.info("  shape: (" + ', '.join(dim_strings) + ")")
+    _logger.info("  shape: (" + ', '.join(dim_strings) + ")")
 
     if return_dataset:
         return dataset

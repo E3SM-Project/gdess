@@ -7,7 +7,7 @@ import logging
 
 from co2_diag.dataset_operations.geographic import closest
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 # Define functions to be imported by *, e.g. from the local __init__ file
 #   (also to avoid adding above imports to other namespaces)

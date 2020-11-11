@@ -2,7 +2,7 @@ import numpy as np
 import xarray as xr
 
 import logging
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def dataset_from_filelist(file_list: list,

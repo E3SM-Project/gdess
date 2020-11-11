@@ -3,7 +3,7 @@ import pandas as pd
 import xarray as xr
 
 import logging
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def daily_anomalies(dataset: xr.Dataset,
