@@ -4,3 +4,8 @@ pandas
 xarray
 matplotlib
 cartopy
+
+# Intake is a package for retrieving CMIP6, and gcsfs is a silent dependency
+intake
+intake-esm
+gcsfs
