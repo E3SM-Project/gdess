@@ -105,6 +105,9 @@ class Loader(Multiset):
         self.datasets_prepped_for_execution = self.original_datasets
         _loader_logger.info('\n'.join(self.original_datasets.keys()))
 
+        _loader_logger.info("Converting units to ppm.")
+        self.convert_all_to_ppm()
+
     def convert_all_to_ppm(self):
         # Convert CO2 units to ppm
         self.apply_function_to_all_datasets(co2ops.convert.co2_molfrac_to_ppm, co2_var_name='co2')
