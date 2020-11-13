@@ -18,8 +18,11 @@ class Multiset():
         self.original_datasets = None
         self.datasets_prepped_for_execution = {}
         self.latest_executed_datasets = {}
+
         if verbose:
             _multiset_logger.setLevel(logging.DEBUG)
+        else:
+            _multiset_logger.setLevel(logging.WARN)
 
     def __repr__(self):
         obj_attributes = sorted([k for k in self.__dict__.keys()

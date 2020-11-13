@@ -33,6 +33,8 @@ class Loader(Multiset):
 
         if verbose:
             _loader_logger.setLevel(logging.DEBUG)
+        else:
+            _loader_logger.setLevel(logging.WARN)
 
     def count_members(self, verbose=True):
         # Get the number of member_id values present for each model's dataset.
