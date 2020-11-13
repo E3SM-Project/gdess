@@ -1,7 +1,12 @@
 setuptools
+
+# Data operations packages
 numpy
 pandas
+dask
 xarray
+
+# Graphics packages
 matplotlib
 cartopy
 
