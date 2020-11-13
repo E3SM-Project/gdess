@@ -1,3 +1,5 @@
+notebooks/exploratory/
+
 # Image files
 *.png
 *.jpg
@@ -62,6 +64,9 @@ coverage.xml
 # Translations
 *.mo
 *.pot
+
+# Pycharm stuff:
+.idea/
 
 # Django stuff:
 *.log
@@ -135,3 +140,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/notebooks/temp_check.ipynb
+/api_diagram.dio
