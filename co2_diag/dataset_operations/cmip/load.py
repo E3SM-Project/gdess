@@ -47,7 +47,8 @@ class Loader(Multiset):
         for k in self.original_datasets.keys():
             member_counts.append(len(self.original_datasets[k]['member_id'].values))
         nmodels = len(member_counts)
-        _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
+        if verbose:
+            _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
 
         return nmodels, member_counts
 
@@ -58,11 +59,16 @@ class Loader(Multiset):
         nmodels, member_counts = self.count_members(verbose=False)
 
         # String representation is built.
-        strrep = f"CMIP Loader: \n" + \
-                 '\t\n'.join(self.original_datasets.keys()) + \
+        strrep = f"-- CMIP Loader -- \n" \
+                 f"Datasets:" \
+                 f"\n\t" + \
+                 '\n\t'.join(self.original_datasets.keys()) + \
+                 f"\n" + \
                  f"There are <{member_counts}> members for each of the {nmodels} models." \
                  f"\n" \
-                 f"\t all attributes:%s" % '\n\t\t\t'.join(obj_attributes)
+                 f"All attributes:" \
+                 f"\n\t" + \
+                 '\n\t'.join(obj_attributes)
 
         return strrep
 
