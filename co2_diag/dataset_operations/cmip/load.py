@@ -15,14 +15,19 @@ import logging
 
 _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 class Loader(Multiset):
-    def __init__(self, verbose=False):
+    def __init__(self, datastore='cmip6', verbose=False):
         """
 
         Parameters
         ----------
+        datastore
         verbose
         """
-        url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
+        if datastore == 'cmip6':
+            url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
+        else:
+            raise ValueError('Unexpected/unhandled datastore <%s>', datastore)
+
         self.dataframe = intake.open_esm_datastore(url)
         self.latest_searched_models = None
 
