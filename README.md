@@ -4,7 +4,7 @@ Helper code for evaluating CO2 in E3SM
 
 ## ⚙ Installation
 
-###### 👥 Clone this repository to the location of your choice
+###### 👥  Clone this repository to the location of your choice
 
 (Most work will be done in the 'develop' branch, which we `checkout` before pulling the latest version)
 ```shell script
@@ -14,14 +14,14 @@ git checkout develop
 git pull
 ```
 
-###### 🌍 Create conda environment, and install this repo's dependencies:
+###### 🌍  Create conda environment and install dependencies:
 ```shell script
 conda create -n "myenv" python=3.8
 conda config --add channels conda-forge
 conda install --file requirements.txt
 ```
 
-###### 💾 Install the package:
+###### 💾  Install the package:
 ```shell script
 pip install .
 ```
