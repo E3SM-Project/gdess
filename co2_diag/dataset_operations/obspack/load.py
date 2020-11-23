@@ -19,7 +19,7 @@ def dataset_from_filelist(file_list: list,
         # These are the default variables to keep if not overridden by a passed parameter.
         vars_to_keep = ['value', 'nvalue', 'value_std_dev',
                         'time', 'start_time', 'datetime', 'time_decimal',
-                        'latitude', 'longitude', 'altitude',
+                        'latitude', 'longitude', 'altitude', 'pressure',
                         'qcflag', 'dataset_platform', 'dataset_project',
                         'obspack_num', 'obspack_id']
 
@@ -29,7 +29,7 @@ def dataset_from_filelist(file_list: list,
 
         # If the following variables are not present, continue loading and just make them blank DataArrays
         #    Otherwise, we will raise an error
-        possible_missing_vars = ['qcflag', 'value_std_dev', 'nvalue']
+        possible_missing_vars = ['pressure', 'qcflag', 'value_std_dev', 'nvalue']
         for pmv in possible_missing_vars:
             if not (pmv in thisds.keys()):
                 blankarray = xr.DataArray(data=[np.nan], dims='obs', name=pmv).squeeze()
