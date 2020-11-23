@@ -208,4 +208,4 @@ class Collection(Multiset):
                          fontsize=12)
 
         plt.tight_layout()
-        plt.show()
+        return fig, ax
