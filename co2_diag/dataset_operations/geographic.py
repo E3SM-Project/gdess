@@ -2,7 +2,9 @@ from math import cos, asin, sqrt
 
 # Define functions to be imported by *, e.g. from the local __init__ file
 #   (also to avoid adding above imports to other namespaces)
-__all__ = ['distance', 'closest']
+__all__ = ['distance', 'closest', 'get_closest_mdl_cell_dict']
+
+import xarray as xr
 
 
 def distance(lat1, lon1, lat2, lon2):
@@ -17,3 +19,42 @@ def closest(data, v):
     return min_entry
 
 
+def get_closest_mdl_cell_dict(dataset: xr.Dataset,
+                              lat: float,
+                              lon: float,
+                              coords_as_dimensions: bool = True
+                              ) -> dict:
+    """Find the nearest point in the model output
+
+    Parameters
+    ----------
+    dataset
+    lat
+    lon
+    coords_as_dimensions
+        True for dataset variables as independent dimensions, e.g.
+            lat = -90, -89,...,0, 1,... ,90
+            lon = -180, -179, -178,...,0, 1,... ,180
+        Flase for dataset variables where all pairs are enumerated, e.g.
+            lat = -90,  -90,...  ,-89,  -89,... 90, 90
+            lon = -180, -179,... ,-180, -179,... 179, 180
+
+    Returns
+    -------
+
+    """
+    obs_station_lat_lon = {'lat': lat, 'lon': lon}
+
+    if coords_as_dimensions:
+        coords = dataset.stack(coord_pair=['lat', 'lon']).coord_pair.values
+    else:
+        coords = zip(dataset['lat'].values, dataset['lon'].values)
+
+    mdl_lat_lon_list = [{'lat': a, 'lon': o, 'index': i}
+                        for i, (a, o)
+                        in enumerate(coords)]
+
+    # Find it.
+    closest_dict = closest(mdl_lat_lon_list, obs_station_lat_lon)
+
+    return closest_dict

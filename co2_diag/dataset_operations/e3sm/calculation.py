@@ -1,11 +1,7 @@
 import numpy as np
 import xarray as xr
 
-from .. import utils
-
 import logging
-
-from co2_diag.dataset_operations.geographic import closest
 
 _logger = logging.getLogger(__name__)
 
@@ -14,8 +10,7 @@ _logger = logging.getLogger(__name__)
 __all__ = ['calc_change_in_mass',
            'calc_global_weighted_means', 'add_global_mean_vars',
            'calc_time_integrated_fluxes',
-           'calc_var_deltas', 'calc_time_deltas',
-           'get_closest_mdl_cell_dict']
+           'calc_var_deltas', 'calc_time_deltas']
 
 
 def calc_change_in_mass(dataset: xr.Dataset,
@@ -98,21 +93,6 @@ def calc_time_deltas(xr_ds_: xr.Dataset
     """
     seconds_per_day = 24 * 60 * 60
     return (xr_ds_['time_bnds'].diff('nbnd') * seconds_per_day).astype('float').isel(nbnd=0).round()
-
-
-def get_closest_mdl_cell_dict(dataset: xr.Dataset, lat, lon
-                              ) -> dict:
-    """Find the nearest point in the model output
-    """
-    obs_station_lat_lon = {'lat': lat, 'lon': lon}
-    mdl_lat_lon_list = [{'lat': a, 'lon': o, 'index': i}
-                        for i, (a, o)
-                        in enumerate(zip(dataset['lat'].values, dataset['lon'].values))]
-
-    # Find it.
-    closest_dict = closest(mdl_lat_lon_list, obs_station_lat_lon)
-
-    return closest_dict
 
 
 def add_global_mean_vars(xr_ds_: xr.Dataset,
