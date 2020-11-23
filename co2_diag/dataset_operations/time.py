@@ -1,5 +1,10 @@
 import numpy as np
+import pandas as pd
 import xarray as xr
+
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 def to_datetime64(dataset: xr.Dataset
@@ -11,8 +16,13 @@ def to_datetime64(dataset: xr.Dataset
 def to_datetimeindex(dataset: xr.Dataset
                      ) -> xr.Dataset:
     # For model output, it is often more convenient to work with the `time` variable as type `datetime64`.
-    dataset['time'] = dataset.indexes['time'].to_datetimeindex()
-    return dataset
+
+    # Check if it's already a datetimeindex
+    if isinstance(dataset.indexes['time'], pd.core.indexes.datetimes.DatetimeIndex):
+        _logger.debug('already a datetimeindex, no conversion done.')
+    else:
+        dataset['time'] = dataset.indexes['time'].to_datetimeindex()
+        return dataset
 
 
 def select_between(dataset: xr.Dataset,
