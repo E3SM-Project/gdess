@@ -50,7 +50,7 @@ class Collection(Multiset):
         nmodels, member_counts = self.count_members(verbose=False)
 
         # String representation is built.
-        strrep = f"-- CMIP Loader -- \n" \
+        strrep = f"-- CMIP Collection -- \n" \
                  f"Datasets:" \
                  f"\n\t" + \
                  '\n\t'.join(self.original_datasets.keys()) + \
@@ -200,7 +200,7 @@ class Collection(Multiset):
 
         ax.set_ylabel('ppm')
         ax.grid(True, linestyle='--', color='gray', alpha=1)
-        for spine in plt.gca().spines.values():
+        for spine in ax.spines.values():
             spine.set_visible(False)
 
         leg = plt.legend(title='Models', frameon=False,
