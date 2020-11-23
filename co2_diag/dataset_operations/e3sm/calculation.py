@@ -107,3 +107,17 @@ def add_global_mean_vars(xr_ds_: xr.Dataset,
         xr_ds_[prefix + var].attrs['long_name'] = xr_ds_[var].long_name + ' (globally averaged)'
 
     return xr_ds_
+
+
+def getPMID(hyam, hybm, P0, PS):
+    PMID = P0 * hyam + PS * hybm
+    PMID.attrs.update({'units': 'Pa',
+                       'long_name': 'Pressure'})
+    return PMID
+
+
+def getPINT(hyai, hybi, P0, PS):
+    PMID = P0 * hyai + PS * hybi
+    PMID.attrs.update({'units': 'Pa',
+                       'long_name': 'Pressure at interface levels'})
+    return PMID
