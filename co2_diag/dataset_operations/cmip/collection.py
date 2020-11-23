@@ -91,7 +91,7 @@ class Collection(Multiset):
         self.latest_searched_models = self.dataframe.search(**query)
         return self.latest_searched_models
 
-    def load_datasets_from_searched_models(self):
+    def load_datasets_from_search(self):
         self.original_datasets = self.latest_searched_models.to_dataset_dict()
         self.datasets_prepped_for_execution = self.original_datasets
         _loader_logger.info('\n'.join(self.original_datasets.keys()))
