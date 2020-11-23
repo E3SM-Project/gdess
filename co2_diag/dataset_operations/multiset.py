@@ -1,3 +1,5 @@
+import copy
+import pickle
 import xarray as xr
 from dask.diagnostics import ProgressBar
 
@@ -44,6 +46,39 @@ class Multiset():
             _multiset_logger.setLevel(logging.WARN)
         else:
             raise ValueError("Unexpect/unhandled verbose option <%s>. Please use 'on' or 'off'", switch)
+
+    def datasets_to_file(self, filename: str = 'cmip_collection.latest_executed_datasets.pickle',):
+        """
+
+        Parameters
+        ----------
+        filename
+
+        """
+        with open(filename, 'wb') as f:
+            # Pickle the 'data' dictionary using the highest protocol available.
+            pickle.dump(self.latest_executed_datasets, f, pickle.HIGHEST_PROTOCOL)
+
+    def datasets_from_file(self,
+                           filename: str = 'cmip_collection.latest_executed_datasets.pickle',
+                           replace: bool = False):
+        """
+
+        Parameters
+        ----------
+        filename
+        replace
+
+        """
+        with open(filename, 'rb') as f:
+            # The protocol version used is detected automatically, so we do not
+            # have to specify it.
+            le_datasets = pickle.load(f)
+
+        if replace:
+            self.latest_executed_datasets = le_datasets
+        else:
+            pass
 
     def apply_function_to_all_datasets(self, fnc, *args, **kwargs):
         """
