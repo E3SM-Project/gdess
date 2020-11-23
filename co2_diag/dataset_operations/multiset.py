@@ -28,7 +28,7 @@ class Multiset():
 
     def __repr__(self):
         obj_attributes = sorted([k for k in self.__dict__.keys()
-                                 if not k.startswith('_')])
+                                 if not self.datasets_prepped_for_execution[k].startswith('_')])
 
         # String representation is built.
         strrep = f"Multiset: \n" + \
@@ -89,34 +89,52 @@ class Multiset():
         args
         kwargs:
             'executing' (bool): specify whether we are executing calculations or lazily applying a new calculation
+                This determines which attribute variable the results are saved into.
+            '
 
         Returns
         -------
 
         """
 
+        # Any keyword arguments are parsed.
+        origin_dict = self.original_datasets
+        if 'append' in kwargs:
+            if kwargs['append']:
+                origin_dict = self.datasets_prepped_for_execution
+                # then remove key
+                kwargs.pop('append', None)
+        #
         destination_dict = self.datasets_prepped_for_execution
         if 'executing' in kwargs:
             if kwargs['executing']:
                 destination_dict = self.latest_executed_datasets
+                # then remove key
+                kwargs.pop('executing', None)
 
         count = 0
-        for k in self.datasets_prepped_for_execution.keys():
+        nd = len(origin_dict)
+        for k in origin_dict.keys():
             count += 1
-            _multiset_logger.debug("-- %d - {%s}.. ", count, k)
-            destination_dict[k] = self.datasets_prepped_for_execution[k].pipe(fnc, *args, **kwargs)
+            _multiset_logger.debug("-- %d/%d - %s/.. ", count, nd, k)
+            destination_dict[k] = origin_dict[k].pipe(fnc, *args, **kwargs)
 
         if count == 0:
             _multiset_logger.debug("Nothing done. No datasets are ready for execution.")
         else:
             _multiset_logger.debug("all processed.")
 
-    def load_all(self, progressbar=True):
+        return destination_dict
+
+    def load_all(self, progressbar=True, inplace=True):
         if progressbar:
             ProgressBar().register()
 
         self.apply_function_to_all_datasets(xr.Dataset.load, executing=True)
         _multiset_logger.info("done.")
+
+        if not inplace:
+            return copy.deepcopy(self)
 
     def apply_selection(self, **selection_dict):
         """Select from dataset.  Wrapper for Xarray's .sel().
@@ -135,14 +153,28 @@ class Multiset():
         Parameters
         ----------
         selection_dict
+            include <isel=True> to use index selection instead of keyword selection.
 
         Returns
         -------
+            a dictionary containing the datasets with selections lazily queued, but not executed.
 
         """
-        _multiset_logger.debug("processing <%s>", selection_dict)
-        self.apply_function_to_all_datasets(xr.Dataset.sel, **selection_dict)
-        _multiset_logger.info("all selections applied, but not yet executed. Ready for .load()")
+        _multiset_logger.debug("processing selection: <%s>", selection_dict)
+
+        index_based_selection = False
+        if 'isel' in selection_dict:
+            index_based_selection = selection_dict['isel']
+            # then remove isel from selections
+            selection_dict.pop('isel', None)
+
+        if index_based_selection:
+            returndict = self.apply_function_to_all_datasets(xr.Dataset.isel, **selection_dict)
+        else:
+            returndict = self.apply_function_to_all_datasets(xr.Dataset.sel, **selection_dict)
+        _multiset_logger.info("selection(s) applied, but not yet executed. Ready for .load()")
+
+        return returndict
 
     def apply_mean(self, dim):
         self.apply_function_to_all_datasets(xr.Dataset.mean, dim=dim)
