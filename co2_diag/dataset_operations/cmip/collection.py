@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import logging
 
 _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
-class Loader(Multiset):
+class Collection(Multiset):
     def __init__(self, datastore='cmip6', verbose=False):
         """
 
