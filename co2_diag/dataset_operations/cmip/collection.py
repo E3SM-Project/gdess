@@ -1,8 +1,10 @@
 import numpy as np
+import xarray as xr
 import warnings
 
 import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.multiset import Multiset
+from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
 
 # Packages for using NCAR's intake
 import intake
@@ -40,17 +42,6 @@ class Collection(Multiset):
             _loader_logger.setLevel(logging.DEBUG)
         else:
             _loader_logger.setLevel(logging.WARN)
-
-    def count_members(self, verbose=True):
-        # Get the number of member_id values present for each model's dataset.
-        member_counts = []
-        for k in self.original_datasets.keys():
-            member_counts.append(len(self.original_datasets[k]['member_id'].values))
-        nmodels = len(member_counts)
-        if verbose:
-            _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
-
-        return nmodels, member_counts
 
     def __repr__(self):
         obj_attributes = sorted([k for k in self.__dict__.keys()
@@ -112,6 +103,39 @@ class Collection(Multiset):
         # Convert CO2 units to ppm
         self.apply_function_to_all_datasets(co2ops.convert.co2_molfrac_to_ppm, co2_var_name='co2')
         _loader_logger.info("all converted.")
+
+    def count_members(self, verbose=True):
+        # Get the number of member_id values present for each model's dataset.
+        member_counts = []
+        for k in self.original_datasets.keys():
+            member_counts.append(len(self.original_datasets[k]['member_id'].values))
+        nmodels = len(member_counts)
+        if verbose:
+            _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
+
+        return nmodels, member_counts
+
+    @staticmethod
+    def latlon_select(xr_ds: xr.Dataset,
+                      lat: float,
+                      lon: float,
+                      ) -> xr.Dataset:
+        """Select from dataset the column that is closest to specified lat/lon pair
+
+        Parameters
+        ----------
+        xr_ds
+        lat
+        lon
+
+        Returns
+        -------
+
+        """
+        closest_point_dict = get_closest_mdl_cell_dict(xr_ds, lat=lat, lon=lon,
+                                                       coords_as_dimensions=True)
+
+        return xr_ds.stack(coord_pair=['lat', 'lon']).isel(coord_pair=closest_point_dict['index'])
 
     @staticmethod
     def categorical_cmap(nc, nsc, cmap="tab10", continuous=False):
