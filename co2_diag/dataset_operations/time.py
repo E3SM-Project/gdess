@@ -3,13 +3,13 @@ import xarray as xr
 
 
 def to_datetime64(dataset: xr.Dataset
-                       ) -> xr.Dataset:
+                  ) -> xr.Dataset:
     # It is more convenient to work with the `time` variable as type `datetime64`.
     return xr.decode_cf(dataset)
 
 
 def to_datetimeindex(dataset: xr.Dataset
-                          ) -> xr.Dataset:
+                     ) -> xr.Dataset:
     # For model output, it is often more convenient to work with the `time` variable as type `datetime64`.
     dataset['time'] = dataset.indexes['time'].to_datetimeindex()
     return dataset
