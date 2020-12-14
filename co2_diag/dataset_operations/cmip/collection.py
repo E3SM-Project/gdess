@@ -33,7 +33,6 @@ class Collection(Multiset):
         else:
             raise ValueError('Unexpected/unhandled datastore <%s>', datastore)
 
-        self.dataframe = intake.open_esm_datastore(url)
         self.latest_searched_models = None
 
         self.original_datasets = None
