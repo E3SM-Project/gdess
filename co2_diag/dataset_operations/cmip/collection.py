@@ -129,7 +129,9 @@ class Collection(Multiset):
         _loader_logger.setLevel(self.validate_verbose(verbose))
 
     def search(self, **query) -> intake_esm.core.esm_datastore:
-        """Wrapper for intake's catalog search
+        """Wrapper for intake's catalog search.
+
+        Loads catalog into the attribute "latest_searched_models"
 
         query keyword arguments:
             experiment_id
