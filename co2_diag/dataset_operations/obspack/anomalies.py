@@ -3,11 +3,13 @@ import pandas as pd
 import xarray as xr
 
 import logging
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
-def daily_anomalies(dataset: xr.Dataset) -> pd.DataFrame:
-    varlist = ['time', 'time_decimal', 'value']
+def daily_anomalies(dataset: xr.Dataset,
+                    varname: str = 'value'
+                    ) -> pd.DataFrame:
+    varlist = ['time', varname]
     tempds = dataset[varlist]
 
     # Get daily values, and add additional temporal label coordinates
@@ -26,21 +28,23 @@ def daily_anomalies(dataset: xr.Dataset) -> pd.DataFrame:
     That is, I want to take away the average of (eg) January 1979 from all the days in January 1979. 
     And I'd like to do this for every month of every year in my array."""
     df_daily['daily_anomaly_from_month'] = \
-        (ds_daily.groupby("year_month") - ds_daily.groupby("year_month").mean("time"))['value']
+        (ds_daily.groupby("year_month") - ds_daily.groupby("year_month").mean("time"))[varname]
     # Get each datum's departure from it's year's mean
-    df_daily['daily_anomaly_from_year'] = (ds_daily.groupby("year") - ds_daily.groupby("year").mean("time"))['value']
+    df_daily['daily_anomaly_from_year'] = (ds_daily.groupby("year") - ds_daily.groupby("year").mean("time"))[varname]
     # Get each datum's departure from the entire dataset's mean
-    df_daily['daily_anomaly_from_allmean'] = (ds_daily - ds_daily.mean("time"))['value']
+    df_daily['daily_anomaly_from_allmean'] = (ds_daily - ds_daily.mean("time"))[varname]
     # Get each datum's departure from it's year's mean
-    df_daily['daily_anomaly_from_year'] = (ds_daily.groupby("year") - ds_daily.groupby("year").mean("time"))['value']
+    df_daily['daily_anomaly_from_year'] = (ds_daily.groupby("year") - ds_daily.groupby("year").mean("time"))[varname]
 
     df_daily = df_daily.reset_index()
 
     return df_daily
 
 
-def monthly_anomalies(dataset: xr.Dataset) -> pd.DataFrame:
-    varlist = ['time', 'time_decimal', 'value']
+def monthly_anomalies(dataset: xr.Dataset,
+                      varname: str = 'value'
+                      ) -> pd.DataFrame:
+    varlist = ['time', varname]
     tempds = dataset[varlist]
 
     # Get monthly values, and add additional temporal label coordinates
@@ -56,17 +60,19 @@ def monthly_anomalies(dataset: xr.Dataset) -> pd.DataFrame:
     #
     # Get each datum's departure from it's year's mean"""
     df_monthly['monthly_anomaly_from_year'] = \
-        (ds_monthly.groupby("year") - ds_monthly.groupby("year").mean("time"))['value']
+        (ds_monthly.groupby("year") - ds_monthly.groupby("year").mean("time"))[varname]
     # Get each datum's departure from the entire dataset's mean"""
-    df_monthly['monthly_anomaly_from_allmean'] = (ds_monthly - ds_monthly.mean("time"))['value']
+    df_monthly['monthly_anomaly_from_allmean'] = (ds_monthly - ds_monthly.mean("time"))[varname]
 
     df_monthly = df_monthly.reset_index()
 
     return df_monthly
 
 
-def seasonal_anomalies(dataset: xr.Dataset) -> pd.DataFrame:
-    varlist = ['time', 'time_decimal', 'value']
+def seasonal_anomalies(dataset: xr.Dataset,
+                       varname: str = 'value'
+                       ) -> pd.DataFrame:
+    varlist = ['time', varname]
     tempds = dataset[varlist]
 
     # Get seasonal (quarterly, starting on December) values, and add additional temporal label coordinates
@@ -91,7 +97,7 @@ def seasonal_anomalies(dataset: xr.Dataset) -> pd.DataFrame:
     # --- Calculate Anomalies ---
     #
     # Get each datum's departure from the entire dataset's mean
-    df_seasonal['seasonal_anomaly_from_allmean'] = (ds_seasonal - ds_seasonal.mean("time"))['value']
+    df_seasonal['seasonal_anomaly_from_allmean'] = (ds_seasonal - ds_seasonal.mean("time"))[varname]
 
     df_seasonal = df_seasonal.reset_index()
 
