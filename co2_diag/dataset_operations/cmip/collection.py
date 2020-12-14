@@ -1,6 +1,8 @@
+import time
 import numpy as np
 import xarray as xr
 import warnings
+from typing import Union
 
 import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.multiset import Multiset
@@ -24,6 +26,7 @@ class Collection(Multiset):
         ----------
         datastore
         verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         if datastore == 'cmip6':
             url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
@@ -38,12 +41,71 @@ class Collection(Multiset):
         self.latest_executed_datasets = {}
         super(Multiset, self).__init__()
 
-        if verbose:
-            _loader_logger.setLevel(logging.DEBUG)
-        else:
-            _loader_logger.setLevel(logging.WARN)
+        self.set_verbose(verbose)
 
-    def __repr__(self):
+        _loader_logger.info('Opening the ESM datastore catalog.')
+        self.dataframe = intake.open_esm_datastore(url)
+
+    @classmethod
+    def run_recipe_for_timeseries(cls,
+                                  datastore='cmip6',
+                                  verbose: Union[bool, str] = False,
+                                  load_from_file=None
+                                  ):
+        """Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore
+        verbose
+        load_from_file
+            (str): path to pickled datastore
+
+        Returns
+        -------
+        Collection object for CMIP6
+
+        """
+        start_time = time.time()
+        step_num = 0
+
+        # Create an instance of this CMIP6 Collection class
+        new_self = cls(datastore=datastore, verbose=verbose)
+
+        # --------------------------
+        # --- Get model datasets ---
+        # --------------------------
+        _loader_logger.info('recipe step <%02d> - Searching for model output subset.', step_num := step_num + 1)
+        esm_datastore = new_self.search(experiment_id='esm-hist',
+                                        table_id=['Amon'],
+                                        variable_id='co2')
+        _loader_logger.info(f"  {esm_datastore.df.shape[0]} model members identified")
+        _loader_logger.info('recipe step <%02d> - Loading model datasets into memory.', step_num := step_num + 1)
+        new_self.load_datasets_from_search()
+
+        if load_from_file is not None:
+            _loader_logger.info('recipe step <%02d> - Loading dataset from file.', step_num := step_num + 1)
+            new_self.datasets_from_file(filename=load_from_file, replace=True)
+        else:
+            # -----------------------------
+            # --- Apply selected bounds ---
+            # -----------------------------
+            _loader_logger.info('recipe step <%02d> - Applying selected bounds.', step_num := step_num + 1)
+            # We will slice the dataset to get 100,000 Pa level values since 1960.
+            selection_dict = {'time': slice("1960", None),
+                              'plev': 100000}
+            new_self.apply_selection(**selection_dict)
+            # The spatial mean will be calculated, leaving us with a time series.
+            new_self.apply_mean(dim=('lon', 'lat'))
+            new_self.execute_all()  # The lazily loaded selections and computations are here actually processed.
+
+        # Report the time this recipe took to execute.
+        execution_time = (time.time() - start_time)
+        _loader_logger.info('recipe execution time (seconds): ' + str(execution_time))
+
+        return new_self
+
+    def __repr__(self) -> str:
         obj_attributes = sorted([k for k in self.__dict__.keys()
                                  if not k.startswith('_')])
 
@@ -63,14 +125,9 @@ class Collection(Multiset):
 
         return strrep
 
-    @staticmethod
-    def set_verbose(switch):
-        if switch == 'on':
-            _loader_logger.setLevel(logging.DEBUG)
-        elif switch == 'off':
-            _loader_logger.setLevel(logging.WARN)
-        else:
-            raise ValueError("Unexpect/unhandled verbose option <%s>. Please use 'on' or 'off'", switch)
+    def set_verbose(self, verbose: Union[bool, str] = False):
+        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        _loader_logger.setLevel(self.validate_verbose(verbose))
 
     def search(self, **query) -> intake_esm.core.esm_datastore:
         """Wrapper for intake's catalog search
