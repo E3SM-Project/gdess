@@ -80,6 +80,7 @@ class Collection(Multiset):
         ----------
         datastore
         verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         load_from_file
             (str): path to pickled datastore
         param_kw
@@ -135,9 +136,7 @@ class Collection(Multiset):
         execution_time = (time.time() - start_time)
         _loader_logger.info('recipe execution time before plotting (seconds): ' + str(execution_time))
 
-        # ----------------
         # --- Plotting ---
-        # ----------------
         fig, ax = new_self.lineplots()
 
         return new_self
