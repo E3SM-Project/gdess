@@ -68,12 +68,14 @@ class Collection(Multiset):
         start_time = time.time()
         step_num = 0
 
+        # ---------------------
+        # --- Preprocessing ---
+        # ---------------------
+        _loader_logger.debug("Preprocessing")
         # Create an instance of this CMIP6 Collection class
         new_self = cls(datastore=datastore, verbose=verbose)
 
-        # --------------------------
         # --- Get model datasets ---
-        # --------------------------
         _loader_logger.info('recipe step <%02d> - Searching for model output subset.', step_num := step_num + 1)
         esm_datastore = new_self.search(experiment_id='esm-hist',
                                         table_id=['Amon'],
