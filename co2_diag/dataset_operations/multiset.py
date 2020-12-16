@@ -132,7 +132,7 @@ class Multiset():
 
         return destination_dict
 
-    def load_all(self, progressbar=True, inplace=True):
+    def execute_all(self, progressbar=True, inplace=True):
         if progressbar:
             ProgressBar().register()
 
