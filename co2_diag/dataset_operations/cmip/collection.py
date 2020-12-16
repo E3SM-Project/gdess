@@ -28,8 +28,10 @@ class Collection(Multiset):
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
+        self.set_verbose(verbose)
+
         if datastore == 'cmip6':
-            url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
+            self.datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
         else:
             raise ValueError('Unexpected/unhandled datastore <%s>', datastore)
 
@@ -38,12 +40,32 @@ class Collection(Multiset):
         self.original_datasets = None
         self.datasets_prepped_for_execution = {}
         self.latest_executed_datasets = {}
+        self.dataframe = None
         super(Multiset, self).__init__()
 
-        self.set_verbose(verbose)
+    def preprocess(self, url):
+        """Set up the dataset that are common to every diagnostic
 
-        _loader_logger.info('Opening the ESM datastore catalog.')
+        Parameters
+        ----------
+        url
+
+        Returns
+        -------
+
+        """
+        _loader_logger.debug("Preprocessing ---")
+        _loader_logger.info('Opening the ESM datastore catalog..')
         self.dataframe = intake.open_esm_datastore(url)
+
+        # --- Get model datasets ---
+        _loader_logger.info('Searching for model output subset..')
+        esm_datastore = self.search(experiment_id='esm-hist',
+                                        table_id=['Amon'],
+                                        variable_id='co2')
+        _loader_logger.info(f"  {esm_datastore.df.shape[0]} model members identified")
+        _loader_logger.info('Loading model datasets into memory..')
+        self.load_datasets_from_search()
 
     @classmethod
     def run_recipe_for_timeseries(cls,
@@ -68,12 +90,10 @@ class Collection(Multiset):
         start_time = time.time()
         step_num = 0
 
-        # ---------------------
-        # --- Preprocessing ---
-        # ---------------------
-        _loader_logger.debug("Preprocessing")
-        # Create an instance of this CMIP6 Collection class
+        # An instance of this CMIP6 Collection is created.
         new_self = cls(datastore=datastore, verbose=verbose)
+        # Data are formatted into the basic data structure common to various diagnostics.
+        new_self.preprocess(new_self.datastore_url)
 
         # --- Get model datasets ---
         _loader_logger.info('recipe step <%02d> - Searching for model output subset.', step_num := step_num + 1)
