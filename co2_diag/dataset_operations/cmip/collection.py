@@ -71,7 +71,8 @@ class Collection(Multiset):
     def run_recipe_for_timeseries(cls,
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
-                                  load_from_file=None
+                                  load_from_file=None,
+                                  param_kw: dict = None
                                   ):
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
@@ -81,6 +82,11 @@ class Collection(Multiset):
         verbose
         load_from_file
             (str): path to pickled datastore
+        param_kw
+            An optional dictionary with zero or more of these parameter keys:
+                start_yr (str): '1960' is default
+                end_yr (str): None is default
+                plev (int): 100000 is default
 
         Returns
         -------
@@ -88,33 +94,38 @@ class Collection(Multiset):
 
         """
         start_time = time.time()
-        step_num = 0
 
         # An instance of this CMIP6 Collection is created.
         new_self = cls(datastore=datastore, verbose=verbose)
         # Data are formatted into the basic data structure common to various diagnostics.
         new_self.preprocess(new_self.datastore_url)
 
-        # --- Get model datasets ---
-        _loader_logger.info('recipe step <%02d> - Searching for model output subset.', step_num := step_num + 1)
-        esm_datastore = new_self.search(experiment_id='esm-hist',
-                                        table_id=['Amon'],
-                                        variable_id='co2')
-        _loader_logger.info(f"  {esm_datastore.df.shape[0]} model members identified")
-        _loader_logger.info('recipe step <%02d> - Loading model datasets into memory.', step_num := step_num + 1)
-        new_self.load_datasets_from_search()
+        # --- Parse additional Parameters ---
+        _loader_logger.debug("Parsing additional parameters ---")
+        # Default values are given here.
+        start_yr = "1960"
+        end_yr = None
+        plev = 100000
+        if param_kw:
+            if 'start_yr' in param_kw:
+                start_yr = param_kw['start_yr']
+            if 'end_yr' in param_kw:
+                end_yr = param_kw['end_yr']
+            if 'plev' in param_kw:
+                plev = param_kw['end_yr']
 
+        # --- Get the parsed dataset ---
         if load_from_file is not None:
-            _loader_logger.info('recipe step <%02d> - Loading dataset from file.', step_num := step_num + 1)
+            _loader_logger.info('Loading dataset from file..')
             new_self.datasets_from_file(filename=load_from_file, replace=True)
         else:
             # -----------------------------
             # --- Apply selected bounds ---
             # -----------------------------
-            _loader_logger.info('recipe step <%02d> - Applying selected bounds.', step_num := step_num + 1)
-            # We will slice the dataset to get 100,000 Pa level values since 1960.
-            selection_dict = {'time': slice("1960", None),
-                              'plev': 100000}
+            _loader_logger.info('Applying selected bounds..')
+            # We will slice the dataset (default is to get 100,000 Pa level values since 1960).
+            selection_dict = {'time': slice(start_yr, end_yr),
+                              'plev': plev}
             new_self.apply_selection(**selection_dict)
             # The spatial mean will be calculated, leaving us with a time series.
             new_self.apply_mean(dim=('lon', 'lat'))
