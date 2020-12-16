@@ -17,15 +17,13 @@ class Multiset():
         Parameters
         ----------
         verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.original_datasets = None
         self.datasets_prepped_for_execution = {}
         self.latest_executed_datasets = {}
 
-        if verbose:
-            _multiset_logger.setLevel(logging.DEBUG)
-        else:
-            _multiset_logger.setLevel(logging.WARN)
+        self.set_verbose(verbose)
 
     def __repr__(self):
         obj_attributes = sorted([k for k in self.__dict__.keys()
@@ -38,6 +36,10 @@ class Multiset():
                  f"\t all attributes:%s" % '\n\t\t\t'.join(obj_attributes)
 
         return strrep
+
+    def set_verbose(self, verbose: Union[bool, str] = False):
+        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        _multiset_logger.setLevel(self._validate_verbose(verbose))
 
     @staticmethod
     def _validate_verbose(verbose: Union[bool, str] = False):
