@@ -1,5 +1,6 @@
 import copy
 import pickle
+from typing import Union
 import xarray as xr
 from dask.diagnostics import ProgressBar
 
@@ -39,13 +40,18 @@ class Multiset():
         return strrep
 
     @staticmethod
-    def set_verbose(switch):
-        if switch == 'on':
-            _multiset_logger.setLevel(logging.DEBUG)
-        elif switch == 'off':
-            _multiset_logger.setLevel(logging.WARN)
+    def _validate_verbose(verbose: Union[bool, str] = False):
+        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        if verbose is True:
+            level_to_set = logging.DEBUG
+        elif verbose is not None:
+            level_to_set = verbose
+        elif verbose is None:
+            level_to_set = logging.WARN
         else:
-            raise ValueError("Unexpect/unhandled verbose option <%s>. Please use 'on' or 'off'", switch)
+            raise ValueError("Unexpect/unhandled verbose option <%s>. "
+                             "Please use True, False or a string for level such as 'INFO, DEBUG, etc.'", verbose)
+        return level_to_set
 
     def datasets_to_file(self, filename: str = 'cmip_collection.latest_executed_datasets.pickle',):
         """

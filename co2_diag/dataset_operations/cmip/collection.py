@@ -126,7 +126,7 @@ class Collection(Multiset):
 
     def set_verbose(self, verbose: Union[bool, str] = False):
         # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        _loader_logger.setLevel(self.validate_verbose(verbose))
+        _loader_logger.setLevel(self._validate_verbose(verbose))
 
     def search(self, **query) -> intake_esm.core.esm_datastore:
         """Wrapper for intake's catalog search.
