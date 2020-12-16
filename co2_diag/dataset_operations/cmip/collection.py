@@ -102,7 +102,9 @@ class Collection(Multiset):
 
         # Report the time this recipe took to execute.
         execution_time = (time.time() - start_time)
-        _loader_logger.info('recipe execution time (seconds): ' + str(execution_time))
+        _loader_logger.info('recipe execution time before plotting (seconds): ' + str(execution_time))
+
+        fig, ax = new_self.lineplots()
 
         return new_self
 
