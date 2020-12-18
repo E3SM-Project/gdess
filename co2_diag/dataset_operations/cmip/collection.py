@@ -42,7 +42,7 @@ class Collection(Multiset):
         self.original_datasets = None
         self.datasets_prepped_for_execution = {}
         self.latest_executed_datasets = {}
-        self.dataframe = None
+        self.catalog_dataframe = None
         super(Multiset, self).__init__()
 
     def preprocess(self, url: str = default_cmip6_datastore_url):
@@ -58,7 +58,7 @@ class Collection(Multiset):
         """
         _loader_logger.debug("Preprocessing ---")
         _loader_logger.info('Opening the ESM datastore catalog..')
-        self.dataframe = intake.open_esm_datastore(url)
+        self.catalog_dataframe = intake.open_esm_datastore(url)
 
         # --- Get model datasets ---
         _loader_logger.info('Searching for model output subset..')
@@ -186,7 +186,7 @@ class Collection(Multiset):
 
         """
         _loader_logger.info("query dictionary: %s", query)
-        self.latest_searched_models = self.dataframe.search(**query)
+        self.latest_searched_models = self.catalog_dataframe.search(**query)
         return self.latest_searched_models
 
     def load_datasets_from_search(self):
