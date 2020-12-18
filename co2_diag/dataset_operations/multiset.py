@@ -89,7 +89,9 @@ class Multiset():
             pass
 
     def apply_function_to_all_datasets(self, fnc, *args, **kwargs):
-        """
+        """Helper for applying functions to multiple datasets.
+
+        Hopefully with this, there shouldn't be a need to writing additional looping code.
 
         Parameters
         ----------
@@ -134,7 +136,21 @@ class Multiset():
 
         return destination_dict
 
-    def execute_all(self, progressbar=True, inplace=True):
+    def execute_all(self,
+                    progressbar: bool = True,
+                    inplace: bool = True):
+        """Process any lazily loaded selections and computations
+
+        Parameters
+        ----------
+        progressbar
+        inplace
+
+        Returns
+        -------
+            A copy of this Collection instance is returned if inplace=False,
+                otherwise, None is returned.
+        """
         if progressbar:
             ProgressBar().register()
 
