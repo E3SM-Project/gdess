@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 
 import logging
 
+default_cmip6_datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
+
 _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 class Collection(Multiset):
     def __init__(self, datastore='cmip6', verbose=False):
@@ -31,7 +33,7 @@ class Collection(Multiset):
         self.set_verbose(verbose)
 
         if datastore == 'cmip6':
-            self.datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
+            self.datastore_url = default_cmip6_datastore_url
         else:
             raise ValueError('Unexpected/unhandled datastore <%s>', datastore)
 
@@ -43,7 +45,7 @@ class Collection(Multiset):
         self.dataframe = None
         super(Multiset, self).__init__()
 
-    def preprocess(self, url):
+    def preprocess(self, url: str = default_cmip6_datastore_url):
         """Set up the dataset that are common to every diagnostic
 
         Parameters
