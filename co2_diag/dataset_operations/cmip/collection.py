@@ -37,7 +37,7 @@ class Collection(Multiset):
         else:
             raise ValueError('Unexpected/unhandled datastore <%s>', datastore)
 
-        self.latest_searched_models = None
+        self.latest_searched_model_catalog = None
 
         self.original_datasets = None
         self.datasets_prepped_for_execution = {}
@@ -171,7 +171,7 @@ class Collection(Multiset):
     def search(self, **query) -> intake_esm.core.esm_datastore:
         """Wrapper for intake's catalog search.
 
-        Loads catalog into the attribute "latest_searched_models"
+        Loads catalog into the attribute "latest_searched_model_catalog"
 
         query keyword arguments:
             experiment_id
@@ -186,8 +186,8 @@ class Collection(Multiset):
 
         """
         _loader_logger.info("query dictionary: %s", query)
-        self.latest_searched_models = self.catalog_dataframe.search(**query)
-        return self.latest_searched_models
+        self.latest_searched_model_catalog = self.catalog_dataframe.search(**query)
+        return self.latest_searched_model_catalog
 
     def load_datasets_from_search(self):
         """Load datasets into memory
@@ -195,7 +195,7 @@ class Collection(Multiset):
         -------
 
         """
-        self.original_datasets = self.latest_searched_models.to_dataset_dict()
+        self.original_datasets = self.latest_searched_model_catalog.to_dataset_dict()
         self.datasets_prepped_for_execution = self.original_datasets
         _loader_logger.info("Model keys:")
         _loader_logger.info('\n'.join(self.original_datasets.keys()))
