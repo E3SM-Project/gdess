@@ -126,13 +126,14 @@ class Collection(Multiset):
             # --- Apply selected bounds ---
             # -----------------------------
             _loader_logger.info('Applying selected bounds..')
-            # We will slice the dataset (default is to get 100,000 Pa level values since 1960).
+            # We will slice the data by time and pressure level.
             selection_dict = {'time': slice(start_yr, end_yr),
                               'plev': plev}
             new_self.apply_selection(**selection_dict)
             # The spatial mean will be calculated, leaving us with a time series.
             new_self.apply_mean(dim=('lon', 'lat'))
-            new_self.execute_all()  # The lazily loaded selections and computations are here actually processed.
+            # The lazily loaded selections and computations are here actually processed.
+            new_self.execute_all()
 
         # Report the time this recipe took to execute.
         execution_time = (time.time() - start_time)
