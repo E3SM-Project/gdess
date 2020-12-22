@@ -48,34 +48,6 @@ class Multiset:
 
         self._set_multiset_verbose(verbose)
 
-    def get_dsd_by_name(self, name: str):
-        # switcher = {
-        #     1: "January",
-        #     2: "February",
-        #     3: "March",
-        #     4: "April",
-        #     5: "May",
-        #     6: "June",
-        #     7: "July",
-        #     8: "August",
-        #     9: "September",
-        #     10: "October",
-        #     11: "November",
-        #     12: "December"
-        # }
-        # print
-        # switcher.get(argument, "Invalid month")
-        mylist = ['original', 'preprocessed', 'ready', 'executed']
-        fullname = [s for i, s in enumerate(mylist) if name in s]
-        if fullname == 'original':
-            pass
-        elif fullname == 'preprocessed':
-            pass
-        elif fullname == 'ready':
-            pass
-        elif fullname == 'executed':
-            pass
-
     # def datasets_to_file(self, filename: str = 'cmip_collection.latest_executed_datasets.pickle',):
     #     """Pickle the latest executed dataset dictionary using the highest protocol available.
     #
