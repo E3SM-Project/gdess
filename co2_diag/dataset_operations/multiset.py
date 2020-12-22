@@ -18,7 +18,7 @@ def run_recipe(func):
         returnval = func(*args, **kwargs)
         # Report the time this recipe took to execute.
         execution_time = (time.time() - start_time)
-        _multiset_logger.info('recipe execution time: ' + str(execution_time))
+        _multiset_logger.info('recipe execution time (seconds): ' + str(execution_time))
 
         return returnval
     return display_time_and_call
