@@ -6,6 +6,7 @@ from typing import Union
 
 import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.multiset import Multiset
+from co2_diag.dataset_operations.datasetdict import DatasetDict
 from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
 
 # Packages for using NCAR's intake
@@ -39,36 +40,9 @@ class Collection(Multiset):
             raise ValueError('Unexpected/unhandled datastore <%s>', datastore)
 
         self.latest_searched_model_catalog = None
-
-        self.original_datasets = None
-        self.datasets_prepped_for_execution = {}
-        self.latest_executed_datasets = {}
         self.catalog_dataframe = None
-        super(Multiset, self).__init__()
 
-    def preprocess(self, url: str = default_cmip6_datastore_url):
-        """Set up the dataset that are common to every diagnostic
-
-        Parameters
-        ----------
-        url
-
-        Returns
-        -------
-
-        """
-        _loader_logger.debug("Preprocessing ---")
-        _loader_logger.info('Opening the ESM datastore catalog..')
-        self.catalog_dataframe = intake.open_esm_datastore(url)
-
-        # --- Get model datasets ---
-        _loader_logger.info('Searching for model output subset..')
-        esm_datastore = self.search(experiment_id='esm-hist',
-                                        table_id=['Amon'],
-                                        variable_id='co2')
-        _loader_logger.info(f"  {esm_datastore.df.shape[0]} model members identified")
-        _loader_logger.info('Loading model datasets into memory..')
-        self.load_datasets_from_search()
+        super().__init__(verbose=verbose)
 
     @classmethod
     def run_recipe_for_timeseries(cls,
@@ -130,11 +104,12 @@ class Collection(Multiset):
             # We will slice the data by time and pressure level.
             selection_dict = {'time': slice(start_yr, end_yr),
                               'plev': plev}
-            new_self.apply_selection(**selection_dict)
+            new_self.stepC_prepped_for_execution_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection_dict,
+                                                                                                     inplace=False)
             # The spatial mean will be calculated, leaving us with a time series.
-            new_self.apply_mean(dim=('lon', 'lat'))
+            new_self.stepC_prepped_for_execution_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
             # The lazily loaded selections and computations are here actually processed.
-            new_self.execute_all()
+            new_self.stepD_latest_executed_datasets = new_self.stepC_prepped_for_execution_datasets.execute_all(inplace=False)
 
         # Report the time this recipe took to execute.
         execution_time = (time.time() - start_time)
@@ -145,31 +120,32 @@ class Collection(Multiset):
 
         return new_self
 
-    def __repr__(self) -> str:
-        obj_attributes = sorted([k for k in self.__dict__.keys()
-                                 if not k.startswith('_')])
+    def preprocess(self, url: str = default_cmip6_datastore_url):
+        """Set up the dataset that are common to every diagnostic
 
-        nmodels, member_counts = self.count_members(verbose=False)
+        Parameters
+        ----------
+        url
 
-        # String representation is built.
-        strrep = f"-- CMIP Collection -- \n" \
-                 f"Datasets:" \
-                 f"\n\t" + \
-                 '\n\t'.join(self.original_datasets.keys()) + \
-                 f"\n" + \
-                 f"There are <{member_counts}> members for each of the {nmodels} models." \
-                 f"\n" \
-                 f"All attributes:" \
-                 f"\n\t" + \
-                 '\n\t'.join(obj_attributes)
+        Returns
+        -------
 
-        return strrep
+        """
+        _loader_logger.info("Preprocessing ---")
 
-    def set_verbose(self, verbose: Union[bool, str] = False):
-        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        _loader_logger.setLevel(self._validate_verbose(verbose))
+        _loader_logger.debug('Opening the ESM datastore catalog..')
+        self.catalog_dataframe = intake.open_esm_datastore(url)
 
-    def search(self, **query) -> intake_esm.core.esm_datastore:
+        _loader_logger.debug('Searching for model output subset..')
+        esm_datastore = self._search(experiment_id='esm-hist', table_id=['Amon'], variable_id='co2')
+        _loader_logger.debug(f"  {esm_datastore.df.shape[0]} model members identified")
+
+        _loader_logger.debug('Loading model datasets into memory..')
+        self._load_datasets_from_search()
+
+        _loader_logger.info("Preprocessing done.")
+
+    def _search(self, **query) -> intake_esm.core.esm_datastore:
         """Wrapper for intake's catalog search.
 
         Loads catalog into the attribute "latest_searched_model_catalog"
@@ -186,40 +162,38 @@ class Collection(Multiset):
         -------
 
         """
-        _loader_logger.info("query dictionary: %s", query)
+        _loader_logger.debug("query dictionary: %s", query)
         self.latest_searched_model_catalog = self.catalog_dataframe.search(**query)
 
         return self.latest_searched_model_catalog
 
-    def load_datasets_from_search(self):
+    def _load_datasets_from_search(self):
         """Load datasets into memory
         Returns
         -------
 
         """
-        self.original_datasets = self.latest_searched_model_catalog.to_dataset_dict()
-        self.datasets_prepped_for_execution = self.original_datasets
-        _loader_logger.info("Model keys:")
-        _loader_logger.info('\n'.join(self.original_datasets.keys()))
+        # self.stepA_original_datasets = self.latest_searched_model_catalog.to_dataset_dict()
+        self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict())
 
-        self.convert_all_to_ppm()
-
-    def convert_all_to_ppm(self):
+        self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
         # Convert CO2 units to ppm
         _loader_logger.debug("Converting units to ppm..")
-        self.apply_function_to_all_datasets(co2ops.convert.co2_molfrac_to_ppm, co2_var_name='co2')
+        self.stepB_preprocessed_datasets.apply_function_to_all(co2ops.convert.co2_molfrac_to_ppm,
+                                                               co2_var_name='co2',
+                                                               inplace=True)
         _loader_logger.debug("all converted.")
+        # self.convert_all_to_ppm()
 
-    def count_members(self, verbose=True):
-        # Get the number of member_id values present for each model's dataset.
-        member_counts = []
-        for k in self.original_datasets.keys():
-            member_counts.append(len(self.original_datasets[k]['member_id'].values))
-        nmodels = len(member_counts)
-        if verbose:
-            _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
+        self.stepC_prepped_for_execution_datasets = self.stepB_preprocessed_datasets.copy()
+        _loader_logger.info("Model keys:")
+        _loader_logger.info('\n'.join(self.stepA_original_datasets.keys()))
 
-        return nmodels, member_counts
+    # def convert_all_to_ppm(self):
+    #     # Convert CO2 units to ppm
+    #     _loader_logger.debug("Converting units to ppm..")
+    #     self.apply_function_to_all_datasets(co2ops.convert.co2_molfrac_to_ppm, co2_var_name='co2')
+    #     _loader_logger.debug("all converted.")
 
     @staticmethod
     def latlon_select(xr_ds: xr.Dataset,
@@ -286,11 +260,11 @@ class Collection(Multiset):
 
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12, 4))
 
-        for ki, k in enumerate(self.latest_executed_datasets.keys()):
-            for mi, m in enumerate(self.latest_executed_datasets[k]['member_id'].values.tolist()):
+        for ki, k in enumerate(self.stepD_latest_executed_datasets.keys()):
+            for mi, m in enumerate(self.stepD_latest_executed_datasets[k]['member_id'].values.tolist()):
                 color_count = ki * max(member_counts) + mi
 
-                darray = self.latest_executed_datasets[k].sel(member_id=m)
+                darray = self.stepD_latest_executed_datasets[k].sel(member_id=m)
 
                 # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
                 if isinstance(darray['time'].values[0], np.datetime64):
@@ -315,3 +289,41 @@ class Collection(Multiset):
 
         plt.tight_layout()
         return fig, ax
+
+    def __repr__(self) -> str:
+        obj_attributes = sorted([k for k in self.__dict__.keys()
+                                 if not k.startswith('_')])
+
+        nmodels, member_counts = self.count_members(verbose=False)
+
+        # String representation is built.
+        strrep = f"-- CMIP Collection -- \n" \
+                 f"Datasets:" \
+                 f"\n\t" + \
+                 self.original_datasets_list_str() + \
+                 f"\n" + \
+                 f"There are <{member_counts}> members for each of the {nmodels} models." \
+                 f"\n" \
+                 f"All attributes:" \
+                 f"\n\t" + \
+                 '\n\t'.join(obj_attributes)
+
+        return strrep
+
+    def count_members(self, verbose=True):
+        if not self.stepA_original_datasets:
+            return 0, 0
+
+        # Get the number of member_id values present for each model's dataset.
+        member_counts = []
+        for k in self.stepA_original_datasets.keys():
+            member_counts.append(len(self.stepA_original_datasets[k]['member_id'].values))
+        nmodels = len(member_counts)
+        if verbose:
+            _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
+
+        return nmodels, member_counts
+
+    def set_verbose(self, verbose: Union[bool, str] = False):
+        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        _loader_logger.setLevel(self._validate_verbose(verbose))
