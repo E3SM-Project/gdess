@@ -46,7 +46,7 @@ class Multiset:
         self.stepC_prepped_for_execution_datasets: DatasetDict = DatasetDict(dict())
         self.stepD_latest_executed_datasets: DatasetDict = DatasetDict(dict())
 
-        self.set_multiset_verbose(verbose)
+        self._set_multiset_verbose(verbose)
 
     def get_dsd_by_name(self, name: str):
         # switcher = {
@@ -117,19 +117,19 @@ class Multiset:
 
         # String representation is built.
         strrep = f"Multiset: \n" + \
-                 self.original_datasets_list_str() + \
+                 self._original_datasets_list_str() + \
                  f"\n" \
                  f"\t all attributes:%s" % '\n\t\t\t'.join(obj_attributes)
 
         return strrep
 
-    def original_datasets_list_str(self):
+    def _original_datasets_list_str(self):
         if self.stepA_original_datasets:
             return '\n\t'.join(self.stepA_original_datasets.keys())
         else:
             return ''
 
-    def set_multiset_verbose(self, verbose: Union[bool, str] = False):
+    def _set_multiset_verbose(self, verbose: Union[bool, str] = False):
         # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         _multiset_logger.setLevel(self._validate_verbose(verbose))
 

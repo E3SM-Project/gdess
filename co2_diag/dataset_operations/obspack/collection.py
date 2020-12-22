@@ -264,7 +264,7 @@ class Collection(Multiset):
         strrep = f"-- Obspack Collection -- \n" \
                  f"Datasets:" \
                  f"\n\t" + \
-                 self.original_datasets_list_str() + \
+                 self._original_datasets_list_str() + \
                  f"\n" \
                  f"All attributes:" \
                  f"\n\t" + \

@@ -294,7 +294,7 @@ class Collection(Multiset):
         strrep = f"-- CMIP Collection -- \n" \
                  f"Datasets:" \
                  f"\n\t" + \
-                 self.original_datasets_list_str() + \
+                 self._original_datasets_list_str() + \
                  f"\n" + \
                  f"There are <{member_counts}> members for each of the {nmodels} models." \
                  f"\n" \
