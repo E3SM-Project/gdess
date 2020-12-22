@@ -4,6 +4,7 @@ from typing import Union
 
 import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.multiset import Multiset, run_recipe
+from co2_diag.dataset_operations.datasetdict import DatasetDict
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
@@ -110,7 +111,7 @@ class Collection(Multiset):
 
         """
         _loader_logger.debug("Preprocessing ---")
-        self.stepA_original_datasets = self._load_stations(self.station_dict, datadir)
+        self.stepA_original_datasets = DatasetDict(self._load_stations(self.station_dict, datadir))
 
     @staticmethod
     def get_resampled_dataframe(dataset_obs,
