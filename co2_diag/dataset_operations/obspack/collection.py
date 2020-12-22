@@ -1,10 +1,9 @@
 import glob
-import time
 import numpy as np
 from typing import Union
 
 import co2_diag.dataset_operations as co2ops
-from co2_diag.dataset_operations.multiset import Multiset
+from co2_diag.dataset_operations.multiset import Multiset, run_recipe
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
@@ -45,6 +44,7 @@ class Collection(Multiset):
         super().__init__(verbose=verbose)
 
     @classmethod
+    @run_recipe
     def run_recipe_for_timeseries(cls,
                                   datadir='',
                                   verbose=False,
@@ -66,8 +66,6 @@ class Collection(Multiset):
         -------
 
         """
-        start_time = time.time()
-
         # An instance of this Obspack Collection is created.
         new_self = cls(verbose=verbose)
         # Data are formatted into the basic data structure common to various diagnostics.
@@ -94,10 +92,6 @@ class Collection(Multiset):
                                                                               timestart=np.datetime64(start_yr),
                                                                               timeend=np.datetime64(end_yr)
                                                                               ).reset_index()
-
-        # Report the time this recipe took to execute.
-        execution_time = (time.time() - start_time)
-        _loader_logger.info('recipe execution time before plotting (seconds): ' + str(execution_time))
 
         # --- Plotting ---
         fig, ax = new_self.station_time_series(stationshortname=sc)

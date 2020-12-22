@@ -1,11 +1,10 @@
-import time
 import numpy as np
 import xarray as xr
 import warnings
 from typing import Union
 
 import co2_diag.dataset_operations as co2ops
-from co2_diag.dataset_operations.multiset import Multiset
+from co2_diag.dataset_operations.multiset import Multiset, run_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
 
@@ -45,6 +44,7 @@ class Collection(Multiset):
         super().__init__(verbose=verbose)
 
     @classmethod
+    @run_recipe
     def run_recipe_for_timeseries(cls,
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
@@ -71,8 +71,6 @@ class Collection(Multiset):
         Collection object for CMIP6
 
         """
-        start_time = time.time()
-
         # An instance of this CMIP6 Collection is created.
         new_self = cls(datastore=datastore, verbose=verbose)
         # Data are formatted into the basic data structure common to various diagnostics.
@@ -110,10 +108,6 @@ class Collection(Multiset):
             new_self.stepC_prepped_for_execution_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
             # The lazily loaded selections and computations are here actually processed.
             new_self.stepD_latest_executed_datasets = new_self.stepC_prepped_for_execution_datasets.execute_all(inplace=False)
-
-        # Report the time this recipe took to execute.
-        execution_time = (time.time() - start_time)
-        _loader_logger.info('recipe execution time before plotting (seconds): ' + str(execution_time))
 
         # --- Plotting ---
         fig, ax = new_self.lineplots()
