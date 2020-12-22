@@ -8,22 +8,6 @@ import logging
 _multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 
-def run_recipe(func):
-    """A decorator for diagnostic recipe methods that provides timing info. Reduces code duplication.
-    """
-    def display_time_and_call(*args, **kwargs):
-        # Clock is started.
-        start_time = time.time()
-        # Recipe is run.
-        returnval = func(*args, **kwargs)
-        # Report the time this recipe took to execute.
-        execution_time = (time.time() - start_time)
-        _multiset_logger.info('recipe execution time (seconds): ' + str(execution_time))
-
-        return returnval
-    return display_time_and_call
-
-
 class Multiset:
     """Useful class for working simultaneously with multiple, consistent xarray Datasets
 
@@ -118,3 +102,19 @@ class Multiset:
             raise ValueError("Unexpect/unhandled verbose option <%s>. "
                              "Please use True, False or a string for level such as 'INFO, DEBUG, etc.'", verbose)
         return level_to_set
+
+
+def run_recipe(func):
+    """A decorator for diagnostic recipe methods that provides timing info. Reduces code duplication.
+    """
+    def display_time_and_call(*args, **kwargs):
+        # Clock is started.
+        start_time = time.time()
+        # Recipe is run.
+        returnval = func(*args, **kwargs)
+        # Report the time this recipe took to execute.
+        execution_time = (time.time() - start_time)
+        _multiset_logger.info('recipe execution time (seconds): ' + str(execution_time))
+
+        return returnval
+    return display_time_and_call
