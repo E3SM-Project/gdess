@@ -256,6 +256,10 @@ class Collection(Multiset):
         # plt.savefig('obspack_example_trend_with_botlegend_20201123.png', dpi=500,
         #            bbox_extra_artists=(leg,), bbox_inches='tight')
 
+    def set_verbose(self, verbose: Union[bool, str] = False):
+        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        _loader_logger.setLevel(self._validate_verbose(verbose))
+
     def __repr__(self):
         obj_attributes = sorted([k for k in self.__dict__.keys()
                                  if not k.startswith('_')])
@@ -271,7 +275,3 @@ class Collection(Multiset):
                  '\n\t'.join(obj_attributes)
 
         return strrep
-
-    def set_verbose(self, verbose: Union[bool, str] = False):
-        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        _loader_logger.setLevel(self._validate_verbose(verbose))

@@ -248,7 +248,7 @@ class Collection(Multiset):
         #                      'lines.linewidth': 2,
         #                      })
 
-        nmodels, member_counts = self.count_members()
+        nmodels, member_counts = self._count_members()
         my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts),
                                         cmap="tab10")
 
@@ -284,11 +284,15 @@ class Collection(Multiset):
         plt.tight_layout()
         return fig, ax
 
+    def set_verbose(self, verbose: Union[bool, str] = False):
+        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        _loader_logger.setLevel(self._validate_verbose(verbose))
+
     def __repr__(self) -> str:
         obj_attributes = sorted([k for k in self.__dict__.keys()
                                  if not k.startswith('_')])
 
-        nmodels, member_counts = self.count_members(verbose=False)
+        nmodels, member_counts = self._count_members(verbose=False)
 
         # String representation is built.
         strrep = f"-- CMIP Collection -- \n" \
@@ -304,7 +308,7 @@ class Collection(Multiset):
 
         return strrep
 
-    def count_members(self, verbose=True):
+    def _count_members(self, verbose=True):
         if not self.stepA_original_datasets:
             return 0, 0
 
@@ -317,7 +321,3 @@ class Collection(Multiset):
             _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
 
         return nmodels, member_counts
-
-    def set_verbose(self, verbose: Union[bool, str] = False):
-        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        _loader_logger.setLevel(self._validate_verbose(verbose))
