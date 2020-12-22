@@ -35,7 +35,7 @@ def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
     ppmfac = 1e6
 
     temp_long_name = xr_ds_[co2_var_name].long_name
-    _logger.info("\toriginal units <%s>", xr_ds_[co2_var_name].attrs['units'])
+    _logger.debug("\toriginal units <%s>", xr_ds_[co2_var_name].attrs['units'])
 
     # do the conversion
     xr_ds_[co2_var_name] = xr_ds_[co2_var_name]*ppmfac
@@ -43,7 +43,7 @@ def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
     xr_ds_[co2_var_name].attrs["units"] = 'ppm'
     xr_ds_[co2_var_name].attrs['long_name'] = temp_long_name
 
-    _logger.info("\tnew units <%s>", xr_ds_[co2_var_name].attrs['units'])
+    _logger.debug("\tnew units <%s>", xr_ds_[co2_var_name].attrs['units'])
 
     return xr_ds_
 
