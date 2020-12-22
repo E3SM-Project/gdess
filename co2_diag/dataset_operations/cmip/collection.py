@@ -16,10 +16,11 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import logging
+_loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 default_cmip6_datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
 
-_loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
+
 class Collection(Multiset):
     def __init__(self, datastore='cmip6', verbose=False):
         """
@@ -187,6 +188,7 @@ class Collection(Multiset):
         """
         _loader_logger.info("query dictionary: %s", query)
         self.latest_searched_model_catalog = self.catalog_dataframe.search(**query)
+
         return self.latest_searched_model_catalog
 
     def load_datasets_from_search(self):

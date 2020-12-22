@@ -5,9 +5,10 @@ import xarray as xr
 from dask.diagnostics import ProgressBar
 
 import logging
-
 _multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
-class Multiset():
+
+
+class Multiset:
     """Useful class for working simultaneously with multiple, consistent xarray Datasets
 
     """
