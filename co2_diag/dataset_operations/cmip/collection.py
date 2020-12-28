@@ -178,8 +178,6 @@ class Collection(Multiset):
                                                                inplace=True)
         _loader_logger.debug("all converted.")
         # self.convert_all_to_ppm()
-
-        self.stepC_prepped_for_execution_datasets = self.stepB_preprocessed_datasets.copy()
         _loader_logger.info("Model keys:")
         _loader_logger.info('\n'.join(self.stepA_original_datasets.keys()))
 
