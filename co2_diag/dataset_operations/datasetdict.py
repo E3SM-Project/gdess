@@ -144,7 +144,7 @@ class DatasetDict(dict):
 
         return returndict
 
-    def copy(self):
+    def copy(self) -> 'DatasetDict':
         """Used to get a new copy, so that further operations won't modify the original
 
         Returns
