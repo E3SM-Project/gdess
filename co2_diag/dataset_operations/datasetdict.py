@@ -20,9 +20,9 @@ class DatasetDict(dict):
         super(DatasetDict, self).__init__(*args, **kwargs)
 
     def queue_selection(self, **selection_dict):
-        """Select from datasets.  Wrapper for Xarray's .sel().
+        """Select from datasets.  Wrapper for xarray's .sel().
 
-        Can also use Xarray's .isel() with an additional argument.
+        Can also use xarray's .isel() with an additional argument.
 
         Example
         -------
