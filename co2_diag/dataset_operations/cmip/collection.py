@@ -326,11 +326,11 @@ class Collection(Multiset):
 
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12, 4))
 
-        for ki, k in enumerate(self.stepD_latest_executed_datasets.keys()):
-            for mi, m in enumerate(self.stepD_latest_executed_datasets[k]['member_id'].values.tolist()):
+        for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
+            for mi, m in enumerate(self.stepC_prepped_datasets[k]['member_id'].values.tolist()):
                 color_count = ki * max(member_counts) + mi
 
-                darray = self.stepD_latest_executed_datasets[k].sel(member_id=m)
+                darray = self.stepC_prepped_datasets[k].sel(member_id=m)
 
                 # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
                 if isinstance(darray['time'].values[0], np.datetime64):
