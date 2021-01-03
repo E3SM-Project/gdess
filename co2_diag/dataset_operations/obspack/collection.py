@@ -3,8 +3,10 @@ import numpy as np
 from typing import Union
 
 import co2_diag.dataset_operations as co2ops
-from co2_diag.dataset_operations.multiset import Multiset, run_recipe
+from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
+
+from co2_diag.graphics.utils import asthetic_grid_no_spines
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
@@ -45,7 +47,7 @@ class Collection(Multiset):
         super().__init__(verbose=verbose)
 
     @classmethod
-    @run_recipe
+    @benchmark_recipe
     def run_recipe_for_timeseries(cls,
                                   datadir='',
                                   verbose=False,
@@ -228,9 +230,7 @@ class Collection(Multiset):
                 transform=ax.transAxes,
                 fontsize=16)
         #
-        ax.grid(True, linestyle='--', color='gray', alpha=1)
-        for spine in ax.spines.values():
-            spine.set_visible(False)
+        asthetic_grid_no_spines(ax)
 
         # Define the date format
         #             ax.xaxis.set_major_locator(mdates.YearLocator())

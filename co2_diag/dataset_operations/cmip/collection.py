@@ -4,9 +4,11 @@ import warnings
 from typing import Union
 
 import co2_diag.dataset_operations as co2ops
-from co2_diag.dataset_operations.multiset import Multiset, run_recipe
+from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
+
+from co2_diag.graphics.utils import asthetic_grid_no_spines
 
 # Packages for using NCAR's intake
 import intake
@@ -44,7 +46,7 @@ class Collection(Multiset):
         super().__init__(verbose=verbose)
 
     @classmethod
-    @run_recipe
+    @benchmark_recipe
     def run_recipe_for_timeseries(cls,
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
@@ -90,6 +92,53 @@ class Collection(Multiset):
             if 'plev' in param_kw:
                 plev = param_kw['end_yr']
 
+            # --- Apply selected bounds ---
+            _loader_logger.info('Applying selected bounds..')
+            # We will slice the data by time and pressure level.
+            selection_dict = {'time': slice(start_yr, end_yr),
+                              'plev': plev}
+            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection_dict,
+                                                                                                   inplace=False)
+            # The spatial mean will be calculated, leaving us with a time series.
+            new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
+            # The lazily loaded selections and computations are here actually processed.
+            new_self.stepC_prepped_datasets.execute_all(inplace=True)
+
+        # --- Plotting ---
+        fig, ax = new_self.lineplots()
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_vertical_profile(cls,
+                                  datastore='cmip6',
+                                  verbose: Union[bool, str] = False,
+                                  load_from_file=None,
+                                  param_kw: dict = None
+                                  ):
+        """Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore
+        verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        load_from_file
+            (str): path to pickled datastore
+        param_kw
+            An optional dictionary with zero or more of these parameter keys:
+                start_yr (str): '1960' is default
+                end_yr (str): None is default
+
+        Returns
+        -------
+        Collection object for CMIP6
+
+        """
+        # An instance of this CMIP6 Collection is created.
+        new_self = cls(datastore=datastore, verbose=verbose)
+
         # --- Get the parsed dataset ---
         if load_from_file is not None:
             _loader_logger.info('Loading dataset from file..')
@@ -100,17 +149,16 @@ class Collection(Multiset):
             # -----------------------------
             _loader_logger.info('Applying selected bounds..')
             # We will slice the data by time and pressure level.
-            selection_dict = {'time': slice(start_yr, end_yr),
-                              'plev': plev}
-            new_self.stepC_prepped_for_execution_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection_dict,
-                                                                                                     inplace=False)
+            selection_dict = {'time': slice(start_yr, end_yr)}
+            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection_dict,
+                                                                                                   inplace=False)
             # The spatial mean will be calculated, leaving us with a time series.
-            new_self.stepC_prepped_for_execution_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
+            new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat', 'time'), inplace=True)
             # The lazily loaded selections and computations are here actually processed.
-            new_self.stepD_latest_executed_datasets = new_self.stepC_prepped_for_execution_datasets.execute_all(inplace=False)
+            new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
         # --- Plotting ---
-        fig, ax = new_self.lineplots()
+        fig, ax = new_self.vertical_plot()
 
         return new_self
 
@@ -271,9 +319,40 @@ class Collection(Multiset):
                         color=my_cmap.colors[color_count], alpha=0.6)
 
         ax.set_ylabel('ppm')
-        ax.grid(True, linestyle='--', color='gray', alpha=1)
-        for spine in ax.spines.values():
-            spine.set_visible(False)
+        asthetic_grid_no_spines(ax)
+
+        leg = plt.legend(title='Models', frameon=False,
+                         bbox_to_anchor=(1.05, 1), loc='upper left',
+                         fontsize=12)
+
+        plt.tight_layout()
+        return fig, ax
+
+    def vertical_plot(self):
+        """Make vertical profile plot of co2 concentrations
+
+        Returns
+        -------
+
+        """
+        nmodels, member_counts = self._count_members()
+        my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap="tab10")
+
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
+
+        for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
+            for mi, m in enumerate(self.stepC_prepped_datasets[k]['member_id'].values.tolist()):
+                color_count = ki * max(member_counts) + mi
+
+                darray = self.stepC_prepped_datasets[k].sel(member_id=m)
+                ax.plot(darray['co2'].squeeze(), darray['plev'].squeeze(), label=f"{k} ({m})",
+                        marker='o', linestyle='-',
+                        color=my_cmap.colors[color_count], alpha=0.6)
+
+        ax.invert_yaxis()
+        ax.set_xlabel('ppm')
+        ax.set_ylabel('pressure [Pa]')
+        asthetic_grid_no_spines(ax)
 
         leg = plt.legend(title='Models', frameon=False,
                          bbox_to_anchor=(1.05, 1), loc='upper left',

@@ -17,8 +17,7 @@ class Multiset:
         This class is a template against which we can run recipes, with an order of operations:
             - Step A: datasets loaded, in their original form
             - Step B: datasets that have been preprocessed
-            - Step C: datasets that have operations lazily queued
-            - Step D: datasets that have been fully processed by executing operations on them
+            - Step C: datasets that have operations lazily queued or fully processed
 
         Parameters
         ----------
@@ -27,8 +26,7 @@ class Multiset:
         """
         self.stepA_original_datasets: Union[DatasetDict, None] = None
         self.stepB_preprocessed_datasets: Union[DatasetDict, None] = None
-        self.stepC_prepped_for_execution_datasets: DatasetDict = DatasetDict(dict())
-        self.stepD_latest_executed_datasets: DatasetDict = DatasetDict(dict())
+        self.stepC_prepped_datasets: DatasetDict = DatasetDict(dict())
 
         self._set_multiset_verbose(verbose)
 
@@ -63,7 +61,7 @@ class Multiset:
             le_datasets = pickle.load(f)
 
         if replace:
-            self.stepD_latest_executed_datasets = le_datasets
+            self.stepC_prepped_datasets = le_datasets
         else:
             pass
 
@@ -104,8 +102,10 @@ class Multiset:
         return level_to_set
 
 
-def run_recipe(func):
-    """A decorator for diagnostic recipe methods that provides timing info. Reduces code duplication.
+def benchmark_recipe(func):
+    """A decorator for diagnostic recipe methods that provides timing info.
+
+    This is used to reduce code duplication.
     """
     def display_time_and_call(*args, **kwargs):
         # Clock is started.
