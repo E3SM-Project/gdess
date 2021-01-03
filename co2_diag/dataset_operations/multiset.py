@@ -22,7 +22,7 @@ class Multiset:
         Parameters
         ----------
         verbose
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+            either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.stepA_original_datasets: Union[DatasetDict, None] = None
         self.stepB_preprocessed_datasets: Union[DatasetDict, None] = None
@@ -43,7 +43,7 @@ class Multiset:
 
     def datasets_from_file(self,
                            filename: str = 'cmip_collection.latest_executed_datasets.pickle',
-                           replace: bool = False):
+                           replace: bool = False) -> None:
         """Load a dataset dictionary from a saved pickle file.
 
         Parameters
@@ -66,30 +66,55 @@ class Multiset:
             pass
 
     def __repr__(self):
-        obj_attributes = sorted([k for k in self.__dict__.keys()
-                                 if not self.stepC_prepped_for_execution_datasets[k].startswith('_')])
-
-        # String representation is built.
+        """ String representation is built.
+        """
         strrep = f"Multiset: \n" + \
                  self._original_datasets_list_str() + \
                  f"\n" \
-                 f"\t all attributes:%s" % '\n\t\t\t'.join(obj_attributes)
+                 f"\t all attributes:%s" % '\n\t\t\t'.join(self._obj_attributes_list_str())
 
         return strrep
 
-    def _original_datasets_list_str(self):
+    def _obj_attributes_list_str(self) -> list:
+        """ Get a list of each dataset attribute (with "empty" markers)
+        """
+        return sorted([f"{k}: empty" if (not self.__dict__[k]) else k
+                       for k in self.__dict__.keys()
+                       if not k.startswith('_')])
+
+    def _original_datasets_list_str(self) -> str:
+        """ Get a list of the identifying keys for each dataset
+        """
         if self.stepA_original_datasets:
             return '\n\t'.join(self.stepA_original_datasets.keys())
         else:
             return ''
 
-    def _set_multiset_verbose(self, verbose: Union[bool, str] = False):
-        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+    def _set_multiset_verbose(self, verbose: Union[bool, str] = False) -> None:
+        """This sets the verbosity level of the Multiset class only.
+
+        Parameters
+        ----------
+        verbose
+            either True, False, or a string for level such as "INFO, DEBUG, etc."
+
+        """
         _multiset_logger.setLevel(self._validate_verbose(verbose))
 
     @staticmethod
-    def _validate_verbose(verbose: Union[bool, str] = False):
-        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+    def _validate_verbose(verbose: Union[bool, str] = False) -> Union[int, str]:
+        """
+
+        Parameters
+        ----------
+        verbose
+            either True, False, or a string for level such as "INFO, DEBUG, etc."
+
+        Returns
+        -------
+            A logging verbosity level or string that corresponds to a verbosity level
+
+        """
         if verbose is True:
             level_to_set = logging.DEBUG
         elif verbose is not None:
@@ -97,7 +122,7 @@ class Multiset:
         elif verbose is None:
             level_to_set = logging.WARN
         else:
-            raise ValueError("Unexpect/unhandled verbose option <%s>. "
+            raise ValueError("Unexpected/unhandled verbose option <%s>. "
                              "Please use True, False or a string for level such as 'INFO, DEBUG, etc.'", verbose)
         return level_to_set
 

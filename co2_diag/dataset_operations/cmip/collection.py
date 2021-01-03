@@ -143,10 +143,10 @@ class Collection(Multiset):
         if load_from_file is not None:
             _loader_logger.info('Loading dataset from file..')
             new_self.datasets_from_file(filename=load_from_file, replace=True)
+
         else:
             # -----------------------------
             # --- Apply selected bounds ---
-            # -----------------------------
             _loader_logger.info('Applying selected bounds..')
             # We will slice the data by time and pressure level.
             selection_dict = {'time': slice(start_yr, end_yr)}
@@ -290,6 +290,14 @@ class Collection(Multiset):
         return cmap
 
     def lineplots(self):
+        """Make timeseries plot of co2 concentrations from or more CMIP models
+
+        Requires self.stepC_prepped_datasets attribute with a time dimension.
+
+        Returns
+        -------
+
+        """
         # plt.rcParams.update({'font.size': 12,
         #                      'lines.linewidth': 2,
         #                      })
@@ -366,12 +374,9 @@ class Collection(Multiset):
         _loader_logger.setLevel(self._validate_verbose(verbose))
 
     def __repr__(self) -> str:
-        obj_attributes = sorted([k for k in self.__dict__.keys()
-                                 if not k.startswith('_')])
-
+        """ String representation is built.
+        """
         nmodels, member_counts = self._count_members(verbose=False)
-
-        # String representation is built.
         strrep = f"-- CMIP Collection -- \n" \
                  f"Datasets:" \
                  f"\n\t" + \
@@ -381,7 +386,7 @@ class Collection(Multiset):
                  f"\n" \
                  f"All attributes:" \
                  f"\n\t" + \
-                 '\n\t'.join(obj_attributes)
+                 '\n\t'.join(self._obj_attributes_list_str())
 
         return strrep
 

@@ -261,10 +261,8 @@ class Collection(Multiset):
         _loader_logger.setLevel(self._validate_verbose(verbose))
 
     def __repr__(self):
-        obj_attributes = sorted([k for k in self.__dict__.keys()
-                                 if not k.startswith('_')])
-
-        # String representation is built.
+        """ String representation is built.
+        """
         strrep = f"-- Obspack Collection -- \n" \
                  f"Datasets:" \
                  f"\n\t" + \
@@ -272,6 +270,6 @@ class Collection(Multiset):
                  f"\n" \
                  f"All attributes:" \
                  f"\n\t" + \
-                 '\n\t'.join(obj_attributes)
+                 '\n\t'.join(self._obj_attributes_list_str())
 
         return strrep
