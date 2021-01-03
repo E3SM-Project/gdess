@@ -409,13 +409,19 @@ class Collection(Multiset):
         return strrep
 
     def _count_members(self, verbose=True):
-        if not self.stepA_original_datasets:
+        if self.stepA_original_datasets:
+            ds_to_check = self.stepA_original_datasets
+        elif self.stepB_preprocessed_datasets:
+            ds_to_check = self.stepB_preprocessed_datasets
+        elif self.stepC_prepped_datasets:
+            ds_to_check = self.stepC_prepped_datasets
+        else:
             return 0, 0
 
         # Get the number of member_id values present for each model's dataset.
         member_counts = []
-        for k in self.stepA_original_datasets.keys():
-            member_counts.append(len(self.stepA_original_datasets[k]['member_id'].values))
+        for k in ds_to_check.keys():
+            member_counts.append(len(ds_to_check[k]['member_id'].values))
         nmodels = len(member_counts)
         if verbose:
             _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
