@@ -75,22 +75,28 @@ class Collection(Multiset):
         """
         # An instance of this CMIP6 Collection is created.
         new_self = cls(datastore=datastore, verbose=verbose)
-        # Data are formatted into the basic data structure common to various diagnostics.
-        new_self.preprocess(new_self.datastore_url)
 
-        # --- Parse additional Parameters ---
-        _loader_logger.debug("Parsing additional parameters ---")
-        # Default values are given here.
-        start_yr = "1960"
-        end_yr = None
-        plev = 100000
-        if param_kw:
-            if 'start_yr' in param_kw:
-                start_yr = param_kw['start_yr']
-            if 'end_yr' in param_kw:
-                end_yr = param_kw['end_yr']
-            if 'plev' in param_kw:
-                plev = param_kw['end_yr']
+        # --- Get the parsed dataset ---
+        if load_from_file is not None:
+            _loader_logger.info('Loading dataset from file..')
+            new_self.datasets_from_file(filename=load_from_file, replace=True)
+
+        else:
+            # Data are formatted into the basic data structure common to various diagnostics.
+            new_self.preprocess(new_self.datastore_url)
+            # --- Parse additional Parameters ---
+            _loader_logger.debug("Parsing additional parameters ---")
+            # Default values are given here.
+            start_yr = "1960"
+            end_yr = None
+            plev = 100000
+            if param_kw:
+                if 'start_yr' in param_kw:
+                    start_yr = param_kw['start_yr']
+                if 'end_yr' in param_kw:
+                    end_yr = param_kw['end_yr']
+                if 'plev' in param_kw:
+                    plev = param_kw['end_yr']
 
             # --- Apply selected bounds ---
             _loader_logger.info('Applying selected bounds..')
@@ -145,7 +151,19 @@ class Collection(Multiset):
             new_self.datasets_from_file(filename=load_from_file, replace=True)
 
         else:
-            # -----------------------------
+            # Data are formatted into the basic data structure common to various diagnostics.
+            new_self.preprocess(new_self.datastore_url)
+            # --- Parse additional Parameters ---
+            _loader_logger.debug("Parsing additional parameters ---")
+            # Default values are given here.
+            start_yr = "1960"
+            end_yr = None
+            if param_kw:
+                if 'start_yr' in param_kw:
+                    start_yr = param_kw['start_yr']
+                if 'end_yr' in param_kw:
+                    end_yr = param_kw['end_yr']
+
             # --- Apply selected bounds ---
             _loader_logger.info('Applying selected bounds..')
             # We will slice the data by time and pressure level.
