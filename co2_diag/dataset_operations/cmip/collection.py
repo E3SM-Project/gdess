@@ -321,8 +321,7 @@ class Collection(Multiset):
         #                      })
 
         nmodels, member_counts = self._count_members()
-        my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts),
-                                        cmap="tab10")
+        my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap="tab10")
 
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12, 4))
 
