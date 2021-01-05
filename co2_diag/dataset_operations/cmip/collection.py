@@ -299,12 +299,15 @@ class Collection(Multiset):
 
         Returns
         -------
-
+        matplotlib figure
+        matplotlib axis
+        Tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
         """
         nmodels, member_counts = self._count_members()
         my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap="tab10")
 
-        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12, 4))
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 4))
 
         for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
             for mi, m in enumerate(self.stepC_prepped_datasets[k]['member_id'].values.tolist()):
@@ -313,9 +316,7 @@ class Collection(Multiset):
                 darray = self.stepC_prepped_datasets[k].sel(member_id=m)
 
                 # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
-                if isinstance(darray['time'].values[0], np.datetime64):
-                    pass
-                else:
+                if not isinstance(darray['time'].values[0], np.datetime64):
                     # Warnings are raised when converting CFtimes to datetimes, because subtle errors.
                     with warnings.catch_warnings():
                         warnings.simplefilter("ignore")
@@ -339,7 +340,10 @@ class Collection(Multiset):
 
         Returns
         -------
-
+        matplotlib figure
+        matplotlib axis
+        Tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
         """
         nmodels, member_counts = self._count_members()
         my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap="tab10")
