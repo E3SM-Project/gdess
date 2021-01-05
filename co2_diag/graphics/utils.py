@@ -1,5 +1,5 @@
 import os
-
+from datetime import datetime
 import numpy as np
 
 from matplotlib import cm
@@ -10,6 +10,12 @@ def asthetic_grid_no_spines(axis):
     axis.grid(True, linestyle='--', color='gray', alpha=1)
     for spine in axis.spines.values():
         spine.set_visible(False)
+
+
+def mysavefig(fig, results_dir, plot_save_name, bbox_artists):
+    today_str = datetime.today().strftime('%Y-%m-%d')
+    fig.savefig(results_dir + plot_save_name + '_' + today_str,
+                bbox_inches='tight', bbox_extra_artists=bbox_artists)
 
 
 def get_colormap(colormap, colormap_search_dir):

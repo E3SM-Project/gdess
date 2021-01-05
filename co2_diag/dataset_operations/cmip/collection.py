@@ -8,7 +8,7 @@ from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
 
-from co2_diag.graphics.utils import asthetic_grid_no_spines
+from co2_diag.graphics.utils import asthetic_grid_no_spines, mysavefig
 
 # Packages for using NCAR's intake
 import intake
@@ -110,7 +110,9 @@ class Collection(Multiset):
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
         # --- Plotting ---
-        fig, ax = new_self.lineplots()
+        fig, ax, bbox_artists = new_self.plot_timeseries()
+        if results_dir:
+            mysavefig(fig, results_dir, 'cmip_timeseries', bbox_artists)
 
         return new_self
 
@@ -174,7 +176,9 @@ class Collection(Multiset):
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
         # --- Plotting ---
-        fig, ax = new_self.vertical_plot()
+        fig, ax, bbox_artists = new_self.plot_vertical_profiles()
+        if results_dir:
+            mysavefig(fig, results_dir, 'cmip_vertical_plot', bbox_artists)
 
         return new_self
 
@@ -298,7 +302,7 @@ class Collection(Multiset):
         cmap = mpl.colors.ListedColormap(cols)
         return cmap
 
-    def lineplots(self):
+    def plot_timeseries(self):
         """Make timeseries plot of co2 concentrations from or more CMIP models
 
         Requires self.stepC_prepped_datasets attribute with a time dimension.
@@ -336,12 +340,12 @@ class Collection(Multiset):
         leg = plt.legend(title='Models', frameon=False,
                          bbox_to_anchor=(1.05, 1), loc='upper left',
                          fontsize=12)
+        bbox_artists = (leg,)
 
-        plt.tight_layout()
-        return fig, ax
+        return fig, ax, bbox_artists
 
-    def vertical_plot(self):
-        """Make vertical profile plot of co2 concentrations
+    def plot_vertical_profiles(self):
+        """Make vertical profile plot of co2 concentrations.
 
         Returns
         -------

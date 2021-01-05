@@ -6,7 +6,7 @@ import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 
-from co2_diag.graphics.utils import asthetic_grid_no_spines
+from co2_diag.graphics.utils import asthetic_grid_no_spines, mysavefig
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
@@ -96,7 +96,9 @@ class Collection(Multiset):
                                                                               ).reset_index()
 
         # --- Plotting ---
-        fig, ax = new_self.station_time_series(stationshortname=sc)
+        fig, ax, bbox_artists = new_self.plot_station_time_series(stationshortname=sc)
+        if results_dir:
+            mysavefig(fig, results_dir, 'cmip_timeseries', bbox_artists)
 
         return new_self
 
@@ -211,7 +213,16 @@ class Collection(Multiset):
 
         return ds_obs_dict
 
-    def station_time_series(self, stationshortname: str):
+    def plot_station_time_series(self, stationshortname: str):
+        """Make timeseries plot of co2 concentration for each surface observing station.
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        Tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        """
         fig, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True, figsize=(7, 5))
 
         ax.plot(self.df_combined_and_resampled['time'], self.df_combined_and_resampled['obs_original_resolution'],
@@ -250,17 +261,17 @@ class Collection(Multiset):
         for lh in leg.legendHandles:
             lh.set_alpha(1)
             lh._legmarker.set_alpha(1)
+        bbox_artists = (leg,)
 
-        plt.tight_layout()
-        plt.show()
+        return fig, ax, bbox_artists
 
-        return fig, ax
-        # plt.savefig('obspack_example_trend_20201123.png', dpi=500)
-        # plt.savefig('obspack_example_trend_with_botlegend_20201123.png', dpi=500,
-        #            bbox_extra_artists=(leg,), bbox_inches='tight')
-
-    def set_verbose(self, verbose: Union[bool, str] = False):
-        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
+        """
+        Parameters
+        ----------
+        verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        """
         _loader_logger.setLevel(self._validate_verbose(verbose))
 
     def __repr__(self):
