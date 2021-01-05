@@ -9,9 +9,8 @@ _multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 
 class Multiset:
-    """Useful class for working simultaneously with multiple, consistent xarray Datasets
+    """Useful class for working simultaneously with multiple, consistent xarray Datasets."""
 
-    """
     def __init__(self, verbose=False):
         """
         This class is a template against which we can run recipes, with an order of operations:

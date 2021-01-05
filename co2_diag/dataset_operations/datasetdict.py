@@ -14,7 +14,6 @@ class DatasetDict(dict):
         - selections
         - means
         - load
-
     """
     def __init__(self, *args, **kwargs):
         super(DatasetDict, self).__init__(*args, **kwargs)
@@ -45,9 +44,8 @@ class DatasetDict(dict):
         Returns
         -------
             A DatasetDict with selections lazily queued, but not executed. Or None if inplace==True.
-
         """
-        _datasetdict_logger.debug("Queueing functions. keyword args = %s", selection_dict)
+        _datasetdict_logger.debug("Queueing selection operation. keyword args = %s", selection_dict)
         if selection_dict.pop('isel', False):
             returndict = self.apply_function_to_all(xr.Dataset.isel, **selection_dict)
         else:  # Use the standard selection method if 'isel' key exists & is false, or if key does not exist.
@@ -67,7 +65,6 @@ class DatasetDict(dict):
         Returns
         -------
             A DatasetDict with selections lazily queued, but not executed. Or None if inplace==True.
-
         """
         _datasetdict_logger.debug("Queueing mean operation. keyword args = %s", kwargs)
         returndict = self.apply_function_to_all(xr.Dataset.mean, dim=dim, **kwargs)
@@ -95,7 +92,7 @@ class DatasetDict(dict):
         -------
             A DatasetDict if inplace==False, or None if inplace==True
         """
-        _datasetdict_logger.debug("Queuing/executing a function. keyword args = %s", kwargs)
+        _datasetdict_logger.debug("Processing datasets operation <%s>. keyword args = %s", fnc, kwargs)
 
         # The destination is either this instance or a copy (as determined by the 'inplace' keyword).
         #   Default is to create a copy.
@@ -111,7 +108,7 @@ class DatasetDict(dict):
             for i, k in enumerate(destination_dict.keys()):
                 _datasetdict_logger.debug("-- %d/%d - %s/.. ", i+1, number_of_datasets, k)
                 destination_dict[k] = destination_dict[k].pipe(fnc, *args, **kwargs)
-            _datasetdict_logger.debug("all processed.")
+            _datasetdict_logger.debug("Operation processed on all datasets.")
         else:
             _datasetdict_logger.debug("Nothing done. No datasets are ready for execution.")
 
@@ -133,7 +130,6 @@ class DatasetDict(dict):
         Returns
         -------
             A DatasetDict if inplace==False, or None if inplace==True
-
         """
         if progressbar:
             ProgressBar().register()
@@ -145,41 +141,33 @@ class DatasetDict(dict):
         return returndict
 
     def copy(self) -> 'DatasetDict':
-        """Used to get a new copy, so that further operations won't modify the original
-
-        Returns
-        -------
-            a new DatasetDict
+        """Generate a new Datasetdict with each dataset copied
+        Useful for preventing further operations from modifying the original.
         """
         new_datasetdict = DatasetDict()
         for k, v in self.items():
             new_datasetdict[k] = v.copy(deep=True)
         return new_datasetdict
 
-    def to_pickle(self, filename: str = 'datasetdict.pickle',):
+    def to_pickle(self, filename: str = 'datasetdict.pickle',) -> None:
         """Pickle this DatasetDict using the highest protocol available.
 
         Parameters
         ----------
         filename
-
-        Returns
-        -------
-            None
         """
         with open(filename, 'wb') as f:
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
     def from_pickle(self,
                     filename: str = 'cmip_collection.latest_executed_datasets.pickle',
-                    replace: bool = False):
+                    replace: bool = False) -> 'DatasetDict':
         """Load a DatasetDict from a saved pickle file.
 
         Parameters
         ----------
         filename
         replace
-
         """
         with open(filename, 'rb') as f:
             # The protocol version used is detected automatically, so we do not have to specify it.

@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 

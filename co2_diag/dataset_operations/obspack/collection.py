@@ -30,7 +30,6 @@ class Collection(Multiset):
         ----------
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-
         """
         self.set_verbose(verbose)
 
@@ -67,14 +66,14 @@ class Collection(Multiset):
 
         Returns
         -------
-
+        Collection object for Obspack that was used to generate the diagnostic
         """
-        # An instance of this Obspack Collection is created.
+        # An empty instance is created.
         new_self = cls(verbose=verbose)
         # Data are formatted into the basic data structure common to various diagnostics.
         new_self.preprocess(datadir=datadir)
 
-        # --- Parse additional Parameters ---
+        # Diagnostic parameters are parsed.
         _loader_logger.debug("Parsing additional parameters ---")
         # Default values are given here.
         sc = 'brw'
@@ -101,16 +100,12 @@ class Collection(Multiset):
 
         return new_self
 
-    def preprocess(self, datadir: str):
+    def preprocess(self, datadir: str) -> None:
         """Set up the dataset that is common to every diagnostic
 
         Parameters
         ----------
         datadir
-
-        Returns
-        -------
-
         """
         _loader_logger.debug("Preprocessing ---")
         self.stepA_original_datasets = DatasetDict(self._load_stations(self.station_dict, datadir))
@@ -118,16 +113,14 @@ class Collection(Multiset):
     @staticmethod
     def get_resampled_dataframe(dataset_obs,
                                 timestart: np.datetime64,
-                                timeend: np.datetime64):
-        # ----------------------
-        # ---- OBSERVATIONS ----
-        # ----------------------
+                                timeend: np.datetime64) -> pd.Dataframe:
+
+        # --- OBSERVATIONS ---
         # Time period is selected.
         ds_sub_obs = co2ops.time.select_between(dataset=dataset_obs,
                                                 timestart=timestart, timeend=timeend,
                                                 varlist=['time', 'value'],
                                                 drop_dups=True)
-
         # Dataset converted to DataFrame.
         df_prepd_obs_orig = ds_sub_obs.to_dataframe().reset_index()
         df_prepd_obs_orig.rename(columns={'value': 'obs_original_resolution'}, inplace=True)
@@ -146,9 +139,7 @@ class Collection(Multiset):
                                .rename(columns={'value': 'obs_resampled_resolution'})
                                )
 
-        # ------------------
-        # ---- COMBINED ----
-        # ------------------
+        # --- COMBINED ---
         df_prepd = (df_prepd_obs_resamp
                     .merge(df_prepd_obs_orig, on='time', how='outer')
                     .reset_index()
@@ -161,6 +152,18 @@ class Collection(Multiset):
     def _load_stations(station_dict: dict,
                        datadir: str
                        ) -> dict:
+        """
+
+        Parameters
+        ----------
+        station_dict
+        datadir
+
+        Returns
+        -------
+        dict
+            Names, latitudes, longitudes, and altitudes of each station
+        """
         ds_obs_dict = {}
         for stationcode, _ in station_dict.items():
             _loader_logger.debug(stationcode)
@@ -261,8 +264,7 @@ class Collection(Multiset):
         _loader_logger.setLevel(self._validate_verbose(verbose))
 
     def __repr__(self):
-        """ String representation is built.
-        """
+        """ String representation is built."""
         strrep = f"-- Obspack Collection -- \n" \
                  f"Datasets:" \
                  f"\n\t" + \

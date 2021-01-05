@@ -70,10 +70,9 @@ class Collection(Multiset):
 
         Returns
         -------
-        Collection object for CMIP6
-
+        Collection object for CMIP6 that was used to generate the diagnostic
         """
-        # An instance of this CMIP6 Collection is created.
+        # An empty instance is created.
         new_self = cls(datastore=datastore, verbose=verbose)
 
         # --- Get the parsed dataset ---
@@ -118,11 +117,11 @@ class Collection(Multiset):
     @classmethod
     @benchmark_recipe
     def run_recipe_for_vertical_profile(cls,
-                                  datastore='cmip6',
-                                  verbose: Union[bool, str] = False,
-                                  load_from_file=None,
-                                  param_kw: dict = None
-                                  ):
+                                        datastore='cmip6',
+                                        verbose: Union[bool, str] = False,
+                                        load_from_file=None,
+                                        param_kw: dict = None
+                                        ):
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
@@ -139,10 +138,9 @@ class Collection(Multiset):
 
         Returns
         -------
-        Collection object for CMIP6
-
+        Collection object for CMIP6 that was used to generate the diagnostic
         """
-        # An instance of this CMIP6 Collection is created.
+        # An empty instance is created.
         new_self = cls(datastore=datastore, verbose=verbose)
 
         # --- Get the parsed dataset ---
@@ -186,10 +184,6 @@ class Collection(Multiset):
         Parameters
         ----------
         url
-
-        Returns
-        -------
-
         """
         _loader_logger.info("Preprocessing ---")
 
@@ -217,22 +211,14 @@ class Collection(Multiset):
             institution_id
             member_id
             grid_label
-
-        Returns
-        -------
-
         """
         _loader_logger.debug("query dictionary: %s", query)
         self.latest_searched_model_catalog = self.catalog_dataframe.search(**query)
 
         return self.latest_searched_model_catalog
 
-    def _load_datasets_from_search(self):
-        """Load datasets into memory
-        Returns
-        -------
-
-        """
+    def _load_datasets_from_search(self) -> None:
+        """Load datasets into memory."""
         # self.stepA_original_datasets = self.latest_searched_model_catalog.to_dataset_dict()
         self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict())
 
@@ -278,16 +264,21 @@ class Collection(Multiset):
     @staticmethod
     def categorical_cmap(nc, nsc, cmap="tab10", continuous=False):
         """
-        Params:
-            nc: number of categories
-            nsc: number of subcategories
-            cmap:
-            continuous:
+        Parameters
+        ----------
+        nc
+            number of categories
+        nsc
+            number of subcategories
+        cmap
+        continuous
 
-        Returns:
+        Returns
+        -------
             A colormap with nc*nsc different colors, where for each category there are nsc colors of same hue
 
-        Notes:
+        Notes
+        -----
             from https://stackoverflow.com/questions/47222585/matplotlib-generic-colormap-from-tab10
         """
         if nc > plt.get_cmap(cmap).N:
@@ -316,10 +307,6 @@ class Collection(Multiset):
         -------
 
         """
-        # plt.rcParams.update({'font.size': 12,
-        #                      'lines.linewidth': 2,
-        #                      })
-
         nmodels, member_counts = self._count_members()
         my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap="tab10")
 
@@ -391,8 +378,7 @@ class Collection(Multiset):
         _loader_logger.setLevel(self._validate_verbose(verbose))
 
     def __repr__(self) -> str:
-        """ String representation is built.
-        """
+        """String representation is built."""
         nmodels, member_counts = self._count_members(verbose=False)
         strrep = f"-- CMIP Collection -- \n" \
                  f"Datasets:" \
@@ -408,6 +394,17 @@ class Collection(Multiset):
         return strrep
 
     def _count_members(self, verbose=True):
+        """Get the number of member_id values present for each model's dataset
+
+        Parameters
+        ----------
+        verbose
+
+        Returns
+        -------
+        Tuple
+            The number of models (int) and the number of members for each model (list of int)
+        """
         if self.stepA_original_datasets:
             ds_to_check = self.stepA_original_datasets
         elif self.stepB_preprocessed_datasets:
@@ -417,7 +414,6 @@ class Collection(Multiset):
         else:
             return 0, 0
 
-        # Get the number of member_id values present for each model's dataset.
         member_counts = []
         for k in ds_to_check.keys():
             member_counts.append(len(ds_to_check[k]['member_id'].values))
