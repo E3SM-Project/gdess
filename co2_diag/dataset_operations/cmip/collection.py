@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import xarray as xr
 import warnings
 from typing import Union
@@ -172,7 +173,111 @@ class Collection(Multiset):
 
         return new_self
 
-    def preprocess(self, url: str = default_cmip6_datastore_url):
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_annual_series(cls,
+                                     datastore='cmip6',
+                                     verbose: Union[bool, str] = False,
+                                     load_from_file=None,
+                                     param_kw: dict = None
+                                     ):
+        """Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore
+        verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        load_from_file
+            (str): path to pickled datastore
+        param_kw
+            An optional dictionary with zero or more of these parameter keys:
+                start_yr (str): '1960' s default
+                end_yr (str): None is default
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        """
+        # An empty instance is created.
+        new_self = cls(datastore=datastore, verbose=verbose)
+
+        # Diagnostic parameters are parsed.
+        _loader_logger.debug("Parsing additional parameters ---")
+        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
+        plev = Multiset._get_recipe_param(param_kw, 'plev', default_value=100000)
+        model_key = Multiset._get_recipe_param(param_kw, 'model_key', default_value=None)
+        member_key = Multiset._get_recipe_param(param_kw, 'member_key', default_value=None)
+        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
+        if load_from_file is not None:
+            _loader_logger.info('Loading dataset from file..')
+            new_self.datasets_from_file(filename=load_from_file, replace=True)
+
+        else:
+            # Data are formatted into the basic data structure common to various diagnostics.
+            new_self.preprocess(new_self.datastore_url)
+
+            # --- Apply selected bounds ---
+            _loader_logger.info('Applying selected bounds..')
+            # We will slice the data by time and pressure level.
+            selection_dict = {'time': slice(start_yr, end_yr),
+                              'plev': plev}
+            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection_dict,
+                                                                                                   inplace=False)
+            # # The spatial mean will be calculated, leaving us with a time series.
+            new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
+            # # The lazily loaded selections and computations are here actually processed.
+            new_self.stepC_prepped_datasets.execute_all(inplace=True)
+
+        if ('member_key' not in locals()) or (not member_key):
+            _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
+                                 new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist())
+            member_key = new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist()
+
+        # --- Calculate anomalies ---
+        def get_anomaly_dataframes(a_dataarray):
+            # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
+            if not isinstance(a_dataarray['time'].values[0], np.datetime64):
+                a_dataarray = co2ops.time.to_datetimeindex(a_dataarray)
+            # Calculate
+            df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(a_dataarray, varname='co2')
+            # Reformat data structures for plotting
+            _df_anomaly_yearly = df_anomaly.pivot(index='moy', columns='year', values='monthly_anomaly_from_year')
+            _df_anomaly_mean_cycle = df_anomaly.groupby('moy').mean().reset_index()
+
+            return _df_anomaly_mean_cycle, _df_anomaly_yearly
+
+        # The mean is calculated across ensemble members if there are multiple.
+        if isinstance(member_key, list) and (len(member_key) > 1):
+            df_list_of_means = []
+            df_list_of_yearly_cycles = []
+            for mi, m in enumerate(member_key):
+                darray = new_self.stepC_prepped_datasets[model_key].sel(member_id=m)
+                df_anomaly_mean_cycle, df_anomaly_yearly = get_anomaly_dataframes(darray)
+                df_anomaly_yearly['member_id'] = m
+                df_anomaly_mean_cycle['member_id'] = m
+                df_list_of_means.append(df_anomaly_mean_cycle)
+                df_list_of_yearly_cycles.append(df_anomaly_yearly)
+
+            df_anomaly_mean_cycle = pd.concat(df_list_of_means).groupby(['moy', 'plev']).mean().reset_index()
+            df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby('moy').mean()
+
+        else:
+            darray = new_self.stepC_prepped_datasets[model_key].sel(member_id=member_key)
+            df_anomaly_mean_cycle, df_anomaly_yearly = get_anomaly_dataframes(darray)
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
+                                                            titlestr=f"{model_key} ({member_key})")
+        if results_dir:
+            mysavefig(fig, results_dir, 'cmip_annual_series', bbox_artists)
+
+        return new_self
+
+    def preprocess(self, url: str = default_cmip6_datastore_url) -> None:
         """Set up the dataset that are common to every diagnostic
 
         Parameters
@@ -367,12 +472,65 @@ class Collection(Multiset):
         leg = plt.legend(title='Models', frameon=False,
                          bbox_to_anchor=(1.05, 1), loc='upper left',
                          fontsize=12)
+        bbox_artists = (leg,)
 
-        plt.tight_layout()
-        return fig, ax
+        return fig, ax, bbox_artists
 
-    def set_verbose(self, verbose: Union[bool, str] = False):
-        # verbose can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+    @staticmethod
+    def plot_annual_series(df_anomaly_yearly, df_anomaly_cycle, titlestr):
+        """Make timeseries plot with annual anomalies of co2 concentration.
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        Tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        """
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(7, 5))
+
+        # ---- Plot Observations ----
+        ax.plot(df_anomaly_yearly, label='annual cycle',
+                color='#C0C0C0', linestyle='-', alpha=0.3, marker='.', zorder=-32)
+        ax.plot(df_anomaly_cycle['moy'], df_anomaly_cycle['monthly_anomaly_from_year'],
+                label='mean annual cycle', marker='o', zorder=10,
+                color=(18 / 255, 140 / 255, 126 / 255))  # (255/255, 127/255, 14/255))
+        #
+        ax.set_ylim((-13, 7))
+        #
+        ax.set_ylabel('$CO_2$ (ppm)')
+        ax.set_xlabel('month')
+        ax.set_title(titlestr, fontsize=12)
+        #
+        #         ax.text(0.02, 0.92, f"{sc.upper()}, {station_dict[sc]['lat']:.1f}, {station_dict[sc]['lon']:.1f}",
+        #                     horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
+        ax.text(0.02, 0.06, f"Global, surface level mean",
+                horizontalalignment='left', verticalalignment='center', transform=ax.transAxes)
+        #
+        # Define the legend
+        handles, labels = ax.get_legend_handles_labels()
+        display = (0, len(handles) - 1)
+        leg = ax.legend([handle for i, handle in enumerate(handles) if i in display],
+                        [label for i, label in enumerate(labels) if i in display],
+                        loc='best', fontsize=12)
+        for lh in leg.legendHandles:
+            lh.set_alpha(1)
+            lh._legmarker.set_alpha(1)
+        #
+        #         ax.grid(linestyle='--', color='lightgray')
+        #         for k in ax.spines.keys():
+        #             ax.spines[k].set_alpha(0.5)
+        bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
+        """
+        Parameters
+        ----------
+        verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        """
         _loader_logger.setLevel(self._validate_verbose(verbose))
 
     def __repr__(self) -> str:
