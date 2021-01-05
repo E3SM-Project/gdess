@@ -70,8 +70,6 @@ class Collection(Multiset):
         """
         # An empty instance is created.
         new_self = cls(verbose=verbose)
-        # Data are formatted into the basic data structure common to various diagnostics.
-        new_self.preprocess(datadir=datadir)
 
         # Diagnostic parameters are parsed.
         _loader_logger.debug("Parsing additional parameters ---")
@@ -87,6 +85,10 @@ class Collection(Multiset):
                 else:
                     raise ValueError('Unexpected station name <%s>', param_kw['stationshortname'])
 
+        # --- Apply diagnostic parameters and prep data for plotting ---
+        # Data are formatted into the basic data structure common to various diagnostics.
+        new_self.preprocess(datadir=datadir)
+        # Data are resampled
         new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
                                                                               timestart=np.datetime64(start_yr),
                                                                               timeend=np.datetime64(end_yr)
