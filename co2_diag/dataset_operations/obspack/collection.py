@@ -1,5 +1,6 @@
 import glob
 import numpy as np
+import pandas as pd
 from typing import Union
 
 import co2_diag.dataset_operations as co2ops
@@ -114,7 +115,7 @@ class Collection(Multiset):
     @staticmethod
     def get_resampled_dataframe(dataset_obs,
                                 timestart: np.datetime64,
-                                timeend: np.datetime64) -> pd.Dataframe:
+                                timeend: np.datetime64) -> pd.DataFrame:
 
         # --- OBSERVATIONS ---
         # Time period is selected.
