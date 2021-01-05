@@ -75,20 +75,17 @@ class Collection(Multiset):
 
         # Diagnostic parameters are parsed.
         _loader_logger.debug("Parsing additional parameters ---")
-        # Default values are given here.
+        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value="2015")
+        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        # For the station name, we also check that it is accounted for in the class attribute dict.
         sc = 'brw'
-        start_yr = "1960"
-        end_yr = "2015"
         if param_kw:
             if 'stationshortname' in param_kw:
                 if param_kw['stationshortname'] in new_self.station_dict:
                     sc = param_kw['stationshortname']
                 else:
                     raise ValueError('Unexpected station name <%s>', param_kw['stationshortname'])
-            if 'start_yr' in param_kw:
-                start_yr = param_kw['start_yr']
-            if 'end_yr' in param_kw:
-                end_yr = param_kw['end_yr']
 
         new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
                                                                               timestart=np.datetime64(start_yr),

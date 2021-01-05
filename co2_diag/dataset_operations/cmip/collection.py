@@ -75,7 +75,14 @@ class Collection(Multiset):
         # An empty instance is created.
         new_self = cls(datastore=datastore, verbose=verbose)
 
-        # --- Get the parsed dataset ---
+        # Diagnostic parameters are parsed.
+        _loader_logger.debug("Parsing additional parameters ---")
+        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
+        plev = Multiset._get_recipe_param(param_kw, 'plev', default_value=100000)
+        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
         if load_from_file is not None:
             _loader_logger.info('Loading dataset from file..')
             new_self.datasets_from_file(filename=load_from_file, replace=True)
@@ -83,19 +90,6 @@ class Collection(Multiset):
         else:
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self.preprocess(new_self.datastore_url)
-            # --- Parse additional Parameters ---
-            _loader_logger.debug("Parsing additional parameters ---")
-            # Default values are given here.
-            start_yr = "1960"
-            end_yr = None
-            plev = 100000
-            if param_kw:
-                if 'start_yr' in param_kw:
-                    start_yr = param_kw['start_yr']
-                if 'end_yr' in param_kw:
-                    end_yr = param_kw['end_yr']
-                if 'plev' in param_kw:
-                    plev = param_kw['end_yr']
 
             # --- Apply selected bounds ---
             _loader_logger.info('Applying selected bounds..')
@@ -145,7 +139,13 @@ class Collection(Multiset):
         # An empty instance is created.
         new_self = cls(datastore=datastore, verbose=verbose)
 
-        # --- Get the parsed dataset ---
+        # Diagnostic parameters are parsed.
+        _loader_logger.debug("Parsing additional parameters ---")
+        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
+        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
         if load_from_file is not None:
             _loader_logger.info('Loading dataset from file..')
             new_self.datasets_from_file(filename=load_from_file, replace=True)
@@ -153,16 +153,6 @@ class Collection(Multiset):
         else:
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self.preprocess(new_self.datastore_url)
-            # --- Parse additional Parameters ---
-            _loader_logger.debug("Parsing additional parameters ---")
-            # Default values are given here.
-            start_yr = "1960"
-            end_yr = None
-            if param_kw:
-                if 'start_yr' in param_kw:
-                    start_yr = param_kw['start_yr']
-                if 'end_yr' in param_kw:
-                    end_yr = param_kw['end_yr']
 
             # --- Apply selected bounds ---
             _loader_logger.info('Applying selected bounds..')
