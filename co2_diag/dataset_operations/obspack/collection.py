@@ -51,7 +51,8 @@ class Collection(Multiset):
     def run_recipe_for_timeseries(cls,
                                   datadir='',
                                   verbose=False,
-                                  param_kw: dict = None):
+                                  param_kw: dict = None
+                                  ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
@@ -213,14 +214,14 @@ class Collection(Multiset):
 
         return ds_obs_dict
 
-    def plot_station_time_series(self, stationshortname: str):
+    def plot_station_time_series(self, stationshortname: str) -> (plt.Figure, plt.Axes, tuple):
         """Make timeseries plot of co2 concentration for each surface observing station.
 
         Returns
         -------
         matplotlib figure
         matplotlib axis
-        Tuple
+        tuple
             Extra matplotlib artists used for the bounding box (bbox) when saving a figure
         """
         fig, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True, figsize=(7, 5))

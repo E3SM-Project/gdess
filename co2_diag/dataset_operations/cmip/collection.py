@@ -53,7 +53,7 @@ class Collection(Multiset):
                                   verbose: Union[bool, str] = False,
                                   load_from_file=None,
                                   param_kw: dict = None
-                                  ):
+                                  ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
@@ -118,7 +118,7 @@ class Collection(Multiset):
                                         verbose: Union[bool, str] = False,
                                         load_from_file=None,
                                         param_kw: dict = None
-                                        ):
+                                        ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
@@ -180,7 +180,7 @@ class Collection(Multiset):
                                      verbose: Union[bool, str] = False,
                                      load_from_file=None,
                                      param_kw: dict = None
-                                     ):
+                                     ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
@@ -239,8 +239,8 @@ class Collection(Multiset):
 
         # --- Calculate anomalies ---
         def get_anomaly_dataframes(a_dataarray):
-            # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
             if not isinstance(a_dataarray['time'].values[0], np.datetime64):
+                # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
                 a_dataarray = co2ops.time.to_datetimeindex(a_dataarray)
             # Calculate
             df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(a_dataarray, varname='co2')
@@ -264,7 +264,6 @@ class Collection(Multiset):
 
             df_anomaly_mean_cycle = pd.concat(df_list_of_means).groupby(['moy', 'plev']).mean().reset_index()
             df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby('moy').mean()
-
         else:
             darray = new_self.stepC_prepped_datasets[model_key].sel(member_id=member_key)
             df_anomaly_mean_cycle, df_anomaly_yearly = get_anomaly_dataframes(darray)
@@ -397,7 +396,7 @@ class Collection(Multiset):
         cmap = mpl.colors.ListedColormap(cols)
         return cmap
 
-    def plot_timeseries(self):
+    def plot_timeseries(self) -> (plt.Figure, plt.Axes, tuple):
         """Make timeseries plot of co2 concentrations from or more CMIP models
 
         Requires self.stepC_prepped_datasets attribute with a time dimension.
@@ -406,7 +405,7 @@ class Collection(Multiset):
         -------
         matplotlib figure
         matplotlib axis
-        Tuple
+        tuple
             Extra matplotlib artists used for the bounding box (bbox) when saving a figure
         """
         nmodels, member_counts = self._count_members()
@@ -440,14 +439,14 @@ class Collection(Multiset):
 
         return fig, ax, bbox_artists
 
-    def plot_vertical_profiles(self):
+    def plot_vertical_profiles(self) -> (plt.Figure, plt.Axes, tuple):
         """Make vertical profile plot of co2 concentrations.
 
         Returns
         -------
         matplotlib figure
         matplotlib axis
-        Tuple
+        tuple
             Extra matplotlib artists used for the bounding box (bbox) when saving a figure
         """
         nmodels, member_counts = self._count_members()
@@ -477,14 +476,14 @@ class Collection(Multiset):
         return fig, ax, bbox_artists
 
     @staticmethod
-    def plot_annual_series(df_anomaly_yearly, df_anomaly_cycle, titlestr):
+    def plot_annual_series(df_anomaly_yearly, df_anomaly_cycle, titlestr) -> (plt.Figure, plt.Axes, tuple):
         """Make timeseries plot with annual anomalies of co2 concentration.
 
         Returns
         -------
         matplotlib figure
         matplotlib axis
-        Tuple
+        tuple
             Extra matplotlib artists used for the bounding box (bbox) when saving a figure
         """
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(7, 5))

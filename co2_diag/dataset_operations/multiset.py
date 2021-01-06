@@ -61,7 +61,7 @@ class Multiset:
 
     def datasets_from_file(self,
                            filename: str = 'cmip_collection.latest_executed_datasets.pickle',
-                           replace: bool = False) -> None:
+                           replace: bool = False) -> Union[bool, DatasetDict]:
         """Load a dataset dictionary from a saved pickle file.
 
         Parameters
@@ -71,7 +71,15 @@ class Multiset:
 
         Returns
         -------
-            None
+        If loaded successfully:
+            True, if replace==True
+            A DatasetDict if replace==False
+        if loaded unsuccessfully:
+            False
+
+        Notes
+        -----
+        The pickle load protocol version used is detected automatically, so we do not have to specify it.
         """
         with open(filename, 'rb') as f:
             # The protocol version used is detected automatically, so we do not
