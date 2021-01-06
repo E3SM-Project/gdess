@@ -103,6 +103,68 @@ class Collection(Multiset):
 
         return new_self
 
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_annual_series(cls,
+                                     datadir='',
+                                     verbose: Union[bool, str] = False,
+                                     param_kw: dict = None
+                                     ) -> 'Collection':
+        """Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datadir
+        verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        param_kw
+            An optional dictionary with zero or more of these parameter keys:
+                start_yr (str): '1960' s default
+                end_yr (str): None is default
+
+        Returns
+        -------
+        Collection object for Obspack that was used to generate the diagnostic
+        """
+        # An empty instance is created.
+        new_self = cls(verbose=verbose)
+
+        _loader_logger.debug("Parsing diagnostic parameters ---")
+        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
+        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        # For the station name, we also check that it is accounted for in the class attribute dict.
+        sc = 'brw'
+        if param_kw:
+            if 'stationshortname' in param_kw:
+                if param_kw['stationshortname'] in new_self.station_dict:
+                    sc = param_kw['stationshortname']
+                else:
+                    raise ValueError('Unexpected station name <%s>', param_kw['stationshortname'])
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
+        # Data are formatted into the basic data structure common to various diagnostics.
+        new_self.preprocess(datadir=datadir)
+
+        _loader_logger.info('Applying selected bounds..')
+        selection = {'time': slice(start_yr, end_yr)}
+        # Data are resampled
+        new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
+                                                                              timestart=np.datetime64(start_yr),
+                                                                              timeend=np.datetime64(end_yr)
+                                                                              ).reset_index()
+
+        df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(new_self.stepA_original_datasets[sc],
+                                                                                   varname='value')
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
+                                                            stationname=sc)
+        if results_dir:
+            mysavefig(fig, results_dir, 'obspack_annual_series', bbox_artists)
+
+        return new_self
+
     def preprocess(self, datadir: str) -> None:
         """Set up the dataset that is common to every diagnostic
 
@@ -262,6 +324,52 @@ class Collection(Multiset):
         for lh in leg.legendHandles:
             lh.set_alpha(1)
             lh._legmarker.set_alpha(1)
+        bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def plot_annual_series(self, df_anomaly_yearly, df_anomaly_cycle, stationname: str) -> (plt.Figure, plt.Axes, tuple):
+        """Make timeseries plot with annual anomalies of co2 concentration.
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        """
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(7, 5))
+
+        # ---- Plot Observations ----
+        ax.plot(df_anomaly_yearly, label='annual cycle',
+                color='#C0C0C0', linestyle='-', alpha=0.3, marker='.', zorder=-32)
+        ax.plot(df_anomaly_cycle['moy'], df_anomaly_cycle['monthly_anomaly_from_year'],
+                label='mean annual cycle', marker='o', zorder=10,
+                color=(0 / 255, 133 / 255, 202 / 255))  # (255/255, 127/255, 14/255))
+        #
+        ax.set_ylim((-13, 7))
+        #
+        ax.set_ylabel('$CO_2$ (ppm)')
+        ax.set_xlabel('month')
+        # ax.set_title(titlestr, fontsize=12)
+        #
+        ax.text(0.02, 0.92, f"{stationname.upper()}, "
+                            f"{self.station_dict[stationname]['lat']:.1f}, {self.station_dict[stationname]['lon']:.1f}",
+                horizontalalignment='left', verticalalignment='center', transform = ax.transAxes)
+        #
+        # Define the legend
+        handles, labels = ax.get_legend_handles_labels()
+        display = (0, len(handles) - 1)
+        leg = ax.legend([handle for i, handle in enumerate(handles) if i in display],
+                        [label for i, label in enumerate(labels) if i in display],
+                        loc='best', fontsize=12)
+        for lh in leg.legendHandles:
+            lh.set_alpha(1)
+            lh._legmarker.set_alpha(1)
+        #
+        #         ax.grid(linestyle='--', color='lightgray')
+        #         for k in ax.spines.keys():
+        #             ax.spines[k].set_alpha(0.5)
         bbox_artists = (leg,)
 
         return fig, ax, bbox_artists
