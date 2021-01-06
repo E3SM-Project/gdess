@@ -32,6 +32,16 @@ pip install .
 
 ## Credits
 
+Major dependencies:
+
+* [pandas](https://pandas.pydata.org/)
+* [NumPy](https://www.numpy.org)
+* [xarray](http://xarray.pydata.org/en/stable/)
+
+Funding Acknowledgment:
+
+* Pacific Northwest National Laboratory
+
 ## Disclaimer
 
 This is a work in progress.  Bugs are expected.
