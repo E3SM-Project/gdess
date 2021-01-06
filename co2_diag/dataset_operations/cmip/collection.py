@@ -47,6 +47,40 @@ class Collection(Multiset):
         super().__init__(verbose=verbose)
 
     @classmethod
+    def cmip_recipe_base(cls,
+                         datastore='cmip6',
+                         verbose: Union[bool, str] = False,
+                         load_from_file=None
+                         ) -> ('Collection', bool):
+        """Create an instance, and either preprocess or load already processed data.
+
+        Parameters
+        ----------
+        datastore
+        verbose
+        load_from_file
+
+        Returns
+        -------
+        tuple
+            Collection
+            bool
+                Whether datasets were loaded from file or not. (If not, there is probably more processing needed.)
+        """
+        # An empty instance is created.
+        new_self = cls(datastore=datastore, verbose=verbose)
+
+        # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
+        # otherwise, this is False.
+        loaded_from_file_bool = new_self.datasets_from_file(filename=load_from_file, replace=True)
+
+        if not loaded_from_file_bool:
+            # Data are formatted into the basic data structure common to various diagnostics.
+            new_self.preprocess(new_self.datastore_url)
+
+        return new_self, loaded_from_file_bool
+
+    @classmethod
     @benchmark_recipe
     def run_recipe_for_timeseries(cls,
                                   datastore='cmip6',
@@ -73,33 +107,23 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        # An empty instance is created.
-        new_self = cls(datastore=datastore, verbose=verbose)
+        new_self, loaded_from_file = cls.cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                          load_from_file=load_from_file)
 
-        # Diagnostic parameters are parsed.
-        _loader_logger.debug("Parsing additional parameters ---")
+        _loader_logger.debug("Parsing diagnostic parameters ---")
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
         end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
         plev = Multiset._get_recipe_param(param_kw, 'plev', default_value=100000)
         results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
-        if load_from_file is not None:
-            _loader_logger.info('Loading dataset from file..')
-            new_self.datasets_from_file(filename=load_from_file, replace=True)
-
-        else:
-            # Data are formatted into the basic data structure common to various diagnostics.
-            new_self.preprocess(new_self.datastore_url)
-
-            # --- Apply selected bounds ---
+        if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
-            # We will slice the data by time and pressure level.
-            selection_dict = {'time': slice(start_yr, end_yr),
-                              'plev': plev}
-            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection_dict,
+            selection = {'time': slice(start_yr, end_yr),
+                         'plev': plev}
+            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
-            # The spatial mean will be calculated, leaving us with a time series.
+            # Spatial mean is calculated, leaving us with a time series.
             new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
             # The lazily loaded selections and computations are here actually processed.
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
@@ -137,31 +161,21 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        # An empty instance is created.
-        new_self = cls(datastore=datastore, verbose=verbose)
+        new_self, loaded_from_file = cls.cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                          load_from_file=load_from_file)
 
-        # Diagnostic parameters are parsed.
-        _loader_logger.debug("Parsing additional parameters ---")
+        _loader_logger.debug("Parsing diagnostic parameters ---")
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
         end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
         results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
-        if load_from_file is not None:
-            _loader_logger.info('Loading dataset from file..')
-            new_self.datasets_from_file(filename=load_from_file, replace=True)
-
-        else:
-            # Data are formatted into the basic data structure common to various diagnostics.
-            new_self.preprocess(new_self.datastore_url)
-
-            # --- Apply selected bounds ---
+        if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
-            # We will slice the data by time and pressure level.
-            selection_dict = {'time': slice(start_yr, end_yr)}
-            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection_dict,
+            selection = {'time': slice(start_yr, end_yr)}
+            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
-            # The spatial mean will be calculated, leaving us with a time series.
+            # Mean is calculated, leaving us with a vertical profile.
             new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat', 'time'), inplace=True)
             # The lazily loaded selections and computations are here actually processed.
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
@@ -199,11 +213,10 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        # An empty instance is created.
-        new_self = cls(datastore=datastore, verbose=verbose)
+        new_self, loaded_from_file = cls.cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                          load_from_file=load_from_file)
 
-        # Diagnostic parameters are parsed.
-        _loader_logger.debug("Parsing additional parameters ---")
+        _loader_logger.debug("Parsing diagnostic parameters ---")
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
         end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
         plev = Multiset._get_recipe_param(param_kw, 'plev', default_value=100000)
@@ -212,24 +225,15 @@ class Collection(Multiset):
         results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
-        if load_from_file is not None:
-            _loader_logger.info('Loading dataset from file..')
-            new_self.datasets_from_file(filename=load_from_file, replace=True)
-
-        else:
-            # Data are formatted into the basic data structure common to various diagnostics.
-            new_self.preprocess(new_self.datastore_url)
-
-            # --- Apply selected bounds ---
+        if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
-            # We will slice the data by time and pressure level.
-            selection_dict = {'time': slice(start_yr, end_yr),
-                              'plev': plev}
-            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection_dict,
+            selection = {'time': slice(start_yr, end_yr),
+                         'plev': plev}
+            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
-            # # The spatial mean will be calculated, leaving us with a time series.
+            # Spatial mean is calculated, leaving us with a time series.
             new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
-            # # The lazily loaded selections and computations are here actually processed.
+            # The lazily loaded selections and computations are here actually processed.
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
         if ('member_key' not in locals()) or (not member_key):
