@@ -189,6 +189,66 @@ class Collection(Multiset):
 
     @classmethod
     @benchmark_recipe
+    def run_recipe_for_zonal_mean(cls,
+                                  datastore='cmip6',
+                                  verbose: Union[bool, str] = False,
+                                  load_from_file=None,
+                                  param_kw: dict = None
+                                  ) -> 'Collection':
+        """Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore
+        verbose
+            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        load_from_file
+            (str): path to pickled datastore
+        param_kw
+            An optional dictionary with zero or more of these parameter keys:
+                start_yr (str): '1960' is default
+                end_yr (str): None is default
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        """
+        new_self, loaded_from_file = cls.cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                          load_from_file=load_from_file)
+
+        _loader_logger.debug("Parsing diagnostic parameters ---")
+        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
+        model_key = Multiset._get_recipe_param(param_kw, 'model_key', default_value=None)
+        member_key = Multiset._get_recipe_param(param_kw, 'member_key', default_value=None)
+        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
+        if not loaded_from_file:
+            _loader_logger.info('Applying selected bounds..')
+            selection = {'time': slice(start_yr, end_yr)}
+            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
+                                                                                                   inplace=False)
+            # The longitudinal mean will be calculated, leaving us with the average latitudinal/height gradients.
+            new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'time'), inplace=True)
+            # The lazily loaded selections and computations are here actually processed.
+            new_self.stepC_prepped_datasets.execute_all(inplace=True)
+
+        if ('member_key' not in locals()) or (not member_key):
+            _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
+                                 new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist())
+            member_key = new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist()
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_zonal_mean(model_key, member_key,
+                                                         titlestr=f"{model_key} ({member_key})")
+        if results_dir:
+            mysavefig(fig, results_dir, 'cmip_zonal_mean_plot', bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
     def run_recipe_for_annual_series(cls,
                                      datastore='cmip6',
                                      verbose: Union[bool, str] = False,
@@ -476,6 +536,36 @@ class Collection(Multiset):
                          bbox_to_anchor=(1.05, 1), loc='upper left',
                          fontsize=12)
         bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def plot_zonal_mean(self, model_key, member_key, titlestr) -> (plt.Figure, plt.Axes, tuple):
+        """Make zonal mean plot of co2 concentrations.
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        """
+        # --- Extract a single model member  ---
+        darray = self.stepC_prepped_datasets[model_key].sel(member_id=member_key)['co2']
+
+        # --- Make Figure ---
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
+
+        darray.plot.contourf(ax=ax, x='lat', y='plev', levels=40,
+                             cbar_kwargs={'label': '$CO_2$ (ppm)', 'spacing': 'proportional'})
+        #
+        ax.invert_yaxis()
+        ax.set_title(titlestr, fontsize=12)
+        #
+        ax.grid(linestyle='--', color='lightgray', alpha=0.3)
+        for k in ax.spines.keys():
+            ax.spines[k].set_alpha(0.5)
+
+        bbox_artists = ()
 
         return fig, ax, bbox_artists
 
