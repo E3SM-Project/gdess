@@ -1,5 +1,10 @@
 # e3sm_co2_diag
-Helper code for evaluating CO2 in E3SM
+Helper code for evaluating CO<sub>2</sub> in E3SM
+
+## Usage
+
+Check out the demonstration notebooks in `notebooks/demo/` 
+for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3SM model output.
 
 
 ## Installation
@@ -25,11 +30,6 @@ conda install --file requirements.txt
 ```shell script
 pip install .
 ```
-
-## Usage
-
-Check out the demonstration notebooks in `notebooks/demo/` 
-for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3SM model output.
 
 ## Uninstalling
 
