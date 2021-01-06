@@ -2,7 +2,7 @@
 Helper code for evaluating CO2 in E3SM
 
 
-## ⚙ Installation
+## Installation
 
 ###### 👥  Clone this repository to the location of your choice
 
