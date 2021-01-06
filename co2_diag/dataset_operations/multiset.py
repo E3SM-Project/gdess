@@ -1,7 +1,9 @@
 import time
 import pickle
 from typing import Union
+import numpy as np
 
+import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 
 import logging
@@ -91,6 +93,19 @@ class Multiset:
                 return True
             else:
                 return pickle.load(f)
+
+    @staticmethod
+    def get_anomaly_dataframes(a_dataarray, varname: str):
+        if not isinstance(a_dataarray['time'].values[0], np.datetime64):
+            # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
+            a_dataarray = co2ops.time.to_datetimeindex(a_dataarray)
+        # Calculate
+        df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(a_dataarray, varname=varname)
+        # Reformat data structures for plotting
+        _df_anomaly_yearly = df_anomaly.pivot(index='moy', columns='year', values='monthly_anomaly_from_year')
+        _df_anomaly_mean_cycle = df_anomaly.groupby('moy').mean().reset_index()
+
+        return _df_anomaly_mean_cycle, _df_anomaly_yearly
 
     def __repr__(self):
         """ String representation is built.

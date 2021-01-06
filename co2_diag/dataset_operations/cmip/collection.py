@@ -301,26 +301,13 @@ class Collection(Multiset):
                                  new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist())
             member_key = new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist()
 
-        # --- Calculate anomalies ---
-        def get_anomaly_dataframes(a_dataarray):
-            if not isinstance(a_dataarray['time'].values[0], np.datetime64):
-                # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
-                a_dataarray = co2ops.time.to_datetimeindex(a_dataarray)
-            # Calculate
-            df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(a_dataarray, varname='co2')
-            # Reformat data structures for plotting
-            _df_anomaly_yearly = df_anomaly.pivot(index='moy', columns='year', values='monthly_anomaly_from_year')
-            _df_anomaly_mean_cycle = df_anomaly.groupby('moy').mean().reset_index()
-
-            return _df_anomaly_mean_cycle, _df_anomaly_yearly
-
         # The mean is calculated across ensemble members if there are multiple.
         if isinstance(member_key, list) and (len(member_key) > 1):
             df_list_of_means = []
             df_list_of_yearly_cycles = []
             for mi, m in enumerate(member_key):
                 darray = new_self.stepC_prepped_datasets[model_key].sel(member_id=m)
-                df_anomaly_mean_cycle, df_anomaly_yearly = get_anomaly_dataframes(darray)
+                df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(darray, varname='co2')
                 df_anomaly_yearly['member_id'] = m
                 df_anomaly_mean_cycle['member_id'] = m
                 df_list_of_means.append(df_anomaly_mean_cycle)
@@ -330,7 +317,7 @@ class Collection(Multiset):
             df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby('moy').mean()
         else:
             darray = new_self.stepC_prepped_datasets[model_key].sel(member_id=member_key)
-            df_anomaly_mean_cycle, df_anomaly_yearly = get_anomaly_dataframes(darray)
+            df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(darray, varname='co2')
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
