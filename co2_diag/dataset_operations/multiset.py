@@ -81,15 +81,16 @@ class Multiset:
         -----
         The pickle load protocol version used is detected automatically, so we do not have to specify it.
         """
-        with open(filename, 'rb') as f:
-            # The protocol version used is detected automatically, so we do not
-            # have to specify it.
-            le_datasets = pickle.load(f)
+        _multiset_logger.info('Loading dataset from file..')
+        if not filename:
+            return False
 
-        if replace:
-            self.stepC_prepped_datasets = le_datasets
-        else:
-            pass
+        with open(filename, 'rb') as f:
+            if replace:
+                self.stepC_prepped_datasets = pickle.load(f)
+                return True
+            else:
+                return pickle.load(f)
 
     def __repr__(self):
         """ String representation is built.
