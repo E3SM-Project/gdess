@@ -28,6 +28,9 @@ pip install .
 
 ## Usage
 
+Check out the demonstration notebooks in `notebooks/demo/` 
+for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3SM model output.
+
 ## Uninstalling
 
 ## Credits
