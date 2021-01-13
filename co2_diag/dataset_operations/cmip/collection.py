@@ -46,11 +46,11 @@ class Collection(Multiset):
         super().__init__(verbose=verbose)
 
     @classmethod
-    def cmip_recipe_base(cls,
-                         datastore='cmip6',
-                         verbose: Union[bool, str] = False,
-                         load_from_file=None
-                         ) -> ('Collection', bool):
+    def _cmip_recipe_base(cls,
+                          datastore='cmip6',
+                          verbose: Union[bool, str] = False,
+                          load_from_file=None
+                          ) -> ('Collection', bool):
         """Create an instance, and either preprocess or load already processed data.
 
         Parameters
@@ -106,8 +106,8 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls.cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                          load_from_file=load_from_file)
+        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                           load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
@@ -160,8 +160,8 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls.cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                          load_from_file=load_from_file)
+        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                           load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
@@ -212,8 +212,8 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls.cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                          load_from_file=load_from_file)
+        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                           load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
@@ -272,8 +272,8 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls.cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                          load_from_file=load_from_file)
+        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                           load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
