@@ -6,7 +6,7 @@ from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 
 
-def asthetic_grid_no_spines(axis):
+def aesthetic_grid_no_spines(axis):
     axis.grid(True, linestyle='--', color='gray', alpha=1)
     for spine in axis.spines.values():
         spine.set_visible(False)

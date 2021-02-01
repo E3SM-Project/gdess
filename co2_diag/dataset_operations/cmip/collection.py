@@ -9,7 +9,7 @@ from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
 
-from co2_diag.graphics.utils import asthetic_grid_no_spines, mysavefig
+from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
 # Packages for using NCAR's intake
 import intake
@@ -443,7 +443,7 @@ class Collection(Multiset):
                         color=my_cmap.colors[color_count], alpha=0.6)
 
         ax.set_ylabel('ppm')
-        asthetic_grid_no_spines(ax)
+        aesthetic_grid_no_spines(ax)
 
         leg = plt.legend(title='Models', frameon=False,
                          bbox_to_anchor=(1.05, 1), loc='upper left',
@@ -479,7 +479,7 @@ class Collection(Multiset):
         ax.invert_yaxis()
         ax.set_xlabel('ppm')
         ax.set_ylabel('pressure [Pa]')
-        asthetic_grid_no_spines(ax)
+        aesthetic_grid_no_spines(ax)
 
         leg = plt.legend(title='Models', frameon=False,
                          bbox_to_anchor=(1.05, 1), loc='upper left',

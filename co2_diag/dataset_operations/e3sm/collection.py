@@ -9,7 +9,7 @@ from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
 
-from co2_diag.graphics.utils import asthetic_grid_no_spines, mysavefig
+from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
 # Packages for using NCAR's intake
 import intake
@@ -176,7 +176,7 @@ class Collection(Multiset):
                  label=f"E3SM simulation", color=my_cmap.colors[0], alpha=0.6)
 
         ax.set_ylabel('$CO_2$ [ppm]')
-        asthetic_grid_no_spines(ax)
+        aesthetic_grid_no_spines(ax)
 
         bbox_artists = ()
 

@@ -7,7 +7,7 @@ import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 
-from co2_diag.graphics.utils import asthetic_grid_no_spines, mysavefig
+from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
@@ -307,7 +307,7 @@ class Collection(Multiset):
                 transform=ax.transAxes,
                 fontsize=16)
         #
-        asthetic_grid_no_spines(ax)
+        aesthetic_grid_no_spines(ax)
 
         # Define the date format
         #             ax.xaxis.set_major_locator(mdates.YearLocator())
