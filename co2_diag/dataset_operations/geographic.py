@@ -35,7 +35,7 @@ def get_closest_mdl_cell_dict(dataset: xr.Dataset,
         True for dataset variables as independent dimensions, e.g.
             lat = -90, -89,...,0, 1,... ,90
             lon = -180, -179, -178,...,0, 1,... ,180
-        Flase for dataset variables where all pairs are enumerated, e.g.
+        False for dataset variables where all pairs are enumerated, e.g.
             lat = -90,  -90,...  ,-89,  -89,... 90, 90
             lon = -180, -179,... ,-180, -179,... 179, 180
 
