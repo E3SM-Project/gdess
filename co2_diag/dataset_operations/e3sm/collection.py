@@ -73,7 +73,6 @@ class Collection(Multiset):
     @benchmark_recipe
     def run_recipe_for_timeseries(cls,
                                   verbose: Union[bool, str] = False,
-                                  nc_file: str = None,
                                   load_from_file=None,
                                   param_kw: dict = None
                                   ) -> 'Collection':
@@ -83,12 +82,11 @@ class Collection(Multiset):
         ----------
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        nc_file
-            (str): path to NetCDF file of E3SM model output
         load_from_file
             (str): path to pickled datastore
         param_kw
             An optional dictionary with zero or more of these parameter keys:
+                test_data (str): path to NetCDF file of E3SM model output
                 start_yr (str): '1960' is default
                 end_yr (str): None is default
                 lev (int): last value is default
@@ -97,13 +95,14 @@ class Collection(Multiset):
         -------
         Collection object for E3SM that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls._e3sm_recipe_base(verbose=verbose,
-                                                           load_from_file=load_from_file,
-                                                           nc_file=nc_file)
-
         _loader_logger.debug("Parsing diagnostic parameters ---")
+        test_data = Multiset._get_recipe_param(param_kw, 'test_data', default_value=None)
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
         end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
+
+        new_self, loaded_from_file = cls._e3sm_recipe_base(verbose=verbose,
+                                                           load_from_file=load_from_file,
+                                                           nc_file=test_data)
 
         n_lev = len(new_self.stepB_preprocessed_datasets['main'].lev)  # get last level
         lev_index = Multiset._get_recipe_param(param_kw, 'lev_index', default_value=n_lev-1)
