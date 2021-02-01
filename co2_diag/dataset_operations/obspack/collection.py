@@ -49,7 +49,6 @@ class Collection(Multiset):
     @classmethod
     @benchmark_recipe
     def run_recipe_for_timeseries(cls,
-                                  datadir='',
                                   verbose=False,
                                   param_kw: dict = None
                                   ) -> 'Collection':
@@ -57,11 +56,11 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datadir
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         param_kw
             An optional dictionary with zero or more of these parameter keys:
+                ref_data (str): directory containing the NOAA Obspack NetCDF files
                 stationshortname (str): 'brw' is default
                 start_yr (str): '1960' is default
                 end_yr (str): '2015' is default
@@ -75,6 +74,7 @@ class Collection(Multiset):
 
         # Diagnostic parameters are parsed.
         _loader_logger.debug("Parsing additional parameters ---")
+        ref_data = Multiset._get_recipe_param(param_kw, 'ref_data', default_value=None)
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
         end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value="2015")
         results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
@@ -89,7 +89,7 @@ class Collection(Multiset):
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         # Data are formatted into the basic data structure common to various diagnostics.
-        new_self.preprocess(datadir=datadir)
+        new_self.preprocess(datadir=ref_data)
         # Data are resampled
         new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
                                                                               timestart=np.datetime64(start_yr),
@@ -106,7 +106,6 @@ class Collection(Multiset):
     @classmethod
     @benchmark_recipe
     def run_recipe_for_annual_series(cls,
-                                     datadir='',
                                      verbose: Union[bool, str] = False,
                                      param_kw: dict = None
                                      ) -> 'Collection':
@@ -114,11 +113,11 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datadir
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         param_kw
             An optional dictionary with zero or more of these parameter keys:
+                ref_data (str): directory containing the NOAA Obspack NetCDF files
                 start_yr (str): '1960' s default
                 end_yr (str): None is default
 
@@ -130,6 +129,7 @@ class Collection(Multiset):
         new_self = cls(verbose=verbose)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
+        ref_data = Multiset._get_recipe_param(param_kw, 'ref_data', default_value=None)
         start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
         end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
         results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
@@ -144,7 +144,7 @@ class Collection(Multiset):
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         # Data are formatted into the basic data structure common to various diagnostics.
-        new_self.preprocess(datadir=datadir)
+        new_self.preprocess(datadir=ref_data)
 
         _loader_logger.info('Applying selected bounds..')
         selection = {'time': slice(start_yr, end_yr)}
