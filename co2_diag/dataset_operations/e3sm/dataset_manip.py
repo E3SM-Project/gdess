@@ -20,10 +20,12 @@ def latlon_select(xr_ds: xr.Dataset,
     Returns
     -------
 
-    """
-    closest_mdl_point_dict = get_closest_mdl_cell_dict(xr_ds, lat=lat, lon=lon)
+    Raises
+    ------
 
+    """
     if grid == 'native':
+        closest_mdl_point_dict = get_closest_mdl_cell_dict(xr_ds, lat=lat, lon=lon, coords_as_dimensions=False)
         return xr_ds.where(xr_ds['ncol'] == closest_mdl_point_dict['index'], drop=True)
     else:
         raise ValueError('Unexpected grid type <%s>, not implemented (yet)', grid)
