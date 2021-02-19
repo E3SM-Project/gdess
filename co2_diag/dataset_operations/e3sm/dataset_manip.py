@@ -10,6 +10,8 @@ def latlon_select(xr_ds: xr.Dataset,
                   ) -> xr.Dataset:
     """Select from dataset the column that is closest to specified lat/lon pair
 
+    Note: this is currently only implemented for the e3sm NATIVE grid
+
     Parameters
     ----------
     xr_ds
