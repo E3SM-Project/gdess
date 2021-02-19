@@ -32,9 +32,44 @@ def by_decimalyear(dataset: xr.Dataset,
     ds_year = dataset.where(keep_mask, drop=True)
     ds_year_shape = ds_year['time_decimal'].shape
     func_log.debug(" -- subset between <start=%f and end=%f> -- # data points: %s",
-                start,
-                end,
-                numstr(ds_year_shape[0], 0))
+                   start,
+                   end,
+                   numstr(ds_year_shape[0], 0))
+
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
+
+    return ds_year
+
+
+def by_datetime(dataset: xr.Dataset,
+                start: np.datetime64 = np.datetime64('2017-01-01'),
+                end: np.datetime64 = np.datetime64('2008-01-01'),
+                verbose: bool = False) -> Union[xr.Dataset, None]:
+    func_log = logging.getLogger("{0}.{1}".format(__name__, "by_datetime"))
+    orig_log_level = func_log.level
+    if verbose:
+        _change_log_level(func_log, verbose)
+
+    # We start with the passed-in dataset.
+    orig_shape = dataset['time'].shape
+    keep_mask = np.full(orig_shape, True)
+    func_log.debug("Original # data points: %s", numstr(orig_shape[0], 0))
+
+    # The data are subsetted by year.
+    keep_mask = keep_mask & (dataset['time'] >= start)
+    keep_mask = keep_mask & (dataset['time'] < end)
+    if not keep_mask.data.any():
+        func_log.debug(" -- subset between <start=%s and end=%s> -- NO DATA POINTS",
+                       start,
+                       end,)
+        return None
+    ds_year = dataset.where(keep_mask, drop=True)
+    ds_year_shape = ds_year['time'].shape
+    func_log.debug(" -- subset between <start=%s and end=%s> -- # data points: %s",
+                   start,
+                   end,
+                   numstr(ds_year_shape[0], 0))
 
     if verbose:
         _change_log_level(func_log, orig_log_level)
