@@ -1,3 +1,4 @@
+from typing import Union
 import numpy as np
 import xarray as xr
 
@@ -9,7 +10,7 @@ import logging
 
 def by_decimalyear(dataset: xr.Dataset,
                    start: float = 2017, end: float = 2018,
-                   verbose: bool = False) -> xr.Dataset:
+                   verbose: bool = False) -> Union[xr.Dataset, None]:
     func_log = logging.getLogger("{0}.{1}".format(__name__, "by_decimalyear"))
     if verbose:
         orig_log_level = func_log.level
@@ -23,6 +24,11 @@ def by_decimalyear(dataset: xr.Dataset,
     # The data are subsetted by year.
     keep_mask = keep_mask & (dataset['time_decimal'] >= start)
     keep_mask = keep_mask & (dataset['time_decimal'] < end)
+    if not keep_mask.data.any():
+        func_log.debug(" -- subset between <start=%f and end=%f> -- NO DATA POINTS",
+                       start,
+                       end,)
+        return None
     ds_year = dataset.where(keep_mask, drop=True)
     ds_year_shape = ds_year['time_decimal'].shape
     func_log.debug(" -- subset between <start=%f and end=%f> -- # data points: %s",
