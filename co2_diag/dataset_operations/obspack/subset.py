@@ -12,9 +12,9 @@ def by_decimalyear(dataset: xr.Dataset,
                    start: float = 2017, end: float = 2018,
                    verbose: bool = False) -> Union[xr.Dataset, None]:
     func_log = logging.getLogger("{0}.{1}".format(__name__, "by_decimalyear"))
+    orig_log_level = func_log.level
     if verbose:
-        orig_log_level = func_log.level
-        _change_log_level(func_log, logging.DEBUG)
+        _change_log_level(func_log, verbose)
 
     # We start with the passed-in dataset.
     orig_shape = dataset['time_decimal'].shape
