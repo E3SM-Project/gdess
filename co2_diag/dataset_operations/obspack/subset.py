@@ -8,6 +8,79 @@ from co2_diag.formatters.nums import numstr
 import logging
 
 
+def bin_by_year_and_vertical(x_ds_: xr.Dataset,
+                             my_year: int,
+                             my_vertical_edges: np.array,
+                             n_latitude: int,
+                             n_longitude: int,
+                             my_verbose=True
+                             ) -> xr.Dataset:
+    """Bin data onto a 2D grid of year and altitude
+
+    Parameters
+    ----------
+    x_ds_
+    my_year
+    my_vertical_edges
+    n_latitude
+    n_longitude
+    my_verbose
+
+    Returns
+    -------
+
+    """
+    # Data are subset by time.
+    temp_ds = by_decimalyear(x_ds_, verbose=my_verbose, start=my_year, end=my_year + 1)
+
+    # Data are binned (using numpy histogram2d function)
+    temp_ds = bin3d(temp_ds, verbose=my_verbose,
+                    vertical_bin_edges=my_vertical_edges,
+                    n_latitude=n_latitude, n_longitude=n_longitude)
+
+    return temp_ds
+
+
+def binTimeLat(dataset: xr.Dataset,
+               n_latitude: int = 10, n_time: int = 10,
+               var_name: str = 'co2'
+               ) -> tuple:
+    """Bin data onto a 2D grid of time and latitude
+
+    Parameters
+    ----------
+    dataset
+    n_latitude
+    n_time
+    var_name
+
+    Returns
+    -------
+    A 3-tuple
+        zi (co2), y_edges (latitude), x_edges (time)
+    """
+    time = dataset['time'].astype("float")
+    lat = dataset['latitude']
+    dat = dataset[var_name]
+
+    # Data are binned onto the grid.
+    #   (x & y must be reversed due to row-first indexing.)
+    zi, y_edges, x_edges = np.histogram2d(lat.values, time.values,
+                                          bins=(n_latitude, n_time), weights=dat.values, normed=False)
+    counts, _, _ = np.histogram2d(lat.values, time.values,
+                                  bins=(n_latitude, n_time))
+    zi = np.ma.masked_equal(zi, 0)
+
+    # Mean is calculated.
+    zi = zi / counts
+    zi = np.ma.masked_invalid(zi)
+
+    #     print(time)
+    #     x_edges = [np.datetime64(datetime.utcfromtimestamp(x)) for x in x_edges]  # convert float times back to np.datetime64
+
+    return zi, y_edges, x_edges
+
+
 def by_decimalyear(dataset: xr.Dataset,
                    start: float = 2017, end: float = 2018,
                    verbose: bool = False) -> Union[xr.Dataset, None]:
