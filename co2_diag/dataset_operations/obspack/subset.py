@@ -37,10 +37,11 @@ def by_decimalyear(dataset: xr.Dataset,
 
 
 def binLonLat(dataset: xr.Dataset,
-              n_latitude: int = 10, n_longitude: int = 10):
+              n_latitude: int = 10, n_longitude: int = 10,
+              var_name: str = 'co2'):
     lon = dataset['longitude']
     lat = dataset['latitude']
-    dat = dataset['value']
+    dat = dataset[var_name]
 
     # Data are binned onto the grid.
     #   (x & y must be reversed due to row-first indexing.)
@@ -59,6 +60,7 @@ def binLonLat(dataset: xr.Dataset,
 
 def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
           n_latitude: int = 10, n_longitude: int = 10, units: str = 'ppm',
+          var_name: str = 'co2',
           verbose: bool = True) -> xr.Dataset:
     func_log = logging.getLogger("{0}.{1}".format(__name__, "bin3d"))
     if verbose:
@@ -109,7 +111,7 @@ def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
     func_log.debug("\nDone.")
 
     ds_sub = xr.Dataset({
-        'value': xr.DataArray(
+        var_name: xr.DataArray(
             data=value_arr,
             dims=['vertical', 'lat', 'lon'],
             coords={'vertical': vertical_centers,

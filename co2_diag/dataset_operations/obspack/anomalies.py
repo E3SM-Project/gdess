@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 
 def daily_anomalies(dataset: xr.Dataset,
-                    varname: str = 'value'
+                    varname: str = 'co2'
                     ) -> pd.DataFrame:
     varlist = ['time', varname]
     tempds = dataset[varlist]
@@ -42,7 +42,7 @@ def daily_anomalies(dataset: xr.Dataset,
 
 
 def monthly_anomalies(dataset: xr.Dataset,
-                      varname: str = 'value'
+                      varname: str = 'co2'
                       ) -> pd.DataFrame:
     varlist = ['time', varname]
     tempds = dataset[varlist]
@@ -70,7 +70,7 @@ def monthly_anomalies(dataset: xr.Dataset,
 
 
 def seasonal_anomalies(dataset: xr.Dataset,
-                       varname: str = 'value'
+                       varname: str = 'co2'
                        ) -> pd.DataFrame:
     varlist = ['time', varname]
     tempds = dataset[varlist]
