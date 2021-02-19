@@ -1,22 +1,15 @@
-import numpy as np
 import xarray as xr
-import warnings
 from typing import Union
 
 from co2_diag import validate_verbose
+
 import co2_diag.dataset_operations as co2ops
-from co2_diag.dataset_operations.e3sm.calculation import getPINT, getPMID
+from co2_diag.dataset_operations.e3sm.calculation import getPMID
 from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
 from co2_diag.dataset_operations.datasetdict import DatasetDict
-from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
-# Packages for using NCAR's intake
-import intake
-import intake_esm
-
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import logging
