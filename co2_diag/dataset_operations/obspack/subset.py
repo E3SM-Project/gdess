@@ -148,7 +148,7 @@ def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
     # x_arr = np.array(x_arr)
     # y_arr = np.array(y_arr)
 
-    func_log.debug(f"subset data shape: ", str(z_arr.shape))
+    func_log.debug("subset data shape: %s", z_arr.shape)
     func_log.debug("\nDone.")
 
     ds_sub = xr.Dataset({
