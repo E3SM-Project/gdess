@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -60,3 +62,34 @@ def select_between(dataset: xr.Dataset,
     tempmask = tempmask & (ds_sub['time'] <= timeend)
 
     return ds_sub.where(tempmask, drop=True)
+
+
+def monthlist(dates) -> list:
+    """Generate a list of months between two dates
+
+    Parameters
+    ----------
+    dates
+        A list of length=2, with a start and end date, in the format of "%Y-%m-%d"
+
+    Returns
+    -------
+    A list containing months (as numpy.datetime64 objects for the first day of each month)
+
+    Example
+    _______
+
+    >>> monthlist_fast(['2017-01-01', '2017-04-01'])
+    [numpy.datetime64('2017-01-01'),
+     numpy.datetime64('2017-02-01'),
+     numpy.datetime64('2017-03-01'),
+     numpy.datetime64('2017-04-01')]
+    """
+    start, end = [datetime.strptime(_, "%Y-%m-%d") for _ in dates]
+    def total_months(dt): return dt.month + 12 * dt.year
+    mlist = []
+    for tot_m in range(total_months(start)-1, total_months(end)):
+        y, m = divmod(tot_m, 12)
+        mlist.append(np.datetime64(datetime(y, m+1, 1).strftime("%Y-%m"), 'D'))
+
+    return mlist
