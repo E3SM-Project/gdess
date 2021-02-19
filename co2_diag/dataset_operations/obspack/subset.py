@@ -2,7 +2,7 @@ from typing import Union
 import numpy as np
 import xarray as xr
 
-from co2_diag import _change_log_level
+from co2_diag import _change_log_level, validate_verbose
 from co2_diag.formatters.nums import numstr
 
 import logging
@@ -45,11 +45,11 @@ def by_decimalyear(dataset: xr.Dataset,
 def by_datetime(dataset: xr.Dataset,
                 start: np.datetime64 = np.datetime64('2017-01-01'),
                 end: np.datetime64 = np.datetime64('2008-01-01'),
-                verbose: bool = False) -> Union[xr.Dataset, None]:
+                verbose: Union[str, bool] = False) -> Union[xr.Dataset, None]:
     func_log = logging.getLogger("{0}.{1}".format(__name__, "by_datetime"))
     orig_log_level = func_log.level
     if verbose:
-        _change_log_level(func_log, verbose)
+        _change_log_level(func_log, validate_verbose(verbose))
 
     # We start with the passed-in dataset.
     orig_shape = dataset['time'].shape
