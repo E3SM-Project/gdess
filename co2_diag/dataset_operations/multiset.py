@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+from co2_diag import validate_verbose
 import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 
@@ -181,32 +182,7 @@ class Multiset:
             either True, False, or a string for level such as "INFO, DEBUG, etc."
 
         """
-        _multiset_logger.setLevel(self._validate_verbose(verbose))
-
-    @staticmethod
-    def _validate_verbose(verbose: Union[bool, str] = False) -> Union[int, str]:
-        """
-
-        Parameters
-        ----------
-        verbose
-            either True, False, or a string for level such as "INFO, DEBUG, etc."
-
-        Returns
-        -------
-            A logging verbosity level or string that corresponds to a verbosity level
-
-        """
-        if verbose is True:
-            level_to_set = logging.DEBUG
-        elif verbose is not None:
-            level_to_set = verbose
-        elif verbose is None:
-            level_to_set = logging.WARN
-        else:
-            raise ValueError("Unexpected/unhandled verbose option <%s>. "
-                             "Please use True, False or a string for level such as 'INFO, DEBUG, etc.'", verbose)
-        return level_to_set
+        _multiset_logger.setLevel(validate_verbose(verbose))
 
 
 def benchmark_recipe(func):

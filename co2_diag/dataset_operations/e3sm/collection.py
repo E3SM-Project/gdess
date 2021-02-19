@@ -3,6 +3,7 @@ import xarray as xr
 import warnings
 from typing import Union
 
+from co2_diag import validate_verbose
 import co2_diag.dataset_operations as co2ops
 from co2_diag.dataset_operations.e3sm.calculation import getPINT, getPMID
 from co2_diag.dataset_operations.multiset import Multiset, benchmark_recipe
@@ -189,7 +190,7 @@ class Collection(Multiset):
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        _loader_logger.setLevel(self._validate_verbose(verbose))
+        _loader_logger.setLevel(validate_verbose(verbose))
 
     def __repr__(self) -> str:
         """ String representation is built.
