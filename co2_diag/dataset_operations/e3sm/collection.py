@@ -123,6 +123,32 @@ class Collection(Multiset):
 
         return new_self
 
+    @staticmethod
+    def _preprocess_functions(dataset):
+        """Run a set of functions on a dataset
+
+        - Set coordinates
+        - Sort the time dimension
+        - Ensure time is a datetimeindex type
+        - Convert CO2 kg/kg to ppm
+
+        Parameters
+        ----------
+        dataset
+
+        Returns
+        -------
+
+        """
+        dataset['PMID'] = getPMID(dataset['hyam'], dataset['hybm'], dataset['P0'], dataset['PS'])
+        dataset = (dataset
+                   .set_coords(['time', 'lat', 'lon', 'PMID'])
+                   .sortby(['time'])
+                   .pipe(co2ops.time.to_datetimeindex)
+                   .pipe(co2ops.convert.co2_kgfrac_to_ppm, co2_var_name='CO2')
+                   )
+        return dataset
+
     def preprocess(self, filepath: str) -> None:
         """Set up the dataset that are common to every diagnostic
 
@@ -135,17 +161,8 @@ class Collection(Multiset):
         self.stepA_original_datasets = DatasetDict({'main': xr.open_dataset(filepath)})
         self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
 
-        def preprocess_functions(dataset):
-            dataset['PMID'] = getPMID(dataset['hyam'], dataset['hybm'], dataset['P0'], dataset['PS'])
-            dataset = (dataset
-                       .set_coords(['time', 'lat', 'lon', 'PMID'])
-                       .sortby(['time'])
-                       .pipe(co2ops.time.to_datetimeindex)
-                       .pipe(co2ops.convert.co2_kgfrac_to_ppm, co2_var_name='CO2')
-                       )
-            return dataset
         _loader_logger.debug('setting coords, formatting time, converting to ppm..')
-        self.stepB_preprocessed_datasets.apply_function_to_all(preprocess_functions, inplace=True)
+        self.stepB_preprocessed_datasets.apply_function_to_all(self._preprocess_functions, inplace=True)
 
         _loader_logger.info("Preprocessing done.")
 
