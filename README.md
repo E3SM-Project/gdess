@@ -20,8 +20,13 @@ git pull
 ```
 
 ###### 🌍  Create conda environment and install dependencies:
+
+💥 Important: Replace “myenv” with the preferred name of your environment, e.g. "e3sm_co2_diagnostics". 
+From here on we’ll always use “myenv” to refer to our environment.
+
 ```shell script
 conda create -n "myenv" python=3.8
+conda activate "myenv"
 conda config --add channels conda-forge
 conda install --file requirements.txt
 ```
