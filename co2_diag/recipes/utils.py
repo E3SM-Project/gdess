@@ -1,5 +1,5 @@
 
-def get_recipe_param(cls, param_dict, param_key: str, default_value=None):
+def get_recipe_param(param_dict, param_key: str, default_value=None):
     """Validate a parameter in the parameter dictionary, and return default if it is not in the dictionary.
 
     Parameters
