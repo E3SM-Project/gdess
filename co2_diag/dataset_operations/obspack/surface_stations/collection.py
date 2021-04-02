@@ -12,6 +12,8 @@ from co2_diag.dataset_operations.datasetdict import DatasetDict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
+from co2_diag.recipes.utils import get_recipe_param
+
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 
@@ -77,10 +79,10 @@ class Collection(ObspackCollection):
 
         # Diagnostic parameters are parsed.
         _loader_logger.debug("Parsing additional parameters ---")
-        ref_data = Multiset._get_recipe_param(param_kw, 'ref_data', default_value=None)
-        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value="2015")
-        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        ref_data = get_recipe_param(param_kw, 'ref_data', default_value=None)
+        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = get_recipe_param(param_kw, 'end_yr', default_value="2015")
+        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
         # For the station name, we also check that it is accounted for in the class attribute dict.
         sc = 'brw'
         if param_kw:
@@ -132,10 +134,10 @@ class Collection(ObspackCollection):
         new_self = cls(verbose=verbose)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        ref_data = Multiset._get_recipe_param(param_kw, 'ref_data', default_value=None)
-        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
-        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        ref_data = get_recipe_param(param_kw, 'ref_data', default_value=None)
+        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
+        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
         # For the station name, we also check that it is accounted for in the class attribute dict.
         sc = 'brw'
         if param_kw:

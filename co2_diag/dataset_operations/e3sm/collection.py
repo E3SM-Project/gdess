@@ -10,6 +10,8 @@ from co2_diag.dataset_operations.datasetdict import DatasetDict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
+from co2_diag.recipes.utils import get_recipe_param
+
 import matplotlib.pyplot as plt
 
 import logging
@@ -90,18 +92,18 @@ class Collection(Multiset):
         Collection object for E3SM that was used to generate the diagnostic
         """
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        test_data = Multiset._get_recipe_param(param_kw, 'test_data', default_value=None)
-        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
+        test_data = get_recipe_param(param_kw, 'test_data', default_value=None)
+        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
 
         new_self, loaded_from_file = cls._e3sm_recipe_base(verbose=verbose,
                                                            load_from_file=load_from_file,
                                                            nc_file=test_data)
 
         n_lev = len(new_self.stepB_preprocessed_datasets['main'].lev)  # get last level
-        lev_index = Multiset._get_recipe_param(param_kw, 'lev_index', default_value=n_lev-1)
+        lev_index = get_recipe_param(param_kw, 'lev_index', default_value=n_lev-1)
 
-        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:

@@ -12,6 +12,8 @@ from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
+from co2_diag.recipes.utils import get_recipe_param
+
 # Packages for using NCAR's intake
 import intake
 import intake_esm
@@ -111,10 +113,10 @@ class Collection(Multiset):
                                                            load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
-        plev = Multiset._get_recipe_param(param_kw, 'plev', default_value=100000)
-        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
+        plev = get_recipe_param(param_kw, 'plev', default_value=100000)
+        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
@@ -165,9 +167,9 @@ class Collection(Multiset):
                                                            load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
-        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
+        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
@@ -217,11 +219,11 @@ class Collection(Multiset):
                                                            load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
-        model_key = Multiset._get_recipe_param(param_kw, 'model_key', default_value=None)
-        member_key = Multiset._get_recipe_param(param_kw, 'member_key', default_value=None)
-        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
+        model_key = get_recipe_param(param_kw, 'model_key', default_value=None)
+        member_key = get_recipe_param(param_kw, 'member_key', default_value=None)
+        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
@@ -277,12 +279,12 @@ class Collection(Multiset):
                                                            load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        start_yr = Multiset._get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = Multiset._get_recipe_param(param_kw, 'end_yr', default_value=None)
-        plev = Multiset._get_recipe_param(param_kw, 'plev', default_value=100000)
-        model_key = Multiset._get_recipe_param(param_kw, 'model_key', default_value=None)
-        member_key = Multiset._get_recipe_param(param_kw, 'member_key', default_value=None)
-        results_dir = Multiset._get_recipe_param(param_kw, 'results_dir', default_value=None)
+        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
+        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
+        plev = get_recipe_param(param_kw, 'plev', default_value=100000)
+        model_key = get_recipe_param(param_kw, 'model_key', default_value=None)
+        member_key = get_recipe_param(param_kw, 'member_key', default_value=None)
+        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
