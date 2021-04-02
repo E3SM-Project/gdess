@@ -1,4 +1,3 @@
-import time
 import pickle
 from typing import Union
 import numpy as np
@@ -164,21 +163,3 @@ class Multiset:
 
         """
         _multiset_logger.setLevel(validate_verbose(verbose))
-
-
-def benchmark_recipe(func):
-    """A decorator for diagnostic recipe methods that provides timing info.
-
-    This is used to reduce code duplication.
-    """
-    def display_time_and_call(*args, **kwargs):
-        # Clock is started.
-        start_time = time.time()
-        # Recipe is run.
-        returnval = func(*args, **kwargs)
-        # Report the time this recipe took to execute.
-        execution_time = (time.time() - start_time)
-        _multiset_logger.info('recipe execution time (seconds): ' + str(execution_time))
-
-        return returnval
-    return display_time_and_call
