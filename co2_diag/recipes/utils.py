@@ -1,6 +1,7 @@
 import time
 
-from co2_diag.dataset_operations.multiset import _multiset_logger
+import logging
+_logger = logging.getLogger(__name__)
 
 
 def get_recipe_param(param_dict, param_key: str, default_value=None):
@@ -34,7 +35,7 @@ def benchmark_recipe(func):
         returnval = func(*args, **kwargs)
         # Report the time this recipe took to execute.
         execution_time = (time.time() - start_time)
-        _multiset_logger.info('recipe execution time (seconds): ' + str(execution_time))
+        _logger.info('recipe execution time (seconds): ' + str(execution_time))
 
         return returnval
     return display_time_and_call
