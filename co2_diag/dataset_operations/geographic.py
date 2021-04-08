@@ -41,7 +41,8 @@ def get_closest_mdl_cell_dict(dataset: xr.Dataset,
 
     Returns
     -------
-
+    A dict with lat, lon, and index in Dataset
+        For example, {'lat': 19.5, 'lon': 204.375, 'index': 31555}
     """
     obs_station_lat_lon = {'lat': lat, 'lon': lon}
 
