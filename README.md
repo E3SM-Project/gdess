@@ -36,8 +36,28 @@ conda install --file requirements.txt
 pip install .
 ```
 
-## Uninstalling
+# 🚮 Updating
 
+To use the latest version of this repository:
+- Enter the `e3sm_co2_diag/` directory
+- Activate your desired environment
+- Run the commands:
+
+   ```
+   git pull
+   git checkout main
+   pip install . --upgrade
+   ```
+
+## 🚮 Uninstalling
+
+To uninstall the python packages from your environment (site-packages):
+
+```
+pip uninstall bayota
+```
+
+## 📁 Project Structure
 #### Directory Tree
 ```
 e3sm_co2_diag
