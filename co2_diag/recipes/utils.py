@@ -4,7 +4,10 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def get_recipe_param(param_dict, param_key: str, default_value=None):
+def get_recipe_param(param_dict,
+                     param_key: str,
+                     default_value=None,
+                     type=None):
     """Validate a parameter in the parameter dictionary, and return default if it is not in the dictionary.
 
     Parameters
@@ -20,6 +23,9 @@ def get_recipe_param(param_dict, param_key: str, default_value=None):
     value = default_value
     if param_dict and (param_key in param_dict):
         value = param_dict[param_key]
+        if not not type:
+            if not isinstance(value, type):
+                raise TypeError(f'{param_key} param should have type {type}. It has type <{type(value)}>.')
     return value
 
 
