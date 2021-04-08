@@ -11,7 +11,6 @@ from co2_diag.dataset_operations.multiset import Multiset
 from co2_diag.dataset_operations.datasetdict import DatasetDict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-
 from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe
 
 import matplotlib.pyplot as plt
@@ -20,12 +19,13 @@ from matplotlib.dates import DateFormatter
 import logging
 _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
-station_names = {'mlo': 'Mauna Loa',
-                 'brw': 'Barrow',
-                 'spo': 'South Pole Observatory',
-                 'smo': 'American Samoa',
-                 'zep': 'Zeppelin Observatory',
-                 'psa': 'Palmer Station'}
+# Define the stations that will be included in the dataset and available for diagnostic plots
+station_dict = {'mlo': {'name': 'Mauna Loa'},
+                'brw': {'name': 'Barrow'},
+                'spo': {'name': 'South Pole Observatory'},
+                'smo': {'name': 'American Samoa'},
+                'zep': {'name': 'Zeppelin Observatory'},
+                'psa': {'name': 'Palmer Station'}}
 
 
 class Collection(ObspackCollection):
@@ -41,13 +41,8 @@ class Collection(ObspackCollection):
 
         self.df_combined_and_resampled = None
         # Define the stations that will be included in the dataset and available for diagnostic plots
-        self.station_dict = {'mlo': {'name': 'Mauna Loa'},
-                             'brw': {'name': 'Barrow'},
-                             'spo': {'name': 'South Pole Observatory'},
-                             'smo': {'name': 'American Samoa'},
-                             'zep': {'name': 'Zeppelin Observatory'},
-                             'psa': {'name': 'Palmer Station'}}
-        _loader_logger.info("Loading data for %d observing stations..", len(self.station_dict))
+        _loader_logger.info("Loading data for %d observing stations..", len(station_dict))
+        self.station_dict = station_dict.copy()
 
         super().__init__(verbose=verbose)
 
