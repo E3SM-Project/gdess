@@ -38,6 +38,48 @@ pip install .
 
 ## Uninstalling
 
+#### Directory Tree
+```
+e3sm_co2_diag
+│
+├── README.md                <- Top-level README for users/developers of this project.
+├── requirements.txt         <- Package dependencies.
+│
+├── notebooks                <- Example jupyter notebooks to see diagnostic capabilities of co2_diag.
+│   └──demo/
+│
+├── co2_diag                 <- *Python package* for handling co2 diagnostics.
+│   │
+│   ├── config               <- Configuration options.
+│   │   └── log_config.json
+│   │
+│   ├── dataset_operations   <- Modules to load, parse, and manipulate data from various sources.
+│   │   ├── cmip/
+│   │   ├── e3sm/
+│   │   ├── obspack/
+│   │   ├── multiset.py
+│   │   └── ...
+│   │
+│   ├── formatters           <- Manipulate formatting in desired ways.
+│   │   ├── nums.py
+│   │   ├── strings.py
+│   │   └── ...
+│   │
+│   ├── graphics             <- Make repeated graphic actions available. 
+│   │   ├── mapping.py
+│   │   ├── utils.py
+│   │   └── ...
+│   │
+│   └── recipes              <- Make repeated diagnostics that span multiple data sources available as recipes. 
+│       ├── surface_trends.py
+│       ├── utils.py
+│       └── ...
+│
+│
+├── MANIFEST.in
+└── setup.py
+```
+
 ## Credits
 
 Major dependencies:
