@@ -52,7 +52,7 @@ class Collection(Multiset):
     def _cmip_recipe_base(cls,
                           datastore='cmip6',
                           verbose: Union[bool, str] = False,
-                          load_from_file=None
+                          load_from_file: Union[bool, str] = None
                           ) -> ('Collection', bool):
         """Create an instance, and either preprocess or load already processed data.
 
@@ -87,7 +87,7 @@ class Collection(Multiset):
     def run_recipe_for_timeseries(cls,
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
-                                  load_from_file=None,
+                                  load_from_file: Union[bool, str] = None,
                                   param_kw: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
