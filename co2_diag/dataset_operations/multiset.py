@@ -1,6 +1,7 @@
 import pickle
 from typing import Union
 import numpy as np
+import pandas as pd
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -141,9 +142,24 @@ class Multiset:
     def _obj_attributes_list_str(self) -> list:
         """ Get a list of each dataset attribute (with "empty" markers)
         """
-        return sorted([f"{k}: empty" if (not self.__dict__[k]) else k
-                       for k in self.__dict__.keys()
-                       if not k.startswith('_')])
+        list_builder = []
+        for k in self.__dict__.keys():
+            if not k.startswith('_'):
+                if isinstance(self.__dict__[k], pd.DataFrame) | isinstance(self.__dict__[k], pd.Series):
+                    # Pandas object truth value can't be compared without .empty
+                    if (not self.__dict__[k].empty):
+                        list_builder.append(f"{k}: empty")
+                    else:
+                        list_builder.append(k)
+                elif (not self.__dict__[k]):
+                    list_builder.append(f"{k}: empty")
+                else:
+                    list_builder.append(f"{k}: {type(k)}")
+
+        return sorted(list_builder)
+        # return sorted([f"{k}: empty" if (not self.__dict__[k]) else k
+        #                for k in self.__dict__.keys()
+        #                if not k.startswith('_')])
 
     def _original_datasets_list_str(self) -> str:
         """ Get a list of the identifying keys for each dataset
