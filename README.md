@@ -36,7 +36,7 @@ conda install --file requirements.txt
 pip install .
 ```
 
-# 🚮 Updating
+## 🚮 Updating
 
 To use the latest version of this repository:
 - Enter the `e3sm_co2_diag/` directory
