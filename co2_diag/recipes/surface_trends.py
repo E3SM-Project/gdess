@@ -6,15 +6,14 @@ This function parses:
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
+from dask.diagnostics import ProgressBar
 
 from co2_diag.recipes.utils import get_recipe_param
 import co2_diag.dataset_operations.obspack.surface_stations.collection as obspack_surface_collection_module
 import co2_diag.dataset_operations.cmip.collection as cmip_collection_module
 from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
-
-import matplotlib.pyplot as plt
-
-from dask.diagnostics import ProgressBar
+from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -80,7 +79,8 @@ def surface_trends(verbose=False,
     ds = new_self.stepB_preprocessed_datasets[model_name]
 
     # --- Obspack and CMIP are now handled Together ---
-    _logger.info('Applying selected bounds to CMIP..')
+    _logger.info('Selected bounds for CMIP:')
+    _logger.info('  -- model=%s', model_name)
     if verbose:
         ProgressBar().register()
     # Surface values are selected.
@@ -123,21 +123,25 @@ def surface_trends(verbose=False,
         y_mdl = da.values[~np.isnan(da.values)]
 
         # Plot
-        fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+        fig, ax = plt.subplots(1, 1, figsize=(6, 4))
         #
         ax.plot(obs_collection.stepA_original_datasets[station_code]['time'],
                 obs_collection.stepA_original_datasets[station_code]['co2'],
                 label=f'Obs [{station_code}]',
                 color='k')
         ax.plot(x_mdl, y_mdl,
-                label='model', color='r', linestyle='-')
+                label=f'Model [{model_name}]',
+                color='r', linestyle='-')
         #
         ax.set_xlim(np.datetime64('1980'), np.datetime64('2021'))
         ax.set_ylabel('$CO_2$ (ppm)')
         #
+        aesthetic_grid_no_spines(ax)
+        #
         plt.legend()
         #
         plt.tight_layout()
-        plt.savefig(savepath_figure)
+        #
+        mysavefig(fig=fig, plot_save_name=savepath_figure)
 
     return da
