@@ -58,6 +58,11 @@ pip uninstall bayota
 ```
 
 ## 📁 Project Structure
+
+#### Components
+
+<img src="./.images/structure_diagram_20210409.png" alt="components" width="607" height="384"/>
+
 #### Directory Tree
 ```
 e3sm_co2_diag
