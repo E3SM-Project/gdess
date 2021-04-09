@@ -165,7 +165,9 @@ class Collection(ObspackCollection):
 
         return new_self
 
-    def preprocess(self, datadir: str) -> None:
+    def preprocess(self, datadir: str,
+                   station_name: Union[str, list] = None
+                   ) -> None:
         """Set up the dataset that is common to every diagnostic
 
         Parameters
@@ -173,7 +175,16 @@ class Collection(ObspackCollection):
         datadir
         """
         _loader_logger.debug("Preprocessing ---")
-        self.stepA_original_datasets = DatasetDict(self._load_stations_by_namedict(self.station_dict, datadir))
+        if not station_name:
+            # Use predefined dictionary of stations at the top of this module
+            stations = self.station_dict
+        else:
+            # Create a subset of the station dictionary containing only the station name(s) passed in
+            if isinstance(station_name, str):
+                station_name = [station_name]
+            stations = dict((k, self.station_dict[k]) for k in station_name)
+
+        self.stepA_original_datasets = DatasetDict(self._load_stations_by_namedict(stations, datadir))
 
     @staticmethod
     def get_resampled_dataframe(dataset_obs,
