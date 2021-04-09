@@ -1,3 +1,10 @@
+""" This produces a plot of multidecadal trends of atmospheric CO2
+This function parses:
+ - observational data from Globalview+ surface stations
+ - model output from CMIP6
+================================================================================
+"""
+
 import numpy as np
 
 from co2_diag.recipes.utils import get_recipe_param
@@ -17,6 +24,8 @@ def surface_trends(verbose=False,
                    param_kw: dict = None,
                    ):
     """Execute a series of preprocessing steps and generate a diagnostic result.
+
+    Relevant co2_diag collections are instantiated and processed.
 
     Parameters
     ----------
@@ -57,6 +66,7 @@ def surface_trends(verbose=False,
     # Relevant co2_diag collections are instantiated and processed.
 
     # --- Surface observations ---
+    _logger.info('*Observations*')
     obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
     obs_collection.preprocess(datadir=ref_data)
     # Data are resampled
@@ -68,6 +78,7 @@ def surface_trends(verbose=False,
                                                 )
 
     # --- CMIP model output at surface ---
+    _logger.info('*CMIP model output*')
     cmip_collection = cmip_collection_module.Collection(verbose=verbose)
     new_self, loaded_from_file = cmip_collection._cmip_recipe_base(datastore='cmip6', verbose=verbose,
                                                                    load_from_file=None)
@@ -79,12 +90,14 @@ def surface_trends(verbose=False,
         ProgressBar().register()
     # Surface values are selected.
     ds_surface = ds['co2'].isel(plev=0)
+    _logger.info('  -- plev=0')
     # Only the first ensemble member is selected, if there are more than one
     # (TODO: enable the selection of a specific ensemble member)
     if 'member_id' in ds['co2'].coords:
         ds_onemember = (ds_surface
                         .isel(member_id=0)
                         .copy())
+        _logger.info('  -- member_id=0')
     else:
         ds_onemember = ds_surface.copy()
     # A specific lat/lon is selected, or a global mean is calculated.
@@ -97,11 +110,15 @@ def surface_trends(verbose=False,
               .where(ds.lat == mdl_cell['lat'], drop=True)
               .where(ds.lon == mdl_cell['lon'], drop=True)
               )
+        _logger.info('  -- lat=%s', mdl_cell['lat'])
+        _logger.info('  -- lon=%s', mdl_cell['lon'])
     elif station_or_globalmean == 'global':
         da = ds_onemember.mean(dim=('lat', 'lon'))
+        _logger.info('  -- mean over lat and lon dimensions')
     else:
         raise ValueError(f'Unexpected value <{station_or_globalmean}> for station_or_globalmean parameter')
     # Lazy computations are executed.
+    _logger.info('Applying selected bounds..')
     da = da.squeeze().compute()
 
     # --- Create Graphic ---

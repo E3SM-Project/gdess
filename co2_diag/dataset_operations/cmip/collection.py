@@ -339,6 +339,7 @@ class Collection(Multiset):
         _loader_logger.info("Preprocessing ---")
 
         _loader_logger.debug('Opening the ESM datastore catalog..')
+        _loader_logger.debug(' URL == %s', url)
         self.catalog_dataframe = intake.open_esm_datastore(url)
 
         _loader_logger.debug('Searching for model output subset..')
