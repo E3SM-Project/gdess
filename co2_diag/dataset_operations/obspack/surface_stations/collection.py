@@ -41,7 +41,6 @@ class Collection(ObspackCollection):
 
         self.df_combined_and_resampled = None
         # Define the stations that will be included in the dataset and available for diagnostic plots
-        _loader_logger.info("Loading data for %d observing stations..", len(station_dict))
         self.station_dict = station_dict.copy()
 
         super().__init__(verbose=verbose)
