@@ -12,10 +12,26 @@ def aesthetic_grid_no_spines(axis):
         spine.set_visible(False)
 
 
-def mysavefig(fig, results_dir, plot_save_name, bbox_artists):
-    today_str = datetime.today().strftime('%Y-%m-%d')
-    fig.savefig(results_dir + plot_save_name + '_' + today_str,
-                bbox_inches='tight', bbox_extra_artists=bbox_artists)
+def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
+    """Append today's date to the file path and save with a tight bbox
+
+    Parameters
+    ----------
+    fig
+    results_dir
+    plot_save_name
+    kwargs
+
+    Returns
+    -------
+
+    """
+    def append_date_before_extension(filename):
+        today_str = datetime.today().strftime('%Y-%m-%d')
+        return "{0}_{2}{1}".format(*os.path.splitext(filename) + (today_str,))
+
+    fig.savefig(append_date_before_extension(results_dir + plot_save_name),
+                bbox_inches='tight', **kwargs)
 
 
 def get_colormap(colormap, colormap_search_dir):
