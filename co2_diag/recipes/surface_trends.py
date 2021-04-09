@@ -57,21 +57,16 @@ def surface_trends(verbose=False,
     station_or_globalmean = get_recipe_param(param_kw, 'station_or_globalmean', default_value='station')
     # For a single station, we also check that it is accounted for in the class attribute dict.
     station_code = get_recipe_param(param_kw, 'station_code', default_value='mlo')
-    if station_code in obspack_surface_collection_module.station_dict:
-        sc = station_code
-    else:
+    if station_code not in obspack_surface_collection_module.station_dict:
         raise ValueError('Unexpected station name <%s>', param_kw['stationshortname'])
-
-
-    # Relevant co2_diag collections are instantiated and processed.
 
     # --- Surface observations ---
     _logger.info('*Observations*')
     obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
-    obs_collection.preprocess(datadir=ref_data)
+    obs_collection.preprocess(datadir=ref_data, station_name=station_code)
     # Data are resampled
     obs_collection.df_combined_and_resampled = (obs_collection
-                                                .get_resampled_dataframe(obs_collection.stepA_original_datasets[sc],
+                                                .get_resampled_dataframe(obs_collection.stepA_original_datasets[station_code],
                                                                          timestart=np.datetime64(start_yr),
                                                                          timeend=np.datetime64(end_yr)
                                                                          ).reset_index()
@@ -103,8 +98,8 @@ def surface_trends(verbose=False,
     # A specific lat/lon is selected, or a global mean is calculated.
     if station_or_globalmean == 'station':
         mdl_cell = get_closest_mdl_cell_dict(new_self.stepB_preprocessed_datasets[model_name],
-                                             lat=obs_collection.station_dict[sc]['lat'],
-                                             lon=obs_collection.station_dict[sc]['lon'],
+                                             lat=obs_collection.station_dict[station_code]['lat'],
+                                             lon=obs_collection.station_dict[station_code]['lon'],
                                              coords_as_dimensions=True)
         da = (ds_onemember
               .where(ds.lat == mdl_cell['lat'], drop=True)
@@ -130,9 +125,10 @@ def surface_trends(verbose=False,
         # Plot
         fig, ax = plt.subplots(1, 1, figsize=(4, 4))
         #
-        ax.plot(obs_collection.stepA_original_datasets['mlo']['time'],
-                obs_collection.stepA_original_datasets['mlo']['co2'],
-                label='obs', color='k')
+        ax.plot(obs_collection.stepA_original_datasets[station_code]['time'],
+                obs_collection.stepA_original_datasets[station_code]['co2'],
+                label=f'Obs [{station_code}]',
+                color='k')
         ax.plot(x_mdl, y_mdl,
                 label='model', color='r', linestyle='-')
         #
