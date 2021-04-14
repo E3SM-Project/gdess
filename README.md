@@ -1,5 +1,6 @@
 # e3sm_co2_diag
-Helper code for evaluating atmospheric CO<sub>2</sub> in E3SM
+Generate diagnostics to help evaluate atmospheric CO<sub>2</sub> 
+as simulated by the Energy Exascale Earth System Model (E3SM)
 
 ## Usage
 
@@ -9,9 +10,9 @@ for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3S
 
 ## Installation
 
-###### 👥  Clone this repository to the location of your choice
-
-(Most work will be done in the 'develop' branch, which we `checkout` before pulling the latest version)
+👥 Clone this repository to the location of your choice. 
+*Note: most work will be done in the 'develop' branch, 
+which we `checkout` before pulling the latest version.*
 ```shell script
 git clone https://github.com/dkauf42/e3sm_co2_diag.git ~/e3sm_co2_diag
 cd ~/e3sm_co2_diag/
@@ -19,10 +20,9 @@ git checkout develop
 git pull
 ```
 
-###### 🌍  Create conda environment and install dependencies:
-
-💥 Important: Replace “myenv” with the preferred name of your environment, e.g. "e3sm_co2_diagnostics". 
-From here on we’ll always use “myenv” to refer to our environment.
+🌍 Create conda environment and install dependencies. 
+*Note: Replace “myenv” with the preferred name of your environment, e.g. "e3sm_co2_diagnostics". 
+From here on we’ll use “myenv” to refer to our environment.*
 
 ```shell script
 conda create -n "myenv" python=3.8
@@ -31,12 +31,12 @@ conda config --add channels conda-forge
 conda install --file requirements.txt
 ```
 
-###### 💾  Install the package:
+💾 Install the package:
 ```shell script
 pip install .
 ```
 
-## 🚮 Updating
+## Updating
 
 To use the latest version of this repository:
 - Enter the `e3sm_co2_diag/` directory
@@ -49,12 +49,12 @@ To use the latest version of this repository:
    pip install . --upgrade
    ```
 
-## 🚮 Uninstalling
+## Uninstalling
 
-To uninstall the python packages from your environment (site-packages):
+🚮 To remove this package from your environment:
 
 ```
-pip uninstall bayota
+pip uninstall co2_diag
 ```
 
 ## 📁 Project Structure
@@ -112,6 +112,8 @@ Major dependencies:
 * [pandas](https://pandas.pydata.org/)
 * [NumPy](https://www.numpy.org)
 * [xarray](http://xarray.pydata.org/en/stable/)
+
+Although not a dependency, ideas were also drawn from [xclim: Climate indices computations](https://github.com/Ouranosinc/xclim).
 
 Funding Acknowledgment:
 
