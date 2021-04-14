@@ -175,6 +175,7 @@ class Collection(ObspackCollection):
         Parameters
         ----------
         datadir
+        station_name
         """
         _loader_logger.debug("Preprocessing ---")
         if not station_name:
@@ -204,7 +205,7 @@ class Collection(ObspackCollection):
         -------
 
         """
-
+        _loader_logger.debug('Resampling obspack observations..')
         # --- OBSERVATIONS ---
         # Time period is selected.
         ds_sub_obs = co2_diag.operations.time.select_between(dataset=dataset_obs,
@@ -235,6 +236,9 @@ class Collection(ObspackCollection):
                     .reset_index()
                     .loc[:, ['time', 'obs_original_resolution', 'obs_resampled_resolution']]
                     )
+
+        _loader_logger.debug('  First resampled row: %s', df_prepd.iloc[0, :])
+        _loader_logger.debug('Done.')
 
         return df_prepd
 
@@ -321,6 +325,10 @@ class Collection(ObspackCollection):
                               .rename({'value': 'co2'})
                               .pipe(co2_molfrac_to_ppm, co2_var_name='co2')
                               )
+            if i == 0:
+                _loader_logger.debug("  The first DataSet has a time range of <%s> to <%s>.",
+                                     ds_obs_dict[k]['time'][0].item(), ds_obs_dict[k]['time'][-1].item())
+        _loader_logger.debug("Done.")
 
         return ds_obs_dict
 
