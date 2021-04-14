@@ -3,9 +3,9 @@ import xarray as xr
 from typing import Union
 
 from co2_diag import validate_verbose
-import co2_diag.data_sources as co2ops
-from co2_diag.data_sources.multiset import Multiset
-from co2_diag.data_sources.datasetdict import DatasetDict
+import co2_diag.data_source as co2ops
+from co2_diag.data_source.multiset import Multiset
+from co2_diag.data_source.datasetdict import DatasetDict
 
 import logging
 _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))

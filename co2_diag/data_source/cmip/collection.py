@@ -5,8 +5,8 @@ import warnings
 from typing import Union
 
 from co2_diag import validate_verbose
-from co2_diag.data_sources.multiset import Multiset
-from co2_diag.data_sources.datasetdict import DatasetDict
+from co2_diag.data_source.multiset import Multiset
+from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.data_operation_utils.geographic import get_closest_mdl_cell_dict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig

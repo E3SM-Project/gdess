@@ -2,4 +2,4 @@
 from . import load
 from . import subset
 from . import anomalies
-from co2_diag.data_sources.obspack import aircraft, surface_stations
+from co2_diag.data_source.obspack import aircraft, surface_stations

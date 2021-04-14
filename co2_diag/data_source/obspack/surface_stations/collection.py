@@ -5,10 +5,10 @@ import pandas as pd
 from typing import Union
 
 from co2_diag import validate_verbose
-import co2_diag.data_sources as co2ops
-from co2_diag.data_sources.obspack.obspack_collection import ObspackCollection
-from co2_diag.data_sources.multiset import Multiset
-from co2_diag.data_sources.datasetdict import DatasetDict
+import co2_diag.data_source as co2ops
+from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
+from co2_diag.data_source.multiset import Multiset
+from co2_diag.data_source.datasetdict import DatasetDict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe
@@ -204,10 +204,10 @@ class Collection(ObspackCollection):
 
         # --- OBSERVATIONS ---
         # Time period is selected.
-        ds_sub_obs = co2_diag.data_operation_utils.time.select_between(dataset=dataset_obs,
-                                                                       timestart=timestart, timeend=timeend,
-                                                                       varlist=['time', 'co2'],
-                                                                       drop_dups=True)
+        ds_sub_obs = co2_diag.operations.time.select_between(dataset=dataset_obs,
+                                                             timestart=timestart, timeend=timeend,
+                                                             varlist=['time', 'co2'],
+                                                             drop_dups=True)
         # Dataset converted to DataFrame.
         df_prepd_obs_orig = ds_sub_obs.to_dataframe().reset_index()
         df_prepd_obs_orig.rename(columns={'co2': 'obs_original_resolution'}, inplace=True)
