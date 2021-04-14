@@ -2,7 +2,7 @@ import re
 import glob
 import numpy as np
 import pandas as pd
-from typing import Union
+import cftime
 
 from co2_diag import validate_verbose
 import co2_diag.data_source as co2ops
@@ -94,8 +94,8 @@ class Collection(ObspackCollection):
         new_self.preprocess(datadir=ref_data, station_name=sc)
         # Data are resampled
         new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
-                                                                              timestart=np.datetime64(start_yr),
-                                                                              timeend=np.datetime64(end_yr)
+                                                                              timestart=cftime.DatetimeGregorian(int(start_yr), 1, 1),
+                                                                              timeend=cftime.DatetimeGregorian(int(end_yr), 1, 1)
                                                                               ).reset_index()
 
         # --- Plotting ---
@@ -152,8 +152,8 @@ class Collection(ObspackCollection):
         selection = {'time': slice(start_yr, end_yr)}
         # Data are resampled
         new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
-                                                                              timestart=np.datetime64(start_yr),
-                                                                              timeend=np.datetime64(end_yr)
+                                                                              timestart=cftime.DatetimeGregorian(int(start_yr), 1, 1),
+                                                                              timeend=cftime.DatetimeGregorian(int(end_yr), 1, 1)
                                                                               ).reset_index()
 
         df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(new_self.stepA_original_datasets[sc],
