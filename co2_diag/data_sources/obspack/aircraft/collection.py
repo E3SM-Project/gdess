@@ -13,11 +13,11 @@ import cartopy.crs as ccrs
 from adjustText import adjust_text
 
 from co2_diag import validate_verbose
-import co2_diag.dataset_operations as co2ops
-from co2_diag.dataset_operations.obspack.obspack_collection import ObspackCollection
-from co2_diag.dataset_operations.multiset import Multiset
+import co2_diag.data_sources as co2ops
+from co2_diag.data_sources.obspack.obspack_collection import ObspackCollection
+from co2_diag.data_sources.multiset import Multiset
 from co2_diag.recipes.utils import benchmark_recipe
-from co2_diag.dataset_operations.datasetdict import DatasetDict
+from co2_diag.data_sources.datasetdict import DatasetDict
 from co2_diag.graphics.mapping import make_my_base_map
 
 import logging

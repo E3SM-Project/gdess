@@ -1,8 +1,12 @@
 from datetime import datetime
 
+import datetime as pydt
+from typing import Sequence
+
 import numpy as np
 import pandas as pd
 import xarray as xr
+import cftime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -24,6 +28,34 @@ def to_datetimeindex(dataset: xr.Dataset
     else:
         dataset['time'] = dataset.indexes['time'].to_datetimeindex()
         return dataset
+
+
+def ensure_cftime_array(time: Sequence):
+    """Convert an input 1D array to an array of cftime objects.
+
+    Parameters
+    ----------
+    time
+
+    Returns
+    -------
+    Python's datetime are converted to cftime.DatetimeGregorian.
+
+    Raises
+    ------
+    ValueError when unable to cast the input.
+    """
+    if isinstance(time, xr.DataArray):
+        time = time.indexes["time"]
+    elif isinstance(time, np.ndarray):
+        time = pd.DatetimeIndex(time)
+    if isinstance(time[0], cftime.datetime):
+        return time
+    if isinstance(time[0], pydt.datetime):
+        return np.array(
+            [cftime.DatetimeGregorian(*ele.timetuple()[:6]) for ele in time]
+        )
+    raise ValueError("Unable to cast array to cftime dtype")
 
 
 def select_between(dataset: xr.Dataset,

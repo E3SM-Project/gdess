@@ -3,10 +3,10 @@ from typing import Union
 
 from co2_diag import validate_verbose
 
-import co2_diag.dataset_operations as co2ops
-from co2_diag.dataset_operations.e3sm.calculation import getPMID
-from co2_diag.dataset_operations.multiset import Multiset
-from co2_diag.dataset_operations.datasetdict import DatasetDict
+import co2_diag.data_sources as co2ops
+from co2_diag.data_sources.e3sm.calculation import getPMID
+from co2_diag.data_sources.multiset import Multiset
+from co2_diag.data_sources.datasetdict import DatasetDict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
