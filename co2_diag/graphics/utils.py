@@ -53,6 +53,7 @@ def limits_with_zero(t: tuple):
     else:
         raise ValueError("Unexpected condition")
 
+
 def get_colormap(colormap, colormap_search_dir):
     if not colormap:
         colormap = "WhiteBlueGreenYellowRed.rgb"
