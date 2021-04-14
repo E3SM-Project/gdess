@@ -315,7 +315,7 @@ class Collection(ObspackCollection):
 
         # Wrangle -- Do the things to the Obs dataset.
         _loader_logger.debug("Converting datetime format and units..")
-        for k, v in ds_obs_dict.items():
+        for i, (k, v) in enumerate(ds_obs_dict.items()):
             _loader_logger.debug(k)
             ds_obs_dict[k] = (v
                               .pipe(to_datetime64)
