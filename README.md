@@ -67,38 +67,45 @@ pip uninstall co2_diag
 ```
 e3sm_co2_diag
 │
-├── README.md                <- Top-level README for users/developers of this project.
-├── requirements.txt         <- Package dependencies.
+├── README.md                <- Top-level README for users/developers of this project
+├── requirements.txt         <- Package dependencies
 │
-├── notebooks                <- Example jupyter notebooks to see diagnostic capabilities of co2_diag.
+├── notebooks                <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
 │   └──demo/
 │
-├── co2_diag                 <- *Python package* for handling co2 diagnostics.
+├── co2_diag                 <- *Python package* for handling co2 diagnostics
 │   │
-│   ├── config               <- Configuration options.
-│   │   └── log_config.json
+│   ├── recipes              <- Generate repeatable diagnostics that span multiple data sources available as recipes 
+│   │   ├── surface_trends.py
+│   │   ├── utils.py
+│   │   └── ...
 │   │
-│   ├── dataset_operations   <- Modules to load, parse, and manipulate data from various sources.
+│   ├── data_source          <- Modules to load, parse, and manipulate data from a particular source
 │   │   ├── cmip/
 │   │   ├── e3sm/
 │   │   ├── obspack/
+│   │   ├── datasetdict.py
 │   │   ├── multiset.py
 │   │   └── ...
 │   │
-│   ├── formatters           <- Manipulate formatting in desired ways.
+│   ├── operations           <- Methods for manipulating datasets (e.g. spatially or temporally) 
+│   │   ├── geographic/
+│   │   ├── time/
+│   │   ├── convert/
+│   │   └── ...
+│   │
+│   ├── formatters           <- Manipulate formatting in desired ways
 │   │   ├── nums.py
 │   │   ├── strings.py
 │   │   └── ...
 │   │
-│   ├── graphics             <- Make repeated graphic actions available. 
+│   ├── graphics             <- Make repeated graphic actions available 
 │   │   ├── mapping.py
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   └── recipes              <- Make repeated diagnostics that span multiple data sources available as recipes. 
-│       ├── surface_trends.py
-│       ├── utils.py
-│       └── ...
+│   └── config               <- Configuration options
+│       └── log_config.json
 │
 │
 ├── MANIFEST.in
