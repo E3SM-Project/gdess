@@ -4,16 +4,16 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-
 import numpy as np
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
 
 from co2_diag.recipes.utils import get_recipe_param
-import co2_diag.dataset_operations.obspack.surface_stations.collection as obspack_surface_collection_module
-import co2_diag.dataset_operations.cmip.collection as cmip_collection_module
-from co2_diag.dataset_operations.geographic import get_closest_mdl_cell_dict
-from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
+import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
+import co2_diag.data_source.cmip.collection as cmip_collection_module
+from co2_diag.operations.geographic import get_closest_mdl_cell_dict
+from co2_diag.operations.time import ensure_dataset_datetime64
+from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -51,8 +51,8 @@ def surface_trends(verbose=False,
     _logger.debug("Parsing parameter options...")
     ref_data = get_recipe_param(param_kw, 'ref_data', default_value=None)
     model_name = get_recipe_param(param_kw, 'model_name', default_value='GFDL')
-    start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
-    end_yr = get_recipe_param(param_kw, 'end_yr', default_value="2015")
+    start_datetime = np.datetime64(get_recipe_param(param_kw, 'start_yr', default_value="1960"), 'D')
+    end_datetime = np.datetime64(get_recipe_param(param_kw, 'end_yr', default_value="2015"), 'D')
     savepath_figure = get_recipe_param(param_kw, 'savepath_figure', default_value=None)
     station_or_globalmean = get_recipe_param(param_kw, 'station_or_globalmean', default_value='station')
     # For a single station, we also check that it is accounted for in the class attribute dict.
@@ -65,64 +65,72 @@ def surface_trends(verbose=False,
     _logger.info('*Processing Observations*')
     obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
     obs_collection.preprocess(datadir=ref_data, station_name=station_code)
-    # Data are resampled
-    obs_collection.df_combined_and_resampled = (obs_collection
-                                                .get_resampled_dataframe(obs_collection.stepA_original_datasets[station_code],
-                                                                         timestart=np.datetime64(start_yr),
-                                                                         timeend=np.datetime64(end_yr)
-                                                                         ).reset_index()
-                                                )
+    ds_obs = obs_collection.stepA_original_datasets[station_code]
+    _logger.info('%s', obs_collection.station_dict[station_code])
 
     # --- CMIP model output ---
     _logger.info('*Processing CMIP model output*')
     cmip_collection = cmip_collection_module.Collection(verbose=verbose)
     new_self, loaded_from_file = cmip_collection._cmip_recipe_base(datastore='cmip6', verbose=verbose,
                                                                    load_from_file=None)
-    ds = new_self.stepB_preprocessed_datasets[model_name]
+    ds_mdl = new_self.stepB_preprocessed_datasets[model_name]
 
     # --- Obspack and CMIP are now handled Together ---
-    _logger.info('Selected bounds for CMIP:')
-    _logger.info('  -- model=%s', model_name)
     if verbose:
         ProgressBar().register()
-    # Surface values are selected.
-    ds_surface = ds['co2'].isel(plev=0)
-    _logger.info('  -- plev=0')
+    _logger.info('Selected bounds for both:')
+
+    # Time boundaries
+    ds_obs = ensure_dataset_datetime64(ds_obs)
+    ds_obs = ds_obs.where(ds_obs.time >= start_datetime, drop=True)
+    ds_obs = ds_obs.where(ds_obs.time <= end_datetime, drop=True)
+    #
+    ds_mdl = ensure_dataset_datetime64(ds_mdl)
+    ds_mdl = ds_mdl.where(ds_mdl.time >= start_datetime, drop=True)
+    ds_mdl = ds_mdl.where(ds_mdl.time <= end_datetime, drop=True)
+    _logger.info('  -- time>=%s  &  time<=%s', start_datetime, end_datetime)
+
+    _logger.info('Selected bounds for CMIP:')
+    _logger.info('  -- model=%s', model_name)
     # Only the first ensemble member is selected, if there are more than one
     # (TODO: enable the selection of a specific ensemble member)
-    if 'member_id' in ds['co2'].coords:
-        ds_onemember = (ds_surface
-                        .isel(member_id=0)
-                        .copy())
+    if 'member_id' in ds_mdl['co2'].coords:
+        ds_mdl = (ds_mdl
+                  .isel(member_id=0)
+                  .copy())
         _logger.info('  -- member_id=0')
     else:
-        ds_onemember = ds_surface.copy()
+        ds_mdl = ds_mdl.copy()
+
+    # Surface values are selected.
+    ds_mdl = ds_mdl['co2'].isel(plev=0)
+    _logger.info('  -- plev=0')
+
     # A specific lat/lon is selected, or a global mean is calculated.
     if station_or_globalmean == 'station':
         mdl_cell = get_closest_mdl_cell_dict(new_self.stepB_preprocessed_datasets[model_name],
                                              lat=obs_collection.station_dict[station_code]['lat'],
                                              lon=obs_collection.station_dict[station_code]['lon'],
                                              coords_as_dimensions=True)
-        da = (ds_onemember
-              .where(ds.lat == mdl_cell['lat'], drop=True)
-              .where(ds.lon == mdl_cell['lon'], drop=True)
-              )
+        da_mdl = (ds_mdl
+                  .where(ds_mdl.lat == mdl_cell['lat'], drop=True)
+                  .where(ds_mdl.lon == mdl_cell['lon'], drop=True)
+                  )
         _logger.info('  -- lat=%s', mdl_cell['lat'])
         _logger.info('  -- lon=%s', mdl_cell['lon'])
     elif station_or_globalmean == 'global':
-        da = ds_onemember.mean(dim=('lat', 'lon'))
+        da_mdl = ds_mdl.mean(dim=('lat', 'lon'))
         _logger.info('  -- mean over lat and lon dimensions')
     else:
         raise ValueError(f'Unexpected value <{station_or_globalmean}> for station_or_globalmean parameter')
     # Lazy computations are executed.
-    _logger.info('Applying selected bounds..')
-    da = da.squeeze().compute()
+    _logger.info('Applying selected bounds...')
+    da_mdl = da_mdl.squeeze().compute()
+    _logger.info('DONE.')
 
-    # --- Create Graphic ---
     if savepath_figure:
-        dt_time = np.array([np.datetime64(item) for item in da['time'].values])
-        x_mdl = dt_time[~np.isnan(da.values)]
-        y_mdl = da.values[~np.isnan(da.values)]
+        # --- Create Graphic ---
+        fig, ax = plt.subplots(1, 1, figsize=(6, 4))
 
         # Plot
         fig, ax = plt.subplots(1, 1, figsize=(6, 4))
@@ -137,7 +145,6 @@ def surface_trends(verbose=False,
         #
         ax.set_xlim(np.datetime64('1980'), np.datetime64('2021'))
         ax.set_ylabel('$CO_2$ (ppm)')
-        #
         aesthetic_grid_no_spines(ax)
         #
         plt.legend()
@@ -146,4 +153,4 @@ def surface_trends(verbose=False,
         #
         mysavefig(fig=fig, plot_save_name=savepath_figure)
 
-    return da
+    return da_mdl
