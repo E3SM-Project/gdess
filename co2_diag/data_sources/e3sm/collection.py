@@ -3,7 +3,6 @@ from typing import Union
 
 from co2_diag import validate_verbose
 
-import co2_diag.data_sources as co2ops
 from co2_diag.data_sources.e3sm.calculation import getPMID
 from co2_diag.data_sources.multiset import Multiset
 from co2_diag.data_sources.datasetdict import DatasetDict
@@ -146,8 +145,8 @@ class Collection(Multiset):
         dataset = (dataset
                    .set_coords(['time', 'lat', 'lon', 'PMID'])
                    .sortby(['time'])
-                   .pipe(co2ops.time.to_datetimeindex)
-                   .pipe(co2ops.convert.co2_kgfrac_to_ppm, co2_var_name='CO2')
+                   .pipe(co2_diag.data_operation_utils.time.to_datetimeindex)
+                   .pipe(co2_diag.data_operation_utils.convert.co2_kgfrac_to_ppm, co2_var_name='CO2')
                    )
         return dataset
 

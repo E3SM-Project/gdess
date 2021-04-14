@@ -5,10 +5,9 @@ import warnings
 from typing import Union
 
 from co2_diag import validate_verbose
-import co2_diag.data_sources as co2ops
 from co2_diag.data_sources.multiset import Multiset
 from co2_diag.data_sources.datasetdict import DatasetDict
-from co2_diag.data_sources.geographic import get_closest_mdl_cell_dict
+from co2_diag.data_operation_utils.geographic import get_closest_mdl_cell_dict
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
@@ -377,7 +376,7 @@ class Collection(Multiset):
         self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
         # Convert CO2 units to ppm
         _loader_logger.debug("Converting units to ppm..")
-        self.stepB_preprocessed_datasets.apply_function_to_all(co2ops.convert.co2_molfrac_to_ppm,
+        self.stepB_preprocessed_datasets.apply_function_to_all(co2_diag.data_operation_utils.convert.co2_molfrac_to_ppm,
                                                                co2_var_name='co2',
                                                                inplace=True)
         _loader_logger.debug("all converted.")
@@ -441,7 +440,7 @@ class Collection(Multiset):
                     # Warnings are raised when converting CFtimes to datetimes, because subtle errors.
                     with warnings.catch_warnings():
                         warnings.simplefilter("ignore")
-                        darray = co2ops.time.to_datetimeindex(darray)
+                        darray = co2_diag.data_operation_utils.time.to_datetimeindex(darray)
 
                 ax.plot(darray['time'], darray.to_array().squeeze(), label=f"{k} ({m})",
                         color=my_cmap.colors[color_count], alpha=0.6)

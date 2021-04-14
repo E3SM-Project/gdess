@@ -1,6 +1,6 @@
 import xarray as xr
 
-from ..geographic import get_closest_mdl_cell_dict
+from co2_diag.data_operation_utils.geographic import get_closest_mdl_cell_dict
 
 
 def latlon_select(xr_ds: xr.Dataset,

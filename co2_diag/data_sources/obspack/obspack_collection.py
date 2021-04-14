@@ -75,12 +75,12 @@ class ObspackCollection(Multiset):
         # Do the things to the Obs dataset.
         for k, v in ds_obs_dict.items():
             ds_obs_dict[k] = (v
-                              .pipe(co2ops.time.to_datetime64)
+                              .pipe(co2_diag.data_operation_utils.time.to_datetime64)
                               .set_coords(['time', 'time_decimal', 'latitude', 'longitude', 'altitude'])
                               .sortby(['time'])
                               #                  .swap_dims({"obs": "time"})
                               .rename({'value': 'co2'})
-                              .pipe(co2ops.convert.co2_molfrac_to_ppm, co2_var_name='co2')
+                              .pipe(co2_diag.data_operation_utils.convert.co2_molfrac_to_ppm, co2_var_name='co2')
                               .set_index(obs=['time', 'longitude', 'latitude', 'altitude'])
                               )
         #### Concatenate all sites into one large dataset, for mapping or other combined analysis purposes

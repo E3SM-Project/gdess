@@ -83,7 +83,7 @@ class Multiset:
     def get_anomaly_dataframes(a_dataarray, varname: str):
         if not isinstance(a_dataarray['time'].values[0], np.datetime64):
             # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
-            a_dataarray = co2ops.time.to_datetimeindex(a_dataarray)
+            a_dataarray = co2_diag.data_operation_utils.time.to_datetimeindex(a_dataarray)
         # Calculate
         df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(a_dataarray, varname=varname)
         # Reformat data structures for plotting

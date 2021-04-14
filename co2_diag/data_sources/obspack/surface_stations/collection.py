@@ -204,10 +204,10 @@ class Collection(ObspackCollection):
 
         # --- OBSERVATIONS ---
         # Time period is selected.
-        ds_sub_obs = co2ops.time.select_between(dataset=dataset_obs,
-                                                timestart=timestart, timeend=timeend,
-                                                varlist=['time', 'co2'],
-                                                drop_dups=True)
+        ds_sub_obs = co2_diag.data_operation_utils.time.select_between(dataset=dataset_obs,
+                                                                       timestart=timestart, timeend=timeend,
+                                                                       varlist=['time', 'co2'],
+                                                                       drop_dups=True)
         # Dataset converted to DataFrame.
         df_prepd_obs_orig = ds_sub_obs.to_dataframe().reset_index()
         df_prepd_obs_orig.rename(columns={'co2': 'obs_original_resolution'}, inplace=True)
@@ -311,12 +311,12 @@ class Collection(ObspackCollection):
         for k, v in ds_obs_dict.items():
             _loader_logger.debug(k)
             ds_obs_dict[k] = (v
-                              .pipe(co2ops.time.to_datetime64)
+                              .pipe(co2_diag.data_operation_utils.time.to_datetime64)
                               .set_coords(['time', 'time_decimal', 'latitude', 'longitude', 'altitude'])
                               .sortby(['time'])
                               .swap_dims({"obs": "time"})
                               .rename({'value': 'co2'})
-                              .pipe(co2ops.convert.co2_molfrac_to_ppm, co2_var_name='co2')
+                              .pipe(co2_diag.data_operation_utils.convert.co2_molfrac_to_ppm, co2_var_name='co2')
                               )
 
         return ds_obs_dict
