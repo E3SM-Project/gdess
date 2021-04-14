@@ -34,6 +34,25 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
                 bbox_inches='tight', **kwargs)
 
 
+def limits_with_zero(t: tuple):
+    """Take a 2-tuple of axis limits
+    If zero is not between them, then replace the one closest to zero with zero.
+
+    Note: we assume that the value closer to zero will be first (last) when the values are both positive (negative)
+    """
+    if (not t) | (len(t) > 2) | (not all([isinstance(x, (int, float)) for x in t])):
+        raise ValueError("Unexpected input format")
+
+    zero_crossings = np.where(np.diff(np.sign(t)))[0]
+    if len(zero_crossings) > 0:
+        return t  # tuple already crosses or contains zero
+    elif (t[0] > 0) & (t[1] > 0):
+        return 0, t[1]
+    elif (t[0] < 0) & (t[1] < 0):
+        return t[0], 0
+    else:
+        raise ValueError("Unexpected condition")
+
 def get_colormap(colormap, colormap_search_dir):
     if not colormap:
         colormap = "WhiteBlueGreenYellowRed.rgb"
