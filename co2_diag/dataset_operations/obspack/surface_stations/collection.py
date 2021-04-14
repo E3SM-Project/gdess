@@ -189,6 +189,18 @@ class Collection(ObspackCollection):
     def get_resampled_dataframe(dataset_obs,
                                 timestart: np.datetime64,
                                 timeend: np.datetime64) -> pd.DataFrame:
+        """Get data resampled at monthly intervals
+
+        Parameters
+        ----------
+        dataset_obs
+        timestart
+        timeend
+
+        Returns
+        -------
+
+        """
 
         # --- OBSERVATIONS ---
         # Time period is selected.
