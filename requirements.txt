@@ -5,6 +5,7 @@ numpy
 pandas
 dask
 xarray
+cftime
 
 # Graphics packages
 matplotlib
