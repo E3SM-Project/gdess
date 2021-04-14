@@ -80,7 +80,7 @@ e3sm_co2_diag
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   ├── data_source          <- Modules to load, parse, and manipulate data from a particular source
+│   ├── data_source          <- Load, parse, and manipulate data from a particular source
 │   │   ├── cmip/
 │   │   ├── e3sm/
 │   │   ├── obspack/
@@ -88,7 +88,7 @@ e3sm_co2_diag
 │   │   ├── multiset.py
 │   │   └── ...
 │   │
-│   ├── operations           <- Methods for manipulating datasets (e.g. spatially or temporally) 
+│   ├── operations           <- Manipulate datasets (e.g. spatially or temporally) 
 │   │   ├── geographic/
 │   │   ├── time/
 │   │   ├── convert/
