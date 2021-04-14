@@ -208,10 +208,10 @@ class Collection(ObspackCollection):
         _loader_logger.debug('Resampling obspack observations..')
         # --- OBSERVATIONS ---
         # Time period is selected.
-        ds_sub_obs = co2_diag.operations.time.select_between(dataset=dataset_obs,
-                                                             timestart=timestart, timeend=timeend,
-                                                             varlist=['time', 'co2'],
-                                                             drop_dups=True)
+        ds_sub_obs = select_between(dataset=dataset_obs,
+                                    timestart=timestart, timeend=timeend,
+                                    varlist=['time', 'co2'],
+                                    drop_dups=True)
         # Dataset converted to DataFrame.
         df_prepd_obs_orig = ds_sub_obs.to_dataframe().reset_index()
         df_prepd_obs_orig.rename(columns={'co2': 'obs_original_resolution'}, inplace=True)
