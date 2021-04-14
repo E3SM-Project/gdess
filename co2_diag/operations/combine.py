@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from co2_diag.data_operation_utils.time import select_between
+from co2_diag.operations.time import select_between
 
 def get_combined_dataframe(dataset_ref: xr.Dataset,
                            dataset_e3sm: xr.Dataset,
