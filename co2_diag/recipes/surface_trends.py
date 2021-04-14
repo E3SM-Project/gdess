@@ -55,6 +55,7 @@ def surface_trends(verbose=False,
     start_datetime = np.datetime64(get_recipe_param(param_kw, 'start_yr', default_value="1960"), 'D')
     end_datetime = np.datetime64(get_recipe_param(param_kw, 'end_yr', default_value="2015"), 'D')
     savepath_figure = get_recipe_param(param_kw, 'savepath_figure', default_value=None)
+    absolute_or_difference = get_recipe_param(param_kw, 'absolute_or_difference', default_value='absolute')
     station_or_globalmean = get_recipe_param(param_kw, 'station_or_globalmean', default_value='station')
     # For a single station, we also check that it is accounted for in the class attribute dict.
     station_code = get_recipe_param(param_kw, 'station_code', default_value='mlo')
@@ -133,18 +134,31 @@ def surface_trends(verbose=False,
         # --- Create Graphic ---
         fig, ax = plt.subplots(1, 1, figsize=(6, 4))
 
-        # Plot
-        fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-        #
-        ax.plot(obs_collection.stepA_original_datasets[station_code]['time'],
-                obs_collection.stepA_original_datasets[station_code]['co2'],
-                label=f'Obs [{station_code}]',
-                color='k')
-        ax.plot(x_mdl, y_mdl,
-                label=f'Model [{model_name}]',
-                color='r', linestyle='-')
-        #
-        ax.set_xlim(np.datetime64('1980'), np.datetime64('2021'))
+        if absolute_or_difference == 'difference':
+            # Values at the same time
+            da_mdl_rs = da_mdl.resample(time="1MS").mean()
+            da_obs_rs = ds_obs.resample(time="1MS").mean()
+            #
+            da_TestMinusRef = (da_mdl_rs - da_obs_rs['co2']).dropna(dim='time')
+            #
+            # Plot
+            ax.plot(da_TestMinusRef['time'], da_TestMinusRef, label='model - obs',
+                    marker='.', linestyle='none')
+            #
+            ax.set_ylim(limits_with_zero(ax.get_ylim()))
+
+        else:
+            x_mdl = da_mdl['time'][~np.isnan(da_mdl.values)]
+            y_mdl = da_mdl.values[~np.isnan(da_mdl.values)]
+            #
+            # Plot
+            ax.plot(ds_obs['time'], ds_obs['co2'],
+                    label=f'Obs [{station_code}]',
+                    color='k')
+            ax.plot(x_mdl, y_mdl,
+                    label=f'Model [{model_name}]',
+                    color='r', linestyle='-')
+
         ax.set_ylabel('$CO_2$ (ppm)')
         aesthetic_grid_no_spines(ax)
         #
