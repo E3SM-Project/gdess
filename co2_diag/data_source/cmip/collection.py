@@ -337,7 +337,7 @@ class Collection(Multiset):
         ----------
         url
         """
-        _loader_logger.info("Preprocessing ---")
+        _loader_logger.debug("Preprocessing...")
 
         _loader_logger.debug('Opening the ESM datastore catalog..')
         _loader_logger.debug(' URL == %s', url)
@@ -350,7 +350,7 @@ class Collection(Multiset):
         _loader_logger.debug('Loading model datasets into memory..')
         self._load_datasets_from_search()
 
-        _loader_logger.info("Preprocessing done.")
+        _loader_logger.debug("Preprocessing done.")
 
     def _search(self, **query) -> intake_esm.core.esm_datastore:
         """Wrapper for intake's catalog search.
@@ -373,7 +373,10 @@ class Collection(Multiset):
     def _load_datasets_from_search(self) -> None:
         """Load datasets into memory."""
         # self.stepA_original_datasets = self.latest_searched_model_catalog.to_dataset_dict()
-        self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict())
+        progressbar = True
+        if _loader_logger.level > 10:  # 10 is debug, 20 is info, etc.
+            progressbar = False
+        self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict(progressbar=progressbar))
 
         self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
         # Convert CO2 units to ppm
@@ -383,8 +386,8 @@ class Collection(Multiset):
                                                                inplace=True)
         _loader_logger.debug("all converted.")
         # self.convert_all_to_ppm()
-        _loader_logger.info("Model keys:")
-        _loader_logger.info('\n'.join(self.stepA_original_datasets.keys()))
+        _loader_logger.debug("Model keys:")
+        _loader_logger.debug('\n'.join(self.stepA_original_datasets.keys()))
 
     # def convert_all_to_ppm(self):
     #     # Convert CO2 units to ppm

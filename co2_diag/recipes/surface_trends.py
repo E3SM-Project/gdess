@@ -46,8 +46,9 @@ def surface_trends(verbose=False,
     -------
     A DataArray containing the values plotted.
     """
+    _logger.setLevel(validate_verbose(verbose))
     # --- Recipe parameters are parsed. ---
-    _logger.debug("Parsing additional parameters ---")
+    _logger.debug("Parsing parameter options...")
     ref_data = get_recipe_param(param_kw, 'ref_data', default_value=None)
     model_name = get_recipe_param(param_kw, 'model_name', default_value='GFDL')
     start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
@@ -58,9 +59,10 @@ def surface_trends(verbose=False,
     station_code = get_recipe_param(param_kw, 'station_code', default_value='mlo')
     if station_code not in obspack_surface_collection_module.station_dict:
         raise ValueError('Unexpected station name <%s>', param_kw['stationshortname'])
+    _logger.debug("DONE.")
 
     # --- Surface observations ---
-    _logger.info('*Observations*')
+    _logger.info('*Processing Observations*')
     obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
     obs_collection.preprocess(datadir=ref_data, station_name=station_code)
     # Data are resampled
@@ -71,8 +73,8 @@ def surface_trends(verbose=False,
                                                                          ).reset_index()
                                                 )
 
-    # --- CMIP model output at surface ---
-    _logger.info('*CMIP model output*')
+    # --- CMIP model output ---
+    _logger.info('*Processing CMIP model output*')
     cmip_collection = cmip_collection_module.Collection(verbose=verbose)
     new_self, loaded_from_file = cmip_collection._cmip_recipe_base(datastore='cmip6', verbose=verbose,
                                                                    load_from_file=None)

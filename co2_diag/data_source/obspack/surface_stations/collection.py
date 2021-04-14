@@ -178,7 +178,7 @@ class Collection(ObspackCollection):
         datadir
         station_name
         """
-        _loader_logger.debug("Preprocessing ---")
+        _loader_logger.debug("Preprocessing...")
         if not station_name:
             # Use predefined dictionary of stations at the top of this module
             stations = self.station_dict
@@ -189,6 +189,7 @@ class Collection(ObspackCollection):
             stations = dict((k, self.station_dict[k]) for k in station_name)
 
         self.stepA_original_datasets = DatasetDict(self._load_stations_by_namedict(stations, datadir))
+        _loader_logger.debug("Preprocessing is done.")
 
     @staticmethod
     def get_resampled_dataframe(dataset_obs,
@@ -315,9 +316,9 @@ class Collection(ObspackCollection):
             station_dict[stationcode].update(station_latlonalt)
 
         # Wrangle -- Do the things to the Obs dataset.
-        _loader_logger.debug("Converting datetime format and units..")
+        _loader_logger.debug("Converting datetime format and units...")
         for i, (k, v) in enumerate(ds_obs_dict.items()):
-            _loader_logger.debug(k)
+            _loader_logger.debug('  %s', k)
             ds_obs_dict[k] = (v
                               .set_coords(['time', 'time_decimal', 'latitude', 'longitude', 'altitude'])
                               .sortby(['time'])

@@ -69,11 +69,11 @@ class Multiset:
         -----
         The pickle load protocol version used is detected automatically, so we do not have to specify it.
         """
-        _multiset_logger.info('Loading dataset from file..')
         if not filename:
             return False
 
         with open(filename, 'rb') as f:
+            _multiset_logger.debug('Loading dataset from file..')
             if replace:
                 self.stepC_prepped_datasets = pickle.load(f)
                 return True
