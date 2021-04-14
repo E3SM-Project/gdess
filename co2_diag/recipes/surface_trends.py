@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
 
+from co2_diag import validate_verbose
 from co2_diag.recipes.utils import get_recipe_param
 import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
 import co2_diag.data_source.cmip.collection as cmip_collection_module
