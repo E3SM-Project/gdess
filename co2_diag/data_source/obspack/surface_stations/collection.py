@@ -4,7 +4,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-import cftime
 
 from co2_diag import validate_verbose
 import co2_diag.data_source as co2ops
@@ -12,7 +11,7 @@ from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 
-from co2_diag.operations.time import select_between, to_datetime64, ensure_dataset_cftime, ensure_datetime64_array
+from co2_diag.operations.time import select_between, ensure_dataset_datetime64, ensure_datetime64_array
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
@@ -79,8 +78,8 @@ class Collection(ObspackCollection):
         # Diagnostic parameters are parsed.
         _loader_logger.debug("Parsing additional parameters ---")
         ref_data = get_recipe_param(param_kw, 'ref_data', default_value=None)
-        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = get_recipe_param(param_kw, 'end_yr', default_value="2015")
+        start_datetime = np.datetime64(get_recipe_param(param_kw, 'start_yr', default_value="1960"), 'D')
+        end_datetime = np.datetime64(get_recipe_param(param_kw, 'end_yr', default_value="2015"), 'D')
         results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
         # For the station name, we also check that it is accounted for in the class attribute dict.
         sc = 'brw'
@@ -96,8 +95,8 @@ class Collection(ObspackCollection):
         new_self.preprocess(datadir=ref_data, station_name=sc)
         # Data are resampled
         new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
-                                                                              timestart=cftime.DatetimeGregorian(int(start_yr), 1, 1),
-                                                                              timeend=cftime.DatetimeGregorian(int(end_yr), 1, 1)
+                                                                              timestart=start_datetime,
+                                                                              timeend=end_datetime
                                                                               ).reset_index()
 
         # --- Plotting ---
@@ -134,8 +133,8 @@ class Collection(ObspackCollection):
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
         ref_data = get_recipe_param(param_kw, 'ref_data', default_value=None)
-        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
+        start_datetime = np.datetime64(get_recipe_param(param_kw, 'start_yr', default_value="1960"),'D')
+        end_datetime = np.datetime64(get_recipe_param(param_kw, 'end_yr', default_value=None), 'D')
         results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
         # For the station name, we also check that it is accounted for in the class attribute dict.
         sc = 'brw'
@@ -151,11 +150,11 @@ class Collection(ObspackCollection):
         new_self.preprocess(datadir=ref_data)
 
         _loader_logger.info('Applying selected bounds..')
-        selection = {'time': slice(start_yr, end_yr)}
+        selection = {'time': slice(start_datetime, end_datetime)}
         # Data are resampled
         new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
-                                                                              timestart=cftime.DatetimeGregorian(int(start_yr), 1, 1),
-                                                                              timeend=cftime.DatetimeGregorian(int(end_yr), 1, 1)
+                                                                              timestart=start_datetime,
+                                                                              timeend=end_datetime
                                                                               ).reset_index()
 
         df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(new_self.stepA_original_datasets[sc],
@@ -320,18 +319,18 @@ class Collection(ObspackCollection):
         for i, (k, v) in enumerate(ds_obs_dict.items()):
             _loader_logger.debug(k)
             ds_obs_dict[k] = (v
-                              .pipe(to_datetime64)
                               .set_coords(['time', 'time_decimal', 'latitude', 'longitude', 'altitude'])
                               .sortby(['time'])
                               .swap_dims({"obs": "time"})
-                              .pipe(ensure_dataset_cftime)
+                              .pipe(ensure_dataset_datetime64)
                               .rename({'value': 'co2'})
                               .pipe(co2_molfrac_to_ppm, co2_var_name='co2')
                               )
             if i == 0:
-                _loader_logger.debug("  The first DataSet has a time range of <%s> to <%s>.",
-                                     ds_obs_dict[k]['time'][0].item(), ds_obs_dict[k]['time'][-1].item())
-        _loader_logger.debug("Done.")
+                _loader_logger.debug("  the first DataSet has a time range of <%s> to <%s>.",
+                                     np.datetime_as_string(ds_obs_dict[k]['time'].values[0], unit='D'),
+                                     np.datetime_as_string(ds_obs_dict[k]['time'].values[-1], unit='D'))
+        _loader_logger.debug("Converting is done.")
 
         return ds_obs_dict
 

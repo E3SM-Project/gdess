@@ -12,10 +12,13 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def to_datetime64(dataset: xr.Dataset
-                  ) -> xr.Dataset:
+def ensure_dataset_datetime64(dataset: xr.Dataset
+                              ) -> xr.Dataset:
     # It is more convenient to work with the `time` variable as type `datetime64`.
-    return xr.decode_cf(dataset)
+    dataset = xr.decode_cf(dataset)
+    dataset['time'] = ensure_datetime64_array(dataset['time'])
+
+    return dataset
 
 
 def to_datetimeindex(dataset: xr.Dataset
