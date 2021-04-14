@@ -1,5 +1,7 @@
 import re
 import glob
+from typing import Union
+
 import numpy as np
 import pandas as pd
 import cftime
@@ -191,8 +193,8 @@ class Collection(ObspackCollection):
 
     @staticmethod
     def get_resampled_dataframe(dataset_obs,
-                                timestart: np.datetime64,
-                                timeend: np.datetime64) -> pd.DataFrame:
+                                timestart,
+                                timeend) -> pd.DataFrame:
         """Get data resampled at monthly intervals
 
         Parameters
@@ -322,6 +324,7 @@ class Collection(ObspackCollection):
                               .set_coords(['time', 'time_decimal', 'latitude', 'longitude', 'altitude'])
                               .sortby(['time'])
                               .swap_dims({"obs": "time"})
+                              .pipe(ensure_dataset_cftime)
                               .rename({'value': 'co2'})
                               .pipe(co2_molfrac_to_ppm, co2_var_name='co2')
                               )
@@ -343,11 +346,12 @@ class Collection(ObspackCollection):
             Extra matplotlib artists used for the bounding box (bbox) when saving a figure
         """
         fig, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True, figsize=(7, 5))
-
-        ax.plot(self.df_combined_and_resampled['time'], self.df_combined_and_resampled['obs_original_resolution'],
+        ax.plot(ensure_datetime64_array(self.df_combined_and_resampled['time']),
+                self.df_combined_and_resampled['obs_original_resolution'],
                 label='NOAA Obs',
                 marker='+', linestyle='None', color='#C0C0C0', alpha=0.6)
-        ax.plot(self.df_combined_and_resampled['time'], self.df_combined_and_resampled['obs_resampled_resolution'],
+        ax.plot(ensure_datetime64_array(self.df_combined_and_resampled['time']),
+                self.df_combined_and_resampled['obs_resampled_resolution'],
                 label='NOAA Obs monthly mean',
                 linestyle='-', color=(0 / 255, 133 / 255, 202 / 255), linewidth=2)
         #

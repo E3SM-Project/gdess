@@ -30,6 +30,22 @@ def to_datetimeindex(dataset: xr.Dataset
         return dataset
 
 
+def ensure_datetime64_array(time: Sequence):
+    """Convert an input 1D array to an array of numpy.datetime64 objects.
+    """
+    if isinstance(time, xr.DataArray):
+        time = time.indexes["time"]
+    elif isinstance(time, np.ndarray):
+        time = pd.DatetimeIndex(time)
+    if isinstance(time[0], np.datetime64):
+        return time
+    if isinstance(time[0], pydt.datetime) | isinstance(time[0], cftime.datetime):
+        return np.array(
+            [np.datetime64(ele) for ele in time]
+        )
+    raise ValueError("Unable to cast array to numpy.datetime64 dtype")
+
+
 def ensure_cftime_array(time: Sequence):
     """Convert an input 1D array to an array of cftime objects.
 
@@ -58,10 +74,16 @@ def ensure_cftime_array(time: Sequence):
     raise ValueError("Unable to cast array to cftime dtype")
 
 
+def ensure_dataset_cftime(dataset):
+    dataset['time'] = ensure_cftime_array(dataset['time'])
+    return dataset
+
+
 def select_between(dataset: xr.Dataset,
-                   timestart: np.datetime64,
-                   timeend: np.datetime64,
+                   timestart,
+                   timeend,
                    varlist=None,
+                   drop=True,
                    drop_dups=True) -> xr.Dataset:
     """Select part of a dataset between two times
 
@@ -69,8 +91,14 @@ def select_between(dataset: xr.Dataset,
     ----------
     dataset
     timestart
+        must be of appropriate type for comparison with dataset.time type
+        (e.g. cftime.DatetimeGregorian or numpy.datetime64)
     timeend
+        must be of appropriate type for comparison with dataset.time type
+        (e.g. cftime.DatetimeGregorian or numpy.datetime64)
     varlist
+    drop
+        True (default) / False
     drop_dups
         True (default) / False
 
@@ -93,7 +121,7 @@ def select_between(dataset: xr.Dataset,
     tempmask = ds_sub['time'] >= timestart
     tempmask = tempmask & (ds_sub['time'] <= timeend)
 
-    return ds_sub.where(tempmask, drop=True)
+    return ds_sub.where(tempmask, drop=drop)
 
 
 def monthlist(dates) -> list:
