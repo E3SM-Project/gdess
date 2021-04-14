@@ -1,5 +1,5 @@
 # e3sm_co2_diag
-Helper code for evaluating CO<sub>2</sub> in E3SM
+Helper code for evaluating atmospheric CO<sub>2</sub> in E3SM
 
 ## Usage
 
