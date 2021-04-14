@@ -132,7 +132,7 @@ class Collection(Multiset):
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
         if results_dir:
-            mysavefig(fig, results_dir, 'cmip_timeseries', bbox_artists)
+            mysavefig(fig, results_dir, 'cmip_timeseries', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -184,7 +184,7 @@ class Collection(Multiset):
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_vertical_profiles()
         if results_dir:
-            mysavefig(fig, results_dir, 'cmip_vertical_plot', bbox_artists)
+            mysavefig(fig, results_dir, 'cmip_vertical_plot', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -244,7 +244,7 @@ class Collection(Multiset):
         fig, ax, bbox_artists = new_self.plot_zonal_mean(model_key, member_key,
                                                          titlestr=f"{model_key} ({member_key})")
         if results_dir:
-            mysavefig(fig, results_dir, 'cmip_zonal_mean_plot', bbox_artists)
+            mysavefig(fig, results_dir, 'cmip_zonal_mean_plot', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -324,7 +324,7 @@ class Collection(Multiset):
         fig, ax, bbox_artists = new_self.plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
                                                             titlestr=f"{model_key} ({member_key})")
         if results_dir:
-            mysavefig(fig, results_dir, 'cmip_annual_series', bbox_artists)
+            mysavefig(fig, results_dir, 'cmip_annual_series', bbox_extra_artists=bbox_artists)
 
         return new_self
 

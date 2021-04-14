@@ -120,7 +120,7 @@ class Collection(Multiset):
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
         if results_dir:
-            mysavefig(fig, results_dir, 'e3sm_timeseries', bbox_artists)
+            mysavefig(fig, results_dir, 'e3sm_timeseries', bbox_extra_artists=bbox_artists)
 
         return new_self
 

@@ -98,7 +98,7 @@ class Collection(ObspackCollection):
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_station_time_series(stationshortname=sc)
         if results_dir:
-            mysavefig(fig, results_dir, 'cmip_timeseries', bbox_artists)
+            mysavefig(fig, results_dir, 'cmip_timeseries', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -160,7 +160,7 @@ class Collection(ObspackCollection):
         fig, ax, bbox_artists = new_self.plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
                                                             stationname=sc)
         if results_dir:
-            mysavefig(fig, results_dir, 'obspack_annual_series', bbox_artists)
+            mysavefig(fig, results_dir, 'obspack_annual_series', bbox_extra_artists=bbox_artists)
 
         return new_self
 
