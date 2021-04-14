@@ -6,6 +6,8 @@ from co2_diag import validate_verbose
 from co2_diag.data_source.e3sm.calculation import getPMID
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
+from co2_diag.operations.time import to_datetimeindex
+from co2_diag.operations.convert import co2_kgfrac_to_ppm
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
@@ -145,8 +147,8 @@ class Collection(Multiset):
         dataset = (dataset
                    .set_coords(['time', 'lat', 'lon', 'PMID'])
                    .sortby(['time'])
-                   .pipe(co2_diag.data_operation_utils.time.to_datetimeindex)
-                   .pipe(co2_diag.data_operation_utils.convert.co2_kgfrac_to_ppm, co2_var_name='CO2')
+                   .pipe(to_datetimeindex)
+                   .pipe(co2_kgfrac_to_ppm, co2_var_name='CO2')
                    )
         return dataset
 

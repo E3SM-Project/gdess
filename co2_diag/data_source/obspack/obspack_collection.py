@@ -6,6 +6,8 @@ from co2_diag import validate_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
+from co2_diag.operations.time import to_datetime64
+from co2_diag.operations.convert import co2_molfrac_to_ppm
 
 import logging
 _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
@@ -75,12 +77,12 @@ class ObspackCollection(Multiset):
         # Do the things to the Obs dataset.
         for k, v in ds_obs_dict.items():
             ds_obs_dict[k] = (v
-                              .pipe(co2_diag.data_operation_utils.time.to_datetime64)
+                              .pipe(to_datetime64)
                               .set_coords(['time', 'time_decimal', 'latitude', 'longitude', 'altitude'])
                               .sortby(['time'])
                               #                  .swap_dims({"obs": "time"})
                               .rename({'value': 'co2'})
-                              .pipe(co2_diag.data_operation_utils.convert.co2_molfrac_to_ppm, co2_var_name='co2')
+                              .pipe(co2_molfrac_to_ppm, co2_var_name='co2')
                               .set_index(obs=['time', 'longitude', 'latitude', 'altitude'])
                               )
         #### Concatenate all sites into one large dataset, for mapping or other combined analysis purposes

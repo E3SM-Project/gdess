@@ -10,6 +10,9 @@ from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 
+from co2_diag.operations.time import select_between, to_datetime64, ensure_dataset_cftime, ensure_datetime64_array
+from co2_diag.operations.convert import co2_molfrac_to_ppm
+
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe
 
@@ -311,12 +314,12 @@ class Collection(ObspackCollection):
         for k, v in ds_obs_dict.items():
             _loader_logger.debug(k)
             ds_obs_dict[k] = (v
-                              .pipe(co2_diag.data_operation_utils.time.to_datetime64)
+                              .pipe(to_datetime64)
                               .set_coords(['time', 'time_decimal', 'latitude', 'longitude', 'altitude'])
                               .sortby(['time'])
                               .swap_dims({"obs": "time"})
                               .rename({'value': 'co2'})
-                              .pipe(co2_diag.data_operation_utils.convert.co2_molfrac_to_ppm, co2_var_name='co2')
+                              .pipe(co2_molfrac_to_ppm, co2_var_name='co2')
                               )
 
         return ds_obs_dict
