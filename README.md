@@ -61,7 +61,7 @@ pip uninstall co2_diag
 
 #### Components
 
-<img src="./.images/structure_diagram_20210409.png" alt="components" width="607" height="384"/>
+<img src="./.images/structure_diagram_20210415.png" alt="components" width="607" height="384"/>
 
 #### Directory Tree
 ```
