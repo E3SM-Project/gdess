@@ -35,7 +35,7 @@ def surface_trends(verbose=False,
     options
         A dictionary that specifies recipe options. It can contain the following keys:
             ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
-            model_name (str): 'brw' is default
+            model_name (str): 'mlo' is default
             start_yr (str): '1960' is default
             end_yr (str): '2015' is default
             savepath_figure (str): None is default
