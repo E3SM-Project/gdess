@@ -16,6 +16,7 @@ import co2_diag.data_source.cmip.collection as cmip_collection_module
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
+from co2_diag.recipes.utils import valid_year_string, model_choices, model_substring
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -169,25 +170,6 @@ def parse_param_options(params: dict):
     param_argstr = shlex.split(' '.join([f"--{k} {v}" for k, v in params.items()]))
     _logger.debug('Parameter argument string == %s', param_argstr)
 
-    # -- Define certain valid choices --
-    model_choices = ['CMIP.CNRM-CERFACS.CNRM-ESM2-1.esm-hist.Amon.gr', 'CMIP.NCAR.CESM2.esm-hist.Amon.gn',
-                     'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn', 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1']
-    def model_substring(s):
-        options = [c for c in model_choices if s in c]
-        if len(options) == 1:
-            return options[0]
-        return s
-    #
-    station_choices = obspack_surface_collection_module.station_dict.keys()
-    #
-    def valid_year_string(y):
-        if y:
-            if isinstance(y, str) | isinstance(y, int):
-                if 0 <= int(y) <= 10000:
-                    return str(y)
-        raise TypeError('Year must be a string or integer whose value is between 0 and 10,000.')
-
-    # -- Commence parsing --
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--ref_data', type=str)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
@@ -196,7 +178,7 @@ def parse_param_options(params: dict):
     parser.add_argument('--end_yr', default="2015", type=valid_year_string)
     parser.add_argument('--savepath_figure', type=str, default=None)
     parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=station_choices)
+                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
 

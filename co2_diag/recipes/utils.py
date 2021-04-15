@@ -29,6 +29,31 @@ def get_recipe_param(param_dict,
     return value
 
 
+def valid_year_string(y):
+    """Function used to validate 'year' argument passed in as a recipe option"""
+    if y:
+        if isinstance(y, str) | isinstance(y, int):
+            if 0 <= int(y) <= 10000:
+                return str(y)
+    raise TypeError('Year must be a string or integer whose value is between 0 and 10,000.')
+
+# -- Define valid model choices --
+model_choices = ['CMIP.CNRM-CERFACS.CNRM-ESM2-1.esm-hist.Amon.gr', 'CMIP.NCAR.CESM2.esm-hist.Amon.gn',
+                 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn', 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1']
+def model_substring(s):
+    """Function used to allow specification of model names by only supplying a partial string match
+
+    Example
+    -------
+    >>> model_substring('BCC')
+    returns 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
+    """
+    options = [c for c in model_choices if s in c]
+    if len(options) == 1:
+        return options[0]
+    return s
+
+
 def benchmark_recipe(func):
     """A decorator for diagnostic recipe methods that provides timing info.
 
