@@ -1,3 +1,4 @@
+import shlex
 import time
 
 import logging
@@ -29,6 +30,18 @@ def get_recipe_param(param_dict,
     return value
 
 
+def options_to_args(options: dict):
+    """Convert a dictionary to a list of strings so that an ArgumentParser can parse it.
+
+    Examples
+    --------
+    a = {'start_yr': "1980", 'end_yr': "2010"}
+    >>> options_to_args(a)
+    returns ['--start_yr', '1980', '--end_yr', '2010']
+    """
+    return shlex.split(' '.join([f"--{k} {v}" for k, v in options.items()]))
+
+
 def valid_year_string(y):
     """Function used to validate 'year' argument passed in as a recipe option"""
     if y:
@@ -36,22 +49,6 @@ def valid_year_string(y):
             if 0 <= int(y) <= 10000:
                 return str(y)
     raise TypeError('Year must be a string or integer whose value is between 0 and 10,000.')
-
-# -- Define valid model choices --
-model_choices = ['CMIP.CNRM-CERFACS.CNRM-ESM2-1.esm-hist.Amon.gr', 'CMIP.NCAR.CESM2.esm-hist.Amon.gn',
-                 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn', 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1']
-def model_substring(s):
-    """Function used to allow specification of model names by only supplying a partial string match
-
-    Example
-    -------
-    >>> model_substring('BCC')
-    returns 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
-    """
-    options = [c for c in model_choices if s in c]
-    if len(options) == 1:
-        return options[0]
-    return s
 
 
 def benchmark_recipe(func):

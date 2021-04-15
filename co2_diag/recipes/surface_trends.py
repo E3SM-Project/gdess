@@ -4,7 +4,6 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-import shlex
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,7 +15,7 @@ import co2_diag.data_source.cmip.collection as cmip_collection_module
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipes.utils import valid_year_string, model_choices, model_substring
+from co2_diag.recipes.utils import valid_year_string, options_to_args
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -39,7 +38,7 @@ def surface_trends(verbose=False,
             model_name (str): 'mlo' is default
             start_yr (str): '1960' is default
             end_yr (str): '2015' is default
-            savepath_figure (str): None is default
+            figure_savepath (str): None is default
             difference (str): None is default
             globalmean (str):
                 either 'station', which requires specifying the <station_code> parameter,
@@ -160,23 +159,23 @@ def surface_trends(verbose=False,
     #
     plt.tight_layout()
     #
-    if opts.savepath_figure:
-        mysavefig(fig=fig, plot_save_name=opts.savepath_figure)
+    if opts.figure_savepath:
+        mysavefig(fig=fig, plot_save_name=opts.figure_savepath)
 
     return data_output
 
 
 def parse_param_options(params: dict):
-    param_argstr = shlex.split(' '.join([f"--{k} {v}" for k, v in params.items()]))
+    param_argstr = options_to_args(params)
     _logger.debug('Parameter argument string == %s', param_argstr)
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--ref_data', type=str)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
-                        type=model_substring, choices=model_choices)
+                        type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
     parser.add_argument('--start_yr', default="1960", type=valid_year_string)
     parser.add_argument('--end_yr', default="2015", type=valid_year_string)
-    parser.add_argument('--savepath_figure', type=str, default=None)
+    parser.add_argument('--figure_savepath', type=str, default=None)
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')

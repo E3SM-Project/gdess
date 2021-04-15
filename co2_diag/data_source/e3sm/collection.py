@@ -1,17 +1,16 @@
+import argparse
+import numpy as np
 import xarray as xr
 from typing import Union
 
 from co2_diag import validate_verbose
-
 from co2_diag.data_source.e3sm.calculation import getPMID
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.time import to_datetimeindex
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
-
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-
-from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe
+from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe, options_to_args, valid_year_string
 
 import matplotlib.pyplot as plt
 
@@ -92,24 +91,22 @@ class Collection(Multiset):
         -------
         Collection object for E3SM that was used to generate the diagnostic
         """
-        _loader_logger.debug("Parsing diagnostic parameters ---")
-        test_data = get_recipe_param(param_kw, 'test_data', default_value=None)
-        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
+        _loader_logger.debug("Parsing diagnostic parameters...")
+        opts = parse_param_options(param_kw)
+        _loader_logger.debug("Parsing is done.")
 
         new_self, loaded_from_file = cls._e3sm_recipe_base(verbose=verbose,
                                                            load_from_file=load_from_file,
-                                                           nc_file=test_data)
+                                                           nc_file=opts.test_data)
 
         n_lev = len(new_self.stepB_preprocessed_datasets['main'].lev)  # get last level
-        lev_index = get_recipe_param(param_kw, 'lev_index', default_value=n_lev-1)
-
-        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
+        if not opts.lev_index:
+            lev_index = n_lev-1
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(start_yr, end_yr)}
+            selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
             iselection = {'lev': lev_index}
@@ -121,8 +118,8 @@ class Collection(Multiset):
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
-        if results_dir:
-            mysavefig(fig, results_dir, 'e3sm_timeseries', bbox_extra_artists=bbox_artists)
+        if opts.figure_savepath:
+            mysavefig(fig, opts.figure_savepath, 'e3sm_timeseries', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -159,7 +156,7 @@ class Collection(Multiset):
         ----------
         filepath
         """
-        _loader_logger.info("Preprocessing ---")
+        _loader_logger.info("Preprocessing...")
         _loader_logger.debug('Opening the file..')
         self.stepA_original_datasets = DatasetDict({'main': xr.open_dataset(filepath)})
         self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
@@ -167,7 +164,7 @@ class Collection(Multiset):
         _loader_logger.debug('setting coords, formatting time, converting to ppm..')
         self.stepB_preprocessed_datasets.apply_function_to_all(self._preprocess_functions, inplace=True)
 
-        _loader_logger.info("Preprocessing done.")
+        _loader_logger.info("Preprocessing is done.")
 
     def plot_timeseries(self) -> (plt.Figure, plt.Axes, tuple):
         """Make timeseries plot of co2 concentrations from the E3SM output
@@ -218,3 +215,22 @@ class Collection(Multiset):
                  '\n\t'.join(self._obj_attributes_list_str())
 
         return strrep
+
+
+def parse_param_options(params: dict):
+    param_argstr = options_to_args(params)
+    _loader_logger.debug('Parameter argument string == %s', param_argstr)
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--test_data', type=str)
+    parser.add_argument('--figure_savepath', type=str, default=None)
+    parser.add_argument('--start_yr', default="1960", type=valid_year_string)
+    parser.add_argument('--end_yr', default="2015", type=valid_year_string)
+    parser.add_argument('--lev_index', default=None, type=int)
+    args = parser.parse_args(param_argstr)
+
+    # Convert times to numpy.datetime64
+    args.start_datetime = np.datetime64(args.start_yr, 'D')
+    args.end_datetime = np.datetime64(args.end_yr, 'D')
+
+    return args

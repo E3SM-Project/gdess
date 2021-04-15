@@ -1,6 +1,5 @@
 import re
 import glob
-import shlex
 import argparse
 from typing import Union
 
@@ -17,7 +16,7 @@ from co2_diag.operations.time import select_between, ensure_dataset_datetime64, 
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe, valid_year_string
+from co2_diag.recipes.utils import benchmark_recipe, valid_year_string, options_to_args
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
@@ -442,7 +441,7 @@ class Collection(ObspackCollection):
 
 
 def parse_param_options(params: dict):
-    param_argstr = shlex.split(' '.join([f"--{k} {v}" for k, v in params.items()]))
+    param_argstr = options_to_args(params)
     _loader_logger.debug('Parameter argument string == %s', param_argstr)
 
     parser = argparse.ArgumentParser(description='Process some integers.')

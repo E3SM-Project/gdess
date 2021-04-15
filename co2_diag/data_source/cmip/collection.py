@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -10,10 +11,9 @@ from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import to_datetimeindex
 from co2_diag.operations.convert import co2_molfrac_to_ppm
+from co2_diag.recipes.utils import valid_year_string, options_to_args, benchmark_recipe
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-
-from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe
 
 # Packages for using NCAR's intake
 import intake
@@ -113,17 +113,15 @@ class Collection(Multiset):
         new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
                                                            load_from_file=load_from_file)
 
-        _loader_logger.debug("Parsing diagnostic parameters ---")
-        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
-        plev = get_recipe_param(param_kw, 'plev', default_value=100000)
-        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
+        _loader_logger.debug("Parsing diagnostic parameters...")
+        opts = parse_param_options(param_kw)
+        _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(start_yr, end_yr),
-                         'plev': plev}
+            selection = {'time': slice(opts.start_datetime, opts.end_datetime),
+                         'plev': opts.plev}
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
             # Spatial mean is calculated, leaving us with a time series.
@@ -133,8 +131,8 @@ class Collection(Multiset):
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
-        if results_dir:
-            mysavefig(fig, results_dir, 'cmip_timeseries', bbox_extra_artists=bbox_artists)
+        if opts.figure_savepath:
+            mysavefig(fig, opts.figure_savepath, 'cmip_timeseries', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -167,15 +165,14 @@ class Collection(Multiset):
         new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
                                                            load_from_file=load_from_file)
 
-        _loader_logger.debug("Parsing diagnostic parameters ---")
-        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
-        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
+        _loader_logger.debug("Parsing diagnostic parameters...")
+        opts = parse_param_options(param_kw)
+        _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(start_yr, end_yr)}
+            selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
             # Mean is calculated, leaving us with a vertical profile.
@@ -185,8 +182,8 @@ class Collection(Multiset):
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_vertical_profiles()
-        if results_dir:
-            mysavefig(fig, results_dir, 'cmip_vertical_plot', bbox_extra_artists=bbox_artists)
+        if opts.figure_savepath:
+            mysavefig(fig, opts.figure_savepath, 'cmip_vertical_plot', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -219,17 +216,14 @@ class Collection(Multiset):
         new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
                                                            load_from_file=load_from_file)
 
-        _loader_logger.debug("Parsing diagnostic parameters ---")
-        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
-        model_key = get_recipe_param(param_kw, 'model_key', default_value=None)
-        member_key = get_recipe_param(param_kw, 'member_key', default_value=None)
-        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
+        _loader_logger.debug("Parsing diagnostic parameters...")
+        opts = parse_param_options(param_kw)
+        _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(start_yr, end_yr)}
+            selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
             # The longitudinal mean will be calculated, leaving us with the average latitudinal/height gradients.
@@ -237,16 +231,16 @@ class Collection(Multiset):
             # The lazily loaded selections and computations are here actually processed.
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
-        if ('member_key' not in locals()) or (not member_key):
+        if ('member_key' not in locals()) or (not opts.member_key):
             _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
-                                 new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist())
-            member_key = new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist()
+                                 new_self.stepC_prepped_datasets[opts.model_key]['member_id'].values.tolist())
+            member_key = new_self.stepC_prepped_datasets[opts.model_key]['member_id'].values.tolist()
 
         # --- Plotting ---
-        fig, ax, bbox_artists = new_self.plot_zonal_mean(model_key, member_key,
-                                                         titlestr=f"{model_key} ({member_key})")
-        if results_dir:
-            mysavefig(fig, results_dir, 'cmip_zonal_mean_plot', bbox_extra_artists=bbox_artists)
+        fig, ax, bbox_artists = new_self.plot_zonal_mean(opts.model_key, member_key,
+                                                         titlestr=f"{opts.model_key} ({member_key})")
+        if opts.figure_savepath:
+            mysavefig(fig, opts.figure_savepath, 'cmip_zonal_mean_plot', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -280,18 +274,14 @@ class Collection(Multiset):
                                                            load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        start_yr = get_recipe_param(param_kw, 'start_yr', default_value="1960")
-        end_yr = get_recipe_param(param_kw, 'end_yr', default_value=None)
-        plev = get_recipe_param(param_kw, 'plev', default_value=100000)
-        model_key = get_recipe_param(param_kw, 'model_key', default_value=None)
-        member_key = get_recipe_param(param_kw, 'member_key', default_value=None)
-        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
+        opts = parse_param_options(param_kw)
+        _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(start_yr, end_yr),
-                         'plev': plev}
+            selection = {'time': slice(opts.start_datetime, opts.end_datetime),
+                         'plev': opts.plev}
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
             # Spatial mean is calculated, leaving us with a time series.
@@ -299,17 +289,17 @@ class Collection(Multiset):
             # The lazily loaded selections and computations are here actually processed.
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
-        if ('member_key' not in locals()) or (not member_key):
+        if ('member_key' not in locals()) or (not opts.member_key):
             _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
-                                 new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist())
-            member_key = new_self.stepC_prepped_datasets[model_key]['member_id'].values.tolist()
+                                 new_self.stepC_prepped_datasets[opts.model_key]['member_id'].values.tolist())
+            member_key = new_self.stepC_prepped_datasets[opts.model_key]['member_id'].values.tolist()
 
         # The mean is calculated across ensemble members if there are multiple.
         if isinstance(member_key, list) and (len(member_key) > 1):
             df_list_of_means = []
             df_list_of_yearly_cycles = []
             for mi, m in enumerate(member_key):
-                darray = new_self.stepC_prepped_datasets[model_key].sel(member_id=m)
+                darray = new_self.stepC_prepped_datasets[opts.model_key].sel(member_id=m)
                 df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(darray, varname='co2')
                 df_anomaly_yearly['member_id'] = m
                 df_anomaly_mean_cycle['member_id'] = m
@@ -319,14 +309,14 @@ class Collection(Multiset):
             df_anomaly_mean_cycle = pd.concat(df_list_of_means).groupby(['moy', 'plev']).mean().reset_index()
             df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby('moy').mean()
         else:
-            darray = new_self.stepC_prepped_datasets[model_key].sel(member_id=member_key)
+            darray = new_self.stepC_prepped_datasets[opts.model_key].sel(member_id=member_key)
             df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(darray, varname='co2')
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
-                                                            titlestr=f"{model_key} ({member_key})")
-        if results_dir:
-            mysavefig(fig, results_dir, 'cmip_annual_series', bbox_extra_artists=bbox_artists)
+                                                            titlestr=f"{opts.model_key} ({member_key})")
+        if opts.figure_savepath:
+            mysavefig(fig, opts.figure_savepath, 'cmip_annual_series', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -388,12 +378,6 @@ class Collection(Multiset):
         # self.convert_all_to_ppm()
         _loader_logger.debug("Model keys:")
         _loader_logger.debug('\n'.join(self.stepA_original_datasets.keys()))
-
-    # def convert_all_to_ppm(self):
-    #     # Convert CO2 units to ppm
-    #     _loader_logger.debug("Converting units to ppm..")
-    #     self.apply_function_to_all_datasets(co2ops.convert.co2_molfrac_to_ppm, co2_var_name='co2')
-    #     _loader_logger.debug("all converted.")
 
     @staticmethod
     def latlon_select(xr_ds: xr.Dataset,
@@ -628,3 +612,42 @@ class Collection(Multiset):
             _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
 
         return nmodels, member_counts
+
+
+# -- Define valid model choices --
+model_choices = ['CMIP.CNRM-CERFACS.CNRM-ESM2-1.esm-hist.Amon.gr', 'CMIP.NCAR.CESM2.esm-hist.Amon.gn',
+                 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn', 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1']
+def model_substring(s):
+    """Function used to allow specification of model names by only supplying a partial string match
+
+    Example
+    -------
+    >>> model_substring('BCC')
+    returns 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
+    """
+    options = [c for c in model_choices if s in c]
+    if len(options) == 1:
+        return options[0]
+    return s
+
+
+def parse_param_options(params: dict):
+    param_argstr = options_to_args(params)
+    _loader_logger.debug('Parameter argument string == %s', param_argstr)
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--ref_data', type=str)
+    parser.add_argument('--figure_savepath', type=str, default=None)
+    parser.add_argument('--start_yr', default="1960", type=valid_year_string)
+    parser.add_argument('--end_yr', default="2015", type=valid_year_string)
+    parser.add_argument('--plev', default=100000, type=int)
+    parser.add_argument('--model_name', default=None,
+                        type=model_substring, choices=model_choices)
+    parser.add_argument('--member_key', default=None, type=int)
+    args = parser.parse_args(param_argstr)
+
+    # Convert times to numpy.datetime64
+    args.start_datetime = np.datetime64(args.start_yr, 'D')
+    args.end_datetime = np.datetime64(args.end_yr, 'D')
+
+    return args
