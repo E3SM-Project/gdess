@@ -104,9 +104,11 @@ e3sm_co2_diag
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   └── config               <- Configuration options
-│       └── log_config.json
-│
+│   ├── config               <- Configuration options
+│   │   └── log_config.json
+│   │
+│   └── tests                <- Unit tests for development 
+│       └── test_surface_trends_recipe.py
 │
 ├── MANIFEST.in
 └── setup.py
