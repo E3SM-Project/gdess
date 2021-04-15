@@ -205,7 +205,7 @@ class Collection(ObspackCollection):
 
         Returns
         -------
-
+        A pandas.DataFrame with columnds of time, original data, and resampled data
         """
         _loader_logger.debug('Resampling obspack observations..')
         # --- OBSERVATIONS ---
