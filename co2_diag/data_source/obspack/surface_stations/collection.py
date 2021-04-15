@@ -1,5 +1,7 @@
 import re
 import glob
+import shlex
+import argparse
 from typing import Union
 
 import numpy as np
@@ -15,7 +17,7 @@ from co2_diag.operations.time import select_between, ensure_dataset_datetime64, 
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe
+from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe, valid_year_string
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
@@ -64,7 +66,7 @@ class Collection(ObspackCollection):
         param_kw
             An optional dictionary with zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
-                stationshortname (str): 'brw' is default
+                station_code (str): 'mlo' is default
                 start_yr (str): '1960' is default
                 end_yr (str): '2015' is default
 
@@ -76,33 +78,24 @@ class Collection(ObspackCollection):
         new_self = cls(verbose=verbose)
 
         # Diagnostic parameters are parsed.
-        _loader_logger.debug("Parsing additional parameters ---")
-        ref_data = get_recipe_param(param_kw, 'ref_data', default_value=None)
-        start_datetime = np.datetime64(get_recipe_param(param_kw, 'start_yr', default_value="1960"), 'D')
-        end_datetime = np.datetime64(get_recipe_param(param_kw, 'end_yr', default_value="2015"), 'D')
-        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
-        # For the station name, we also check that it is accounted for in the class attribute dict.
-        sc = 'brw'
-        if param_kw:
-            if 'stationshortname' in param_kw:
-                if param_kw['stationshortname'] in new_self.station_dict:
-                    sc = param_kw['stationshortname']
-                else:
-                    raise ValueError('Unexpected station name <%s>', param_kw['stationshortname'])
+        _loader_logger.debug("Parsing additional parameters...")
+        opts = parse_param_options(param_kw)
+        _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         # Data are formatted into the basic data structure common to various diagnostics.
-        new_self.preprocess(datadir=ref_data, station_name=sc)
+        new_self.preprocess(datadir=opts.ref_data, station_name=opts.station_code)
         # Data are resampled
-        new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
-                                                                              timestart=start_datetime,
-                                                                              timeend=end_datetime
-                                                                              ).reset_index()
+        new_self.df_combined_and_resampled = (new_self
+                                              .get_resampled_dataframe(new_self.stepA_original_datasets[opts.station_code],
+                                                                       timestart=opts.start_datetime,
+                                                                       timeend=opts.end_datetime
+                                                                       ).reset_index())
 
         # --- Plotting ---
-        fig, ax, bbox_artists = new_self.plot_station_time_series(stationshortname=sc)
-        if results_dir:
-            mysavefig(fig, results_dir, 'cmip_timeseries', bbox_extra_artists=bbox_artists)
+        fig, ax, bbox_artists = new_self.plot_station_time_series(stationshortname=opts.station_code)
+        if opts.figure_savepath:
+            mysavefig(fig, opts.figure_savepath, 'cmip_timeseries', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -132,39 +125,30 @@ class Collection(ObspackCollection):
         new_self = cls(verbose=verbose)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        ref_data = get_recipe_param(param_kw, 'ref_data', default_value=None)
-        start_datetime = np.datetime64(get_recipe_param(param_kw, 'start_yr', default_value="1960"),'D')
-        end_datetime = np.datetime64(get_recipe_param(param_kw, 'end_yr', default_value=None), 'D')
-        results_dir = get_recipe_param(param_kw, 'results_dir', default_value=None)
-        # For the station name, we also check that it is accounted for in the class attribute dict.
-        sc = 'brw'
-        if param_kw:
-            if 'stationshortname' in param_kw:
-                if param_kw['stationshortname'] in new_self.station_dict:
-                    sc = param_kw['stationshortname']
-                else:
-                    raise ValueError('Unexpected station name <%s>', param_kw['stationshortname'])
+        opts = parse_param_options(param_kw)
+        _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         # Data are formatted into the basic data structure common to various diagnostics.
-        new_self.preprocess(datadir=ref_data)
+        new_self.preprocess(datadir=opts.ref_data)
 
         _loader_logger.info('Applying selected bounds..')
-        selection = {'time': slice(start_datetime, end_datetime)}
         # Data are resampled
-        new_self.df_combined_and_resampled = new_self.get_resampled_dataframe(new_self.stepA_original_datasets[sc],
-                                                                              timestart=start_datetime,
-                                                                              timeend=end_datetime
-                                                                              ).reset_index()
+        new_self.df_combined_and_resampled = (new_self
+                                              .get_resampled_dataframe(new_self.stepA_original_datasets[opts.station_code],
+                                                                       timestart=opts.start_datetime,
+                                                                       timeend=opts.end_datetime
+                                                                       ).reset_index())
 
-        df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(new_self.stepA_original_datasets[sc],
-                                                                                   varname='co2')
+        df_anomaly_mean_cycle, df_anomaly_yearly = (Multiset
+                                                    .get_anomaly_dataframes(new_self.stepA_original_datasets[opts.station_code],
+                                                                            varname='co2'))
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
-                                                            stationname=sc)
-        if results_dir:
-            mysavefig(fig, results_dir, 'obspack_annual_series', bbox_extra_artists=bbox_artists)
+                                                            stationname=opts.station_code)
+        if opts.figure_savepath:
+            mysavefig(fig, opts.figure_savepath, 'obspack_annual_series', bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -455,3 +439,23 @@ class Collection(ObspackCollection):
                  '\n\t'.join(self._obj_attributes_list_str())
 
         return strrep
+
+
+def parse_param_options(params: dict):
+    param_argstr = shlex.split(' '.join([f"--{k} {v}" for k, v in params.items()]))
+    _loader_logger.debug('Parameter argument string == %s', param_argstr)
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--ref_data', type=str)
+    parser.add_argument('--figure_savepath', type=str, default=None)
+    parser.add_argument('--start_yr', default="1960", type=valid_year_string)
+    parser.add_argument('--end_yr', default="2015", type=valid_year_string)
+    parser.add_argument('--station_code', default='mlo',
+                        type=str, choices=station_dict.keys())
+    args = parser.parse_args(param_argstr)
+
+    # Convert times to numpy.datetime64
+    args.start_datetime = np.datetime64(args.start_yr, 'D')
+    args.end_datetime = np.datetime64(args.end_yr, 'D')
+
+    return args
