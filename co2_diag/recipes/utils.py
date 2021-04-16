@@ -1,33 +1,9 @@
+import argparse
 import shlex
 import time
 
 import logging
 _logger = logging.getLogger(__name__)
-
-
-def get_recipe_param(param_dict,
-                     param_key: str,
-                     default_value=None,
-                     type=None):
-    """Validate a parameter in the parameter dictionary, and return default if it is not in the dictionary.
-
-    Parameters
-    ----------
-    param_dict
-    param_key
-    default_value
-
-    Returns
-    -------
-    The value from the dictionary, which can be of any type
-    """
-    value = default_value
-    if param_dict and (param_key in param_dict):
-        value = param_dict[param_key]
-        if not not type:
-            if not isinstance(value, type):
-                raise TypeError(f'{param_key} param should have type {type}. It has type <{type(value)}>.')
-    return value
 
 
 def options_to_args(options: dict):
@@ -42,13 +18,43 @@ def options_to_args(options: dict):
     return shlex.split(' '.join([f"--{k} {v}" for k, v in options.items()]))
 
 
+def is_some_none(val):
+    """Check if value is either a Python None object or the case-insensitive string 'None' """
+    if val is None:
+        return True
+    elif isinstance(val, str):
+        if val.lower() == 'none':
+            return True
+    else:
+        return False
+
+
+def nullable_int(val):
+    """Validate whether a value's type is either an integer or none"""
+    if is_some_none(val):
+        return None
+    if not isinstance(val, int):
+        raise argparse.ArgumentTypeError('Value must be an integer')
+    return val
+
+
+def nullable_str(val):
+    """Validate whether a value's type is either a string or none"""
+    if is_some_none(val):
+        return None
+    if not isinstance(val, str):
+        raise argparse.ArgumentTypeError('Value must be an string')
+    return val
+
+
 def valid_year_string(y):
     """Function used to validate 'year' argument passed in as a recipe option"""
-    if y:
-        if isinstance(y, str) | isinstance(y, int):
-            if 0 <= int(y) <= 10000:
-                return str(y)
-    raise TypeError('Year must be a string or integer whose value is between 0 and 10,000.')
+    if is_some_none(y):
+        return None
+    elif isinstance(y, str) | isinstance(y, int):
+        if 0 <= int(y) <= 10000:
+            return str(y)
+    raise argparse.ArgumentTypeError('Year must be a string or integer whose value is between 0 and 10,000.')
 
 
 def benchmark_recipe(func):

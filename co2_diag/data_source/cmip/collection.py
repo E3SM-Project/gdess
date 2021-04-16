@@ -11,7 +11,7 @@ from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import to_datetimeindex
 from co2_diag.operations.convert import co2_molfrac_to_ppm
-from co2_diag.recipes.utils import valid_year_string, options_to_args, benchmark_recipe
+from co2_diag.recipes.utils import valid_year_string, options_to_args, benchmark_recipe, nullable_str
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
@@ -231,14 +231,14 @@ class Collection(Multiset):
             # The lazily loaded selections and computations are here actually processed.
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
-        if ('member_key' not in locals()) or (not opts.member_key):
+        if not opts.member_key:
             _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
-                                 new_self.stepC_prepped_datasets[opts.model_key]['member_id'].values.tolist())
-            member_key = new_self.stepC_prepped_datasets[opts.model_key]['member_id'].values.tolist()
+                                 new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist())
+            opts.member_key = new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist()
 
         # --- Plotting ---
-        fig, ax, bbox_artists = new_self.plot_zonal_mean(opts.model_key, member_key,
-                                                         titlestr=f"{opts.model_key} ({member_key})")
+        fig, ax, bbox_artists = new_self.plot_zonal_mean(opts.model_name, opts.member_key,
+                                                         titlestr=f"{opts.model_name} ({opts.member_key})")
         if opts.figure_savepath:
             mysavefig(fig, opts.figure_savepath, 'cmip_zonal_mean_plot', bbox_extra_artists=bbox_artists)
 
@@ -289,17 +289,17 @@ class Collection(Multiset):
             # The lazily loaded selections and computations are here actually processed.
             new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
-        if ('member_key' not in locals()) or (not opts.member_key):
+        if not opts.member_key:
             _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
-                                 new_self.stepC_prepped_datasets[opts.model_key]['member_id'].values.tolist())
-            member_key = new_self.stepC_prepped_datasets[opts.model_key]['member_id'].values.tolist()
+                                 new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist())
+            member_key = new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist()
 
         # The mean is calculated across ensemble members if there are multiple.
-        if isinstance(member_key, list) and (len(member_key) > 1):
+        if isinstance(opts.member_key, list) and (len(opts.member_key) > 1):
             df_list_of_means = []
             df_list_of_yearly_cycles = []
-            for mi, m in enumerate(member_key):
-                darray = new_self.stepC_prepped_datasets[opts.model_key].sel(member_id=m)
+            for mi, m in enumerate(opts.member_key):
+                darray = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=m)
                 df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(darray, varname='co2')
                 df_anomaly_yearly['member_id'] = m
                 df_anomaly_mean_cycle['member_id'] = m
@@ -309,12 +309,12 @@ class Collection(Multiset):
             df_anomaly_mean_cycle = pd.concat(df_list_of_means).groupby(['moy', 'plev']).mean().reset_index()
             df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby('moy').mean()
         else:
-            darray = new_self.stepC_prepped_datasets[opts.model_key].sel(member_id=member_key)
+            darray = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)
             df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(darray, varname='co2')
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
-                                                            titlestr=f"{opts.model_key} ({member_key})")
+                                                            titlestr=f"{opts.model_name} ({opts.member_key})")
         if opts.figure_savepath:
             mysavefig(fig, opts.figure_savepath, 'cmip_annual_series', bbox_extra_artists=bbox_artists)
 
@@ -480,7 +480,7 @@ class Collection(Multiset):
 
         return fig, ax, bbox_artists
 
-    def plot_zonal_mean(self, model_key, member_key, titlestr) -> (plt.Figure, plt.Axes, tuple):
+    def plot_zonal_mean(self, model_name, member_key, titlestr) -> (plt.Figure, plt.Axes, tuple):
         """Make zonal mean plot of co2 concentrations.
 
         Returns
@@ -491,7 +491,7 @@ class Collection(Multiset):
             Extra matplotlib artists used for the bounding box (bbox) when saving a figure
         """
         # --- Extract a single model member  ---
-        darray = self.stepC_prepped_datasets[model_key].sel(member_id=member_key)['co2']
+        darray = self.stepC_prepped_datasets[model_name].sel(member_id=member_key)['co2']
 
         # --- Make Figure ---
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
@@ -643,7 +643,7 @@ def parse_param_options(params: dict):
     parser.add_argument('--plev', default=100000, type=int)
     parser.add_argument('--model_name', default=None,
                         type=model_substring, choices=model_choices)
-    parser.add_argument('--member_key', default=None, type=int)
+    parser.add_argument('--member_key', default=None, type=nullable_str)
     args = parser.parse_args(param_argstr)
 
     # Convert times to numpy.datetime64

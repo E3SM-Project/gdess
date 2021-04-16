@@ -10,7 +10,7 @@ from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.time import to_datetimeindex
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-from co2_diag.recipes.utils import get_recipe_param, benchmark_recipe, options_to_args, valid_year_string
+from co2_diag.recipes.utils import benchmark_recipe, options_to_args, valid_year_string
 
 import matplotlib.pyplot as plt
 
