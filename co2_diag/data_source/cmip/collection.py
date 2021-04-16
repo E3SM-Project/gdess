@@ -9,7 +9,7 @@ from co2_diag import validate_verbose
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
-from co2_diag.operations.time import to_datetimeindex
+from co2_diag.operations.time import to_datetimeindex, ensure_dataset_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 from co2_diag.recipes.utils import valid_year_string, options_to_args, benchmark_recipe, nullable_str
 
@@ -374,6 +374,7 @@ class Collection(Multiset):
         self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm,
                                                                co2_var_name='co2',
                                                                inplace=True)
+        self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
         _loader_logger.debug("all converted.")
         # self.convert_all_to_ppm()
         _loader_logger.debug("Model keys:")
