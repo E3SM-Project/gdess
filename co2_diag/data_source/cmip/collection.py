@@ -89,7 +89,7 @@ class Collection(Multiset):
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
                                   load_from_file: Union[bool, str] = None,
-                                  param_kw: dict = None
+                                  options: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
@@ -100,8 +100,8 @@ class Collection(Multiset):
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         load_from_file
             (str): path to pickled datastore
-        param_kw
-            An optional dictionary with zero or more of these parameter keys:
+        options
+            A dictionary with zero or more of these parameter keys:
                 start_yr (str): '1960' is default
                 end_yr (str): None is default
                 plev (int): 100000 is default
@@ -111,7 +111,7 @@ class Collection(Multiset):
         Collection object for CMIP6 that was used to generate the diagnostic
         """
         _loader_logger.debug("Parsing diagnostic parameters...")
-        opts = parse_param_options(param_kw)
+        opts = parse_param_options(options)
         _loader_logger.debug("Parsing is done.")
 
         new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
@@ -142,7 +142,7 @@ class Collection(Multiset):
                                         datastore='cmip6',
                                         verbose: Union[bool, str] = False,
                                         load_from_file=None,
-                                        param_kw: dict = None
+                                        options: dict = None
                                         ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
@@ -153,8 +153,8 @@ class Collection(Multiset):
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         load_from_file
             (str): path to pickled datastore
-        param_kw
-            An optional dictionary with zero or more of these parameter keys:
+        options
+            A dictionary with zero or more of these parameter keys:
                 start_yr (str): '1960' is default
                 end_yr (str): None is default
 
@@ -163,7 +163,7 @@ class Collection(Multiset):
         Collection object for CMIP6 that was used to generate the diagnostic
         """
         _loader_logger.debug("Parsing diagnostic parameters...")
-        opts = parse_param_options(param_kw)
+        opts = parse_param_options(options)
         _loader_logger.debug("Parsing is done.")
 
         new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
@@ -193,7 +193,7 @@ class Collection(Multiset):
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
                                   load_from_file=None,
-                                  param_kw: dict = None
+                                  options: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
@@ -204,8 +204,8 @@ class Collection(Multiset):
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         load_from_file
             (str): path to pickled datastore
-        param_kw
-            An optional dictionary with zero or more of these parameter keys:
+        options
+            A dictionary with zero or more of these parameter keys:
                 start_yr (str): '1960' is default
                 end_yr (str): None is default
 
@@ -214,7 +214,7 @@ class Collection(Multiset):
         Collection object for CMIP6 that was used to generate the diagnostic
         """
         _loader_logger.debug("Parsing diagnostic parameters...")
-        opts = parse_param_options(param_kw)
+        opts = parse_param_options(options)
         _loader_logger.debug("Parsing is done.")
 
         new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
@@ -250,7 +250,7 @@ class Collection(Multiset):
                                      datastore='cmip6',
                                      verbose: Union[bool, str] = False,
                                      load_from_file=None,
-                                     param_kw: dict = None
+                                     options: dict = None
                                      ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
@@ -261,8 +261,8 @@ class Collection(Multiset):
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         load_from_file
             (str): path to pickled datastore
-        param_kw
-            An optional dictionary with zero or more of these parameter keys:
+        options
+            A dictionary with zero or more of these parameter keys:
                 start_yr (str): '1960' s default
                 end_yr (str): None is default
 
@@ -274,7 +274,7 @@ class Collection(Multiset):
                                                            load_from_file=load_from_file)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        opts = parse_param_options(param_kw)
+        opts = parse_param_options(options)
         _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---

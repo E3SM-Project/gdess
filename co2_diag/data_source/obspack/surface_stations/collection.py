@@ -54,7 +54,7 @@ class Collection(ObspackCollection):
     @benchmark_recipe
     def run_recipe_for_timeseries(cls,
                                   verbose=False,
-                                  param_kw: dict = None
+                                  options: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
@@ -62,8 +62,8 @@ class Collection(ObspackCollection):
         ----------
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        param_kw
-            An optional dictionary with zero or more of these parameter keys:
+        options
+            A dictionary with zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 station_code (str): 'mlo' is default
                 start_yr (str): '1960' is default
@@ -78,7 +78,7 @@ class Collection(ObspackCollection):
 
         # Diagnostic parameters are parsed.
         _loader_logger.debug("Parsing additional parameters...")
-        opts = parse_param_options(param_kw)
+        opts = parse_param_options(options)
         _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
@@ -102,7 +102,7 @@ class Collection(ObspackCollection):
     @benchmark_recipe
     def run_recipe_for_annual_series(cls,
                                      verbose: Union[bool, str] = False,
-                                     param_kw: dict = None
+                                     options: dict = None
                                      ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
@@ -110,8 +110,8 @@ class Collection(ObspackCollection):
         ----------
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        param_kw
-            An optional dictionary with zero or more of these parameter keys:
+        options
+            A dictionary with zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 start_yr (str): '1960' s default
                 end_yr (str): None is default
@@ -124,7 +124,7 @@ class Collection(ObspackCollection):
         new_self = cls(verbose=verbose)
 
         _loader_logger.debug("Parsing diagnostic parameters ---")
-        opts = parse_param_options(param_kw)
+        opts = parse_param_options(options)
         _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
