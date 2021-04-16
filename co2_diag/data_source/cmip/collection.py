@@ -110,12 +110,12 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                           load_from_file=load_from_file)
-
         _loader_logger.debug("Parsing diagnostic parameters...")
         opts = parse_param_options(param_kw)
         _loader_logger.debug("Parsing is done.")
+
+        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                           load_from_file=load_from_file)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
@@ -162,12 +162,12 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                           load_from_file=load_from_file)
-
         _loader_logger.debug("Parsing diagnostic parameters...")
         opts = parse_param_options(param_kw)
         _loader_logger.debug("Parsing is done.")
+
+        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                           load_from_file=load_from_file)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
@@ -213,12 +213,12 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                           load_from_file=load_from_file)
-
         _loader_logger.debug("Parsing diagnostic parameters...")
         opts = parse_param_options(param_kw)
         _loader_logger.debug("Parsing is done.")
+
+        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
+                                                           load_from_file=load_from_file)
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
