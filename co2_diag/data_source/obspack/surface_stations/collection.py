@@ -439,7 +439,7 @@ def parse_param_options(params: dict):
     _loader_logger.debug("Parsing diagnostic parameters...")
 
     param_argstr = options_to_args(params)
-    _loader_logger.debug('Parameter argument string == %s', param_argstr)
+    _loader_logger.debug(' Parameter argument string == %s', param_argstr)
 
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--ref_data', type=str)
