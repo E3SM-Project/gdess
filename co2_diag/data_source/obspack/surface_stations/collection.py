@@ -73,7 +73,7 @@ class Collection(ObspackCollection):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
-        opts = parse_param_options(options)
+        opts = _parse_options(options)
 
         # An empty instance is created.
         new_self = cls(verbose=verbose)
@@ -117,7 +117,7 @@ class Collection(ObspackCollection):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
-        opts = parse_param_options(options)
+        opts = _parse_options(options)
 
         # An empty instance is created.
         new_self = cls(verbose=verbose)
@@ -435,7 +435,7 @@ class Collection(ObspackCollection):
         return strrep
 
 
-def parse_param_options(params: dict):
+def _parse_options(params: dict):
     _loader_logger.debug("Parsing diagnostic parameters...")
 
     param_argstr = options_to_args(params)

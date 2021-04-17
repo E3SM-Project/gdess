@@ -91,7 +91,7 @@ class Collection(Multiset):
         -------
         Collection object for E3SM that was used to generate the diagnostic
         """
-        opts = parse_param_options(options)
+        opts = _parse_options(options)
 
         new_self, loaded_from_file = cls._recipe_base(verbose=verbose,
                                                       from_file=load_from_file,
@@ -215,7 +215,7 @@ class Collection(Multiset):
         return strrep
 
 
-def parse_param_options(params: dict):
+def _parse_options(params: dict):
     _loader_logger.debug("Parsing diagnostic parameters...")
 
     param_argstr = options_to_args(params)

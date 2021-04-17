@@ -128,7 +128,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        opts = parse_param_options(options)
+        opts = _parse_options(options)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
@@ -169,7 +169,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        opts = parse_param_options(options)
+        opts = _parse_options(options)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
@@ -209,7 +209,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        opts = parse_param_options(options)
+        opts = _parse_options(options)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
@@ -255,7 +255,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        opts = parse_param_options(options)
+        opts = _parse_options(options)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
@@ -593,7 +593,7 @@ def model_substring(s):
     return s
 
 
-def parse_param_options(params: dict):
+def _parse_options(params: dict):
     _loader_logger.debug("Parsing diagnostic parameters...")
 
     param_argstr = options_to_args(params)

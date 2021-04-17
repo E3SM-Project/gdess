@@ -50,10 +50,9 @@ def surface_trends(verbose=False,
     A dictionary containing the data that were plotted.
     """
     _logger.setLevel(validate_verbose(verbose))
-    # --- Recipe options are parsed. ---
-    _logger.debug("Parsing parameter options...")
-    opts = parse_param_options(options)
-    _logger.debug("DONE.")
+    if verbose:
+        ProgressBar().register()
+    opts = _parse_options(options)
 
     # --- Surface observations ---
     _logger.info('*Processing Observations*')
@@ -70,8 +69,6 @@ def surface_trends(verbose=False,
     ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
 
     # --- Obspack and CMIP are now handled Together ---
-    if verbose:
-        ProgressBar().register()
     _logger.info('Selected bounds for both:')
 
     # Time boundaries
@@ -165,7 +162,9 @@ def surface_trends(verbose=False,
     return data_output
 
 
-def parse_param_options(params: dict):
+def _parse_options(params: dict):
+    _logger.debug("Parsing diagnostic parameters...")
+
     param_argstr = options_to_args(params)
     _logger.debug('Parameter argument string == %s', param_argstr)
 
@@ -180,11 +179,11 @@ def parse_param_options(params: dict):
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
-
     args = parser.parse_args(param_argstr)
 
     # Convert times to numpy.datetime64
     args.start_datetime = np.datetime64(args.start_yr, 'D')
     args.end_datetime = np.datetime64(args.end_yr, 'D')
 
+    _logger.debug("Parsing is done.")
     return args
