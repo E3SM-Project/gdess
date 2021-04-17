@@ -5,6 +5,7 @@ This function parses:
 ================================================================================
 """
 import argparse
+from typing import Union
 import numpy as np
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
@@ -21,7 +22,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def surface_trends(verbose=False,
+def surface_trends(verbose: Union[bool, str] = False,
                    options: dict = None,
                    ):
     """Execute a series of preprocessing steps and generate a diagnostic result.
@@ -30,10 +31,10 @@ def surface_trends(verbose=False,
 
     Parameters
     ----------
-    verbose
+    verbose: Union[bool, str]
         can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-    options
-        A dictionary that specifies recipe options. It can contain the following keys:
+    options: dict
+        Recipe options specified as key:value pairs. It can contain the following keys:
             ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
             model_name (str): 'mlo' is default
             start_yr (str): '1960' is default
@@ -70,7 +71,6 @@ def surface_trends(verbose=False,
 
     # --- Obspack and CMIP are now handled Together ---
     _logger.info('Selected bounds for both:')
-
     # Time boundaries
     ds_obs = ensure_dataset_datetime64(ds_obs)
     ds_obs = ds_obs.where(ds_obs.time >= opts.start_datetime, drop=True)
@@ -116,7 +116,7 @@ def surface_trends(verbose=False,
     # Lazy computations are executed.
     _logger.info('Applying selected bounds...')
     da_mdl = da_mdl.squeeze().compute()
-    _logger.info('DONE.')
+    _logger.info('done.')
 
     # --- Create Graphic ---
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
@@ -130,7 +130,8 @@ def surface_trends(verbose=False,
         data_output = {'model': da_mdl_rs, 'obs': da_obs_rs, 'diff': da_TestMinusRef}
         #
         # Plot
-        ax.plot(da_TestMinusRef['time'], da_TestMinusRef, label='model - obs',
+        ax.plot(da_TestMinusRef['time'], da_TestMinusRef,
+                label='model - obs',
                 marker='.', linestyle='none')
         #
         ax.set_ylim(limits_with_zero(ax.get_ylim()))

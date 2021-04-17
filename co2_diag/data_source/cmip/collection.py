@@ -75,7 +75,7 @@ class Collection(Multiset):
 
         Returns
         -------
-        tuple
+        tuple: (Collection, bool)
             Collection
             bool
                 Whether datasets were loaded from file or not. (If not, there is probably more processing needed.)
