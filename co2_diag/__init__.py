@@ -1,3 +1,31 @@
+import logging
+from typing import Union
+
+
+def validate_verbose(verbose: Union[bool, str] = False) -> Union[int, str]:
+    """Convert a verbosity argument to a logging level
+
+    Parameters
+    ----------
+    verbose
+        either True, False, or a string for level such as "INFO, DEBUG, etc."
+
+    Returns
+    -------
+        A logging verbosity level or string that corresponds to a verbosity level
+
+    """
+    if verbose is True:
+        level_to_set = logging.DEBUG
+    elif verbose is not None:
+        level_to_set = verbose
+    elif verbose is None:
+        level_to_set = logging.WARN
+    else:
+        raise ValueError("Unexpected/unhandled verbose option <%s>. "
+                         "Please use True, False or a string for level such as 'INFO, DEBUG, etc.'", verbose)
+    return level_to_set
+
 
 def _config_logger():
     """Configure the root logger"""

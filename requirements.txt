@@ -5,10 +5,13 @@ numpy
 pandas
 dask
 xarray
+cftime
 
 # Graphics packages
 matplotlib
 cartopy
+# A graphics package for adding labels to mapped data points
+adjustText
 
 # Intake is a package for retrieving CMIP6, and gcsfs is a silent dependency
 intake

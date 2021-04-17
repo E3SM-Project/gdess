@@ -47,6 +47,11 @@
     "loggers": {
         "co2_diag.dataset_operations": {
             "handlers": ["rotating_file", "console"],
+            "level": "INFO",
+            "propagate": false
+        },
+        "co2_diag.dataset_operations.datasetdict": {
+            "handlers": ["rotating_file", "console"],
             "level": "DEBUG",
             "propagate": false
         },
