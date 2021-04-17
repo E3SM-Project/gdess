@@ -28,40 +28,49 @@ default_cmip6_datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm
 
 
 class Collection(Multiset):
-    def __init__(self, datastore='cmip6', verbose=False):
-        """
+    def __init__(self, datastore='cmip6', verbose: Union[bool, str] = False):
+        """Instantiate a CMIP Collection object.
 
         Parameters
         ----------
-        datastore
-        verbose
+        datastore: str
+            a shortened name of an ESM catalog that we will query for model outputs.
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
+        # Set up the level of verbosity, i.e. how many log messages are displayed.
         self.set_verbose(verbose)
+        self._progressbar = True
+        if _loader_logger.level > 10:  # 10 is debug, 20 is info, etc.
+            self._progressbar = False
 
+        self.latest_searched_model_catalog = None
+        self.catalog_dataframe = None
+        # TODO: add capability to handle additional datastores besides cmip6, such as CMIP5, etc.
         if datastore == 'cmip6':
             self.datastore_url = default_cmip6_datastore_url
         else:
             raise ValueError('Unexpected/unhandled datastore <%s>', datastore)
 
-        self.latest_searched_model_catalog = None
-        self.catalog_dataframe = None
-
         super().__init__(verbose=verbose)
 
     @classmethod
-    def _cmip_recipe_base(cls,
-                          datastore='cmip6',
-                          verbose: Union[bool, str] = False,
-                          load_from_file: Union[bool, str] = None
-                          ) -> ('Collection', bool):
+    def _recipe_base(cls,
+                     datastore='cmip6',
+                     verbose: Union[bool, str] = False,
+                     from_file: Union[bool, str] = None,
+                     selection: dict = None,
+                     mean_dims: tuple = None,
+                     ) -> ('Collection', bool):
         """Create an instance, and either preprocess or load already processed data.
 
         Parameters
         ----------
-        datastore
-        verbose
-        load_from_file
+        datastore: str
+        verbose: Union[bool, str]
+        from_file: Union[bool, str]
+        selection: dict
+        mean_dims: tuple
 
         Returns
         -------
@@ -75,11 +84,19 @@ class Collection(Multiset):
 
         # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
         # otherwise, this is False.
-        loaded_from_file_bool = new_self.datasets_from_file(filename=load_from_file, replace=True)
+        loaded_from_file_bool = new_self.datasets_from_file(filename=from_file, replace=True)
 
         if not loaded_from_file_bool:
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self.preprocess(new_self.datastore_url)
+
+            _loader_logger.info('Applying selected bounds..')
+            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
+                                                                                                   inplace=False)
+            # Spatial mean is calculated, leaving us with a time series.
+            new_self.stepC_prepped_datasets.queue_mean(dim=mean_dims, inplace=True)
+            # The lazily loaded selections and computations are here actually processed.
+            new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
         return new_self, loaded_from_file_bool
 
@@ -95,11 +112,11 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datastore
-        verbose
+        datastore: str
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file
-            (str): path to pickled datastore
+        load_from_file: Union[bool, str]
+            path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
                 start_yr (str): '1960' is default
@@ -110,24 +127,13 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        _loader_logger.debug("Parsing diagnostic parameters...")
         opts = parse_param_options(options)
-        _loader_logger.debug("Parsing is done.")
 
-        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                           load_from_file=load_from_file)
-
-        # --- Apply diagnostic parameters and prep data for plotting ---
-        if not loaded_from_file:
-            _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(opts.start_datetime, opts.end_datetime),
-                         'plev': opts.plev}
-            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
-                                                                                                   inplace=False)
-            # Spatial mean is calculated, leaving us with a time series.
-            new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
-            # The lazily loaded selections and computations are here actually processed.
-            new_self.stepC_prepped_datasets.execute_all(inplace=True)
+        # Apply diagnostic options and prep data for plotting
+        selection = {'time': slice(opts.start_datetime, opts.end_datetime),
+                     'plev': opts.plev}
+        new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
+                                                      selection=selection, mean_dims=('lon', 'lat'))
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
@@ -141,18 +147,18 @@ class Collection(Multiset):
     def run_recipe_for_vertical_profile(cls,
                                         datastore='cmip6',
                                         verbose: Union[bool, str] = False,
-                                        load_from_file=None,
+                                        load_from_file: Union[bool, str] = None,
                                         options: dict = None
                                         ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
         ----------
-        datastore
-        verbose
+        datastore: str
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file
-            (str): path to pickled datastore
+        load_from_file: str
+            path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
                 start_yr (str): '1960' is default
@@ -162,23 +168,12 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        _loader_logger.debug("Parsing diagnostic parameters...")
         opts = parse_param_options(options)
-        _loader_logger.debug("Parsing is done.")
 
-        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                           load_from_file=load_from_file)
-
-        # --- Apply diagnostic parameters and prep data for plotting ---
-        if not loaded_from_file:
-            _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
-            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
-                                                                                                   inplace=False)
-            # Mean is calculated, leaving us with a vertical profile.
-            new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat', 'time'), inplace=True)
-            # The lazily loaded selections and computations are here actually processed.
-            new_self.stepC_prepped_datasets.execute_all(inplace=True)
+        # Apply diagnostic options and prep data for plotting
+        selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
+        new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
+                                                      selection=selection, mean_dims=('lon', 'lat', 'time'))
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_vertical_profiles()
@@ -192,18 +187,18 @@ class Collection(Multiset):
     def run_recipe_for_zonal_mean(cls,
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
-                                  load_from_file=None,
+                                  load_from_file: Union[bool, str] = None,
                                   options: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
         ----------
-        datastore
-        verbose
+        datastore: str
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file
-            (str): path to pickled datastore
+        load_from_file: Union[bool, str]
+            path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
                 start_yr (str): '1960' is default
@@ -213,23 +208,12 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        _loader_logger.debug("Parsing diagnostic parameters...")
         opts = parse_param_options(options)
-        _loader_logger.debug("Parsing is done.")
 
-        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                           load_from_file=load_from_file)
-
-        # --- Apply diagnostic parameters and prep data for plotting ---
-        if not loaded_from_file:
-            _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
-            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
-                                                                                                   inplace=False)
-            # The longitudinal mean will be calculated, leaving us with the average latitudinal/height gradients.
-            new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'time'), inplace=True)
-            # The lazily loaded selections and computations are here actually processed.
-            new_self.stepC_prepped_datasets.execute_all(inplace=True)
+        # Apply diagnostic options and prep data for plotting
+        selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
+        new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
+                                                      selection=selection, mean_dims=('lon', 'time'))
 
         if not opts.member_key:
             _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
@@ -249,18 +233,18 @@ class Collection(Multiset):
     def run_recipe_for_annual_series(cls,
                                      datastore='cmip6',
                                      verbose: Union[bool, str] = False,
-                                     load_from_file=None,
+                                     load_from_file: Union[bool, str] = None,
                                      options: dict = None
                                      ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
         ----------
-        datastore
-        verbose
+        datastore: str
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file
-            (str): path to pickled datastore
+        load_from_file: Union[bool, str]
+            path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
                 start_yr (str): '1960' s default
@@ -270,29 +254,18 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        new_self, loaded_from_file = cls._cmip_recipe_base(datastore=datastore, verbose=verbose,
-                                                           load_from_file=load_from_file)
-
-        _loader_logger.debug("Parsing diagnostic parameters ---")
         opts = parse_param_options(options)
-        _loader_logger.debug("Parsing is done.")
 
-        # --- Apply diagnostic parameters and prep data for plotting ---
-        if not loaded_from_file:
-            _loader_logger.info('Applying selected bounds..')
-            selection = {'time': slice(opts.start_datetime, opts.end_datetime),
-                         'plev': opts.plev}
-            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
-                                                                                                   inplace=False)
-            # Spatial mean is calculated, leaving us with a time series.
-            new_self.stepC_prepped_datasets.queue_mean(dim=('lon', 'lat'), inplace=True)
-            # The lazily loaded selections and computations are here actually processed.
-            new_self.stepC_prepped_datasets.execute_all(inplace=True)
+        # Apply diagnostic options and prep data for plotting
+        selection = {'time': slice(opts.start_datetime, opts.end_datetime),
+                     'plev': opts.plev}
+        new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
+                                                      selection=selection, mean_dims=('lon', 'lat'))
 
         if not opts.member_key:
             _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
                                  new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist())
-            member_key = new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist()
+            opts.member_key = new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist()
 
         # The mean is calculated across ensemble members if there are multiple.
         if isinstance(opts.member_key, list) and (len(opts.member_key) > 1):
@@ -321,33 +294,20 @@ class Collection(Multiset):
         return new_self
 
     def preprocess(self, url: str = default_cmip6_datastore_url) -> None:
-        """Set up the dataset that are common to every diagnostic
+        """Set up the datasets that are common to every diagnostic
 
         Parameters
         ----------
-        url
+        url: str
         """
         _loader_logger.debug("Preprocessing...")
 
-        _loader_logger.debug('Opening the ESM datastore catalog..')
-        _loader_logger.debug(' URL == %s', url)
+        _loader_logger.debug(' Opening the ESM datastore catalog, using URL == %s', url)
         self.catalog_dataframe = intake.open_esm_datastore(url)
 
-        _loader_logger.debug('Searching for model output subset..')
-        esm_datastore = self._search(experiment_id='esm-hist', table_id=['Amon'], variable_id='co2')
-        _loader_logger.debug(f"  {esm_datastore.df.shape[0]} model members identified")
-
-        _loader_logger.debug('Loading model datasets into memory..')
-        self._load_datasets_from_search()
-
-        _loader_logger.debug("Preprocessing done.")
-
-    def _search(self, **query) -> intake_esm.core.esm_datastore:
-        """Wrapper for intake's catalog search.
-
-        Loads catalog into the attribute "latest_searched_model_catalog"
-
-        query keyword arguments:
+        """
+        We use the intake package's search to load a catalog into the attribute "latest_searched_model_catalog"
+        Acceptable search arguments include: 
             experiment_id
             table_id
             variable_id
@@ -355,28 +315,28 @@ class Collection(Multiset):
             member_id
             grid_label
         """
-        _loader_logger.debug("query dictionary: %s", query)
-        self.latest_searched_model_catalog = self.catalog_dataframe.search(**query)
+        search_parameters = {'experiment_id': 'esm-hist',
+                             'table_id': ['Amon'],
+                             'variable_id': 'co2'}
+        _loader_logger.debug(' Searching for model output subset, with parameters = %s', search_parameters)
+        self.latest_searched_model_catalog = self.catalog_dataframe.search(**search_parameters)
+        _loader_logger.debug(f"  {self.latest_searched_model_catalog.df.shape[0]} model members identified")
+        self._load_datasets_from_search()
 
-        return self.latest_searched_model_catalog
+        _loader_logger.debug("Preprocessing done.")
 
     def _load_datasets_from_search(self) -> None:
         """Load datasets into memory."""
-        # self.stepA_original_datasets = self.latest_searched_model_catalog.to_dataset_dict()
-        progressbar = True
-        if _loader_logger.level > 10:  # 10 is debug, 20 is info, etc.
-            progressbar = False
-        self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict(progressbar=progressbar))
-
+        _loader_logger.debug(' Loading model datasets into memory..')
+        self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
         self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
-        # Convert CO2 units to ppm
+
         _loader_logger.debug("Converting units to ppm..")
         self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm,
                                                                co2_var_name='co2',
                                                                inplace=True)
         self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
         _loader_logger.debug("all converted.")
-        # self.convert_all_to_ppm()
         _loader_logger.debug("Model keys:")
         _loader_logger.debug('\n'.join(self.stepA_original_datasets.keys()))
 
@@ -389,13 +349,13 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        xr_ds
-        lat
-        lon
+        xr_ds: xr.Dataset
+        lat: float
+        lon: float
 
         Returns
         -------
-
+        An xarray.Dataset
         """
         closest_point_dict = get_closest_mdl_cell_dict(xr_ds, lat=lat, lon=lon,
                                                        coords_as_dimensions=True)
@@ -426,18 +386,19 @@ class Collection(Multiset):
                 darray = self.stepC_prepped_datasets[k].sel(member_id=m)
 
                 # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
-                if not isinstance(darray['time'].values[0], np.datetime64):
-                    # Warnings are raised when converting CFtimes to datetimes, because subtle errors.
-                    with warnings.catch_warnings():
-                        warnings.simplefilter("ignore")
-                        darray = to_datetimeindex(darray)
+                darray = ensure_dataset_datetime64(darray)
+                # if not isinstance(darray['time'].values[0], np.datetime64):
+                #     # Warnings are raised when converting CFtimes to datetimes, because subtle errors.
+                #     with warnings.catch_warnings():
+                #         warnings.simplefilter("ignore")
+                #         darray = to_datetimeindex(darray)
 
                 ax.plot(darray['time'], darray.to_array().squeeze(), label=f"{k} ({m})",
                         color=my_cmap.colors[color_count], alpha=0.6)
 
         ax.set_ylabel('ppm')
         aesthetic_grid_no_spines(ax)
-
+        #
         leg = plt.legend(title='Models', frameon=False,
                          bbox_to_anchor=(1.05, 1), loc='upper left',
                          fontsize=12)
@@ -506,7 +467,6 @@ class Collection(Multiset):
         ax.grid(linestyle='--', color='lightgray', alpha=0.3)
         for k in ax.spines.keys():
             ax.spines[k].set_alpha(0.5)
-
         bbox_artists = ()
 
         return fig, ax, bbox_artists
@@ -563,14 +523,14 @@ class Collection(Multiset):
         """
         Parameters
         ----------
-        verbose
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         _loader_logger.setLevel(validate_verbose(verbose))
 
     def __repr__(self) -> str:
         """String representation is built."""
-        nmodels, member_counts = self._count_members(verbose=False)
+        nmodels, member_counts = self._count_members(suppress_log_message=True)
         strrep = f"-- CMIP Collection -- \n" \
                  f"Datasets:" \
                  f"\n\t" + \
@@ -584,12 +544,12 @@ class Collection(Multiset):
 
         return strrep
 
-    def _count_members(self, verbose=True):
+    def _count_members(self, suppress_log_message: bool = False):
         """Get the number of member_id values present for each model's dataset
 
         Parameters
         ----------
-        verbose
+        suppress_log_message: bool
 
         Returns
         -------
@@ -609,7 +569,7 @@ class Collection(Multiset):
         for k in ds_to_check.keys():
             member_counts.append(len(ds_to_check[k]['member_id'].values))
         nmodels = len(member_counts)
-        if verbose:
+        if not suppress_log_message:
             _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
 
         return nmodels, member_counts
@@ -633,6 +593,8 @@ def model_substring(s):
 
 
 def parse_param_options(params: dict):
+    _loader_logger.debug("Parsing diagnostic parameters...")
+
     param_argstr = options_to_args(params)
     _loader_logger.debug('Parameter argument string == %s', param_argstr)
 
@@ -651,4 +613,5 @@ def parse_param_options(params: dict):
     args.start_datetime = np.datetime64(args.start_yr, 'D')
     args.end_datetime = np.datetime64(args.end_yr, 'D')
 
+    _loader_logger.debug("Parsing is done.")
     return args
