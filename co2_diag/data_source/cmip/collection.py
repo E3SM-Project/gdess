@@ -59,6 +59,7 @@ class Collection(Multiset):
                      datastore='cmip6',
                      verbose: Union[bool, str] = False,
                      from_file: Union[bool, str] = None,
+                     skip_selections: bool = False,
                      selection: dict = None,
                      mean_dims: tuple = None,
                      ) -> ('Collection', bool):
@@ -86,7 +87,7 @@ class Collection(Multiset):
         # otherwise, this is False.
         loaded_from_file_bool = new_self.datasets_from_file(filename=from_file, replace=True)
 
-        if not loaded_from_file_bool:
+        if (not loaded_from_file_bool) & (not skip_selections):
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self.preprocess(new_self.datastore_url)
 
