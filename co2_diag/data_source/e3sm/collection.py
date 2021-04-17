@@ -19,12 +19,12 @@ _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 
 class Collection(Multiset):
-    def __init__(self, verbose=False):
-        """
+    def __init__(self, verbose: Union[bool, str] = False):
+        """Instantiate an E3SM Collection object.
 
         Parameters
         ----------
-        verbose
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.set_verbose(verbose)
@@ -32,18 +32,18 @@ class Collection(Multiset):
         super().__init__(verbose=verbose)
 
     @classmethod
-    def _e3sm_recipe_base(cls,
-                          verbose: Union[bool, str] = False,
-                          load_from_file=None,
-                          nc_file: str = None
-                          ) -> ('Collection', bool):
+    def _recipe_base(cls,
+                     verbose: Union[bool, str] = False,
+                     from_file: Union[bool, str] = None,
+                     nc_file: str = None
+                     ) -> ('Collection', bool):
         """Create an instance, and either preprocess or load already processed data.
 
         Parameters
         ----------
-        verbose
-        load_from_file
-        nc_file
+        verbose: Union[bool, str]
+        from_file: Union[bool, str]
+        nc_file: str
 
         Returns
         -------
@@ -57,7 +57,7 @@ class Collection(Multiset):
 
         # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
         # otherwise, this is False.
-        loaded_from_file_bool = new_self.datasets_from_file(filename=load_from_file, replace=True)
+        loaded_from_file_bool = new_self.datasets_from_file(filename=from_file, replace=True)
 
         if not loaded_from_file_bool:
             # Data are formatted into the basic data structure common to various diagnostics.
@@ -91,17 +91,14 @@ class Collection(Multiset):
         -------
         Collection object for E3SM that was used to generate the diagnostic
         """
-        _loader_logger.debug("Parsing diagnostic parameters...")
         opts = parse_param_options(options)
-        _loader_logger.debug("Parsing is done.")
 
-        new_self, loaded_from_file = cls._e3sm_recipe_base(verbose=verbose,
-                                                           load_from_file=load_from_file,
-                                                           nc_file=opts.test_data)
-
+        new_self, loaded_from_file = cls._recipe_base(verbose=verbose,
+                                                      from_file=load_from_file,
+                                                      nc_file=opts.test_data)
         n_lev = len(new_self.stepB_preprocessed_datasets['main'].lev)  # get last level
         if not opts.lev_index:
-            lev_index = n_lev-1
+            opts.lev_index = n_lev-1
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
@@ -109,7 +106,7 @@ class Collection(Multiset):
             selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
-            iselection = {'lev': lev_index}
+            iselection = {'lev': opts.lev_index}
             new_self.stepC_prepped_datasets.queue_selection(**iselection, isel=True, inplace=True)
             # Spatial mean is calculated, leaving us with a time series.
             new_self.stepC_prepped_datasets.queue_mean(dim=('ncol'), inplace=True)
@@ -124,7 +121,7 @@ class Collection(Multiset):
         return new_self
 
     @staticmethod
-    def _preprocess_functions(dataset):
+    def _preprocess_functions(dataset: xr.Dataset):
         """Run a set of functions on a dataset
 
         - Set coordinates
@@ -134,11 +131,11 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        dataset
+        dataset: xr.Dataset
 
         Returns
         -------
-
+        An xr.Dataset
         """
         dataset['PMID'] = getPMID(dataset['hyam'], dataset['hybm'], dataset['P0'], dataset['PS'])
         dataset = (dataset
@@ -154,14 +151,15 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        filepath
+        filepath: str
         """
         _loader_logger.info("Preprocessing...")
-        _loader_logger.debug('Opening the file..')
+
+        _loader_logger.debug(' Opening the file..')
         self.stepA_original_datasets = DatasetDict({'main': xr.open_dataset(filepath)})
         self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
 
-        _loader_logger.debug('setting coords, formatting time, converting to ppm..')
+        _loader_logger.debug(' Setting coords, formatting time, converting to ppm..')
         self.stepB_preprocessed_datasets.apply_function_to_all(self._preprocess_functions, inplace=True)
 
         _loader_logger.info("Preprocessing is done.")
@@ -185,10 +183,10 @@ class Collection(Multiset):
         plt.plot(self.stepC_prepped_datasets['main']['time'],
                  self.stepC_prepped_datasets['main']['CO2'],
                  label=f"E3SM simulation", color=my_cmap.colors[0], alpha=0.6)
-
+        #
         ax.set_ylabel('$CO_2$ [ppm]')
         aesthetic_grid_no_spines(ax)
-
+        #
         bbox_artists = ()
 
         return fig, ax, bbox_artists
@@ -197,7 +195,7 @@ class Collection(Multiset):
         """
         Parameters
         ----------
-        verbose
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         _loader_logger.setLevel(validate_verbose(verbose))
@@ -218,6 +216,8 @@ class Collection(Multiset):
 
 
 def parse_param_options(params: dict):
+    _loader_logger.debug("Parsing diagnostic parameters...")
+
     param_argstr = options_to_args(params)
     _loader_logger.debug('Parameter argument string == %s', param_argstr)
 
@@ -233,4 +233,5 @@ def parse_param_options(params: dict):
     args.start_datetime = np.datetime64(args.start_yr, 'D')
     args.end_datetime = np.datetime64(args.end_yr, 'D')
 
+    _loader_logger.debug("Parsing is done.")
     return args

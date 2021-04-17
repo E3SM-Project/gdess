@@ -18,7 +18,7 @@ _multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 class Multiset:
     """Useful class for working simultaneously with multiple, consistent xarray Datasets."""
 
-    def __init__(self, verbose=False):
+    def __init__(self, verbose: Union[bool, str] = False):
         """
         This class is a template against which we can run recipes, with an order of operations:
             - Step A: datasets loaded, in their original form
@@ -27,7 +27,7 @@ class Multiset:
 
         Parameters
         ----------
-        verbose
+        verbose: Union[bool, str]
             either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.stepA_original_datasets: Union[DatasetDict, None] = None
@@ -54,8 +54,8 @@ class Multiset:
 
         Parameters
         ----------
-        filename
-        replace
+        filename: str
+        replace: bool
 
         Returns
         -------
@@ -94,16 +94,19 @@ class Multiset:
         return _df_anomaly_mean_cycle, _df_anomaly_yearly
 
     @staticmethod
-    def categorical_cmap(nc, nsc, cmap="tab10", continuous=False):
+    def categorical_cmap(nc: int,
+                         nsc: int,
+                         cmap: str = "tab10",
+                         continuous: bool = False):
         """
         Parameters
         ----------
-        nc
+        nc: int
             number of categories
-        nsc
+        nsc: int
             number of subcategories
-        cmap
-        continuous
+        cmap: str
+        continuous: bool
 
         Returns
         -------

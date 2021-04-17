@@ -25,12 +25,12 @@ _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 
 class Collection(ObspackCollection):
-    def __init__(self, verbose=False):
-        """
+    def __init__(self, verbose: Union[bool, str] = False):
+        """Instantiate a Obspack Aircraft Collection object.
 
         Parameters
         ----------
-        verbose
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.set_verbose(verbose)
@@ -84,7 +84,7 @@ class Collection(ObspackCollection):
 
         Parameters
         ----------
-        datadir
+        datadir: str
             directory containing the Globalview+ NetCDF files.
 
         Returns

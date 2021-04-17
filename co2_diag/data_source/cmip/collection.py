@@ -323,7 +323,7 @@ class Collection(Multiset):
         _loader_logger.debug(f"  {self.latest_searched_model_catalog.df.shape[0]} model members identified")
         self._load_datasets_from_search()
 
-        _loader_logger.debug("Preprocessing done.")
+        _loader_logger.debug("Preprocessing is done.")
 
     def _load_datasets_from_search(self) -> None:
         """Load datasets into memory."""

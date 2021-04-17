@@ -18,8 +18,8 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
     Parameters
     ----------
     fig
-    results_dir
-    plot_save_name
+    results_dir: str
+    plot_save_name: str
     kwargs
 
     Returns

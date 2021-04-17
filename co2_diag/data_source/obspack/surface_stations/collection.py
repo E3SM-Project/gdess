@@ -34,12 +34,12 @@ station_dict = {'mlo': {'name': 'Mauna Loa'},
 
 
 class Collection(ObspackCollection):
-    def __init__(self, verbose=False):
-        """
+    def __init__(self, verbose: Union[bool, str]=False):
+        """Instantiate an Obspack Surface Station Collection object.
 
         Parameters
         ----------
-        verbose
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.set_verbose(verbose)
@@ -53,14 +53,14 @@ class Collection(ObspackCollection):
     @classmethod
     @benchmark_recipe
     def run_recipe_for_timeseries(cls,
-                                  verbose=False,
+                                  verbose: Union[bool, str] = False,
                                   options: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
 
         Parameters
         ----------
-        verbose
+        verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         options
             A dictionary with zero or more of these parameter keys:
@@ -73,13 +73,10 @@ class Collection(ObspackCollection):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
+        opts = parse_param_options(options)
+
         # An empty instance is created.
         new_self = cls(verbose=verbose)
-
-        # Diagnostic parameters are parsed.
-        _loader_logger.debug("Parsing additional parameters...")
-        opts = parse_param_options(options)
-        _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         # Data are formatted into the basic data structure common to various diagnostics.
@@ -120,12 +117,10 @@ class Collection(ObspackCollection):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
+        opts = parse_param_options(options)
+
         # An empty instance is created.
         new_self = cls(verbose=verbose)
-
-        _loader_logger.debug("Parsing diagnostic parameters ---")
-        opts = parse_param_options(options)
-        _loader_logger.debug("Parsing is done.")
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         # Data are formatted into the basic data structure common to various diagnostics.
@@ -441,6 +436,8 @@ class Collection(ObspackCollection):
 
 
 def parse_param_options(params: dict):
+    _loader_logger.debug("Parsing diagnostic parameters...")
+
     param_argstr = options_to_args(params)
     _loader_logger.debug('Parameter argument string == %s', param_argstr)
 
@@ -457,4 +454,5 @@ def parse_param_options(params: dict):
     args.start_datetime = np.datetime64(args.start_yr, 'D')
     args.end_datetime = np.datetime64(args.end_yr, 'D')
 
+    _loader_logger.debug("Parsing is done.")
     return args
