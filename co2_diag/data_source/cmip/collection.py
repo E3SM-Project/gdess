@@ -86,18 +86,21 @@ class Collection(Multiset):
         # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
         # otherwise, this is False.
         loaded_from_file_bool = new_self.datasets_from_file(filename=from_file, replace=True)
+        _loader_logger.debug(' loaded from file? --> %s', loaded_from_file_bool)
+        _loader_logger.debug(' skip_selections: %s', skip_selections)
 
-        if (not loaded_from_file_bool) & (not skip_selections):
+        if not loaded_from_file_bool:
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self.preprocess(new_self.datastore_url, model_name)
 
-            _loader_logger.debug(' applying selected bounds: %s', selection)
-            new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
-                                                                                                   inplace=False)
-            # Spatial mean is calculated, leaving us with a time series.
-            new_self.stepC_prepped_datasets.queue_mean(dim=mean_dims, inplace=True)
-            # The lazily loaded selections and computations are here actually processed.
-            new_self.stepC_prepped_datasets.execute_all(inplace=True)
+            if not skip_selections:
+                _loader_logger.debug(' applying selected bounds: %s', selection)
+                new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
+                                                                                                       inplace=False)
+                # Spatial mean is calculated, leaving us with a time series.
+                new_self.stepC_prepped_datasets.queue_mean(dim=mean_dims, inplace=True)
+                # The lazily loaded selections and computations are here actually processed.
+                new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
         return new_self, loaded_from_file_bool
 
