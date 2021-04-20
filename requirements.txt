@@ -17,3 +17,6 @@ adjustText
 intake
 intake-esm
 gcsfs
+
+# For development purposes
+pytest
