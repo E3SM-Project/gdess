@@ -177,7 +177,8 @@ class Collection(Multiset):
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
         new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
-                                                      selection=selection, mean_dims=('lon', 'lat', 'time'))
+                                                      selection=selection, mean_dims=('lon', 'lat', 'time'),
+                                                      model_name=opts.model_name)
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_vertical_profiles()
@@ -218,7 +219,8 @@ class Collection(Multiset):
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
         new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
-                                                      selection=selection, mean_dims=('lon', 'time'))
+                                                      selection=selection, mean_dims=('lon', 'time'),
+                                                      model_name=opts.model_name)
 
         if not opts.member_key:
             _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
@@ -266,7 +268,8 @@ class Collection(Multiset):
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
                      'plev': opts.plev}
         new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
-                                                      selection=selection, mean_dims=('lon', 'lat'))
+                                                      selection=selection, mean_dims=('lon', 'lat'),
+                                                      model_name=opts.model_name)
 
         if not opts.member_key:
             _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
@@ -334,10 +337,6 @@ class Collection(Multiset):
         self.latest_searched_model_catalog = self.catalog_dataframe.search(**search_parameters)
         _loader_logger.debug(f"  {self.latest_searched_model_catalog.df.shape[0]} model members identified")
 
-        # Load (all or specified) models
-        if model_name:
-            if isinstance(model_name, str):
-                model_name = [model_name]
         self._load_datasets_from_search(model_name)
 
         _loader_logger.debug("Preprocessing is done.")
@@ -348,7 +347,12 @@ class Collection(Multiset):
         """Load datasets into memory."""
         _loader_logger.debug(' Loading into memory the following models: %s', model_name)
         self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
-        # Extract only the specified datasets, and create a copy of each.
+        # Extract all (or only the specified) datasets, and create a copy of each.
+        if model_name:
+            if isinstance(model_name, str):
+                model_name = [model_name]
+        else:
+            model_name = self.stepA_original_datasets.keys()
         self.stepB_preprocessed_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
 
         _loader_logger.debug("Converting units to ppm..")
