@@ -108,6 +108,7 @@ e3sm_co2_diag
 │   │   └── log_config.json
 │   │
 │   └── tests                <- Unit tests for development 
+│       ├── test_cmip_collection_recipes.py
 │       └── test_surface_trends_recipe.py
 │
 ├── MANIFEST.in
