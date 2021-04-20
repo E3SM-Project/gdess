@@ -3,7 +3,7 @@ import numpy as np
 import xarray as xr
 from typing import Union
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 from co2_diag.data_source.e3sm.calculation import getPMID
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
@@ -27,7 +27,7 @@ class Collection(Multiset):
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        self.set_verbose(verbose)
+        set_verbose(_loader_logger, verbose)
 
         super().__init__(verbose=verbose)
 
@@ -91,6 +91,7 @@ class Collection(Multiset):
         -------
         Collection object for E3SM that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         new_self, loaded_from_file = cls._recipe_base(verbose=verbose,
@@ -190,15 +191,6 @@ class Collection(Multiset):
         bbox_artists = ()
 
         return fig, ax, bbox_artists
-
-    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """
-        Parameters
-        ----------
-        verbose: Union[bool, str]
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        """
-        _loader_logger.setLevel(validate_verbose(verbose))
 
     def __repr__(self) -> str:
         """ String representation is built.

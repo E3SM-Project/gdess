@@ -12,7 +12,7 @@ import cartopy.crs as ccrs
 
 from adjustText import adjust_text
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
 from co2_diag.data_source.multiset import Multiset
@@ -33,7 +33,7 @@ class Collection(ObspackCollection):
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        self.set_verbose(verbose)
+        set_verbose(_loader_logger, verbose)
 
         self.df_combined_and_resampled = None
         # Define the stations that will be included in the dataset and available for diagnostic plots
@@ -186,15 +186,6 @@ class Collection(ObspackCollection):
                     force_text=(0.1, 1), force_points=(3.2, 3),
                     expand_points=(1.25, 1.25),  # expand_objects=(1.25, 1.25),
                     arrowprops=dict(arrowstyle="->", color='b', lw=0.4))
-
-    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """
-        Parameters
-        ----------
-        verbose
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        """
-        _loader_logger.setLevel(validate_verbose(verbose))
 
     def __repr__(self):
         """ String representation is built."""

@@ -2,7 +2,7 @@ import os
 import xarray as xr
 from typing import Union
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
@@ -14,7 +14,7 @@ _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 
 class ObspackCollection(Multiset):
-    def __init__(self, verbose=False):
+    def __init__(self, verbose: Union[bool, str] = False):
         """
 
         Parameters
@@ -22,7 +22,7 @@ class ObspackCollection(Multiset):
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        self.set_verbose(verbose)
+        set_verbose(_loader_logger, verbose)
         super().__init__(verbose=verbose)
 
     @staticmethod
@@ -89,12 +89,3 @@ class ObspackCollection(Multiset):
         ds_all = xr.concat(ds_obs_dict.values(), dim=('obs'))
 
         return DatasetDict(ds_obs_dict)
-
-    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """
-        Parameters
-        ----------
-        verbose
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        """
-        _loader_logger.setLevel(validate_verbose(verbose))

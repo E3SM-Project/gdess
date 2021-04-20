@@ -5,7 +5,7 @@ import xarray as xr
 import warnings
 from typing import Union
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
@@ -39,7 +39,7 @@ class Collection(Multiset):
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         # Set up the level of verbosity, i.e. how many log messages are displayed.
-        self.set_verbose(verbose)
+        set_verbose(_loader_logger, verbose)
         self._progressbar = True
         if _loader_logger.level > 10:  # 10 is debug, 20 is info, etc.
             self._progressbar = False
@@ -62,6 +62,7 @@ class Collection(Multiset):
                      skip_selections: bool = False,
                      selection: dict = None,
                      mean_dims: tuple = None,
+                     model_name: Union[str, list] = None
                      ) -> ('Collection', bool):
         """Create an instance, and either preprocess or load already processed data.
 
@@ -89,7 +90,7 @@ class Collection(Multiset):
 
         if (not loaded_from_file_bool) & (not skip_selections):
             # Data are formatted into the basic data structure common to various diagnostics.
-            new_self.preprocess(new_self.datastore_url)
+            new_self.preprocess(new_self.datastore_url, model_name)
 
             _loader_logger.info('Applying selected bounds..')
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
@@ -128,13 +129,15 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
                      'plev': opts.plev}
         new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
-                                                      selection=selection, mean_dims=('lon', 'lat'))
+                                                      selection=selection, mean_dims=('lon', 'lat'),
+                                                      model_name=opts.model_name)
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
@@ -169,6 +172,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         # Apply diagnostic options and prep data for plotting
@@ -209,6 +213,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         # Apply diagnostic options and prep data for plotting
@@ -255,6 +260,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         # Apply diagnostic options and prep data for plotting
@@ -294,12 +300,16 @@ class Collection(Multiset):
 
         return new_self
 
-    def preprocess(self, url: str = default_cmip6_datastore_url) -> None:
+    def preprocess(self,
+                   url: str = default_cmip6_datastore_url,
+                   model_name: Union[str, list] = None
+                   ) -> None:
         """Set up the datasets that are common to every diagnostic
 
         Parameters
         ----------
         url: str
+        model_name: Union[str, list]
         """
         _loader_logger.debug("Preprocessing...")
 
@@ -322,15 +332,23 @@ class Collection(Multiset):
         _loader_logger.debug(' Searching for model output subset, with parameters = %s', search_parameters)
         self.latest_searched_model_catalog = self.catalog_dataframe.search(**search_parameters)
         _loader_logger.debug(f"  {self.latest_searched_model_catalog.df.shape[0]} model members identified")
-        self._load_datasets_from_search()
+
+        # Load (all or specified) models
+        if model_name:
+            if isinstance(model_name, str):
+                model_name = [model_name]
+        self._load_datasets_from_search(model_name)
 
         _loader_logger.debug("Preprocessing is done.")
 
-    def _load_datasets_from_search(self) -> None:
+    def _load_datasets_from_search(self,
+                                   model_name: list
+                                   ) -> None:
         """Load datasets into memory."""
         _loader_logger.debug(' Loading model datasets into memory..')
         self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
-        self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
+        # Extract only the specified datasets, and create a copy of each.
+        self.stepB_preprocessed_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
 
         _loader_logger.debug("Converting units to ppm..")
         self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm,
@@ -384,17 +402,20 @@ class Collection(Multiset):
             for mi, m in enumerate(self.stepC_prepped_datasets[k]['member_id'].values.tolist()):
                 color_count = ki * max(member_counts) + mi
 
-                darray = self.stepC_prepped_datasets[k].sel(member_id=m)
-
+                data = self.stepC_prepped_datasets[k].sel(member_id=m)
+                _loader_logger.debug("type of darray: %s", type(data))
+                _loader_logger.debug("darray: %s", data)
                 # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
-                darray = ensure_dataset_datetime64(darray)
+                dset = ensure_dataset_datetime64(data)
+                _loader_logger.debug("type of darray2: %s", type(data))
+                _loader_logger.debug("darray: %s", data)
                 # if not isinstance(darray['time'].values[0], np.datetime64):
                 #     # Warnings are raised when converting CFtimes to datetimes, because subtle errors.
                 #     with warnings.catch_warnings():
                 #         warnings.simplefilter("ignore")
                 #         darray = to_datetimeindex(darray)
-
-                ax.plot(darray['time'], darray.to_array().squeeze(), label=f"{k} ({m})",
+                y = dset['co2'].squeeze().to_array()
+                ax.plot(y['time'], y, label=f"{k} ({m})",
                         color=my_cmap.colors[color_count], alpha=0.6)
 
         ax.set_ylabel('ppm')
@@ -519,15 +540,6 @@ class Collection(Multiset):
         bbox_artists = (leg,)
 
         return fig, ax, bbox_artists
-
-    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """
-        Parameters
-        ----------
-        verbose: Union[bool, str]
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        """
-        _loader_logger.setLevel(validate_verbose(verbose))
 
     def __repr__(self) -> str:
         """String representation is built."""

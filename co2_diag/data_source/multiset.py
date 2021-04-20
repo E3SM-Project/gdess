@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.time import to_datetimeindex
@@ -34,7 +34,7 @@ class Multiset:
         self.stepB_preprocessed_datasets: Union[DatasetDict, None] = None
         self.stepC_prepped_datasets: DatasetDict = DatasetDict(dict())
 
-        self._set_multiset_verbose(verbose)
+        set_verbose(_multiset_logger, verbose)
 
     # def datasets_to_file(self, filename: str = 'cmip_collection.latest_executed_datasets.pickle',):
     #     """Pickle the latest executed dataset dictionary using the highest protocol available.
@@ -172,14 +172,3 @@ class Multiset:
             return '\n\t'.join(self.stepA_original_datasets.keys())
         else:
             return ''
-
-    def _set_multiset_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """This sets the verbosity level of the Multiset class only.
-
-        Parameters
-        ----------
-        verbose
-            either True, False, or a string for level such as "INFO, DEBUG, etc."
-
-        """
-        _multiset_logger.setLevel(validate_verbose(verbose))

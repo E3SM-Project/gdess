@@ -6,7 +6,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
 from co2_diag.data_source.multiset import Multiset
@@ -42,7 +42,7 @@ class Collection(ObspackCollection):
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        self.set_verbose(verbose)
+        set_verbose(_loader_logger, verbose)
 
         self.df_combined_and_resampled = None
         # Define the stations that will be included in the dataset and available for diagnostic plots
@@ -73,6 +73,7 @@ class Collection(ObspackCollection):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         # An empty instance is created.
@@ -117,6 +118,7 @@ class Collection(ObspackCollection):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         # An empty instance is created.
@@ -411,15 +413,6 @@ class Collection(ObspackCollection):
         bbox_artists = (leg,)
 
         return fig, ax, bbox_artists
-
-    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """
-        Parameters
-        ----------
-        verbose
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        """
-        _loader_logger.setLevel(validate_verbose(verbose))
 
     def __repr__(self):
         """ String representation is built."""
