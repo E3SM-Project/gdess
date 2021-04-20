@@ -14,7 +14,7 @@ from co2_diag import set_verbose
 import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
 import co2_diag.data_source.cmip.collection as cmip_collection_module
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
-from co2_diag.operations.time import ensure_dataset_datetime64
+from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipes.utils import valid_year_string, options_to_args
 
@@ -183,8 +183,8 @@ def _parse_options(params: dict):
     args = parser.parse_args(param_argstr)
 
     # Convert times to numpy.datetime64
-    args.start_datetime = np.datetime64(args.start_yr, 'D')
-    args.end_datetime = np.datetime64(args.end_yr, 'D')
+    args.start_datetime = year_to_datetime64(args.start_yr)
+    args.end_datetime = year_to_datetime64(args.end_yr)
 
     _logger.debug("Parsing is done.")
     return args
