@@ -92,7 +92,7 @@ class Collection(Multiset):
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self.preprocess(new_self.datastore_url, model_name)
 
-            _loader_logger.info('Applying selected bounds..')
+            _loader_logger.debug(' applying selected bounds: %s', selection)
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)
             # Spatial mean is calculated, leaving us with a time series.
@@ -279,8 +279,10 @@ class Collection(Multiset):
             df_list_of_means = []
             df_list_of_yearly_cycles = []
             for mi, m in enumerate(opts.member_key):
-                darray = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=m)
-                df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(darray, varname='co2')
+                _loader_logger.debug(' selecting model=%s, member=%s', opts.model_name, m)
+                ds = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=m)
+
+                df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname='co2')
                 df_anomaly_yearly['member_id'] = m
                 df_anomaly_mean_cycle['member_id'] = m
                 df_list_of_means.append(df_anomaly_mean_cycle)
@@ -345,7 +347,7 @@ class Collection(Multiset):
                                    model_name: list
                                    ) -> None:
         """Load datasets into memory."""
-        _loader_logger.debug(' Loading model datasets into memory..')
+        _loader_logger.debug(' Loading into memory the following models: %s', model_name)
         self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
         # Extract only the specified datasets, and create a copy of each.
         self.stepB_preprocessed_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
@@ -356,8 +358,8 @@ class Collection(Multiset):
                                                                inplace=True)
         self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
         _loader_logger.debug("all converted.")
-        _loader_logger.debug("Model keys:")
-        _loader_logger.debug('\n'.join(self.stepA_original_datasets.keys()))
+        _loader_logger.debug("Keys for models that have been preprocessed:")
+        _loader_logger.debug(' ' + '\n '.join(self.stepB_preprocessed_datasets.keys()))
 
     @staticmethod
     def latlon_select(xr_ds: xr.Dataset,
@@ -626,5 +628,5 @@ def _parse_options(params: dict):
     args.start_datetime = year_to_datetime64(args.start_yr)
     args.end_datetime = year_to_datetime64(args.end_yr)
 
-    _loader_logger.debug("Parsing is done.")
+    _loader_logger.debug("Parsing is done. Parsed options: %s", args)
     return args
