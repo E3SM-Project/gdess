@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.datasetdict import DatasetDict
-from co2_diag.operations.time import to_datetimeindex
+from co2_diag.operations.time import ensure_datetime64_array, ensure_dataset_datetime64
 
 import logging
 _multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))

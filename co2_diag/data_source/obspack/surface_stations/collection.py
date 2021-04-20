@@ -12,7 +12,8 @@ from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 
-from co2_diag.operations.time import select_between, ensure_dataset_datetime64, ensure_datetime64_array
+from co2_diag.operations.time import select_between, ensure_dataset_datetime64, \
+    ensure_datetime64_array, year_to_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
@@ -444,8 +445,8 @@ def _parse_options(params: dict):
     args = parser.parse_args(param_argstr)
 
     # Convert times to numpy.datetime64
-    args.start_datetime = np.datetime64(args.start_yr, 'D')
-    args.end_datetime = np.datetime64(args.end_yr, 'D')
+    args.start_datetime = year_to_datetime64(args.start_yr)
+    args.end_datetime = year_to_datetime64(args.end_yr)
 
     _loader_logger.debug("Parsing is done.")
     return args
