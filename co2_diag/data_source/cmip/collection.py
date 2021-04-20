@@ -408,18 +408,9 @@ class Collection(Multiset):
                 color_count = ki * max(member_counts) + mi
 
                 data = self.stepC_prepped_datasets[k].sel(member_id=m)
-                _loader_logger.debug("type of darray: %s", type(data))
-                _loader_logger.debug("darray: %s", data)
-                # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
-                dset = ensure_dataset_datetime64(data)
-                _loader_logger.debug("type of darray2: %s", type(data))
-                _loader_logger.debug("darray: %s", data)
-                # if not isinstance(darray['time'].values[0], np.datetime64):
-                #     # Warnings are raised when converting CFtimes to datetimes, because subtle errors.
-                #     with warnings.catch_warnings():
-                #         warnings.simplefilter("ignore")
-                #         darray = to_datetimeindex(darray)
-                y = dset['co2'].squeeze().to_array()
+                data = ensure_dataset_datetime64(data)
+
+                y = data['co2'].squeeze()
                 ax.plot(y['time'], y, label=f"{k} ({m})",
                         color=my_cmap.colors[color_count], alpha=0.6)
 

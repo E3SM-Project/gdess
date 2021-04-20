@@ -2,6 +2,7 @@ import pickle
 from typing import Union
 import numpy as np
 import pandas as pd
+import xarray as xr
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -81,12 +82,30 @@ class Multiset:
                 return pickle.load(f)
 
     @staticmethod
-    def get_anomaly_dataframes(a_dataarray, varname: str):
-        if not isinstance(a_dataarray['time'].values[0], np.datetime64):
-            # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
-            a_dataarray = to_datetimeindex(a_dataarray)
+    def get_anomaly_dataframes(data: Union[xr.DataArray, xr.Dataset],
+                               varname: str
+                               ) -> (pd.DataFrame, pd.DataFrame):
+        """
+
+        Parameters
+        ----------
+        data
+        varname
+
+        Returns
+        -------
+
+        """
+        if isinstance(data, xr.DataArray):
+            data = ensure_datetime64_array(data)
+        elif isinstance(data, xr.Dataset):
+            data = ensure_dataset_datetime64(data)
+        else:
+            raise TypeError('Unexpected type <%s>. Was expecting either xarray.Dataset or xarray.DataArray',
+                            type(data))
+
         # Calculate
-        df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(a_dataarray, varname=varname)
+        df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(data, varname=varname)
         # Reformat data structures for plotting
         _df_anomaly_yearly = df_anomaly.pivot(index='moy', columns='year', values='monthly_anomaly_from_year')
         _df_anomaly_mean_cycle = df_anomaly.groupby('moy').mean().reset_index()
