@@ -109,6 +109,7 @@ e3sm_co2_diag
 │   │
 │   └── tests                <- Unit tests for development 
 │       ├── test_cmip_collection_recipes.py
+│       ├── test_obspack_surface_collection_recipes.py
 │       └── test_surface_trends_recipe.py
 │
 ├── MANIFEST.in
