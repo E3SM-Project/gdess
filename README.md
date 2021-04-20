@@ -7,6 +7,8 @@ as simulated by the Energy Exascale Earth System Model (E3SM)
 Check out the demonstration notebooks in `notebooks/demo/` 
 for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3SM model output.
 
+**Note:** It seems that recipes involving CMIP data won't work when on the PNNL VPN
+(presumably because the VPN blocks retrieval of the CMIP data catalog using a web URL, which is initiated by the `intake` package).
 
 ## Installation
 
