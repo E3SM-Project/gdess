@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
 import co2_diag.data_source.cmip.collection as cmip_collection_module
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
@@ -50,7 +50,7 @@ def surface_trends(verbose: Union[bool, str] = False,
     -------
     A dictionary containing the data that were plotted.
     """
-    _logger.setLevel(validate_verbose(verbose))
+    set_verbose(_logger, verbose)
     if verbose:
         ProgressBar().register()
     opts = _parse_options(options)
