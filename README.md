@@ -1,6 +1,21 @@
 # e3sm_co2_diag
-Generate diagnostics to help evaluate atmospheric CO<sub>2</sub> 
-as simulated by the Energy Exascale Earth System Model (E3SM)
+
+## Overview
+
+This package facilitates comparison of simulated atmospheric CO<sub>2</sub> against observational data. 
+Specifically, it selects, loads, and parses the observational datasets and model simulations to be in a consistent structure 
+and generates data visualizations for several diagnostic use cases.
+
+#### Motivation
+
+There is a need to evaluate atmospheric CO<sub>2</sub> for continuing development of the Energy Exascale Earth System Model (E3SM)
+&mdash; particularly the v2 campaign focused on simulations of global biogeochemistry.
+
+#### Problem to solve
+
+Although there are existing diagnostic tools for Earth System Models
+(e.g. ESMValTool, ILAMB, BGC-val), they do not provide functionality specific
+for atmospheric CO<sub>2</sub> concentrations.
 
 ## Usage
 
