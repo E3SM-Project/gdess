@@ -15,10 +15,15 @@ def dataset_from_filelist(file_list: list,
                           decode_times: bool = False):
     """Load ObsPack NetCDF files specified in a list and create one Dataset from them.
 
-    :param file_list:
-    :param vars_to_keep: list
-    :param decode_times: parameter passed to Xarray.open_dataset()
-    :return: xr.Dataset
+    Parameters
+    ----------
+    file_list
+    vars_to_keep: list
+    decode_times: parameter passed to Xarray.open_dataset()
+
+    Returns
+    -------
+    An xr.Dataset
     """
     if vars_to_keep is None:
         # These are the default variables to keep if not overridden by a passed parameter.
