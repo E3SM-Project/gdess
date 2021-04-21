@@ -8,7 +8,7 @@ import pandas as pd
 
 from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
-from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
+from co2_diag.data_source.obspack.load import load_data_with_regex
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 
@@ -34,7 +34,7 @@ station_dict = {'mlo': {'name': 'Mauna Loa'},
                 'psa': {'name': 'Palmer Station'}}
 
 
-class Collection(ObspackCollection):
+class Collection(Multiset):
     def __init__(self, verbose: Union[bool, str]=False):
         """Instantiate an Obspack Surface Station Collection object.
 
@@ -242,8 +242,7 @@ class Collection(ObspackCollection):
         """
         # --- Go through files and extract all 'surface' sampled files ---
         p = re.compile(r'co2_([a-zA-Z0-9]*)_surface.*\.nc$')
-        return_value = super(Collection, Collection)._load_data_with_regex(datadir=datadir,
-                                                                           compiled_regex_pattern=p)
+        return_value = load_data_with_regex(datadir=datadir, compiled_regex_pattern=p)
         return return_value
 
     @staticmethod

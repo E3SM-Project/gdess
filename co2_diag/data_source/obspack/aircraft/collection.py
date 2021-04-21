@@ -14,7 +14,7 @@ from adjustText import adjust_text
 
 from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
-from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
+from co2_diag.data_source.obspack.load import load_data_with_regex
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.recipes.utils import benchmark_recipe
 from co2_diag.data_source.datasetdict import DatasetDict
@@ -24,7 +24,7 @@ import logging
 _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 
-class Collection(ObspackCollection):
+class Collection(Multiset):
     def __init__(self, verbose: Union[bool, str] = False):
         """Instantiate a Obspack Aircraft Collection object.
 
@@ -94,8 +94,8 @@ class Collection(ObspackCollection):
         """
         # --- Go through files and extract all 'aircraft' sampled files ---
         p = re.compile(r'co2_([a-zA-Z0-9]*)_aircraft.*\.nc$')
-        return_value = super(Collection, Collection)._load_data_with_regex(datadir=datadir,
-                                                                           compiled_regex_pattern=p)
+        return_value = load_data_with_regex(datadir=datadir, compiled_regex_pattern=p)
+
         return return_value
 
     @staticmethod
