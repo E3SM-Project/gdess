@@ -169,7 +169,7 @@ def _parse_options(params: dict):
     param_argstr = options_to_args(params)
     _logger.debug('Parameter argument string == %s', param_argstr)
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Process surface observing station and CMIP data and compare. ')
     parser.add_argument('--ref_data', type=str)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
                         type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
