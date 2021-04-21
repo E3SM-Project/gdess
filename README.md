@@ -17,13 +17,27 @@ Although there are existing diagnostic tools for Earth System Models
 (e.g. ESMValTool, ILAMB, BGC-val), they do not provide functionality specific
 for atmospheric CO<sub>2</sub> concentrations.
 
+## Data requirements and availability
+
+- **Globalview+ data** 
+  - For parsing and running demo notebooks, one must first download Obspack, 
+which is available from the NOAA Global Monitoring Laboratory (GML) here:
+<https://www.esrl.noaa.gov/gmd/ccgg/obspack/data.php>
+  - There is a sample file from NOAA GML included in this Git repository to enable the running of test cases.
+
+- **CMIP6** 
+  - It seems that recipes involving CMIP data won't work when on the PNNL VPN
+(presumably because the VPN blocks retrieval of the CMIP data catalog using a web URL, 
+which is initiated by the [intake](https://github.com/intake/intake-esm) package).
+  
+- **E3SM**
+  - For parsing and running demo notebooks, 
+    one must have access to model output history as NetCDF file(s).
+
 ## Usage
 
 Check out the demonstration notebooks in `notebooks/demo/` 
 for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3SM model output.
-
-**Note:** It seems that recipes involving CMIP data won't work when on the PNNL VPN
-(presumably because the VPN blocks retrieval of the CMIP data catalog using a web URL, which is initiated by the [intake](https://github.com/intake/intake-esm) package).
 
 ## Installation
 
