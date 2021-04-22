@@ -149,7 +149,14 @@ e3sm_co2_diag
 
 ## Credits
 
-Major dependencies:
+#### Dependencies
+
+- `ccgcrv`: The curve fitting code in the ccgcrv directory has been mildly modified -- modified for improved code integration, i.e. the computational logic has not been changed -- from the code made available by the NOAA Global Monitoring Laboratory. 
+From their website, one can access the [source code](https://www.esrl.noaa.gov/gmd/aftp/user/thoning/ccgcrv/) 
+and read a [description of its usage](https://www.esrl.noaa.gov/gmd/ccgg/mbl/crvfit/crvfit.html). 
+Additional details regarding the curve fitting approach are found in the following publications:
+  - Thoning, K.W., P.P. Tans, and W.D. Komhyr, 1989, Atmospheric carbon dioxide at Mauna Loa Observatory, 2. Analysis of the NOAA/GMCC data, 1974 1985., J. Geophys. Res. ,94, 8549 8565. https://doi.org/10.1029/JD094iD06p08549
+  - Sweeney, C., Karion, A., Wolter, S., Newberger, T., Guenther, D., Higgs, J.A., Andrews, A.E., Lang, P.M., Neff, D., Dlugokencky, E., Miller, J.B., Montzka, S.A., Miller, B.R., Masarie, K.A., Biraud, S.C., Novelli, P.C., Crotwell, M., Crotwell, A.M., Thoning, K., Tans, P.P., 2015. Seasonal climatology of CO 2 across North America from aircraft measurements in the NOAA/ESRL Global Greenhouse Gas Reference Network. J. Geophys. Res. Atmos. 120, 5155–5190. https://doi.org/10.1002/2014JD022591
 
 * [pandas](https://pandas.pydata.org/)
 * [NumPy](https://www.numpy.org)
@@ -157,7 +164,7 @@ Major dependencies:
 
 Although not a dependency, ideas were also drawn from [xclim: Climate indices computations](https://github.com/Ouranosinc/xclim).
 
-Funding Acknowledgment:
+#### Funding Acknowledgment:
 
 * Pacific Northwest National Laboratory
 
