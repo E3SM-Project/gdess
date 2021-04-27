@@ -1,6 +1,7 @@
 import argparse
 import shlex
 import time
+from typing import Union
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ def options_to_args(options: dict):
     return shlex.split(' '.join([f"--{k} {v}" for k, v in options.items()]))
 
 
-def is_some_none(val):
+def is_some_none(val) -> bool:
     """Check if value is either a Python None object or the case-insensitive string 'None' """
     if val is None:
         return True
@@ -29,7 +30,7 @@ def is_some_none(val):
         return False
 
 
-def nullable_int(val):
+def nullable_int(val) -> Union[None, int]:
     """Validate whether a value's type is either an integer or none"""
     if is_some_none(val):
         return None
@@ -38,7 +39,7 @@ def nullable_int(val):
     return val
 
 
-def nullable_str(val):
+def nullable_str(val) -> Union[None, str]:
     """Validate whether a value's type is either a string or none"""
     if is_some_none(val):
         return None
@@ -47,7 +48,7 @@ def nullable_str(val):
     return val
 
 
-def valid_year_string(y):
+def valid_year_string(y) -> Union[None, str]:
     """Function used to validate 'year' argument passed in as a recipe option"""
     if is_some_none(y):
         return None

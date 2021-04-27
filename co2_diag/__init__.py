@@ -2,6 +2,19 @@ import logging
 from typing import Union
 
 
+def set_verbose(logger,
+                verbose: Union[bool, str] = False
+                ) -> None:
+    """
+    Parameters
+    ----------
+    logger: logging.Logger
+    verbose: Union[bool, str]
+        can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+    """
+    logger.setLevel(validate_verbose(verbose))
+
+
 def validate_verbose(verbose: Union[bool, str] = False) -> Union[int, str]:
     """Convert a verbosity argument to a logging level
 

@@ -6,13 +6,14 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
-from co2_diag.data_source.obspack.obspack_collection import ObspackCollection
+from co2_diag.data_source.obspack.load import load_data_with_regex
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 
-from co2_diag.operations.time import select_between, ensure_dataset_datetime64, ensure_datetime64_array
+from co2_diag.operations.time import select_between, ensure_dataset_datetime64, \
+    ensure_datetime64_array, year_to_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
@@ -33,7 +34,7 @@ station_dict = {'mlo': {'name': 'Mauna Loa'},
                 'psa': {'name': 'Palmer Station'}}
 
 
-class Collection(ObspackCollection):
+class Collection(Multiset):
     def __init__(self, verbose: Union[bool, str]=False):
         """Instantiate an Obspack Surface Station Collection object.
 
@@ -42,7 +43,7 @@ class Collection(ObspackCollection):
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        self.set_verbose(verbose)
+        set_verbose(_loader_logger, verbose)
 
         self.df_combined_and_resampled = None
         # Define the stations that will be included in the dataset and available for diagnostic plots
@@ -73,6 +74,7 @@ class Collection(ObspackCollection):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         # An empty instance is created.
@@ -117,6 +119,7 @@ class Collection(ObspackCollection):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         # An empty instance is created.
@@ -239,8 +242,7 @@ class Collection(ObspackCollection):
         """
         # --- Go through files and extract all 'surface' sampled files ---
         p = re.compile(r'co2_([a-zA-Z0-9]*)_surface.*\.nc$')
-        return_value = super(Collection, Collection)._load_data_with_regex(datadir=datadir,
-                                                                           compiled_regex_pattern=p)
+        return_value = load_data_with_regex(datadir=datadir, compiled_regex_pattern=p)
         return return_value
 
     @staticmethod
@@ -412,15 +414,6 @@ class Collection(ObspackCollection):
 
         return fig, ax, bbox_artists
 
-    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """
-        Parameters
-        ----------
-        verbose
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        """
-        _loader_logger.setLevel(validate_verbose(verbose))
-
     def __repr__(self):
         """ String representation is built."""
         strrep = f"-- Obspack Surface Station Collection -- \n" \
@@ -451,8 +444,8 @@ def _parse_options(params: dict):
     args = parser.parse_args(param_argstr)
 
     # Convert times to numpy.datetime64
-    args.start_datetime = np.datetime64(args.start_yr, 'D')
-    args.end_datetime = np.datetime64(args.end_yr, 'D')
+    args.start_datetime = year_to_datetime64(args.start_yr)
+    args.end_datetime = year_to_datetime64(args.end_yr)
 
     _loader_logger.debug("Parsing is done.")
     return args

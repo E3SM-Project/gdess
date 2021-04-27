@@ -2,14 +2,15 @@ import pickle
 from typing import Union
 import numpy as np
 import pandas as pd
+import xarray as xr
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.datasetdict import DatasetDict
-from co2_diag.operations.time import to_datetimeindex
+from co2_diag.operations.time import ensure_datetime64_array, ensure_dataset_datetime64
 
 import logging
 _multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
@@ -34,7 +35,7 @@ class Multiset:
         self.stepB_preprocessed_datasets: Union[DatasetDict, None] = None
         self.stepC_prepped_datasets: DatasetDict = DatasetDict(dict())
 
-        self._set_multiset_verbose(verbose)
+        set_verbose(_multiset_logger, verbose)
 
     # def datasets_to_file(self, filename: str = 'cmip_collection.latest_executed_datasets.pickle',):
     #     """Pickle the latest executed dataset dictionary using the highest protocol available.
@@ -81,12 +82,30 @@ class Multiset:
                 return pickle.load(f)
 
     @staticmethod
-    def get_anomaly_dataframes(a_dataarray, varname: str):
-        if not isinstance(a_dataarray['time'].values[0], np.datetime64):
-            # Some time variables are numpy datetime64, some are CFtime.  Errors are raised if plotted together.
-            a_dataarray = to_datetimeindex(a_dataarray)
+    def get_anomaly_dataframes(data: Union[xr.DataArray, xr.Dataset],
+                               varname: str
+                               ) -> (pd.DataFrame, pd.DataFrame):
+        """
+
+        Parameters
+        ----------
+        data
+        varname
+
+        Returns
+        -------
+
+        """
+        if isinstance(data, xr.DataArray):
+            data = ensure_datetime64_array(data)
+        elif isinstance(data, xr.Dataset):
+            data = ensure_dataset_datetime64(data)
+        else:
+            raise TypeError('Unexpected type <%s>. Was expecting either xarray.Dataset or xarray.DataArray',
+                            type(data))
+
         # Calculate
-        df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(a_dataarray, varname=varname)
+        df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(data, varname=varname)
         # Reformat data structures for plotting
         _df_anomaly_yearly = df_anomaly.pivot(index='moy', columns='year', values='monthly_anomaly_from_year')
         _df_anomaly_mean_cycle = df_anomaly.groupby('moy').mean().reset_index()
@@ -172,14 +191,3 @@ class Multiset:
             return '\n\t'.join(self.stepA_original_datasets.keys())
         else:
             return ''
-
-    def _set_multiset_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """This sets the verbosity level of the Multiset class only.
-
-        Parameters
-        ----------
-        verbose
-            either True, False, or a string for level such as "INFO, DEBUG, etc."
-
-        """
-        _multiset_logger.setLevel(validate_verbose(verbose))

@@ -1,12 +1,43 @@
 # e3sm_co2_diag
-Generate diagnostics to help evaluate atmospheric CO<sub>2</sub> 
-as simulated by the Energy Exascale Earth System Model (E3SM)
+
+## Overview
+
+This package facilitates comparison of simulated atmospheric CO<sub>2</sub> against observational data. 
+Specifically, it selects, loads, and parses the observational datasets and model simulations to be in a consistent structure 
+and generates data visualizations for several diagnostic use cases.
+
+#### Motivation
+
+There is a need to evaluate atmospheric CO<sub>2</sub> for continuing development of the Energy Exascale Earth System Model (E3SM)
+&mdash; particularly the v2 campaign focused on simulations of global biogeochemistry.
+
+#### Problem to solve
+
+Although there are existing diagnostic tools for Earth System Models
+(e.g. ESMValTool, ILAMB, BGC-val), they do not provide functionality specific
+for atmospheric CO<sub>2</sub> concentrations.
+
+## Data requirements and availability
+
+- **Globalview+ data** 
+  - For parsing and running demo notebooks, one must first download Obspack, 
+which is available from the NOAA Global Monitoring Laboratory (GML) here:
+<https://www.esrl.noaa.gov/gmd/ccgg/obspack/data.php>
+  - There is a sample file from NOAA GML included in this Git repository to enable the running of test cases.
+
+- **CMIP6** 
+  - It seems that recipes involving CMIP data won't work when on the PNNL VPN
+(presumably because the VPN blocks retrieval of the CMIP data catalog using a web URL, 
+which is initiated by the [intake](https://github.com/intake/intake-esm) package).
+  
+- **E3SM**
+  - For parsing and running demo notebooks, 
+    one must have access to model output history as NetCDF file(s).
 
 ## Usage
 
 Check out the demonstration notebooks in `notebooks/demo/` 
 for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3SM model output.
-
 
 ## Installation
 
@@ -104,11 +135,13 @@ e3sm_co2_diag
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   ├── config               <- Configuration options
-│   │   └── log_config.json
-│   │
-│   └── tests                <- Unit tests for development 
-│       └── test_surface_trends_recipe.py
+│   └── config               <- Configuration options
+│       └── log_config.json
+│    
+├── tests                    <- Unit tests for development 
+│   ├── test_cmip_collection_recipes.py
+│   ├── test_obspack_surface_collection_recipes.py
+│   └── test_surface_trends_recipe.py
 │
 ├── MANIFEST.in
 └── setup.py
@@ -116,7 +149,14 @@ e3sm_co2_diag
 
 ## Credits
 
-Major dependencies:
+#### Dependencies
+
+- `ccgcrv`: The curve fitting code in the ccgcrv directory has been mildly modified -- modified for improved code integration, i.e. the computational logic has not been changed -- from the code made available by the NOAA Global Monitoring Laboratory. 
+From their website, one can access the [source code](https://www.esrl.noaa.gov/gmd/aftp/user/thoning/ccgcrv/) 
+and read a [description of its usage](https://www.esrl.noaa.gov/gmd/ccgg/mbl/crvfit/crvfit.html). 
+Additional details regarding the curve fitting approach are found in the following publications:
+  - Thoning, K.W., P.P. Tans, and W.D. Komhyr, 1989, Atmospheric carbon dioxide at Mauna Loa Observatory, 2. Analysis of the NOAA/GMCC data, 1974 1985., J. Geophys. Res. ,94, 8549 8565. https://doi.org/10.1029/JD094iD06p08549
+  - Sweeney, C., Karion, A., Wolter, S., Newberger, T., Guenther, D., Higgs, J.A., Andrews, A.E., Lang, P.M., Neff, D., Dlugokencky, E., Miller, J.B., Montzka, S.A., Miller, B.R., Masarie, K.A., Biraud, S.C., Novelli, P.C., Crotwell, M., Crotwell, A.M., Thoning, K., Tans, P.P., 2015. Seasonal climatology of CO 2 across North America from aircraft measurements in the NOAA/ESRL Global Greenhouse Gas Reference Network. J. Geophys. Res. Atmos. 120, 5155–5190. https://doi.org/10.1002/2014JD022591
 
 * [pandas](https://pandas.pydata.org/)
 * [NumPy](https://www.numpy.org)
@@ -124,7 +164,7 @@ Major dependencies:
 
 Although not a dependency, ideas were also drawn from [xclim: Climate indices computations](https://github.com/Ouranosinc/xclim).
 
-Funding Acknowledgment:
+#### Funding Acknowledgment:
 
 * Pacific Northwest National Laboratory
 

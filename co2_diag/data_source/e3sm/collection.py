@@ -1,13 +1,12 @@
 import argparse
-import numpy as np
 import xarray as xr
 from typing import Union
 
-from co2_diag import validate_verbose
+from co2_diag import set_verbose
 from co2_diag.data_source.e3sm.calculation import getPMID
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
-from co2_diag.operations.time import to_datetimeindex
+from co2_diag.operations.time import to_datetimeindex, year_to_datetime64
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from co2_diag.recipes.utils import benchmark_recipe, options_to_args, valid_year_string
@@ -27,7 +26,7 @@ class Collection(Multiset):
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        self.set_verbose(verbose)
+        set_verbose(_loader_logger, verbose)
 
         super().__init__(verbose=verbose)
 
@@ -91,6 +90,7 @@ class Collection(Multiset):
         -------
         Collection object for E3SM that was used to generate the diagnostic
         """
+        set_verbose(_loader_logger, verbose)
         opts = _parse_options(options)
 
         new_self, loaded_from_file = cls._recipe_base(verbose=verbose,
@@ -191,15 +191,6 @@ class Collection(Multiset):
 
         return fig, ax, bbox_artists
 
-    def set_verbose(self, verbose: Union[bool, str] = False) -> None:
-        """
-        Parameters
-        ----------
-        verbose: Union[bool, str]
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        """
-        _loader_logger.setLevel(validate_verbose(verbose))
-
     def __repr__(self) -> str:
         """ String representation is built.
         """
@@ -230,8 +221,8 @@ def _parse_options(params: dict):
     args = parser.parse_args(param_argstr)
 
     # Convert times to numpy.datetime64
-    args.start_datetime = np.datetime64(args.start_yr, 'D')
-    args.end_datetime = np.datetime64(args.end_yr, 'D')
+    args.start_datetime = year_to_datetime64(args.start_yr)
+    args.end_datetime = year_to_datetime64(args.end_yr)
 
     _loader_logger.debug("Parsing is done.")
     return args

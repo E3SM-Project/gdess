@@ -45,12 +45,22 @@
     },
 
     "loggers": {
-        "co2_diag.dataset_operations": {
+        "co2_diag.recipes": {
             "handlers": ["rotating_file", "console"],
             "level": "INFO",
             "propagate": false
         },
-        "co2_diag.dataset_operations.datasetdict": {
+        "co2_diag.data_source": {
+            "handlers": ["rotating_file", "console"],
+            "level": "INFO",
+            "propagate": false
+        },
+        "co2_diag.data_source.datasetdict": {
+            "handlers": ["rotating_file", "console"],
+            "level": "INFO",
+            "propagate": false
+        },
+        "co2_diag.data_source.obspack.load": {
             "handlers": ["rotating_file", "console"],
             "level": "DEBUG",
             "propagate": false
@@ -63,6 +73,16 @@
         "co2_diag.graphics": {
             "handlers": ["console"],
             "level": "DEBUG",
+            "propagate": false
+        },
+        "co2_diag.operations": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": false
+        },
+        "co2_diag.operations.time": {
+            "handlers": ["console"],
+            "level": "INFO",
             "propagate": false
         }
     },

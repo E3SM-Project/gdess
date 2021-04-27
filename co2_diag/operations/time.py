@@ -21,6 +21,13 @@ def ensure_dataset_datetime64(dataset: xr.Dataset
     return dataset
 
 
+def year_to_datetime64(yr: str):
+    if yr is not None:
+        return np.datetime64(yr, 'D')
+    else:
+        return None
+
+
 def to_datetimeindex(dataset: xr.Dataset
                      ) -> xr.Dataset:
     # For model output, it is often more convenient to work with the `time` variable as type `datetime64`.
