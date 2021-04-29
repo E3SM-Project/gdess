@@ -168,6 +168,8 @@ Although not a dependency, ideas were also drawn from [xclim: Climate indices co
 
 #### Funding Acknowledgment:
 
+* Data were obtained from the Energy Exascale Earth System Model project, 
+  sponsored by the U.S.Department of Energy, Office of Science, Office of Biological and Environmental Research.
 * Pacific Northwest National Laboratory
 
 ## Disclaimer
