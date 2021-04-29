@@ -262,6 +262,7 @@ def _main(options):
 			print(" %.6f" % filt.params[i], end='')
 		#		print("%d %.6f" % (i, filt.params[i]))
 		print()
+	return filt
 
 
 def _ccgcrv_parser():
@@ -332,7 +333,7 @@ def ccgcrv(options: dict, data_file):
 	param_argstr = options_to_args(options)
 	options = _ccgcrv_parser().parse_args(param_argstr)
 	options.args = [data_file]
-	_main(options)
+	return _main(options)
 
 
 def validate_options(options):
