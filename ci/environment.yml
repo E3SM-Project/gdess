@@ -16,5 +16,3 @@ dependencies:
   - intake-esm>=2021
   - gcsfs>=0.8
   - scipy>=1.5
-  - flake8
-  - pytest
