@@ -1,3 +1,4 @@
+import os
 import re
 import glob
 import argparse
@@ -270,6 +271,7 @@ class Collection(Multiset):
             # print("files: ")
             # print(*[os.path.basename(x) for x in file_list], sep = "\n")
 
+            _loader_logger.debug('Station files: %s', ', '.join([os.path.basename(x) for x in file_list]))
             ds_obs_dict[stationcode] = co2ops.obspack.load.dataset_from_filelist(file_list)
 
             # Simple unit check - for the Altitude variable
