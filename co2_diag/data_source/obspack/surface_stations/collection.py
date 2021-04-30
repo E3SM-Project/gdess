@@ -266,6 +266,7 @@ class Collection(Multiset):
         ds_obs_dict = {}
         for stationcode, _ in station_dict.items():
             _loader_logger.debug(stationcode)
+            _loader_logger.debug('data directory: %s', datadir)
 
             file_list = glob.glob(datadir + f"co2_{stationcode}*.nc")
             # print("files: ")
