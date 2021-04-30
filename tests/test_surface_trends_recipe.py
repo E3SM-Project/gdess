@@ -1,7 +1,6 @@
 import os
 import pytest
 
-from co2_diag.data_source.obspack.surface_stations.collection import Collection
 from co2_diag.recipes import surface_trends
 
 
