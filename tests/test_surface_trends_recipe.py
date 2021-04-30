@@ -5,13 +5,7 @@ from co2_diag.data_source.obspack.surface_stations.collection import Collection
 from co2_diag.recipes import surface_trends
 
 
-@pytest.fixture
-def newEmptySurfaceStation():
-    mySurfaceInstance = Collection(verbose='DEBUG')
-    return mySurfaceInstance
-
-
-def test_recipe_input_year_error(rootdir, newEmptySurfaceStation):
+def test_recipe_input_year_error(rootdir):
     test_path = os.path.join(rootdir, 'test_data/')
 
     recipe_options = {
@@ -25,7 +19,7 @@ def test_recipe_input_year_error(rootdir, newEmptySurfaceStation):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_model_error(rootdir, newEmptySurfaceStation):
+def test_recipe_input_model_error(rootdir):
     test_path = os.path.join(rootdir, 'test_data/')
 
     recipe_options = {
@@ -39,7 +33,7 @@ def test_recipe_input_model_error(rootdir, newEmptySurfaceStation):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_stationcode_error(rootdir, newEmptySurfaceStation):
+def test_recipe_input_stationcode_error(rootdir):
     test_path = os.path.join(rootdir, 'test_data/')
 
     recipe_options = {
@@ -53,7 +47,7 @@ def test_recipe_input_stationcode_error(rootdir, newEmptySurfaceStation):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_completes_with_no_errors(rootdir, newEmptySurfaceStation):
+def test_recipe_completes_with_no_errors(rootdir):
     test_path = os.path.join(rootdir, 'test_data/')
 
     recipe_options = {
