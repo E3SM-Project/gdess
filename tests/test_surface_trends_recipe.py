@@ -7,7 +7,7 @@ from co2_diag.recipes import surface_trends
 
 @pytest.fixture
 def newEmptySurfaceStation():
-    mySurfaceInstance = Collection()
+    mySurfaceInstance = Collection(verbose='DEBUG')
     return mySurfaceInstance
 
 
