@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from co2_diag.data_source.obspack.surface_stations.collection import Collection
@@ -10,9 +11,11 @@ def newEmptySurfaceStation():
     return mySurfaceInstance
 
 
-def test_recipe_input_year_error(newEmptySurfaceStation):
+def test_recipe_input_year_error(rootdir, newEmptySurfaceStation):
+    test_path = os.path.join(rootdir, 'test_data/')
+
     recipe_options = {
-        'ref_data': './',
+        'ref_data': test_path,
         'model_name': 'BCC',
         'start_yr': "198012",
         'end_yr': "201042",
@@ -22,9 +25,11 @@ def test_recipe_input_year_error(newEmptySurfaceStation):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_model_error(newEmptySurfaceStation):
+def test_recipe_input_model_error(rootdir, newEmptySurfaceStation):
+    test_path = os.path.join(rootdir, 'test_data/')
+
     recipe_options = {
-        'ref_data': './',
+        'ref_data': test_path,
         'model_name': 'BCasdasdjkhgC',
         'start_yr': "1980",
         'end_yr': "2010",
@@ -34,9 +39,11 @@ def test_recipe_input_model_error(newEmptySurfaceStation):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_stationcode_error(newEmptySurfaceStation):
+def test_recipe_input_stationcode_error(rootdir, newEmptySurfaceStation):
+    test_path = os.path.join(rootdir, 'test_data/')
+
     recipe_options = {
-        'ref_data': './',
+        'ref_data': test_path,
         'model_name': 'BCC',
         'start_yr': "1980",
         'end_yr': "2010",
@@ -46,9 +53,11 @@ def test_recipe_input_stationcode_error(newEmptySurfaceStation):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_completes_with_no_errors(newEmptySurfaceStation):
+def test_recipe_completes_with_no_errors(rootdir, newEmptySurfaceStation):
+    test_path = os.path.join(rootdir, 'test_data/')
+
     recipe_options = {
-        'ref_data': './',
+        'ref_data': test_path,
         'model_name': 'BCC',
         'start_yr': "1980",
         'end_yr': "2010",
