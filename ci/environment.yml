@@ -1,0 +1,18 @@
+name: co2_diag_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.7
+  - numpy>=1.20
+  - pandas>=1.1
+  - xarray>=0.17
+  - dask>=2021
+  - cftime>=1.4
+  - matplotlib>=3.3
+  - cartopy>=0.18
+  - adjusttext>=0.7.3
+  - intake>=0.6
+  - intake-esm>=2021
+  - gcsfs>=0.8
+  - scipy>=1.5

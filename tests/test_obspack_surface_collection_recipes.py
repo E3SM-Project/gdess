@@ -1,3 +1,4 @@
+import os
 import pytest
 import xarray as xr
 
@@ -14,14 +15,18 @@ def test_station_MLO_is_present(newEmptySurfaceStation):
     assert 'mlo' in newEmptySurfaceStation.station_dict
 
 
-def test_simplest_preprocessed_type(newEmptySurfaceStation):
-    newEmptySurfaceStation.preprocess(datadir='./', station_name='mlo')
+def test_simplest_preprocessed_type(rootdir, newEmptySurfaceStation):
+    test_path = os.path.join(rootdir, 'test_data/')
+
+    newEmptySurfaceStation.preprocess(datadir=test_path, station_name='mlo')
     assert isinstance(newEmptySurfaceStation.stepA_original_datasets['mlo'], xr.Dataset)
 
 
-def test_recipe_input_year_error(newEmptySurfaceStation):
+def test_recipe_input_year_error(rootdir, newEmptySurfaceStation):
+    test_path = os.path.join(rootdir, 'test_data/')
+
     recipe_options = {
-        'ref_data': './',
+        'ref_data': test_path,
         'start_yr': "198012",
         'end_yr': "201042",
         'station_code': 'mlo'}
@@ -29,9 +34,11 @@ def test_recipe_input_year_error(newEmptySurfaceStation):
         newEmptySurfaceStation.run_recipe_for_timeseries(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_stationcode_error(newEmptySurfaceStation):
+def test_recipe_input_stationcode_error(rootdir, newEmptySurfaceStation):
+    test_path = os.path.join(rootdir, 'test_data/')
+
     recipe_options = {
-        'ref_data': './',
+        'ref_data': test_path,
         'start_yr': "1980",
         'end_yr': "2010",
         'station_code': 'asdkjhfasg'}
@@ -39,9 +46,11 @@ def test_recipe_input_stationcode_error(newEmptySurfaceStation):
         newEmptySurfaceStation.run_recipe_for_timeseries(verbose='DEBUG', options=recipe_options)
 
 
-def test_timeseries_recipe_completes_with_no_errors(newEmptySurfaceStation):
+def test_timeseries_recipe_completes_with_no_errors(rootdir, newEmptySurfaceStation):
+    test_path = os.path.join(rootdir, 'test_data/')
+
     recipe_options = {
-        'ref_data': './',
+        'ref_data': test_path,
         'start_yr': "1980",
         'end_yr': "2010",
         'station_code': 'mlo'}
