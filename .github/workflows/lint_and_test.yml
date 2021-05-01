@@ -12,23 +12,22 @@ on:
       - main
 
 jobs:
-  build:
-
+  test1:
+    name:  Test1 (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]  #, 3.8, 3.9]
         os: [macOS-latest]  #ubuntu-latest, windows-latest,
+        python-version: [3.7]  #, 3.8, 3.9]
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
+        #      - name: Set up Python ${{ matrix.python-version }}
+        #        uses: actions/setup-python@v2
+        #        with:
+        #          python-version: ${{ matrix.python-version }}
 
       - name: Cache conda
         uses: actions/cache@v1
@@ -45,9 +44,9 @@ jobs:
           miniconda-version: "latest"
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          auto-activate-base: true
           environment-file: ci/environment.yml
-          activate-environment: test
+          #          activate-environment: test
+          #          auto-activate-base: true
           #      - name: Add conda to system path
           #        run: |
           #          # $CONDA is an environment variable pointing to the root of the miniconda directory
@@ -56,8 +55,8 @@ jobs:
           #        run: |
           #          conda env update --file ci/environment.yml --name base
 
-      - name: Sh
-        shell: sh -l {0}
+      - name: Conda info
+        shell: bash -l {0}
         run: |
           conda info
           conda list
