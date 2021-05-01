@@ -38,7 +38,7 @@ jobs:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-python${{ matrix.python-version }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
 
-      - name: setup miniconda
+      - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
@@ -63,6 +63,7 @@ jobs:
 
       - name: Lint with flake8
         run: |
+          conda activate test
           conda info
           conda install flake8
           # stop the build if there are Python syntax errors or undefined names
@@ -72,9 +73,11 @@ jobs:
 
       - name: Install package
         run: |
+          conda activate test
           pip install -e .
 
       - name: Test with pytest
         run: |
+          conda activate test
           conda  install pytest
           pytest
