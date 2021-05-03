@@ -5,7 +5,7 @@ from co2_diag.recipes import surface_trends
 
 
 def test_recipe_input_year_error(rootdir):
-    test_path = os.path.join(rootdir, 'test_data/')
+    test_path = os.path.join(rootdir, 'test_data')
 
     recipe_options = {
         'ref_data': test_path,
@@ -19,7 +19,7 @@ def test_recipe_input_year_error(rootdir):
 
 
 def test_recipe_input_model_error(rootdir):
-    test_path = os.path.join(rootdir, 'test_data/')
+    test_path = os.path.join(rootdir, 'test_data')
 
     recipe_options = {
         'ref_data': test_path,
@@ -33,7 +33,7 @@ def test_recipe_input_model_error(rootdir):
 
 
 def test_recipe_input_stationcode_error(rootdir):
-    test_path = os.path.join(rootdir, 'test_data/')
+    test_path = os.path.join(rootdir, 'test_data')
 
     recipe_options = {
         'ref_data': test_path,
@@ -47,7 +47,7 @@ def test_recipe_input_stationcode_error(rootdir):
 
 
 def test_recipe_completes_with_no_errors(rootdir):
-    test_path = os.path.join(rootdir, 'test_data/')
+    test_path = os.path.join(rootdir, 'test_data')
 
     recipe_options = {
         'ref_data': test_path,

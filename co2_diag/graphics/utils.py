@@ -30,7 +30,7 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
         today_str = datetime.today().strftime('%Y-%m-%d')
         return "{0}_{2}{1}".format(*os.path.splitext(filename) + (today_str,))
 
-    fig.savefig(append_date_before_extension(results_dir + plot_save_name),
+    fig.savefig(append_date_before_extension(os.path.join(results_dir, plot_save_name)),
                 bbox_inches='tight', **kwargs)
 
 

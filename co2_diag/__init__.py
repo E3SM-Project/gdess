@@ -46,7 +46,9 @@ def _config_logger():
     import logging.config
     import json
 
-    logconfig_path = os.path.dirname(os.path.realpath(__file__)) + '/config/log_config.json'
+    logconfig_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                  'config',
+                                  'log_config.json')
     with open(logconfig_path, 'r') as logging_configuration_file:
         config_dict = json.load(logging_configuration_file)
 

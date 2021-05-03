@@ -268,7 +268,7 @@ class Collection(Multiset):
             _loader_logger.debug(stationcode)
             _loader_logger.debug('data directory: %s', datadir)
 
-            file_list = glob.glob(datadir + f"co2_{stationcode}*.nc")
+            file_list = glob.glob(os.path.join(datadir, f"co2_{stationcode}*.nc"))
             # print("files: ")
             # print(*[os.path.basename(x) for x in file_list], sep = "\n")
 
