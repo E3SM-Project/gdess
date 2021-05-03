@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]  #macOS-latest, ubuntu-latest,
+        os: [macOS-latest, ubuntu-latest]  # windows-latest
         python-version: [3.9]
 
     steps:
@@ -75,9 +75,8 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install -e .
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      #      - name: Setup tmate session
+      #        uses: mxschmitt/action-tmate@v3
 
       - name: Test with pytest
         shell: bash -l {0}
