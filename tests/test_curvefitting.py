@@ -32,7 +32,7 @@ def test_curvefitting_results_remain_the_same(rootdir):
         compare = datacompy.Compare(
             df_expected,
             df_filter_output,
-            join_columns=['date', 'function', 'polynomial', 'trend'],
+            join_columns='date',
             # abs_tol=0,  # Optional, defaults to 0
             rel_tol=0.000001,  # Optional, defaults to 0
             df1_name='expected',  # Optional, defaults to 'df1'
