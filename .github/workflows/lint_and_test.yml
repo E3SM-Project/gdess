@@ -84,3 +84,10 @@ jobs:
           conda install pytest
           conda install pytest-cov
           pytest --cov=./ --cov-report=xml
+      - name: Send coverage report to codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          env_vars: OS,PYTHON
+          fail_ci_if_error: false
+          verbose: true # optional (default = false)
