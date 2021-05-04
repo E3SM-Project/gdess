@@ -1,6 +1,6 @@
 # e3sm_co2_diag
 
-![test status](https://github.com/dkauf42/e3sm_co2_diag/actions/workflows/lint_and_test.yml/badge.svg)
+[![test status](https://github.com/dkauf42/e3sm_co2_diag/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/dkauf42/e3sm_co2_diag/actions/workflows/lint_and_test.yml)
 
 ## Overview
 
