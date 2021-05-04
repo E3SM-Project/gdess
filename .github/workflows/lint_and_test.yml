@@ -83,4 +83,4 @@ jobs:
         run: |
           conda install pytest
           conda install pytest-cov
-          pytest --cov=./ --cov-report=html
+          pytest --cov=./ --cov-report=xml
