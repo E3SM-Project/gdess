@@ -103,6 +103,8 @@ class Collection(Multiset):
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
             _loader_logger.info('Applying selected bounds..')
+            new_self.validate_time_options(opts.start_datetime, opts.end_datetime)
+
             selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
             new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                    inplace=False)

@@ -81,6 +81,29 @@ class Multiset:
             else:
                 return pickle.load(f)
 
+    def validate_time_options(self, starttime_option, endtime_option):
+        """Check whether the specified start time is before the data's end time
+            and the specified end time is after the data's start time.
+
+        Parameters
+        ----------
+        starttime_option
+        endtime_option
+
+        Returns
+        -------
+
+        """
+        for k, v in self.stepB_preprocessed_datasets.items():
+            data_starttime = v['time'].min().values
+            data_endtime = v['time'].max().values
+            if starttime_option > data_endtime:
+                raise ValueError("The specified start time (%s) is later than %s data's end time (%s)",
+                                 starttime_option, k, data_endtime)
+            elif endtime_option < data_starttime:
+                raise ValueError("The specified end time (%s) is later than %s data's start time (%s)",
+                                 endtime_option, k, data_starttime)
+
     @staticmethod
     def get_anomaly_dataframes(data: Union[xr.DataArray, xr.Dataset],
                                varname: str
