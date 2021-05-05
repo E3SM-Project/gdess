@@ -4,8 +4,17 @@ import re
 def tex_escape(text):
     """Return text with problematic escape sequences parsed for Latex use.
 
-        :param text: a plain text message
-        :return: the message escaped to appear correctly in LaTeX
+    Note: This function was copied from the following StackOverflow answer,
+        <https://stackoverflow.com/a/25875504/10134974>
+
+    Parameters
+    ----------
+    text
+        a plain text message
+
+    Returns
+    -------
+    the message escaped to appear correctly in LaTeX
     """
     conv = {
         '&': r'\&',
