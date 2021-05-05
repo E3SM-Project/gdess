@@ -5,6 +5,9 @@ import numpy as np
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 
+colormap_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            'colormaps')
+
 
 def aesthetic_grid_no_spines(axis):
     axis.grid(True, linestyle='--', color='gray', alpha=1)
@@ -54,11 +57,11 @@ def limits_with_zero(t: tuple):
         raise ValueError("Unexpected condition")
 
 
-def get_colormap(colormap, colormap_search_dir):
+def get_colormap(colormap=None, colormap_search_dir=None):
     if not colormap:
         colormap = "WhiteBlueGreenYellowRed.rgb"
     if not colormap_search_dir:
-        colormap_search_dir = '/global/homes/d/dekauf/colormaps/'
+        colormap_search_dir = colormap_dir
 
     installed_colormap = os.path.join(colormap_search_dir, colormap)
 
@@ -68,18 +71,14 @@ def get_colormap(colormap, colormap_search_dir):
         matplotlib_cmap = None
         pass
 
-    if os.path.exists(colormap):
-        # colormap is an .rgb in the current directory
-        pass
-    elif not os.path.exists(colormap) and os.path.exists(installed_colormap):
-        # use the colormap from /plot/colormaps
+    if os.path.exists(installed_colormap):
+        # use the colormap from ./colormaps
         colormap = installed_colormap
     elif matplotlib_cmap:
         return matplotlib_cmap
-    elif not os.path.exists(colormap) and not os.path.exists(installed_colormap):
-        pth = os.path.join(colormap_search_dir, 'colormaps')
-        msg = "File {} isn't in the current working directory or installed in {}"
-        raise IOError(msg.format(colormap, pth))
+    elif not os.path.exists(installed_colormap):
+        msg = "File {} isn't installed in {} or in matplotlib"
+        raise IOError(msg.format(colormap, colormap_search_dir))
 
     rgb_arr = np.loadtxt(colormap)
     rgb_arr = rgb_arr / 255.0
