@@ -1,10 +1,12 @@
 
 import datetime
-import numpy
+import numpy as np
+from typing import Union
+
 
 ###########################################################
-def datesOk(year, month, day, hour=0, minute=0, second=0):
-	""" Check if values are appropriate for a real date """
+def datesOk(year, month, day, hour=0, minute=0, second=0) -> bool:
+	"""Check if values are appropriate for a real date """
 
 	if month < 1 or month > 12:
 		raise ValueError("Month is out of range")
@@ -25,7 +27,7 @@ def datesOk(year, month, day, hour=0, minute=0, second=0):
 
 
 ###########################################################
-def decimalDate (year, month, day, hour=0, minute=0, second=0):
+def decimalDate (year, month, day, hour=0, minute=0, second=0) -> Union[int, float]:
 	""" Convert a date and time to a fractional year. """
 
 	if not datesOk(year, month, day, hour, minute, second):
@@ -42,7 +44,7 @@ def decimalDate (year, month, day, hour=0, minute=0, second=0):
 
 
 ###################################################
-def secondOfYear(year, month, day, hour, minute, second):
+def secondOfYear(year, month, day, hour, minute, second) -> int:
 
 	if not datesOk(year, month, day, hour, minute, second):
 		return 0
@@ -53,8 +55,7 @@ def secondOfYear(year, month, day, hour, minute, second):
 	return soy
 
 ###################################################
-def dayOfYear(year, month, day):
-
+def dayOfYear(year, month, day) -> int:
 	if not datesOk(year, month, day):
 		return 0
 
@@ -68,8 +69,7 @@ def dayOfYear(year, month, day):
 
 ###################################################
 # Make an integer value that contains the date and hour
-def intDate (year, month, day, hour=0):
-
+def intDate (year, month, day, hour=0) -> int:
 	if not datesOk(year, month, day, hour):
 		return 0
 
@@ -79,7 +79,7 @@ def intDate (year, month, day, hour=0):
 
 ###################################################
 # Opposite of intDate, get date and hour from integer value
-def getDate(intdate):
+def getDate(intdate) -> tuple:
 
 	s = str(intdate)
 
@@ -95,7 +95,7 @@ def getDate(intdate):
 
 ###################################################
 # Don't use these routines for resolution less than 1 second.
-def calendarDate (decyear):
+def calendarDate(decyear) -> tuple:
 
 	dyr =  int(decyear)
 	fyr = decyear - dyr
@@ -125,7 +125,7 @@ def calendarDate (decyear):
 
 
 ###################################################
-def to_mmdd (year, doy):
+def to_mmdd(year, doy) -> tuple[int, int]:
 
 	if doy < 1 or doy > 366:
 		raise ValueError("Day of year is out of range")
@@ -145,7 +145,7 @@ def to_mmdd (year, doy):
 	return int(month), int(idoy)
 
 ###################################################
-def toMonthDay(year, doy):
+def toMonthDay(year, doy) -> tuple[int, int]:
 
 	if doy < 1 or doy > 366:
 		raise ValueError("Day of year is out of range")
@@ -155,7 +155,7 @@ def toMonthDay(year, doy):
 	return month, day
 
 ###################################################
-def getDatetime(datestr, sep=""):
+def getDatetime(datestr, sep="") -> datetime.datetime:
 	""" create a datetime from yyyy mm dd string """
 
 	separators = ["", "-", "/"]
@@ -199,7 +199,7 @@ def getDatetime(datestr, sep=""):
 	return None
 
 ###################################################
-def getTime(timestr, sep=""):
+def getTime(timestr, sep="") -> datetime.time:
 
 	separators = ["", ":"]
 	if sep:
@@ -227,15 +227,13 @@ def getTime(timestr, sep=""):
 			
 
 ###################################################
-def decimalDateFromDatetime(dt):
-
+def decimalDateFromDatetime(dt) -> Union[int, float]:
 	dd = decimalDate(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
 
 	return dd
 
 ###################################################
-def datetimeFromDateAndTime(d, t):
-
+def datetimeFromDateAndTime(d, t) -> datetime.datetime:
 	s = "%s" % t
 	(hr,mn,sc) = s.split(":")
 	
@@ -244,7 +242,7 @@ def datetimeFromDateAndTime(d, t):
 	return dt
 
 ###################################################
-def datetimeFromDecimalDate(dd):
+def datetimeFromDecimalDate(dd) -> datetime.datetime:
 
 	yr, mon, dy, hr, mn, sc = calendarDate(dd)
 	dt = datetime.datetime(yr, mon, dy, hr, mn, sc)
@@ -253,8 +251,7 @@ def datetimeFromDecimalDate(dd):
 
 
 ###################################################
-def dateFromDecimalDate(dd):
-
+def dateFromDecimalDate(dd) -> datetime.date:
 	yr, mon, dy, hr, mn, sc = calendarDate(dd)
 	dt = datetime.date(yr, mon, dy)
 
@@ -262,7 +259,10 @@ def dateFromDecimalDate(dd):
 
 def dec2date(dd):
 
-	a = numpy.empty((dd.size, 6))
+def dec2date(dd) -> np.ndarray:
+	"""Decimal date array to array of tuples"""
+
+	a = np.empty((dd.size, 6))
 	# dd is a numpy array of decimal dates
 	for i in range(dd.size):
 		yr, mon, dy, hr, mn, sc = calendarDate(dd[i])
