@@ -17,7 +17,6 @@ def test_simplest_preprocessed_type(newEmptyCMIPCollection):
 
 def test_recipe_input_year_error(newEmptyCMIPCollection):
     recipe_options = {
-        'ref_data': './',
         'model_name': 'BCC',
         'start_yr': "198012",
         'end_yr': "201042"}
@@ -27,7 +26,6 @@ def test_recipe_input_year_error(newEmptyCMIPCollection):
 
 def test_recipe_input_model_error(newEmptyCMIPCollection):
     recipe_options = {
-        'ref_data': './',
         'model_name': 'BCasdasdjkhgC',
         'start_yr': "1980",
         'end_yr': "2010"}
@@ -35,12 +33,11 @@ def test_recipe_input_model_error(newEmptyCMIPCollection):
         newEmptyCMIPCollection.run_recipe_for_timeseries(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_completes_with_no_errors(newEmptyCMIPCollection):
+def test_timeseries_recipe_completes_with_no_errors(newEmptyCMIPCollection):
     recipe_options = {
-        'ref_data': './',
         'model_name': 'BCC',
         'start_yr': "1980",
-        'end_yr': "2010"}
+        'end_yr': "1990"}
     try:
         newEmptyCMIPCollection.run_recipe_for_timeseries(verbose='DEBUG', options=recipe_options)
     except Exception as exc:
