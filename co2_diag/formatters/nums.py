@@ -18,16 +18,11 @@ def my_round(x, nearest: int = 10, direction: str = 'up'
     x
     nearest
     direction
-
-    Returns
-    -------
-
     """
     # rounding method
     if direction == 'up':
-        retval = math.ceil(math.ceil(x / float(nearest))) * nearest
+        return math.ceil(math.ceil(x / float(nearest))) * nearest
     elif direction == 'down':
-        retval = math.floor(math.floor(x / float(nearest))) * nearest
+        return math.floor(math.floor(x / float(nearest))) * nearest
     else:
-        raise ValueError
-    return retval
+        raise ValueError("Unexpected direction given. Should be either 'up' or 'down'.")
