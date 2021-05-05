@@ -1,9 +1,10 @@
+import cftime
 import pytest
 import numpy as np
 import pandas as pd
 import xarray as xr
 
-from co2_diag.operations.time import ensure_datetime64_array
+from co2_diag.operations.time import ensure_datetime64_array, ensure_cftime_array, monthlist
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
 
 @pytest.fixture
@@ -65,6 +66,21 @@ def test_datetime64_conversion_for_dataarray(dataarray_withco2):
     newarray = ensure_datetime64_array(dataarray_withco2)
     assert isinstance(newarray, np.ndarray) & \
            isinstance(newarray[0], np.datetime64)
+
+
+def test_cftime_conversion(dataarray_withco2):
+    new_time_array = ensure_cftime_array(dataarray_withco2)
+
+    assert all([isinstance(x, cftime.DatetimeGregorian)
+                for x in new_time_array])
+
+
+def test_month_list_generation():
+    expected = [np.datetime64(x)
+                for x in
+                ['2020-11-01', '2020-12-01', '2021-01-01', '2021-02-01', '2021-03-01', '2021-04-01', '2021-05-01']
+                ]
+    assert monthlist(['2020-11-01', '2021-05-05']) == expected
 
 
 def test_unit_conversion_dataset(dataset_withco2):
