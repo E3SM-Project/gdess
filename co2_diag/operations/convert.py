@@ -5,7 +5,7 @@ _logger = logging.getLogger(__name__)
 
 
 def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
-                       co2_var_name: str = 'CO2',
+                       co2_var_name: str = 'co2',
                        ) -> xr.Dataset:
     """Convert CO2 from units of mol/mol to ppm
 
@@ -49,7 +49,7 @@ def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
 
 
 def co2_kgfrac_to_ppm(xr_ds_: xr.Dataset,
-                      co2_var_name: str = 'CO2',
+                      co2_var_name: str = 'co2',
                       ) -> xr.Dataset:
     """Convert CO2 from units of kg/kg to ppm
 
@@ -78,7 +78,9 @@ def co2_kgfrac_to_ppm(xr_ds_: xr.Dataset,
     mwfac = mwdry / mwco2
     ppmfac = mwfac * 1e6
 
-    temp_long_name = xr_ds_[co2_var_name].long_name
+    temp_long_name = ''
+    if 'long_name' in xr_ds_[co2_var_name].attrs:
+        temp_long_name = xr_ds_[co2_var_name].long_name
 
     # do the conversion
     xr_ds_[co2_var_name] = xr_ds_[co2_var_name]*ppmfac
