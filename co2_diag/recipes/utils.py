@@ -34,7 +34,7 @@ def nullable_int(val) -> Union[None, int]:
     if is_some_none(val):
         return None
     if not isinstance(val, int):
-        raise argparse.ArgumentTypeError('Value must be an integer')
+        raise argparse.ArgumentTypeError("Value must be an integer, None, or 'None'.")
     return val
 
 
@@ -43,7 +43,7 @@ def nullable_str(val) -> Union[None, str]:
     if is_some_none(val):
         return None
     if not isinstance(val, str):
-        raise argparse.ArgumentTypeError('Value must be an string')
+        raise argparse.ArgumentTypeError('Value must be an string or None.')
     return val
 
 
