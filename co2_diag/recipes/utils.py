@@ -23,9 +23,8 @@ def is_some_none(val) -> bool:
     """Check if value is either a Python None object or the case-insensitive string 'None' """
     if val is None:
         return True
-    elif isinstance(val, str):
-        if val.lower() == 'none':
-            return True
+    elif isinstance(val, str) and (val.lower() == 'none'):
+        return True
     else:
         return False
 
