@@ -40,19 +40,28 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
 def limits_with_zero(t: tuple):
     """Take a 2-tuple of axis limits
     If zero is not between them, then replace the one closest to zero with zero.
-
-    Note: we assume that the value closer to zero will be first (last) when the values are both positive (negative)
     """
-    if (not t) | (len(t) > 2) | (not all([isinstance(x, (int, float)) for x in t])):
-        raise ValueError("Unexpected input format")
+    if (not t) | (len(t) > 2):
+        raise ValueError("Unexpected input size. Should be a tuple of length 2.")
+    elif not all([isinstance(x, (int, float)) for x in t]):
+        raise TypeError("Unexpected input types. Should be float or integer.")
 
     zero_crossings = np.where(np.diff(np.sign(t)))[0]
     if len(zero_crossings) > 0:
-        return t  # tuple already crosses or contains zero
+        # tuple already crosses or contains zero
+        return t
     elif (t[0] > 0) & (t[1] > 0):
-        return 0, t[1]
+        # both are positive
+        if t[0] < t[1]:
+            return 0, t[1]
+        else:
+            return t[0], 0
     elif (t[0] < 0) & (t[1] < 0):
-        return t[0], 0
+        # both are negative
+        if t[0] < t[1]:
+            return t[0], 0
+        else:
+            return 0, t[1]
     else:
         raise ValueError("Unexpected condition")
 
