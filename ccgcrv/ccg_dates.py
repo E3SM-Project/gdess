@@ -164,8 +164,7 @@ def getDatetime(datestr, sep="") -> datetime.datetime:
 
 	separators = ["", "-", "/"]
 	if sep:
-		separators = separators + sep
-
+		separators.append(sep)
 
 	for separator in separators:
 		if separator == "":
@@ -205,8 +204,7 @@ def getTime(timestr, sep="") -> datetime.time:
 
 	separators = ["", ":"]
 	if sep:
-		separators = separators + sep
-
+		separators.append(sep)
 
 	for separator in separators:
 		if separator == "":
