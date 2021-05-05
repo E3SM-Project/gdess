@@ -1003,7 +1003,6 @@ class ccgFilter():
 		A list of tuples, each tuple has 4 values (year, value, std. deviation, n)
 		"""
 
-
 		if data is None:
 			ysmooth = self.getSmoothValue(self.xinterp)
 		else:
@@ -1023,6 +1022,7 @@ class ccgFilter():
 			data.append((year, mean, std, len(w[0])))
 
 		return data
+
 
 	#------------------------------------------------------------
 	def getTrendCrossingDates(self):
@@ -1047,7 +1047,6 @@ class ccgFilter():
 				tcdown.append(x)
 
 			ty = y
-
 
 		return (tcup, tcdown)
 

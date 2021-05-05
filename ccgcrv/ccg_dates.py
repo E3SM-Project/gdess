@@ -1,4 +1,3 @@
-
 import datetime
 import numpy as np
 from typing import Union
@@ -54,18 +53,20 @@ def secondOfYear(year, month, day, hour, minute, second) -> int:
 
 	return soy
 
+
 ###################################################
 def dayOfYear(year, month, day) -> int:
 	if not datesOk(year, month, day):
 		return 0
 
-	mona =  [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+	mona = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
 
 	x = mona[month-1] + day
 	if ((year % 4 == 0 and year % 100 != 0) or year % 400 == 0) and month > 2:
 		x = x + 1
 
 	return x
+
 
 ###################################################
 # Make an integer value that contains the date and hour
@@ -76,6 +77,7 @@ def intDate (year, month, day, hour=0) -> int:
 	id = year*1000000 + month*10000 + day*100 + hour
 
 	return id
+
 
 ###################################################
 # Opposite of intDate, get date and hour from integer value
@@ -93,35 +95,35 @@ def getDate(intdate) -> tuple:
 
 	return year, month, day, hour
 
+
 ###################################################
 # Don't use these routines for resolution less than 1 second.
 def calendarDate(decyear) -> tuple:
 
-	dyr =  int(decyear)
+	dyr = int(decyear)
 	fyr = decyear - dyr
 
 	if dyr % 4 == 0:
 		nsec = fyr * (366*86400)
 	else:
-		nsec  = fyr * (365*86400)
+		nsec = fyr * (365*86400)
 
 	nsec = round(nsec, 0)
 
 	ndays = int(nsec / 86400)
-	doy  = ndays + 1
+	doy = ndays + 1
 
 	if doy > 366:
 		dyr = dyr + 1
 		doy = 1
 	month, day = to_mmdd(dyr, doy)
 
-
 	nsecs = round(nsec - (ndays*86400), 0)
-	hour  = int(nsecs / 3600)
+	hour = int(nsecs / 3600)
 	minute = int((nsecs - (hour *3600)) / 60)
 	seconds = int(round(nsecs - (hour * 3600.0) - (minute * 60.0), 0))
 
-	return dyr,month,day,hour,minute,seconds
+	return dyr, month, day, hour, minute, seconds
 
 
 ###################################################
@@ -133,16 +135,17 @@ def to_mmdd(year, doy) -> tuple[int, int]:
 	if year % 4 == 0:
 		mona = [31,29,31,30,31,30,31,31,30,31,30,31]
 	else:
-		mona  = [31,28,31,30,31,30,31,31,30,31,30,31]
+		mona = [31,28,31,30,31,30,31,31,30,31,30,31]
 
 	idoy =  doy
 	imon = 0
 	while idoy - mona[imon] > 0:
-		idoy  = idoy - mona[imon]
+		idoy = idoy - mona[imon]
 		imon += 1
 
 	month = imon + 1
 	return int(month), int(idoy)
+
 
 ###################################################
 def toMonthDay(year, doy) -> tuple[int, int]:
@@ -153,6 +156,7 @@ def toMonthDay(year, doy) -> tuple[int, int]:
 	month, day = to_mmdd(year, doy)
 
 	return month, day
+
 
 ###################################################
 def getDatetime(datestr, sep="") -> datetime.datetime:
@@ -173,7 +177,7 @@ def getDatetime(datestr, sep="") -> datetime.datetime:
 			year = int(a[0])
 			month = int(a[1])
 			day = int(a[2])
-			if len(a)>3:
+			if len(a) > 3:
 				hour = int(a[3])
 				minute = int(a[4])
 				if len(a) == 6:
@@ -193,10 +197,8 @@ def getDatetime(datestr, sep="") -> datetime.datetime:
 			date = datetime.datetime(year, month, day, hour, minute, second)
 			return date
 
-
 	raise ValueError("Cannot create datetime from string: %s" % datestr)
 
-	return None
 
 ###################################################
 def getTime(timestr, sep="") -> datetime.time:
@@ -222,8 +224,6 @@ def getTime(timestr, sep="") -> datetime.time:
 			return time
 
 	raise ValueError("Cannot create time from string: %s" % timestr)
-
-	return None
 			
 
 ###################################################
@@ -232,14 +232,16 @@ def decimalDateFromDatetime(dt) -> Union[int, float]:
 
 	return dd
 
+
 ###################################################
 def datetimeFromDateAndTime(d, t) -> datetime.datetime:
 	s = "%s" % t
-	(hr,mn,sc) = s.split(":")
-	
-	dt = datetime.datetime(d.year, d.month, d.day, int(hr), int(mn), int(sc))
+	(hr, mn, sc) = s.split(":")
+
+	dt = datetime.datetime(d['year'], d['month'], d['day'], int(hr), int(mn), int(sc))
 
 	return dt
+
 
 ###################################################
 def datetimeFromDecimalDate(dd) -> datetime.datetime:
@@ -257,7 +259,6 @@ def dateFromDecimalDate(dd) -> datetime.date:
 
 	return dt
 
-def dec2date(dd):
 
 def dec2date(dd) -> np.ndarray:
 	"""Decimal date array to array of tuples"""
