@@ -23,6 +23,7 @@ def datesOk(year, month, day, hour=0, minute=0, second=0):
 
 	return True
 
+
 ###########################################################
 def decimalDate (year, month, day, hour=0, minute=0, second=0):
 	""" Convert a date and time to a fractional year. """
@@ -38,6 +39,7 @@ def decimalDate (year, month, day, hour=0, minute=0, second=0):
 		dd = year + soy/3.1536e7
 
 	return dd
+
 
 ###################################################
 def secondOfYear(year, month, day, hour, minute, second):
