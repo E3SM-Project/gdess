@@ -1,6 +1,7 @@
 import pytest
 
-from co2_diag.recipes.utils import options_to_args, valid_year_string, is_some_none
+from co2_diag.recipes.utils import options_to_args, valid_year_string, \
+    is_some_none, nullable_str, nullable_int
 
 
 def test_options_to_args():
@@ -36,3 +37,38 @@ def test_none_is_some_none():
 
 def test_nonestr_is_some_none():
     assert is_some_none('None') is True
+
+
+def test_not_a_none_string_is_not_none():
+    assert is_some_none('no') is False
+
+
+def test_not_a_none_string_bad_type():
+    assert is_some_none([]) is False
+
+
+def test_nullable_string_to_none_object():
+    assert nullable_str('none') is None
+
+
+def test_nullable_string_bad_type():
+    with pytest.raises(Exception):
+        nullable_str(5)
+
+
+def test_nullable_integer_is_none():
+    assert nullable_int('none') is None
+
+
+def test_nullable_integer():
+    assert nullable_int(5) == 5
+
+
+def test_nullable_integer_bad_string():
+    with pytest.raises(Exception):
+        nullable_int('no')
+
+
+def test_nullable_integer_bad_type():
+    with pytest.raises(Exception):
+        nullable_int([])
