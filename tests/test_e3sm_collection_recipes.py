@@ -11,6 +11,11 @@ def newEmptyE3SMCollection():
     return myE3SMInstance
 
 
+def test_obj_attributes_return_type(newEmptyE3SMCollection):
+    attribute_strings = newEmptyE3SMCollection._obj_attributes_list_str()
+    assert isinstance(attribute_strings, list) and (len(attribute_strings) > 0)
+
+
 def test_simplest_preprocessed_type(rootdir, newEmptyE3SMCollection):
     test_path = os.path.join(rootdir, 'test_data', 'test_co2_hist_files_ne4pg2_2yrbudget_record.CO2.nc')
 
