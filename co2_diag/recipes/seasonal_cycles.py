@@ -31,8 +31,8 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def seasonal_cycles(verbose: Union[bool, str] = False,
-                    options: dict = None,
+def seasonal_cycles(options: dict,
+                    verbose: Union[bool, str] = False,
                     ):
     """Execute a series of preprocessing steps and generate a diagnostic result.
 
