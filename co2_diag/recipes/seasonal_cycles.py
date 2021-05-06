@@ -40,8 +40,6 @@ def seasonal_cycles(verbose: Union[bool, str] = False,
 
     Parameters
     ----------
-    verbose: Union[bool, str]
-        can be either True, False, or a string for level such as "INFO, DEBUG, etc."
     options: dict
         Recipe options specified as key:value pairs. It can contain the following keys:
             ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
@@ -54,6 +52,8 @@ def seasonal_cycles(verbose: Union[bool, str] = False,
                 either 'station', which requires specifying the <station_code> parameter,
                 or 'global', which will calculate a global mean
             station_code (str): a three letter code to specify the desired surface observing station
+    verbose: Union[bool, str]
+        can be either True, False, or a string for level such as "INFO, DEBUG, etc."
 
     Returns
     -------
