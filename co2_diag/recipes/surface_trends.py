@@ -98,6 +98,8 @@ def surface_trends(verbose: Union[bool, str] = False,
     _logger.info('  -- plev=0')
 
     # A specific lat/lon is selected, or a global mean is calculated.
+    # TODO: Add option for hemispheric averages as well.
+    #  And average not only the CMIP model outputs the stations, but also the surface stations within that hemisphere.
     if opts.globalmean:
         da_mdl = ds_mdl.mean(dim=('lat', 'lon'))
         _logger.info('  -- mean over lat and lon dimensions')
