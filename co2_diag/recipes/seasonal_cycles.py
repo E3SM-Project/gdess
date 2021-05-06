@@ -96,9 +96,12 @@ def seasonal_cycles(options: dict,
                    'func': '',
                    'poly': '',
                    'trend': '',
-                   'res': '',
-                   'stats': '',
-                   'amp': ''}
+                   'res': ''}
+
+        if _logger.level < 20:
+            # log level is lower than "INFO" (20), e.g. "VERBOSE" (15) or DEBUG (10)
+            options['stats'] = ''  # print stats output
+            options['amp'] = ''  # print amplitudes
 
         filt = ccgcrv(options, temp.name)
 
