@@ -167,30 +167,30 @@ def seasonal_cycles(options: dict,
 
     # --- Make a supplemental figure for filter components ---
 
-    fig, axs = plt.subplots(2, 2, sharex='all', figsize=(14, 7))
+    fig, axs = plt.subplots(2, 2, sharex='all', sharey='row', figsize=(14, 7))
     ax_iterator = np.ndenumerate(axs)
 
     _, ax = next(ax_iterator)
     ax.plot(x, detrend, label='detrend', alpha=0.2, marker='.')
+    aesthetic_grid_no_spines(ax)
     ax.legend()
-
+    #
     _, ax = next(ax_iterator)
-    ax.plot(x0, resid_smooth, label='resid_smooth', alpha=0.2, marker='.', color='gray')
-    ax.plot(x0, resid_trend, label='resid_trend', alpha=0.2, marker='.')
+    ax.plot(x, resid_from_func, label='residuals from the function', alpha=0.2, marker='.')
+    ax.plot(x, resid_from_smooth, label='residuals about the smoothed line', alpha=0.2, marker='.')
+    aesthetic_grid_no_spines(ax)
     ax.legend()
-
-    _, ax = next(ax_iterator)
-    ax.plot(x, resid_from_func, label='resid_from_func', alpha=0.2, marker='.')
-    ax.plot(x, resid_from_smooth, label='resid_from_smooth', alpha=0.2, marker='.')
-    ax.legend()
-
+    #
     _, ax = next(ax_iterator)
     ax.plot(x1, y9, label='equally spaced interpolated data with function removed', alpha=0.2, marker='.')
+    aesthetic_grid_no_spines(ax)
     ax.legend()
     #
+    _, ax = next(ax_iterator)
+    ax.plot(x0, resid_smooth, label='smoothed residuals', alpha=0.2, marker='.', color='gray')
+    ax.plot(x0, resid_trend, label='trend of residuals', alpha=0.2, marker='.')
     aesthetic_grid_no_spines(ax)
-    #
-    plt.legend()
+    ax.legend()
     #
     plt.tight_layout()
     #
