@@ -127,7 +127,7 @@ def calendarDate(decyear) -> tuple:
 
 
 ###################################################
-def to_mmdd(year, doy) -> tuple[int, int]:
+def to_mmdd(year, doy) -> tuple:
 
 	if doy < 1 or doy > 366:
 		raise ValueError("Day of year is out of range")
@@ -148,7 +148,7 @@ def to_mmdd(year, doy) -> tuple[int, int]:
 
 
 ###################################################
-def toMonthDay(year, doy) -> tuple[int, int]:
+def toMonthDay(year, doy) -> tuple:
 
 	if doy < 1 or doy > 366:
 		raise ValueError("Day of year is out of range")
