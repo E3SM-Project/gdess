@@ -4,6 +4,8 @@
 [![codecov](https://codecov.io/gh/dkauf42/e3sm_co2_diag/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/dkauf42/e3sm_co2_diag)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
+[comment]: <> ([![latest version]&#40;https://img.shields.io/badge/Current%20version-0.01a1-brightgreen.svg&#41;]&#40;https://github.com/dkauf42/e3sm_co2_diag/releases/tag/0.01b1&#41;)
+
 ## Overview
 
 This package facilitates comparison of simulated atmospheric CO<sub>2</sub> against observational data. 
@@ -96,7 +98,7 @@ pip uninstall co2_diag
 
 #### Components
 
-<img src="./.images/structure_diagram_20210415.png" alt="components" width="607" height="384"/>
+<img src="./.images/structure_diagram_20210512.png" alt="components" width="607" height="384"/>
 
 #### Directory Tree
 ```
