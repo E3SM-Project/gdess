@@ -24,10 +24,15 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
+        with:
+          lfs: true
         #      - name: Set up Python ${{ matrix.python-version }}
         #        uses: actions/setup-python@v2
         #        with:
         #          python-version: ${{ matrix.python-version }}
+
+      - name: Checkout LFS objects
+        run: git lfs checkout
 
       - name: Cache conda
         uses: actions/cache@v1
