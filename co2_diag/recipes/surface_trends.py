@@ -34,7 +34,8 @@ def surface_trends(options: dict,
     options: dict
         Recipe options specified as key:value pairs. It can contain the following keys:
             ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
-            model_name (str): 'mlo' is default
+            model_name (str): 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1' is default
+            station_code (str): a three letter code to specify the desired surface observing station; 'mlo' is default
             start_yr (str): '1960' is default
             end_yr (str): '2015' is default
             figure_savepath (str): None is default
@@ -42,7 +43,6 @@ def surface_trends(options: dict,
             globalmean (str):
                 either 'station', which requires specifying the <station_code> parameter,
                 or 'global', which will calculate a global mean
-            station_code (str): a three letter code to specify the desired surface observing station
     verbose: Union[bool, str]
         can be either True, False, or a string for level such as "INFO, DEBUG, etc."
 
@@ -175,11 +175,11 @@ def _parse_options(params: dict):
     parser.add_argument('--ref_data', type=str)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
                         type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
+    parser.add_argument('--station_code', default='mlo',
+                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--start_yr', default="1960", type=valid_year_string)
     parser.add_argument('--end_yr', default="2015", type=valid_year_string)
     parser.add_argument('--figure_savepath', type=str, default=None)
-    parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
     args = parser.parse_args(param_argstr)

@@ -49,7 +49,8 @@ def seasonal_cycles(options: dict,
     options: dict
         Recipe options specified as key:value pairs. It can contain the following keys:
             ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
-            model_name (str): 'mlo' is default
+            model_name (str): 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1' is default
+            station_code (str): a three letter code to specify the desired surface observing station; 'mlo' is default
             start_yr (str): '1960' is default
             end_yr (str): '2015' is default
             figure_savepath (str): None is default
@@ -57,7 +58,6 @@ def seasonal_cycles(options: dict,
             globalmean (str):
                 either 'station', which requires specifying the <station_code> parameter,
                 or 'global', which will calculate a global mean
-            station_code (str): a three letter code to specify the desired surface observing station
     verbose: Union[bool, str]
         can be either True, False, or a string for level such as "INFO, DEBUG, etc."
 
@@ -112,36 +112,6 @@ def seasonal_cycles(options: dict,
     # Original data points
     x = df_surface_station['time_decimal'].values
     y = df_surface_station['co2'].values
-
-    # def get_filt_results(filt_obj):
-    #     # get x,y data for plotting
-    #     x0 = filt_obj.xinterp
-    #     y1 = filt_obj.getFunctionValue(x0)
-    #     y2 = filt_obj.getPolyValue(x0)
-    #     y3 = filt_obj.getSmoothValue(x0)
-    #     y4 = filt_obj.getTrendValue(x0)
-    #     # Seasonal Cycle
-    #     trend = filt_obj.getTrendValue(x)
-    #     detrend = y - trend
-    #     harmonics = filt_obj.getHarmonicValue(x0)
-    #     smooth_cycle = harmonics + filt_obj.smooth - filt_obj.trend
-    #     # residuals from the function
-    #     resid_from_func = filt_obj.resid
-    #     # smoothed residuals
-    #     resid_smooth = filt_obj.smooth
-    #     # trend of residuals
-    #     resid_trend = filt_obj.trend
-    #     # residuals about the smoothedline
-    #     # resid_from_smooth = filt.yp - filt.getSmoothValue(x)
-    #     # equally spaced interpolated data with function removed
-    #     x1 = filt_obj.xinterp
-    #     y9 = filt.yinterp
-    #     # extra
-    #     mm = filt_obj.getMonthlyMeans()
-    #     amps = filt_obj.getAmplitudes()
-    #     tcup, tcdown = filt_obj.getTrendCrossingDates()
-    #
-    #     return None
 
     # --- Make the figure ---
     fig, ax = plt.subplots(1, 1, figsize=(10, 7))
@@ -301,11 +271,11 @@ def _parse_options(params: dict):
     parser.add_argument('--ref_data', type=str)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
                         type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
+    parser.add_argument('--station_code', default='mlo',
+                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--start_yr', default="1960", type=valid_year_string)
     parser.add_argument('--end_yr', default="2015", type=valid_year_string)
     parser.add_argument('--figure_savepath', type=str, default=None)
-    parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
