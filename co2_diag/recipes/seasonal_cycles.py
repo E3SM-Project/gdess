@@ -4,6 +4,7 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
+import os
 import argparse
 import datetime
 from datetime import timedelta
@@ -25,7 +26,12 @@ from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipes.utils import valid_year_string, options_to_args
 
+from co2_diag.operations.Confrontation import make_comparable
+
 from ccgcrv.ccgcrv import ccgcrv
+from ccgcrv.ccg_filter import ccgFilter
+
+from ccgcrv.ccg_dates import datetimeFromDecimalDate, calendarDate, decimalDateFromDatetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -76,85 +82,84 @@ def seasonal_cycles(options: dict,
 
     df_surface_station = ds_obs['co2'].to_dataframe().reset_index()
 
-    # --- Fit a curve to the surface station data ---
-    n_poly_terms = 3
-    n_harm_terms = 4
-    today_str = datetime.datetime.today().strftime('%Y-%m-%d')
-    output_filepath = f'curve_fit_results_{n_poly_terms}poly_{n_harm_terms}harm_{today_str}.txt'
+    # --- CMIP model output ---
+    _logger.info('*Processing CMIP model output*')
+    cmip_collection = cmip_collection_module.Collection(verbose=verbose)
+    new_self, loaded_from_file = cmip_collection._recipe_base(datastore='cmip6', verbose=verbose,
+                                                              from_file=None, skip_selections=True)
+    ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
 
-    # Write dataframe to temporary file, read it, and fit the curve
-    with tempfile.NamedTemporaryFile(suffix='.txt', prefix=('test_mlo'),
-                                     delete=False, mode='w+') as temp:
-        df_surface_station.loc[:, ['time_decimal', 'co2']].to_csv(temp.name, sep=' ', index=False, header=False)
+    da_obs, da_mdl = make_comparable(ds_obs, ds_mdl,
+                                     time_limits=(np.datetime64(opts.start_yr),
+                                                  np.datetime64(opts.end_yr)),
+                                     latlon=(ds_obs['latitude'].values[0], ds_obs['longitude'].values[0]),
+                                     global_mean=False)
 
-        options = {'npoly': n_poly_terms,
-                   'nharm': n_harm_terms,
-                   'file': output_filepath,
-                   'short': 400,
-                   'equal': '',
-                   'showheader': '',
-                   'func': '',
-                   'poly': '',
-                   'trend': '',
-                   'res': ''}
+    # Surface station curve fitting
+    xp = da_obs['time_decimal'].values
+    yp = da_obs['co2'].values
+    filt_ref = ccgFilter(xp=xp, yp=yp, numpolyterms=3, numharmonics=4, timezero=int(xp[0]))
 
-        if _logger.level < 20:
-            # log level is lower than "INFO" (20), e.g. "VERBOSE" (15) or DEBUG (10)
-            options['stats'] = ''  # print stats output
-            options['amp'] = ''  # print amplitudes
+    # CMIP data curve fitting
 
-        filt = ccgcrv(options, temp.name)
-
-    # Show the first few rows
-    df_ccgcrv_output = pd.read_csv(output_filepath, sep='\s+')
-    df_ccgcrv_output['datetime'] = df_ccgcrv_output.date.map(t2dt)
-    _logger.debug("filter output head: %s", df_ccgcrv_output.head(2))
+    da_mdl = da_mdl.assign_coords(time_decimal=('time',
+                                                [decimalDateFromDatetime(x) for x in
+                                                 pd.DatetimeIndex(da_mdl['time'].values)]))
+    xp = da_mdl['time_decimal'].values
+    yp = da_mdl.values
+    filt_mdl = ccgFilter(xp=xp, yp=yp, numpolyterms=3, numharmonics=4, timezero=int(xp[0]))
 
     # Original data points
     x = df_surface_station['time_decimal'].values
     y = df_surface_station['co2'].values
 
-    # --- Extract the relevant filtered components ---
-    x0 = filt.xinterp
-    y1 = filt.getFunctionValue(x0)
-    y2 = filt.getPolyValue(x0)
-    y3 = filt.getSmoothValue(x0)
-    y4 = filt.getTrendValue(x0)
-
-    # Seasonal Cycle
-    trend = filt.getTrendValue(x)
-    detrend = y - trend
-    harmonics = filt.getHarmonicValue(x0)
-    smooth_cycle = harmonics + filt.smooth - filt.trend
-
-    # residuals from the function
-    resid_from_func = filt.resid
-
-    # smoothed residuals
-    resid_smooth = filt.smooth
-
-    # trend of residuals
-    resid_trend = filt.trend
-
-    # residuals about the smoothedline
-    resid_from_smooth = filt.yp - filt.getSmoothValue(x)
-
-    # equally spaced interpolated data with function removed
-    x1 = filt.xinterp
-    y9 = filt.yinterp
+    # def get_filt_results(filt_obj):
+    #     # get x,y data for plotting
+    #     x0 = filt_obj.xinterp
+    #     y1 = filt_obj.getFunctionValue(x0)
+    #     y2 = filt_obj.getPolyValue(x0)
+    #     y3 = filt_obj.getSmoothValue(x0)
+    #     y4 = filt_obj.getTrendValue(x0)
+    #     # Seasonal Cycle
+    #     trend = filt_obj.getTrendValue(x)
+    #     detrend = y - trend
+    #     harmonics = filt_obj.getHarmonicValue(x0)
+    #     smooth_cycle = harmonics + filt_obj.smooth - filt_obj.trend
+    #     # residuals from the function
+    #     resid_from_func = filt_obj.resid
+    #     # smoothed residuals
+    #     resid_smooth = filt_obj.smooth
+    #     # trend of residuals
+    #     resid_trend = filt_obj.trend
+    #     # residuals about the smoothedline
+    #     # resid_from_smooth = filt.yp - filt.getSmoothValue(x)
+    #     # equally spaced interpolated data with function removed
+    #     x1 = filt_obj.xinterp
+    #     y9 = filt.yinterp
+    #     # extra
+    #     mm = filt_obj.getMonthlyMeans()
+    #     amps = filt_obj.getAmplitudes()
+    #     tcup, tcdown = filt_obj.getTrendCrossingDates()
+    #
+    #     return None
 
     # --- Make the figure ---
     fig, ax = plt.subplots(1, 1, figsize=(10, 7))
-    ax.plot(df_surface_station['time'], df_surface_station['co2'], label='MLO obs',
+    ax.plot(filt_ref.xinterp, filt_ref.getFunctionValue(filt_ref.xinterp), label='Function values',
+            color=[x / 255 for x in [255, 127, 14]], alpha=1, linewidth=2.5, )
+    ax.plot(filt_ref.xinterp, filt_ref.getPolyValue(filt_ref.xinterp), label='Poly values',
+            color=[x / 255 for x in [31, 119, 180]], alpha=1, linewidth=2.5, )
+    ax.plot(filt_ref.xinterp, filt_ref.getTrendValue(filt_ref.xinterp), label='Trend values',
+            color=[x / 255 for x in [44, 160, 44]], alpha=1, linewidth=2.5, )
+    # ax.plot(x0, y3, label='Smooth values',
+    #        alpha=1, linewidth=2.5, )
+    ax.plot(df_surface_station['time_decimal'].values, df_surface_station['co2'].values,
+            label='original',
             marker='.', linestyle='none', color='gray', zorder=-10, alpha=0.2)
-    ax.plot(df_ccgcrv_output['datetime'], df_ccgcrv_output['function'], label='Curve fit function',
-            alpha=1, linewidth=2.5, color=[x / 255 for x in [255, 127, 14]])
-    ax.plot(df_ccgcrv_output['datetime'], df_ccgcrv_output['polynomial'], label='Curve fit polynomial',
-            alpha=1, linewidth=2.5, color=[x / 255 for x in [31, 119, 180]])
-    ax.plot(df_ccgcrv_output['datetime'], df_ccgcrv_output['trend'], label='Curve fit trend',
-            alpha=1, linewidth=2.5, color=[x / 255 for x in [44, 160, 44]])
     ax.set_ylabel("$CO_2$ (ppm)")
     ax.set_xlabel("year")
+    #
+    plt.title('obs')
     #
     aesthetic_grid_no_spines(ax)
     #
@@ -163,56 +168,91 @@ def seasonal_cycles(options: dict,
     plt.tight_layout()
     #
     if opts.figure_savepath:
-        mysavefig(fig=fig, plot_save_name=opts.figure_savepath + 'supplement1.png')
+        mysavefig(fig=fig, plot_save_name=opts.figure_savepath + 'supplement1_ref.png')
 
-    # --- Make a supplemental figure for filter components ---
-
-    fig, axs = plt.subplots(2, 2, sharex='all', sharey='row', figsize=(14, 7))
-    ax_iterator = np.ndenumerate(axs)
-
-    _, ax = next(ax_iterator)
-    ax.plot(x, detrend, label='detrend', alpha=0.2, marker='.')
-    aesthetic_grid_no_spines(ax)
-    ax.legend()
+    # --- Make the figure ---
+    fig, ax = plt.subplots(1, 1, figsize=(10, 7))
+    ax.plot(filt_mdl.xinterp, filt_mdl.getFunctionValue(filt_mdl.xinterp), label='Function values',
+            color=[x / 255 for x in [255, 127, 14]], alpha=1, linewidth=2.5, )
+    ax.plot(filt_mdl.xinterp, filt_mdl.getPolyValue(filt_mdl.xinterp), label='Poly values',
+            color=[x / 255 for x in [31, 119, 180]], alpha=1, linewidth=2.5, )
+    ax.plot(filt_mdl.xinterp, filt_mdl.getTrendValue(filt_mdl.xinterp), label='Trend values',
+            color=[x / 255 for x in [44, 160, 44]], alpha=1, linewidth=2.5, )
+    # ax.plot(x0, y3, label='Smooth values',
+    #        alpha=1, linewidth=2.5, )
+    ax.plot(da_mdl['time_decimal'].values, da_mdl.values, label='original',
+            marker='.', linestyle='none', color='gray', zorder=-10, alpha=0.2)
+    ax.set_ylabel("$CO_2$ (ppm)")
+    ax.set_xlabel("year")
     #
-    _, ax = next(ax_iterator)
-    ax.plot(x, resid_from_func, label='residuals from the function', alpha=0.2, marker='.')
-    ax.plot(x, resid_from_smooth, label='residuals about the smoothed line', alpha=0.2, marker='.')
-    aesthetic_grid_no_spines(ax)
-    ax.legend()
+    plt.title(f'model [{opts.model_name}]')
     #
-    _, ax = next(ax_iterator)
-    ax.plot(x1, y9, label='equally spaced interpolated data with function removed', alpha=0.2, marker='.')
     aesthetic_grid_no_spines(ax)
-    ax.legend()
     #
-    _, ax = next(ax_iterator)
-    ax.plot(x0, resid_smooth, label='smoothed residuals', alpha=0.2, marker='.', color='gray')
-    ax.plot(x0, resid_trend, label='trend of residuals', alpha=0.2, marker='.')
-    aesthetic_grid_no_spines(ax)
-    ax.legend()
+    plt.legend()
     #
     plt.tight_layout()
     #
     if opts.figure_savepath:
-        mysavefig(fig=fig, plot_save_name=opts.figure_savepath + 'supplement2.png')
+        mysavefig(fig=fig, plot_save_name=opts.figure_savepath + 'supplement1_mdl.png')
+
+    # --- Make a supplemental figure for filter components ---
+
+    # fig, axs = plt.subplots(2, 2, sharex='all', sharey='row', figsize=(14, 7))
+    # ax_iterator = np.ndenumerate(axs)
+    #
+    # _, ax = next(ax_iterator)
+    # ax.plot(x, detrend, label='detrend', alpha=0.2, marker='.')
+    # aesthetic_grid_no_spines(ax)
+    # ax.legend()
+    # #
+    # _, ax = next(ax_iterator)
+    # ax.plot(x, resid_from_func, label='residuals from the function', alpha=0.2, marker='.')
+    # ax.plot(x, resid_from_smooth, label='residuals about the smoothed line', alpha=0.2, marker='.')
+    # aesthetic_grid_no_spines(ax)
+    # ax.legend()
+    # #
+    # _, ax = next(ax_iterator)
+    # ax.plot(x1, y9, label='equally spaced interpolated data with function removed', alpha=0.2, marker='.')
+    # aesthetic_grid_no_spines(ax)
+    # ax.legend()
+    # #
+    # _, ax = next(ax_iterator)
+    # ax.plot(x0, resid_smooth, label='smoothed residuals', alpha=0.2, marker='.', color='gray')
+    # ax.plot(x0, resid_trend, label='trend of residuals', alpha=0.2, marker='.')
+    # aesthetic_grid_no_spines(ax)
+    # ax.legend()
+    # #
+    # plt.tight_layout()
+    # #
+    # if opts.figure_savepath:
+    #     mysavefig(fig=fig, plot_save_name=opts.figure_savepath + 'supplement2.png')
 
     # --- Do a seasonal climatology ---
+    def make_cycle(x0, smooth_cycle):
+        # Convert dates to datetime objects, and make a dataframe with a month column for grouping purposes.
+        df_seasonalcycle = pd.DataFrame.from_dict({'datetime': [t2dt(i) for i in x0],
+                                                   'co2': smooth_cycle})
+        df_seasonalcycle['month'] = df_seasonalcycle['datetime'].dt.month
 
-    # Convert dates to datetime objects, and make a dataframe with a month column for grouping purposes.
-    df_seasonalcycle = pd.DataFrame.from_dict({'datetime': [t2dt(i) for i in x0],
-                                               'co2': smooth_cycle})
-    df_seasonalcycle['month'] = df_seasonalcycle['datetime'].dt.month
+        # Bin by month, and add a column that represents months in datetime format for plotting purposes.
+        df_monthly = df_seasonalcycle.groupby('month').mean().reset_index()
+        df_monthly['month_datetime'] = pd.to_datetime(df_monthly['month'], format='%m')
 
-    # Bin by month, and add a column that represents months in datetime format for plotting purposes.
-    df_monthly = df_seasonalcycle.groupby('month').mean().reset_index()
-    df_monthly['month_datetime'] = pd.to_datetime(df_monthly['month'], format='%m')
+        return df_monthly['month_datetime'], df_monthly['co2']
+    #
+    ref_dt, ref_vals = make_cycle(x0=filt_ref.xinterp,
+                                 smooth_cycle=filt_ref.getHarmonicValue(filt_ref.xinterp) + filt_ref.smooth - filt_ref.trend)
+    #
+    mdl_dt, mdl_vals = make_cycle(x0=filt_mdl.xinterp,
+               smooth_cycle=filt_mdl.getHarmonicValue(filt_mdl.xinterp) + filt_mdl.smooth - filt_mdl.trend)
 
     # --- Plot the seasonal cycle
-    fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-    ax.plot(df_monthly['month_datetime'], df_monthly['co2'],
-            label='seasonal climatology', marker='o')
-
+    fig, ax = plt.subplots(1, 1, figsize=(10, 4))
+    ax.plot(ref_dt, ref_vals, label=f'obs [{opts.station_code}]', marker='o', color='k')
+    ax.plot(mdl_dt, mdl_vals, label=f'model [{opts.model_name}]', marker='o', color='r')
+    #
+    plt.title('annual climatology')
     ax.set_ylabel("$CO_2$ (ppm)")
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
@@ -223,10 +263,9 @@ def seasonal_cycles(options: dict,
     #
     aesthetic_grid_no_spines(ax)
     #
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
     #
     plt.tight_layout()
-    #
     if opts.figure_savepath:
         mysavefig(fig=fig, plot_save_name=opts.figure_savepath)
 
