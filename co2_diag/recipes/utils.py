@@ -71,14 +71,31 @@ def valid_existing_path(p):
     raise argparse.ArgumentTypeError('Path must exist and be readable.')
 
 
-def parse_recipe_options(options, argument_adder):
+def add_shared_arguments_for_recipes(parser):
+    """Add common recipe arguments to a parser object
+
+    Parameters
+    ----------
+    parser
+
+    Returns
+    -------
+    None
+    """
+    parser.add_argument('ref_data', type=valid_existing_path, help='Filepath to the reference data folder')
+    parser.add_argument('--start_yr', default="1960", type=valid_year_string, help='Initial year cutoff')
+    parser.add_argument('--end_yr', default="2015", type=valid_year_string, help='Final year cutoff')
+    parser.add_argument('--figure_savepath', type=str, default=None, help='Filepath for saving generated figures')
+
+
+def parse_recipe_options(options, recipe_specific_argument_adder):
     """
 
     Parameters
     ----------
     options : Union[dict, argparse.Namespace]
         specifications for a given recipe execution
-    argument_adder : function
+    recipe_specific_argument_adder : function
         a function that will add arguments defined for a particular recipe to the parser object
 
     Returns
@@ -86,7 +103,7 @@ def parse_recipe_options(options, argument_adder):
 
     """
     parser = argparse.ArgumentParser(description='Process surface observing station and CMIP data and compare. ')
-    argument_adder(parser)
+    recipe_specific_argument_adder(parser)
 
     if isinstance(options, dict):
         # In this case, the options have not yet been parsed.

@@ -15,7 +15,7 @@ import co2_diag.data_source.cmip.collection as cmip_collection_module
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipes.utils import valid_year_string, valid_existing_path, parse_recipe_options
+from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -176,13 +176,10 @@ def add_surface_trends_args_to_parser(parser):
     -------
     None
     """
-    parser.add_argument('ref_data', type=valid_existing_path)
+    add_shared_arguments_for_recipes(parser)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
                         type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
-    parser.add_argument('--start_yr', default="1960", type=valid_year_string)
-    parser.add_argument('--end_yr', default="2015", type=valid_year_string)
-    parser.add_argument('--figure_savepath', type=str, default=None)
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
