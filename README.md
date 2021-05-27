@@ -42,7 +42,9 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
 
 ## Usage
 
-Check out the demonstration notebooks in `notebooks/demo/` 
+Diagnostic recipes can be run from the command line or from within a Python kernel.
+
+For running in Python, check out the demonstration notebooks in `notebooks/demo/` 
 for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3SM model output.
 
 ## Installation
@@ -104,20 +106,24 @@ pip uninstall co2_diag
 ```
 e3sm_co2_diag
 │
-├── README.md                <- Top-level README for users/developers of this project
-├── requirements.txt         <- Package dependencies
+├── README.md                  <- Top-level README for users/developers of this project
+├── requirements.txt           <- Package dependencies
 │
-├── notebooks                <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
+├── notebooks                  <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
 │   └──demo/
 │
-├── co2_diag                 <- *Python package* for handling co2 diagnostics
+├── co2_diag                   <- *Python package* for handling co2 diagnostics
 │   │
-│   ├── recipes              <- Generate repeatable diagnostics that span multiple data sources available as recipes 
+│   ├── bin                  
+│   │   └── codima.py          <- Run recipes from the command line
+│   │
+│   ├── recipes                <- Generate repeatable diagnostics that span multiple data sources available as recipes 
 │   │   ├── surface_trends.py
+│   │   ├── seasonal_cycles.py
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   ├── data_source          <- Load, parse, and manipulate data from a particular source
+│   ├── data_source            <- Load, parse, and manipulate data from a particular source
 │   │   ├── cmip/
 │   │   ├── e3sm/
 │   │   ├── obspack/
@@ -125,26 +131,26 @@ e3sm_co2_diag
 │   │   ├── multiset.py
 │   │   └── ...
 │   │
-│   ├── operations           <- Manipulate datasets (e.g. spatially or temporally) 
+│   ├── operations             <- Manipulate datasets (e.g. spatially or temporally) 
 │   │   ├── geographic/
 │   │   ├── time/
 │   │   ├── convert/
 │   │   └── ...
 │   │
-│   ├── formatters           <- Manipulate formatting in desired ways
+│   ├── formatters             <- Manipulate formatting in desired ways
 │   │   ├── nums.py
 │   │   ├── strings.py
 │   │   └── ...
 │   │
-│   ├── graphics             <- Make repeated graphic actions available 
+│   ├── graphics               <- Make repeated graphic actions available 
 │   │   ├── mapping.py
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   └── config               <- Configuration options
+│   └── config                 <- Configuration options
 │       └── log_config.json
 │    
-├── tests                    <- Unit tests for development 
+├── tests                      <- Unit tests for development 
 │   ├── test_cmip_collection_recipes.py
 │   ├── test_obspack_surface_collection_recipes.py
 │   └── test_surface_trends_recipe.py
