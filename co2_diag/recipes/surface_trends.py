@@ -4,7 +4,6 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-import argparse
 from typing import Union
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,9 +13,9 @@ from co2_diag import set_verbose
 import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
 import co2_diag.data_source.cmip.collection as cmip_collection_module
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
-from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
+from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipes.utils import valid_year_string, options_to_args
+from co2_diag.recipes.utils import valid_year_string, valid_existing_path, parse_recipe_options
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -53,7 +52,8 @@ def surface_trends(options: dict,
     set_verbose(_logger, verbose)
     if verbose:
         ProgressBar().register()
-    opts = _parse_options(options)
+    _logger.debug("Parsing diagnostic parameters...")
+    opts = parse_recipe_options(options, add_surface_trends_args_to_parser)
 
     # --- Surface observations ---
     _logger.info('*Processing Observations*')
@@ -165,14 +165,18 @@ def surface_trends(options: dict,
     return data_output
 
 
-def _parse_options(params: dict):
-    _logger.debug("Parsing diagnostic parameters...")
+def add_surface_trends_args_to_parser(parser):
+    """Add the recipe arguments to a parser object
 
-    param_argstr = options_to_args(params)
-    _logger.debug('Parameter argument string == %s', param_argstr)
+    Parameters
+    ----------
+    parser
 
-    parser = argparse.ArgumentParser(description='Process surface observing station and CMIP data and compare. ')
-    parser.add_argument('--ref_data', type=str)
+    Returns
+    -------
+    None
+    """
+    parser.add_argument('ref_data', type=valid_existing_path)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
                         type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
     parser.add_argument('--station_code', default='mlo',
@@ -182,11 +186,3 @@ def _parse_options(params: dict):
     parser.add_argument('--figure_savepath', type=str, default=None)
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
-    args = parser.parse_args(param_argstr)
-
-    # Convert times to numpy.datetime64
-    args.start_datetime = year_to_datetime64(args.start_yr)
-    args.end_datetime = year_to_datetime64(args.end_yr)
-
-    _logger.debug("Parsing is done.")
-    return args

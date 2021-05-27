@@ -4,11 +4,9 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-import os
 import argparse
 import datetime
 from datetime import timedelta
-import tempfile
 from typing import Union
 import numpy as np
 import pandas as pd
@@ -21,9 +19,8 @@ from matplotlib import ticker
 from co2_diag import set_verbose
 import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
 import co2_diag.data_source.cmip.collection as cmip_collection_module
-from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipes.utils import valid_year_string, options_to_args
+from co2_diag.recipes.utils import valid_year_string, valid_existing_path, parse_recipe_options
 
 from co2_diag.operations.Confrontation import make_comparable
 
@@ -35,7 +32,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def seasonal_cycles(options: dict,
+def seasonal_cycles(options: Union[dict, argparse.Namespace],
                     verbose: Union[bool, str] = False,
                     ):
     """Execute a series of preprocessing steps and generate a diagnostic result.
@@ -44,7 +41,7 @@ def seasonal_cycles(options: dict,
 
     Parameters
     ----------
-    options: dict
+    options: Union[dict, argparse.Namespace]
         Recipe options specified as key:value pairs. It can contain the following keys:
             ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
             model_name (str): 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1' is default
@@ -66,7 +63,8 @@ def seasonal_cycles(options: dict,
     set_verbose(_logger, verbose)
     if verbose:
         ProgressBar().register()
-    opts = _parse_options(options)
+    _logger.debug("Parsing diagnostic parameters...")
+    opts = parse_recipe_options(options, add_seasonal_cycle_args_to_parser)
 
     # --- Surface observations ---
     _logger.info('*Processing Observations*')
@@ -259,14 +257,18 @@ def dt2t(year, month, day, h=0, m=0, s=0) :
     return year + second_of_year / year_seconds
 
 
-def _parse_options(params: dict):
-    _logger.debug("Parsing diagnostic parameters...")
+def add_seasonal_cycle_args_to_parser(parser):
+    """Add the recipe arguments to a parser object
 
-    param_argstr = options_to_args(params)
-    _logger.debug('Parameter argument string == %s', param_argstr)
+    Parameters
+    ----------
+    parser
 
-    parser = argparse.ArgumentParser(description='Process surface observing station and CMIP data and compare. ')
-    parser.add_argument('--ref_data', type=str)
+    Returns
+    -------
+    None
+    """
+    parser.add_argument('ref_data', type=valid_existing_path)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
                         type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
     parser.add_argument('--station_code', default='mlo',
@@ -277,11 +279,3 @@ def _parse_options(params: dict):
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
-    args = parser.parse_args(param_argstr)
-
-    # Convert times to numpy.datetime64
-    args.start_datetime = year_to_datetime64(args.start_yr)
-    args.end_datetime = year_to_datetime64(args.end_yr)
-
-    _logger.debug("Parsing is done.")
-    return args

@@ -1,7 +1,10 @@
+import os
 import argparse
 import shlex
 import time
 from typing import Union
+
+from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -55,6 +58,54 @@ def valid_year_string(y) -> Union[None, str]:
         if 0 <= int(y) <= 10000:
             return str(y)
     raise argparse.ArgumentTypeError('Year must be a string or integer whose value is between 0 and 10,000.')
+
+
+def valid_existing_path(p):
+    """Function used to validate a file path argument passed in as a recipe option"""
+    try:
+        if os.path.exists(p):
+            if os.access(p, os.R_OK):
+                return p
+    except TypeError as e:
+        pass
+    raise argparse.ArgumentTypeError('Path must exist and be readable.')
+
+
+def parse_recipe_options(options, argument_adder):
+    """
+
+    Parameters
+    ----------
+    options : Union[dict, argparse.Namespace]
+        specifications for a given recipe execution
+    argument_adder : function
+        a function that will add arguments defined for a particular recipe to the parser object
+
+    Returns
+    -------
+
+    """
+    parser = argparse.ArgumentParser(description='Process surface observing station and CMIP data and compare. ')
+    argument_adder(parser)
+
+    if isinstance(options, dict):
+        # In this case, the options have not yet been parsed.
+        params = options_to_args(options)
+        _logger.debug('Parameter argument string == %s', params)
+        args = parser.parse_args(params)
+    elif isinstance(options, argparse.Namespace):
+        # In this case, the options have been parsed previously.
+        _logger.debug('Parameters == %s', options)
+        args = options
+    else:
+        raise TypeError('<%s> is an unexpected type of the recipe options', type(options))
+
+    # Convert times to numpy.datetime64
+    args.start_datetime = year_to_datetime64(args.start_yr)
+    args.end_datetime = year_to_datetime64(args.end_yr)
+
+    _logger.debug("Parsing is done.")
+    return args
 
 
 def benchmark_recipe(func):
