@@ -1,7 +1,6 @@
 import logging
 from typing import Union
 
-
 def set_verbose(logger,
                 verbose: Union[bool, str] = False
                 ) -> None:
