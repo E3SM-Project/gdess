@@ -19,14 +19,6 @@ from co2_diag.recipes.surface_trends import add_surface_trends_args_to_parser
 
 def main(args):
     """
-
-    Parameters
-    ----------
-    recipe
-
-    Returns
-    -------
-
     """
     # Get the argument values. Then clear them from the namespace so the subcommands do not encounter them.
     verbosity = args.verbose
@@ -46,10 +38,11 @@ def main(args):
 def parse_cli():
     """Input arguments are parsed.
     """
-    parser = ArgumentParser(description="Generate diagnostic figures or metrics")
+    parser = ArgumentParser(description="Run a CO2 diagnostic recipe to generate figures and metrics",
+                            fromfile_prefix_chars='@')
     parser.add_argument("--verbose", action='store_true')
 
-    # Set up the argument parser for each recipe
+    # A separate subparser is set up for each recipe to handle its specific input arguments.
     subparsers = parser.add_subparsers(title='available recipe subcommands', dest='subparser_name')  #, help='name of diagnostic recipe to run')
     #
     subparser_seasonal = subparsers.add_parser('seasonal', help='generate diagnostics of seasonal cycles')
