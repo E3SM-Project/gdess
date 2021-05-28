@@ -51,6 +51,11 @@ def parse_cli():
     subparser_trend = subparsers.add_parser('trend', help='generate diagnostics of multidecadal trends')
     add_surface_trends_args_to_parser(subparser_trend)
 
+    # Print the help message if no arguments are supplied at the command line.
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
     return parser.parse_args()
 
 
