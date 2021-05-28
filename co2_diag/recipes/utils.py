@@ -2,7 +2,7 @@ import os
 import argparse
 import shlex
 import time
-from typing import Union
+from typing import Union, Callable
 
 from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
 
@@ -10,7 +10,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def options_to_args(options: dict):
+def options_to_args(options: dict) -> list[str]:
     """Convert a dictionary to a list of strings so that an ArgumentParser can parse it.
 
     Examples
@@ -66,21 +66,17 @@ def valid_existing_path(p):
         if os.path.exists(p):
             if os.access(p, os.R_OK):
                 return p
-    except TypeError as e:
+    except TypeError:
         pass
     raise argparse.ArgumentTypeError('Path must exist and be readable.')
 
 
-def add_shared_arguments_for_recipes(parser):
+def add_shared_arguments_for_recipes(parser: argparse.PARSER) -> None:
     """Add common recipe arguments to a parser object
 
     Parameters
     ----------
     parser
-
-    Returns
-    -------
-    None
     """
     parser.add_argument('ref_data', type=valid_existing_path, help='Filepath to the reference data folder')
     parser.add_argument('--start_yr', default="1960", type=valid_year_string, help='Initial year cutoff')
@@ -88,7 +84,9 @@ def add_shared_arguments_for_recipes(parser):
     parser.add_argument('--figure_savepath', type=str, default=None, help='Filepath for saving generated figures')
 
 
-def parse_recipe_options(options, recipe_specific_argument_adder):
+def parse_recipe_options(options: Union[dict, argparse.Namespace],
+                         recipe_specific_argument_adder: Callable[[argparse.PARSER], None]
+                         ) -> argparse.Namespace:
     """
 
     Parameters
@@ -96,11 +94,11 @@ def parse_recipe_options(options, recipe_specific_argument_adder):
     options : Union[dict, argparse.Namespace]
         specifications for a given recipe execution
     recipe_specific_argument_adder : function
-        a function that will add arguments defined for a particular recipe to the parser object
+        a function that adds arguments defined for a particular recipe to a parser object
 
     Returns
     -------
-
+    a parsed argument namespace
     """
     parser = argparse.ArgumentParser(description='Process surface observing station and CMIP data and compare. ')
     recipe_specific_argument_adder(parser)
@@ -127,8 +125,6 @@ def parse_recipe_options(options, recipe_specific_argument_adder):
 
 def benchmark_recipe(func):
     """A decorator for diagnostic recipe methods that provides timing info.
-
-    This is used to reduce code duplication.
     """
     def display_time_and_call(*args, **kwargs):
         # Clock is started.

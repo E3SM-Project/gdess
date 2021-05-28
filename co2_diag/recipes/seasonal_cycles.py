@@ -25,7 +25,6 @@ from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recip
 from co2_diag.operations.Confrontation import make_comparable
 
 from ccgcrv.ccg_filter import ccgFilter
-
 from ccgcrv.ccg_dates import datetimeFromDecimalDate, calendarDate, decimalDateFromDatetime
 
 import logging
@@ -257,16 +256,12 @@ def dt2t(year, month, day, h=0, m=0, s=0) :
     return year + second_of_year / year_seconds
 
 
-def add_seasonal_cycle_args_to_parser(parser):
-    """Add the recipe arguments to a parser object
+def add_seasonal_cycle_args_to_parser(parser: argparse.PARSER) -> None:
+    """Add recipe arguments to a parser object
 
     Parameters
     ----------
     parser
-
-    Returns
-    -------
-    None
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',

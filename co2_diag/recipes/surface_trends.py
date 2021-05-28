@@ -4,6 +4,7 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
+import argparse
 from typing import Union
 import numpy as np
 import matplotlib.pyplot as plt
@@ -165,16 +166,12 @@ def surface_trends(options: dict,
     return data_output
 
 
-def add_surface_trends_args_to_parser(parser):
-    """Add the recipe arguments to a parser object
+def add_surface_trends_args_to_parser(parser: argparse.PARSER) -> None:
+    """Add recipe arguments to a parser object
 
     Parameters
     ----------
     parser
-
-    Returns
-    -------
-    None
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
