@@ -10,7 +10,7 @@ from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
-from co2_diag.recipes.utils import valid_year_string, options_to_args, benchmark_recipe, nullable_str
+from co2_diag.recipes.utils import benchmark_recipe, nullable_str, parse_recipe_options, add_shared_arguments_for_recipes
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
@@ -132,7 +132,7 @@ class Collection(Multiset):
         Collection object for CMIP6 that was used to generate the diagnostic
         """
         set_verbose(_loader_logger, verbose)
-        opts = _parse_options(options)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
@@ -175,7 +175,7 @@ class Collection(Multiset):
         Collection object for CMIP6 that was used to generate the diagnostic
         """
         set_verbose(_loader_logger, verbose)
-        opts = _parse_options(options)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
@@ -217,7 +217,7 @@ class Collection(Multiset):
         Collection object for CMIP6 that was used to generate the diagnostic
         """
         set_verbose(_loader_logger, verbose)
-        opts = _parse_options(options)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
@@ -265,7 +265,7 @@ class Collection(Multiset):
         Collection object for CMIP6 that was used to generate the diagnostic
         """
         set_verbose(_loader_logger, verbose)
-        opts = _parse_options(options)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
@@ -604,26 +604,15 @@ def model_substring(s):
     return s
 
 
-def _parse_options(params: dict):
-    _loader_logger.debug("Parsing diagnostic parameters...")
+def add_cmip_collection_args_to_parser(parser: argparse.PARSER) -> None:
+    """Add recipe arguments to a parser object
 
-    param_argstr = options_to_args(params)
-    _loader_logger.debug(' Parameter argument string == %s', param_argstr)
-
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--ref_data', type=str)
-    parser.add_argument('--figure_savepath', type=str, default=None)
-    parser.add_argument('--start_yr', default="1960", type=valid_year_string)
-    parser.add_argument('--end_yr', default="2015", type=valid_year_string)
+    Parameters
+    ----------
+    parser
+    """
+    add_shared_arguments_for_recipes(parser)
     parser.add_argument('--plev', default=100000, type=int)
     parser.add_argument('--model_name', default=None,
                         type=model_substring, choices=model_choices)
     parser.add_argument('--member_key', default=None, type=nullable_str)
-    args = parser.parse_args(param_argstr)
-
-    # Convert times to numpy.datetime64
-    args.start_datetime = year_to_datetime64(args.start_yr)
-    args.end_datetime = year_to_datetime64(args.end_yr)
-
-    _loader_logger.debug("Parsing is done. Parsed options: %s", args)
-    return args

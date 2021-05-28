@@ -18,7 +18,7 @@ from co2_diag.operations.time import select_between, ensure_dataset_datetime64, 
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-from co2_diag.recipes.utils import benchmark_recipe, valid_year_string, options_to_args
+from co2_diag.recipes.utils import benchmark_recipe, add_shared_arguments_for_recipes, parse_recipe_options
 
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
@@ -76,7 +76,7 @@ class Collection(Multiset):
         Collection object for Obspack that was used to generate the diagnostic
         """
         set_verbose(_loader_logger, verbose)
-        opts = _parse_options(options)
+        opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
 
         # An empty instance is created.
         new_self = cls(verbose=verbose)
@@ -121,7 +121,7 @@ class Collection(Multiset):
         Collection object for Obspack that was used to generate the diagnostic
         """
         set_verbose(_loader_logger, verbose)
-        opts = _parse_options(options)
+        opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
 
         # An empty instance is created.
         new_self = cls(verbose=verbose)
@@ -431,24 +431,43 @@ class Collection(Multiset):
         return strrep
 
 
-def _parse_options(params: dict):
-    _loader_logger.debug("Parsing diagnostic parameters...")
+def get_dict_of_all_stations(datadir):
+    """Build a dictionary that contains a key for each station code,
+       and with a list of filenames for each key.
 
-    param_argstr = options_to_args(params)
-    _loader_logger.debug(' Parameter argument string == %s', param_argstr)
+    Parameters
+    ----------
+    datadir : str
+        the directory containing netcdf files for the station data
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--ref_data', type=str)
-    parser.add_argument('--figure_savepath', type=str, default=None)
-    parser.add_argument('--start_yr', default="1960", type=valid_year_string)
-    parser.add_argument('--end_yr', default="2015", type=valid_year_string)
+    Returns
+    -------
+    A dictionary with (keys) three-letter station codes, and for each station (values) a list of data filenames
+    """
+    filepath_list = glob.glob(datadir + '*surface*.nc')
+    filenames = [os.path.basename(x) for x in filepath_list]
+
+    # regex to get the station code from each filename
+    pattern = r"co2_(?P<station_code>.*)_surface.*"
+
+    dict_to_build = dict()
+    for f in filenames:
+        result = re.match(pattern, f)['station_code']
+        if result not in dict_to_build.keys():
+            dict_to_build[result] = [f]
+        else:
+            dict_to_build[result].append(f)
+
+    return dict_to_build
+
+
+def add_surface_station_collection_args_to_parser(parser: argparse.PARSER) -> None:
+    """Add recipe arguments to a parser object
+
+    Parameters
+    ----------
+    parser
+    """
+    add_shared_arguments_for_recipes(parser)
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=station_dict.keys())
-    args = parser.parse_args(param_argstr)
-
-    # Convert times to numpy.datetime64
-    args.start_datetime = year_to_datetime64(args.start_yr)
-    args.end_datetime = year_to_datetime64(args.end_yr)
-
-    _loader_logger.debug("Parsing is done.")
-    return args

@@ -9,7 +9,7 @@ from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.time import to_datetimeindex, year_to_datetime64
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-from co2_diag.recipes.utils import benchmark_recipe, options_to_args, valid_year_string
+from co2_diag.recipes.utils import benchmark_recipe, add_shared_arguments_for_recipes, parse_recipe_options
 
 import matplotlib.pyplot as plt
 
@@ -91,7 +91,7 @@ class Collection(Multiset):
         Collection object for E3SM that was used to generate the diagnostic
         """
         set_verbose(_loader_logger, verbose)
-        opts = _parse_options(options)
+        opts = parse_recipe_options(options, add_e3sm_collection_args_to_parser)
 
         new_self, loaded_from_file = cls._recipe_base(verbose=verbose,
                                                       from_file=load_from_file,
@@ -208,23 +208,12 @@ class Collection(Multiset):
         return strrep
 
 
-def _parse_options(params: dict):
-    _loader_logger.debug("Parsing diagnostic parameters...")
+def add_e3sm_collection_args_to_parser(parser: argparse.PARSER) -> None:
+    """Add recipe arguments to a parser object
 
-    param_argstr = options_to_args(params)
-    _loader_logger.debug(' Parameter argument string == %s', param_argstr)
-
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--test_data', type=str)
-    parser.add_argument('--figure_savepath', type=str, default=None)
-    parser.add_argument('--start_yr', default="1960", type=valid_year_string)
-    parser.add_argument('--end_yr', default="2015", type=valid_year_string)
+    Parameters
+    ----------
+    parser
+    """
+    add_shared_arguments_for_recipes(parser)
     parser.add_argument('--lev_index', default=None, type=int)
-    args = parser.parse_args(param_argstr)
-
-    # Convert times to numpy.datetime64
-    args.start_datetime = year_to_datetime64(args.start_yr)
-    args.end_datetime = year_to_datetime64(args.end_yr)
-
-    _loader_logger.debug("Parsing is done.")
-    return args
