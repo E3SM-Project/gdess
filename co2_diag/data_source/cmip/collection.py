@@ -604,7 +604,7 @@ def model_substring(s):
     return s
 
 
-def add_cmip_collection_args_to_parser(parser: argparse.PARSER) -> None:
+def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """Add recipe arguments to a parser object
 
     Parameters

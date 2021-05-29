@@ -71,7 +71,7 @@ def valid_existing_path(p):
     raise argparse.ArgumentTypeError('Path must exist and be readable.')
 
 
-def add_shared_arguments_for_recipes(parser: argparse.PARSER) -> None:
+def add_shared_arguments_for_recipes(parser: argparse.ArgumentParser) -> None:
     """Add common recipe arguments to a parser object
 
     Parameters
@@ -85,7 +85,7 @@ def add_shared_arguments_for_recipes(parser: argparse.PARSER) -> None:
 
 
 def parse_recipe_options(options: Union[dict, argparse.Namespace],
-                         recipe_specific_argument_adder: Callable[[argparse.PARSER], None]
+                         recipe_specific_argument_adder: Callable[[argparse.ArgumentParser], None]
                          ) -> argparse.Namespace:
     """
 

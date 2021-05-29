@@ -461,7 +461,7 @@ def get_dict_of_all_stations(datadir):
     return dict_to_build
 
 
-def add_surface_station_collection_args_to_parser(parser: argparse.PARSER) -> None:
+def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """Add recipe arguments to a parser object
 
     Parameters

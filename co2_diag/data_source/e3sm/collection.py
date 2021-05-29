@@ -208,7 +208,7 @@ class Collection(Multiset):
         return strrep
 
 
-def add_e3sm_collection_args_to_parser(parser: argparse.PARSER) -> None:
+def add_e3sm_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """Add recipe arguments to a parser object
 
     Parameters
