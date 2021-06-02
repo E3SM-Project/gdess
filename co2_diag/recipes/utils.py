@@ -10,7 +10,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def options_to_args(options: dict) -> list[str]:
+def options_to_args(options: dict) -> list:
     """Convert a dictionary to a list of strings so that an ArgumentParser can parse it.
 
     Examples
