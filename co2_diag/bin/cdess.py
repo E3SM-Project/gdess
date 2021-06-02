@@ -44,6 +44,16 @@ def parse_cli():
                             fromfile_prefix_chars='@')
     parser.add_argument("--verbose", action='store_true')
 
+    # Redefine parser function to allow multiple arguments (i.e., nargs='*') on a single line when read from a file
+    def convert_arg_line_to_args(arg_line):
+        for arg in arg_line.split():
+            if not arg.strip():
+                continue
+            if arg[0] == '#':
+                break
+            yield arg
+    parser.convert_arg_line_to_args = convert_arg_line_to_args
+
     # A separate subparser is set up for each recipe to handle its specific input arguments.
     subparsers = parser.add_subparsers(title='available recipe subcommands', dest='subparser_name')  #, help='name of diagnostic recipe to run')
     #
