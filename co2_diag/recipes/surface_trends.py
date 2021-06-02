@@ -166,7 +166,7 @@ def surface_trends(options: dict,
     return data_output
 
 
-def add_surface_trends_args_to_parser(parser: argparse.PARSER) -> None:
+def add_surface_trends_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """Add recipe arguments to a parser object
 
     Parameters
