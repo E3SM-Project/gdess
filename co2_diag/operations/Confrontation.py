@@ -15,6 +15,10 @@ _logger = logging.getLogger(__name__)
 def make_comparable(ref, com, **keywords):
     """Make two datasets comparable.
 
+    Ensures time formats are compatible.
+    Clips the data to appropriate time bounds.
+    Gets data at the specified lat/lon.
+
     Parameters
     ----------
     ref : xarray.Dataset
