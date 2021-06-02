@@ -78,7 +78,11 @@ def add_shared_arguments_for_recipes(parser: argparse.ArgumentParser) -> None:
     ----------
     parser
     """
-    parser.add_argument('ref_data', type=valid_existing_path, help='Filepath to the reference data folder')
+
+    # A data path is required.
+    parser.add_argument('ref_data', type=valid_existing_path,
+                        help='Filepath to the reference data folder')
+
     parser.add_argument('--start_yr', default="1960", type=valid_year_string, help='Initial year cutoff')
     parser.add_argument('--end_yr', default="2015", type=valid_year_string, help='Final year cutoff')
     parser.add_argument('--figure_savepath', type=str, default=None, help='Filepath for saving generated figures')
@@ -106,6 +110,7 @@ def parse_recipe_options(options: Union[dict, argparse.Namespace],
     if isinstance(options, dict):
         # In this case, the options have not yet been parsed.
         params = options_to_args(options)
+        params.remove('--ref_data')  # remove this key because it is handled as a positional argument, not a kwarg.
         _logger.debug('Parameter argument string == %s', params)
         args = parser.parse_args(params)
     elif isinstance(options, argparse.Namespace):
