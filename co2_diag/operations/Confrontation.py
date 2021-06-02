@@ -1,4 +1,4 @@
-# # import numpy as np
+import numpy as np
 import pandas as pd
 import xarray as xr
 # #
@@ -54,22 +54,15 @@ def make_comparable(ref, com, **keywords):
 
     _logger.info('Selected bounds for both:')
 
-    # Ensure time formats are equivalent
-    ds_ref = ensure_dataset_datetime64(ref)
-    ds_com = ensure_dataset_datetime64(com)
     # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
-    if time_limits[0]:
-        ds_ref = ds_ref.where(ds_ref.time >= time_limits[0], drop=True)
-    if time_limits[1]:
-        ds_ref = ds_ref.where(ds_ref.time <= time_limits[1], drop=True)
-    ds_com = ds_com.where(ds_com.time >= ds_ref['time'].min().values, drop=True)
-    ds_com = ds_com.where(ds_com.time <= ds_ref['time'].max().values, drop=True)
-    _logger.info('  -- time>=%s  &  time<=%s', time_limits[0], time_limits[1])
+    ds_ref, initial_ref_time, final_ref_time = apply_time_bounds(ref, time_limits)
+    ds_com, initial_com_time, final_com_time = apply_time_bounds(com, (initial_ref_time, final_ref_time))
     # decimal years are added as a coordinate if not already there.
     if not ('time_decimal' in ds_com.coords):
         ds_com = ds_com.assign_coords(time_decimal=('time',
                                                     [decimalDateFromDatetime(x) for x in
                                                      pd.DatetimeIndex(ds_com['time'].values)]))
+    _logger.info('  -- time>=%s  &  time<=%s', time_limits[0], time_limits[1])
 
     _logger.info('Selected bounds for Comparison dataset:')
     # _logger.info('  -- model=%s', opts.model_name)
@@ -111,6 +104,42 @@ def make_comparable(ref, com, **keywords):
     _logger.info('done.')
 
     return ds_ref, da_mdl
+
+
+def apply_time_bounds(ds: xr.Dataset,
+                      time_limits: tuple
+                      ) -> tuple:
+    """
+
+    Parameters
+    ----------
+    ds
+    time_limits
+
+    Returns
+    -------
+    a tuple containing:
+        a Dataset
+        the earliest datetime in the dataset
+        the latest datetime in the dataset
+    """
+    ds = ensure_dataset_datetime64(ds)
+
+    initial_ref_time = ds['time'].min().values
+    final_ref_time = ds['time'].max().values
+
+    if time_limits[0]:
+        if final_ref_time < time_limits[0]:
+            raise RuntimeError("Final time of dataset <%s> is before the given time frame's start <%s>." %
+                               (np.datetime_as_string(final_ref_time, unit='s'), time_limits[0]))
+        ds = ds.where(ds.time >= time_limits[0], drop=True)
+    if time_limits[1]:
+        if initial_ref_time > time_limits[1]:
+            raise RuntimeError("Initial time of dataset <%s> is after the given time frame's end <%s>." %
+                               (np.datetime_as_string(initial_ref_time, unit='s'), time_limits[1]))
+        ds = ds.where(ds.time <= time_limits[1], drop=True)
+
+    return ds, initial_ref_time, final_ref_time
 #
 #
 # # def get_combined_dataframe(dataset_ref: xr.Dataset,
