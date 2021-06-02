@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+""" This is the command line interface for running co2 diagnostics
+
+Example usage:
+    >> ./bin/bgcdess --help
+    >> ./bin/cdess trend --help
+    >> ./bin/cdess trend raw_data/noaa-obspack/nc/ --figure_savepath ./
+    >> ./bin/cdess seasonal --help
+"""
+
+# Generic/Built-in
+import sys
+from argparse import ArgumentParser
+
+from co2_diag.recipes.seasonal_cycles import add_seasonal_cycle_args_to_parser
+from co2_diag.recipes.surface_trends import add_surface_trends_args_to_parser
+
+
+def main(args):
+    """
+    """
+    # Get the argument values. Then clear them from the namespace so the subcommands do not encounter them.
+    verbosity = args.verbose
+    del args.verbose
+    recipe_name = args.subparser_name
+    del args.subparser_name
+
+    # Run the selected recipe
+    if recipe_name == 'seasonal':
+        from co2_diag.recipes import seasonal_cycles
+        seasonal_cycles(args, verbose=verbosity)
+
+    elif recipe_name == 'trend':
+        from co2_diag.recipes import surface_trends
+        surface_trends(args, verbose=verbosity)
+
+    return 0  # a clean, no-issue, exit
+
+
+def parse_cli():
+    """Input arguments are parsed.
+    """
+    parser = ArgumentParser(description="Run a CO2 diagnostic recipe to generate figures and metrics",
+                            fromfile_prefix_chars='@')
+    parser.add_argument("--verbose", action='store_true')
+
+    # A separate subparser is set up for each recipe to handle its specific input arguments.
+    subparsers = parser.add_subparsers(title='available recipe subcommands', dest='subparser_name')  #, help='name of diagnostic recipe to run')
+    #
+    subparser_seasonal = subparsers.add_parser('seasonal', help='generate diagnostics of seasonal cycles')
+    add_seasonal_cycle_args_to_parser(subparser_seasonal)
+    #
+    subparser_trend = subparsers.add_parser('trend', help='generate diagnostics of multidecadal trends')
+    add_surface_trends_args_to_parser(subparser_trend)
+
+    # Print the help message if no arguments are supplied at the command line.
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    parsed_args = parse_cli()
+
+    sys.exit(main(parsed_args))
