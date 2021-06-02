@@ -6,6 +6,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+import xarray as xr
 
 from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
@@ -431,7 +432,7 @@ class Collection(Multiset):
         return strrep
 
 
-def get_dict_of_all_stations(datadir):
+def get_dict_of_all_station_filenames(datadir):
     """Build a dictionary that contains a key for each station code,
        and with a list of filenames for each key.
 
@@ -459,6 +460,13 @@ def get_dict_of_all_stations(datadir):
             dict_to_build[result].append(f)
 
     return dict_to_build
+
+
+def get_dict_of_station_codes_and_names(datadir):
+    stations_dict = get_dict_of_all_station_filenames(datadir)
+    return {k: {'name': xr.open_dataset(os.path.join(datadir, stations_dict[k][0])).attrs['site_name']}
+            for k,v
+            in stations_dict.items()}
 
 
 def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
