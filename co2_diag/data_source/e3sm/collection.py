@@ -95,7 +95,7 @@ class Collection(Multiset):
 
         new_self, loaded_from_file = cls._recipe_base(verbose=verbose,
                                                       from_file=load_from_file,
-                                                      nc_file=opts.test_data)
+                                                      nc_file=opts.ref_data)
         n_lev = len(new_self.stepB_preprocessed_datasets['main'].lev)  # get last level
         if not opts.lev_index:
             opts.lev_index = n_lev-1
