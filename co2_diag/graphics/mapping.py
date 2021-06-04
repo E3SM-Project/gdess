@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
@@ -104,16 +104,37 @@ def determine_tick_step(degrees_covered):
         return 1
 
 
-def add_site_labels(dataframe, ax, column_with_labels='site_code'):
-    # --- Add data point labels ---
-    # And adjust them so that they are not overlapping each other or the data points.
+def add_site_labels(ax: plt.Axes, labels: Sequence, lats: Sequence, lons: Sequence,
+                    **kwargs) -> None:
+    """Add data point labels
+    And adjust them so that they are not overlapping each other or the data points.
+
+    Note: For densely packed aircraft sites, these arguments worked well:
+        force_text=(0.1, 1), force_points=(3.2, 3), expand_points=(1.25, 1.25)
+        arrowprops=dict(arrowstyle="->", color='b', lw=0.4)
+
+    Parameters
+    ----------
+    ax
+    labels
+    lats
+    lons
+    kwargs
+
+    Returns
+    -------
+    """
     texts = []
-    for index, row in dataframe.iterrows():
-        texts.append(ax.annotate(row[column_with_labels].upper(), (row['lon'], row['lat']), color='b'))
-    adjust_text(texts, ax=ax, only_move={'points': 'xy', 'texts': 'y'},
-                force_text=(0.1, 1), force_points=(3.2, 3),
-                expand_points=(1.25, 1.25),  # expand_objects=(1.25, 1.25),
-                arrowprops=dict(arrowstyle="->", color='b', lw=0.4))
+    for label, lat, lon in zip(labels, lats, lons):
+        if lon > 180:
+            lon -= 360
+        # If the point is too close to the map's edge, matplotlib won't display the annotation, so we need to nudge it.
+        if abs(ax.get_ylim()[0] - lat) < 0.5:
+            lat += 0.5
+        elif abs(ax.get_ylim()[1] - lat) < 0.5:
+            lat -= 0.5
+        texts.append(ax.annotate(label.upper(), (lon, lat), color='b'))
+    adjust_text(texts, ax=ax, only_move={'points': 'xy', 'texts': 'y'}, **kwargs)
 
 """Set up some plotting functions that mimic the E3SM_diag figures
 
