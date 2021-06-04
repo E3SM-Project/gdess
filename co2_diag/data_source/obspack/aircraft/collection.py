@@ -10,8 +10,6 @@ from matplotlib.colors import BoundaryNorm
 
 import cartopy.crs as ccrs
 
-from adjustText import adjust_text
-
 from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.obspack.load import load_data_with_regex
@@ -174,18 +172,6 @@ class Collection(Multiset):
                                             cmap=cmap, cnorm=cnorm)
 
         return fig, ax
-
-    @staticmethod
-    def add_site_labels(dataframe, ax):
-        # --- Add data point labels ---
-        # And adjust them so that they are not overlapping each other or the data points.
-        texts = []
-        for index, row in dataframe.iterrows():
-            texts.append(ax.annotate(row['site_code'].upper(), (row['lon'], row['lat']), color='b'))
-        adjust_text(texts, ax=ax, only_move={'points': 'xy', 'texts': 'y'},
-                    force_text=(0.1, 1), force_points=(3.2, 3),
-                    expand_points=(1.25, 1.25),  # expand_objects=(1.25, 1.25),
-                    arrowprops=dict(arrowstyle="->", color='b', lw=0.4))
 
     def __repr__(self):
         """ String representation is built."""

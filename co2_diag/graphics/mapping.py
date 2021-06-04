@@ -7,6 +7,7 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+from adjustText import adjust_text
 
 from .utils import get_colormap
 
@@ -102,6 +103,17 @@ def determine_tick_step(degrees_covered):
     else:
         return 1
 
+
+def add_site_labels(dataframe, ax, column_with_labels='site_code'):
+    # --- Add data point labels ---
+    # And adjust them so that they are not overlapping each other or the data points.
+    texts = []
+    for index, row in dataframe.iterrows():
+        texts.append(ax.annotate(row[column_with_labels].upper(), (row['lon'], row['lat']), color='b'))
+    adjust_text(texts, ax=ax, only_move={'points': 'xy', 'texts': 'y'},
+                force_text=(0.1, 1), force_points=(3.2, 3),
+                expand_points=(1.25, 1.25),  # expand_objects=(1.25, 1.25),
+                arrowprops=dict(arrowstyle="->", color='b', lw=0.4))
 
 """Set up some plotting functions that mimic the E3SM_diag figures
 
