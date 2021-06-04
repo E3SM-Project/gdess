@@ -95,8 +95,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     _logger.info('*Processing Observations*')
     counter = {'current': 1, 'skipped': 0}
     station_filts = []
-    lat_list = []
-    station_name_list = []
+    processed_station_metadata = {'lat': [], 'lon': [], 'code': [], 'fullname': []}
     cycle_list_with_each_station = []
     num_stations = [len(stations_to_analyze)]
     for station in stations_to_analyze:
@@ -161,8 +160,12 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                      smooth_cycle=filt_ref.getHarmonicValue(filt_ref.xinterp) + filt_ref.smooth - filt_ref.trend)
         #
         cycle_list_with_each_station.append(pd.DataFrame.from_dict({"month": ref_dt, f"{station}": ref_vals}))
-        lat_list.append(obs_collection.station_dict[station]['lat'])
-        station_name_list.append(station)
+
+        # Gather together the metadata for this station now that it's been processed.
+        processed_station_metadata['lon'].append(obs_collection.station_dict[station]['lon'])
+        processed_station_metadata['lat'].append(obs_collection.station_dict[station]['lat'])
+        processed_station_metadata['fullname'].append(obs_collection.station_dict[station]['name'])
+        processed_station_metadata['code'].append(station)
 
         counter['current'] += 1
         # END of station loop
@@ -180,12 +183,14 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                    figure_title=f'model [{opts.model_name}]',
                                    savepath=opts.figure_savepath + 'supplement1_mdl.png')
 
+    df_station_metadata = pd.DataFrame.from_dict(processed_station_metadata)
     # Dataframes for each station are combined so we have one 'month' column, and a single column for each station.
     # First, dataframes are sorted by latitude, then combined, then the duplicate 'month' columns are removed.
-    lat_list, cycle_list_with_each_station, latitudinally_sorted_station_names = \
-        sort_lists_by([lat_list, cycle_list_with_each_station, station_name_list], key_list=0, desc=False)
+    cycle_list_with_each_station = [x for _, x
+                                    in sorted(zip(list(df_station_metadata['lat']), cycle_list_with_each_station))]
     df_cycles_for_all_stations = pd.concat(cycle_list_with_each_station, axis=1, sort=False)
     df_cycles_for_all_stations = df_cycles_for_all_stations.loc[:, ~df_cycles_for_all_stations.columns.duplicated()]
+    df_station_metadata.sort_values(by='lat', ascending=True, inplace=True)  # sort the metadata after using it for sorting the cycle list
 
     # --- Plot the seasonal cycles for all stations
     xdata = df_cycles_for_all_stations['month']
@@ -198,7 +203,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                       savepath=opts.figure_savepath)
     else:
         plot_lines_for_all_station_cycles(xdata, ydata, savepath=opts.figure_savepath)
-        plot_heatmap_of_all_stations(xdata, ydata, latitudes=lat_list, savepath=opts.figure_savepath)
+        plot_heatmap_of_all_stations(xdata, ydata, latitudes=list(df_station_metadata['lat']), savepath=opts.figure_savepath)
 
     # --- Make a supplemental figure for filter components ---
     #
@@ -233,9 +238,9 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     #     mysavefig(fig=fig, plot_save_name=opts.figure_savepath + 'supplement2.png')
 
     if compare_against_model:
-        returnval = df_cycles_for_all_stations, cycle_list_with_each_station, mdl_dt, mdl_vals
+        returnval = df_cycles_for_all_stations, cycle_list_with_each_station, df_station_metadata, mdl_dt, mdl_vals
     else:
-        returnval = df_cycles_for_all_stations, cycle_list_with_each_station
+        returnval = df_cycles_for_all_stations, cycle_list_with_each_station, df_station_metadata
     return returnval
 
 
