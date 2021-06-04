@@ -93,14 +93,14 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
 
     # --- Load Surface station observations ---
     _logger.info('*Processing Observations*')
-    counter = 1
+    counter = {'current': 1, 'skipped': 0}
     station_filts = []
     lat_list = []
     station_name_list = []
     cycle_list_with_each_station = []
     num_stations = [len(stations_to_analyze)]
     for station in stations_to_analyze:
-        _logger.info("Station %s of %s: %s", counter, num_stations[0], station)
+        _logger.info("Station %s of %s: %s", counter['current'], num_stations[0], station)
         obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
         obs_collection.preprocess(datadir=opts.ref_data, station_name=station)
         ds_obs = obs_collection.stepA_original_datasets[station]
@@ -121,14 +121,14 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                 da_obs, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(opts.start_yr),
                                                                       np.datetime64(opts.end_yr)))
         except RuntimeError as re:
-            update_for_skipped_station(re, station, num_stations)
+            update_for_skipped_station(re, station, num_stations, counter)
             continue
 
         # Check that there is at least one year's worth of data for this station.
         num_months = da_obs.time.values.max().astype('datetime64[M]') - da_obs.time.values.min().astype('datetime64[M]')
         if num_months < 12:
             msg = '  insufficient number of months of data for station <%s>' % station
-            update_for_skipped_station(msg, station, num_stations)
+            update_for_skipped_station(msg, station, num_stations, counter)
             continue
 
         # --- Curve fitting ---
@@ -140,7 +140,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                 filt_mdl = ccgFilter(xp=xp, yp=yp, numpolyterms=3, numharmonics=4, timezero=int(xp[0]))
             except TypeError as te:
                 _logger.info('--- Curve filtering error ---')
-                update_for_skipped_station(te, station, num_stations)
+                update_for_skipped_station(te, station, num_stations, counter)
                 continue
         # Surface stations
         xp = da_obs['time_decimal'].values
@@ -164,10 +164,11 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         lat_list.append(obs_collection.station_dict[station]['lat'])
         station_name_list.append(station)
 
-        counter += 1
+        counter['current'] += 1
         # END of station loop
 
-    _logger.info("Done -- %s stations fully processed.", len(cycle_list_with_each_station))
+    _logger.info("Done -- %s stations fully processed. %s stations skipped.",
+                 len(cycle_list_with_each_station), counter['skipped'])
 
     if compare_against_model:
         mdl_dt, mdl_vals = make_cycle(x0=filt_mdl.xinterp,
@@ -238,10 +239,11 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     return returnval
 
 
-def update_for_skipped_station(msg, station_name, station_count):
+def update_for_skipped_station(msg, station_name, station_count, counter_dict):
     """Print a message and reduce the total station count by one."""
     _logger.info('  %s', msg)
     _logger.info('  skipping station: %s', station_name)
+    counter_dict['skipped'] += 1
     station_count[0] -= 1
 
 
