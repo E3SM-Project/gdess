@@ -19,6 +19,7 @@ from matplotlib import ticker
 from co2_diag import set_verbose
 import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
 import co2_diag.data_source.cmip.collection as cmip_collection_module
+from co2_diag.formatters.nums import numstr
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
 
@@ -329,6 +330,8 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
     fig, ax = plt.subplots(1, 1, figsize=(10, 4))
     ax.plot(xdata, ydata, '-o')
     #
+    aesthetic_grid_no_spines(ax)
+    #
     plt.legend(ydata.columns.values, loc='upper left')
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
@@ -363,13 +366,14 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
     ax.set_yticks(range(num_stations))
     ax.set_yticklabels(station_labels)
     #
-    # Add seconday y-axis to show latitudes
+    # Add secondary y-axis on the right side to show station latitudes
     if latitudes:
         ax2 = ax.twinx()
         ax2.yaxis.set_label_position("right")
         ax2.yaxis.tick_right()
+        ax2.set_ylim(ax.get_ylim())
         ax2.set_yticks(range(num_stations))
-        ax2.set_yticklabels(latitudes)
+        ax2.set_yticklabels([numstr(x, decimalpoints=2) for x in latitudes])
     #
     cbar = fig.colorbar(im, orientation="horizontal", pad=0.2)
     cbar.ax.set_xlabel('$CO_2$ (ppm)')
