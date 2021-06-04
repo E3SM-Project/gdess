@@ -72,8 +72,6 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     # The list of stations to analyze is populated.
     if opts.run_all_stations:
         stations_to_analyze = obspack_surface_collection_module.station_dict.keys()
-    elif opts.run_three_stations:
-        stations_to_analyze = list(obspack_surface_collection_module.station_dict.keys())[0:3]
     elif opts.station_list:
         stations_to_analyze = opts.station_list
     else:
@@ -451,7 +449,7 @@ def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--run_all_stations', action='store_true')
-    parser.add_argument('--run_three_stations', action='store_true')
+    parser.add_argument('--latitude_bin_size', default=None)
     parser.add_argument('--plot_filter_components', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
