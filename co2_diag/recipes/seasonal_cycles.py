@@ -191,6 +191,36 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     df_cycles_for_all_stations = df_cycles_for_all_stations.loc[:, ~df_cycles_for_all_stations.columns.duplicated()]
     df_station_metadata.sort_values(by='lat', ascending=True, inplace=True)  # sort the metadata after using it for sorting the cycle list
 
+    heatmap_rightside_labels = [numstr(x, decimalpoints=2) for x in df_station_metadata['lat']]
+    if opts.latitude_bin_size:
+        # We determine bins to which each station is assigned.
+        step = opts.latitude_bin_size
+        to_bin = lambda x: np.floor(x / step) * step
+        df_station_metadata["latbin"] = df_station_metadata['lat'].map(to_bin)
+        df_station_metadata["lonbin"] = df_station_metadata['lon'].map(to_bin)
+
+        # Add the coordinates and binning information to the dataframe with seasonal cycle values
+        new_df = df_cycles_for_all_stations.transpose()
+        new_df.columns = new_df.loc['month']  # .map(lambda x: x.strftime('%m'))
+        new_df = (new_df
+                  .drop(labels='month', axis=0, inplace=False)
+                  .apply(pd.to_numeric, axis=0)
+                  .reset_index()
+                  .rename(columns={'index': 'code'})
+                  .merge(df_station_metadata.loc[:, ['code', 'fullname', 'lat', 'latbin']], on='code'))
+
+        # Take the means of each latitude bin and transpose dataframe
+        groups = new_df.groupby(["latbin"], as_index=False)
+        binned_df = (groups.mean()
+                     .drop('lat', axis=1)
+                     .sort_values(by='latbin', ascending=False)
+                     .set_index('latbin')
+                     .transpose()
+                     .reset_index()
+                     .rename(columns={'index': 'month'}))
+        df_cycles_for_all_stations = binned_df
+        heatmap_rightside_labels = None
+
     # --- Plot the seasonal cycles for all stations
     xdata = df_cycles_for_all_stations['month']
     ydata = df_cycles_for_all_stations.loc[:, (df_cycles_for_all_stations.columns != 'month')]
@@ -202,7 +232,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                       savepath=opts.figure_savepath)
     else:
         plot_lines_for_all_station_cycles(xdata, ydata, savepath=opts.figure_savepath)
-        plot_heatmap_of_all_stations(xdata, ydata, latitudes=list(df_station_metadata['lat']), savepath=opts.figure_savepath)
+        plot_heatmap_of_all_stations(xdata, ydata, rightside_labels=heatmap_rightside_labels, savepath=opts.figure_savepath)
 
     # --- Make a supplemental figure for filter components ---
     #
@@ -345,7 +375,7 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
 
 def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
                                  ydata: pd.DataFrame,
-                                 latitudes: list = None,
+                                 rightside_labels: list = None,
                                  savepath=None) -> None:
     mindate = mdates.date2num(xdata.tolist()[0])
     maxdate = mdates.date2num(xdata.tolist()[-1])
@@ -365,13 +395,13 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
     ax.set_yticklabels(station_labels)
     #
     # Add secondary y-axis on the right side to show station latitudes
-    if latitudes:
+    if rightside_labels:
         ax2 = ax.twinx()
         ax2.yaxis.set_label_position("right")
         ax2.yaxis.tick_right()
         ax2.set_ylim(ax.get_ylim())
         ax2.set_yticks(range(num_stations))
-        ax2.set_yticklabels([numstr(x, decimalpoints=2) for x in latitudes])
+        ax2.set_yticklabels(rightside_labels)
     #
     cbar = fig.colorbar(im, orientation="horizontal", pad=0.2)
     cbar.ax.set_xlabel('$CO_2$ (ppm)')
@@ -448,9 +478,9 @@ def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')
-    parser.add_argument('--run_all_stations', action='store_true')
-    parser.add_argument('--latitude_bin_size', default=None)
+    parser.add_argument('--latitude_bin_size', default=None, type=float)
     parser.add_argument('--plot_filter_components', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
+    parser.add_argument('--run_all_stations', action='store_true')
     parser.add_argument('--station_list', nargs='*')
