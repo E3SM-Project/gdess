@@ -1,14 +1,15 @@
 import argparse
+from typing import Union
 import pandas as pd
 import xarray as xr
-import warnings
-from typing import Union
+import matplotlib.pyplot as plt
 
 from co2_diag import set_verbose
+from co2_diag.data_source.cmip.load_utils import model_substring, model_choices
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
-from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
+from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 from co2_diag.recipes.utils import benchmark_recipe, nullable_str, parse_recipe_options, add_shared_arguments_for_recipes
 
@@ -17,8 +18,6 @@ from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 # Packages for using NCAR's intake
 import intake
 import intake_esm
-
-import matplotlib.pyplot as plt
 
 import logging
 _loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
@@ -587,23 +586,6 @@ class Collection(Multiset):
         return nmodels, member_counts
 
 
-# -- Define valid model choices --
-model_choices = ['CMIP.CNRM-CERFACS.CNRM-ESM2-1.esm-hist.Amon.gr', 'CMIP.NCAR.CESM2.esm-hist.Amon.gn',
-                 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn', 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1']
-def model_substring(s):
-    """Function used to allow specification of model names by only supplying a partial string match
-
-    Example
-    -------
-    >>> model_substring('BCC')
-    returns 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
-    """
-    options = [c for c in model_choices if s in c]
-    if len(options) == 1:
-        return options[0]
-    return s
-
-
 def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """Add recipe arguments to a parser object
 
@@ -613,6 +595,5 @@ def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--plev', default=100000, type=int)
-    parser.add_argument('--model_name', default=None,
-                        type=model_substring, choices=model_choices)
+    parser.add_argument('--model_name', default=None, type=model_substring, choices=model_choices)
     parser.add_argument('--member_key', default=None, type=nullable_str)
