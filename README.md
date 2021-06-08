@@ -59,8 +59,8 @@ git clone https://github.com/dkauf42/e3sm_co2_diag.git ~/e3sm_co2_diag
 From here on we’ll use “myenv” to refer to our environment.*
 
 ```shell script
-conda create -n "myenv" python>=3.8
-conda activate "myenv"
+conda create -n myenv python=3.8
+conda activate myenv
 conda config --add channels conda-forge
 conda install --file requirements.txt
 ```
