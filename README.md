@@ -49,22 +49,17 @@ for how to run recipes for CMIP6 model output, NOAA Globalview+ Obspack, and E3S
 
 ## Installation
 
-👥 Clone this repository to the location of your choice. 
-*Note: most work will be done in the 'develop' branch, 
-which we `checkout` before pulling the latest version.*
+👥 Clone this repository to the location of your choice.
 ```shell script
 git clone https://github.com/dkauf42/e3sm_co2_diag.git ~/e3sm_co2_diag
-cd ~/e3sm_co2_diag/
-git checkout develop
-git pull
 ```
 
 🌍 Create conda environment and install dependencies. 
-*Note: Replace “myenv” with the preferred name of your environment, e.g. "e3sm_co2_diagnostics". 
+*Note: Replace “myenv” with the preferred name of your environment, e.g. "co2_diagnostics". 
 From here on we’ll use “myenv” to refer to our environment.*
 
 ```shell script
-conda create -n "myenv" python=3.8
+conda create -n "myenv" python>=3.8
 conda activate "myenv"
 conda config --add channels conda-forge
 conda install --file requirements.txt
@@ -72,6 +67,7 @@ conda install --file requirements.txt
 
 💾 Install the package:
 ```shell script
+cd ~/e3sm_co2_diag/
 pip install .
 ```
 
@@ -95,6 +91,11 @@ To use the latest version of this repository:
 ```
 pip uninstall co2_diag
 ```
+
+## Developing
+
+Most work will be done in the 'develop' branch, 
+so please `git checkout develop` or create a new branch before modifying code.
 
 ## 📁 Project Structure
 
