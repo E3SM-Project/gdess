@@ -45,8 +45,8 @@ def print_var_summary(dataset: xr.Dataset, varname='CO2', return_dataset=False):
 
     _logger.info("Summary for <%s>%s%s:",
                  varname,
-                ' (units of ' + vu + ')' if vu else '',
-                ' (long_name: ' + ln + ')' if ln else '')
+                 ' (units of ' + vu + ')' if vu else '',
+                 ' (long_name: ' + ln + ')' if ln else '')
     _logger.info("  min: %s", str(stats_dict['min']))
     _logger.info("  mean: %s", str(stats_dict['mean']))
     _logger.info("  max: %s", str(stats_dict['max']))
