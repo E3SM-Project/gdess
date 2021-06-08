@@ -5,8 +5,6 @@ This function parses:
 ================================================================================
 """
 import argparse
-import datetime
-from datetime import timedelta
 from typing import Union
 import numpy as np
 import pandas as pd
@@ -443,26 +441,6 @@ def plot_filter_components(filter_object, original_x, original_y,
     #
     if savepath:
         mysavefig(fig=fig, plot_save_name=savepath + 'supplement1_mdl.png')
-
-def t2dt(atime):
-    """
-    Convert atime (a float) to DT.datetime
-    This is the inverse of dt2t.
-    assert dt2t(t2dt(atime)) == atime
-    """
-    year = int(atime)
-    remainder = atime - year
-    boy = datetime.datetime(year, 1, 1)
-    eoy = datetime.datetime(year + 1, 1, 1)
-    seconds = remainder * (eoy - boy).total_seconds()
-    return boy + timedelta(seconds=seconds)
-
-
-def dt2t(year, month, day, h=0, m=0, s=0) :
-    """convert a DT.datetime to a float"""
-    year_seconds = (datetime.datetime(year,12,31,23,59,59,999999)-datetime.datetime(year,1,1,0,0,0)).total_seconds()
-    second_of_year = (datetime.datetime(year,month,day,h,m,s) - datetime.datetime(year,1,1,0,0,0)).total_seconds()
-    return year + second_of_year / year_seconds
 
 
 def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:

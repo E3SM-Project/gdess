@@ -1,6 +1,5 @@
-from datetime import datetime
-
 import datetime as pydt
+from datetime import timedelta
 from typing import Sequence
 
 import numpy as np
@@ -155,11 +154,32 @@ def monthlist(dates) -> list:
      numpy.datetime64('2017-03-01'),
      numpy.datetime64('2017-04-01')]
     """
-    start, end = [datetime.strptime(_, "%Y-%m-%d") for _ in dates]
+    start, end = [pydt.datetime.strptime(_, "%Y-%m-%d") for _ in dates]
     def total_months(dt): return dt.month + 12 * dt.year
     mlist = []
     for tot_m in range(total_months(start)-1, total_months(end)):
         y, m = divmod(tot_m, 12)
-        mlist.append(np.datetime64(datetime(y, m+1, 1).strftime("%Y-%m"), 'D'))
+        mlist.append(np.datetime64(pydt.datetime(y, m+1, 1).strftime("%Y-%m"), 'D'))
 
     return mlist
+
+
+def dt2t(year, month, day, h=0, m=0, s=0) :
+    """convert a DT.datetime to a float"""
+    year_seconds = (pydt.datetime(year,12,31,23,59,59,999999)-pydt.datetime(year,1,1,0,0,0)).total_seconds()
+    second_of_year = (pydt.datetime(year,month,day,h,m,s) - pydt.datetime(year,1,1,0,0,0)).total_seconds()
+    return year + second_of_year / year_seconds
+
+
+def t2dt(atime):
+    """
+    Convert a time (a float) to DT.datetime
+    This is the inverse of dt2t.
+    assert dt2t(t2dt(atime)) == atime
+    """
+    year = int(atime)
+    remainder = atime - year
+    boy = pydt.datetime(year, 1, 1)
+    eoy = pydt.datetime(year + 1, 1, 1)
+    seconds = remainder * (eoy - boy).total_seconds()
+    return boy + timedelta(seconds=seconds)
