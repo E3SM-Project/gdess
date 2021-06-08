@@ -4,8 +4,12 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from co2_diag.operations.time import ensure_datetime64_array, ensure_cftime_array, monthlist
+from co2_diag.operations.time import ensure_datetime64_array, ensure_cftime_array, monthlist, dt2t
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
+from co2_diag.operations.utils import print_var_summary
+
+import logging
+
 
 @pytest.fixture
 def random_data():
@@ -96,3 +100,14 @@ def test_unit_conversion_dataset(dataset_withco2):
 def test_unit_conversion_dataset_bad_varname_raises(dataset_withco2):
     with pytest.raises(Exception):
         co2_kgfrac_to_ppm(dataset_withco2, co2_var_name='carbon dio')
+
+
+def test_conversion_of_datetime_to_a_decimalyear_time():
+    afloat = dt2t(year=2013, month=3, day=15, h=12)
+    assert (afloat - 2013.20136) < 0.00001
+
+
+def test_print_netcdf_var_summary(dataset_withco2, caplog):
+    print_var_summary(dataset_withco2, varname='co2', return_dataset=False)
+    for record in caplog.records:
+        assert record.levelname == "INFO"

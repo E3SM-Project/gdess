@@ -60,3 +60,19 @@ def test_recipe_completes_with_no_errors(rootdir):
         data_dict = seasonal_cycles(verbose='DEBUG', options=recipe_options)
     except Exception as exc:
         assert False, f"'surface_trends' raised an exception {exc}"
+
+
+def test_recipe_bin_multiple_stations_completes_with_no_errors(rootdir):
+    test_path = os.path.join(rootdir, 'test_data')
+
+    recipe_options = {
+        'ref_data': test_path,
+        'latitude_bin_size': 30,
+        'start_yr': "1980",
+        'end_yr': "2010",
+        'figure_savepath': 'test_figure',
+        'station_list': 'mlo'}
+    try:
+        data_dict = seasonal_cycles(verbose='DEBUG', options=recipe_options)
+    except Exception as exc:
+        assert False, f"'surface_trends' raised an exception {exc}"
