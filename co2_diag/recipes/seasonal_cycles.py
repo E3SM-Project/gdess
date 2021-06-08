@@ -13,18 +13,20 @@ from dask.diagnostics import ProgressBar
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import ticker
+import matplotlib.colors as mcolors
 
 from co2_diag import set_verbose
-import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
-import co2_diag.data_source.cmip.collection as cmip_collection_module
 from co2_diag.formatters.nums import numstr
-from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
-
+import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
+from co2_diag.data_source.cmip import Collection as cmipCollection
+from co2_diag.data_source.cmip import model_substring, model_choices
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
+from co2_diag.operations.time import t2dt
+from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
+from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
 from ccgcrv.ccg_filter import ccgFilter
-from ccgcrv.ccg_dates import datetimeFromDecimalDate, calendarDate, decimalDateFromDatetime
+from ccgcrv.ccg_dates import decimalDateFromDatetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -32,7 +34,7 @@ _logger = logging.getLogger(__name__)
 
 def seasonal_cycles(options: Union[dict, argparse.Namespace],
                     verbose: Union[bool, str] = False,
-                    ):
+                    ) -> tuple:
     """Execute a series of preprocessing steps and generate a diagnostic result.
 
     Relevant co2_diag collections are instantiated and processed.
@@ -49,6 +51,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
             station_code (str): a three letter code to specify the desired surface observing station; 'mlo' is default
             start_yr (str): '1960' is default
             end_yr (str): '2015' is default
+            latitude_bin_size (numeric): None is default
             figure_savepath (str): None is default
             difference (str): None is default
             globalmean (str):
@@ -59,7 +62,11 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
 
     Returns
     -------
-    A dictionary containing the data that were plotted.
+    A tuple:
+        A DataFrame containing the data that were plotted.
+        A list of the data for each station
+        A DataFrame containing the metadata for each station
+        (and if a comparison with a model was made, then the datetimes and values are also part of the returned tuple)
     """
     set_verbose(_logger, verbose)
     if verbose:
@@ -77,16 +84,15 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
 
     # --- Load CMIP model output ---
     # We will only compare against CMIP model outputs if we are analyzing the cycle for a single station
-    ds_mdl = None
-    compare_against_model = len(stations_to_analyze) < 2
-    if compare_against_model:
+    if compare_against_model := (len(stations_to_analyze) < 2):
         _logger.info('*Processing CMIP model output*')
-        cmip_collection = cmip_collection_module.Collection(verbose=verbose)
-        new_self, loaded_from_file = cmip_collection._recipe_base(datastore='cmip6', verbose=verbose,
-                                                                  from_file=None, skip_selections=True)
+        new_self, loaded_from_file = cmipCollection._recipe_base(datastore='cmip6', verbose=verbose,
+                                                                 from_file=None, skip_selections=True)
         ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
         ds_mdl = ds_mdl.assign_coords(time_decimal=('time', [decimalDateFromDatetime(x)
                                                              for x in pd.DatetimeIndex(ds_mdl['time'].values)]))
+    else:
+        ds_mdl = None
 
     # --- Load Surface station observations ---
     _logger.info('*Processing Observations*')
@@ -211,7 +217,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         groups = new_df.groupby(["latbin"], as_index=False)
         binned_df = (groups.mean()
                      .drop('lat', axis=1)
-                     .sort_values(by='latbin', ascending=False)
+                     .sort_values(by='latbin', ascending=True)
                      .set_index('latbin')
                      .transpose()
                      .reset_index()
@@ -229,7 +235,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                       mdl_dt, mdl_vals, f'model [{opts.model_name}]',
                                       savepath=opts.figure_savepath)
     else:
-        plot_lines_for_all_station_cycles(xdata, ydata, savepath=opts.figure_savepath)
+        plot_lines_for_all_station_cycles(xdata, ydata.iloc[:, ::-1], savepath=opts.figure_savepath)
         plot_heatmap_of_all_stations(xdata, ydata, rightside_labels=heatmap_rightside_labels, savepath=opts.figure_savepath)
 
     # --- Make a supplemental figure for filter components ---
@@ -273,28 +279,9 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
 
 def update_for_skipped_station(msg, station_name, station_count, counter_dict):
     """Print a message and reduce the total station count by one."""
-    _logger.info('  %s', msg)
-    _logger.info('  skipping station: %s', station_name)
+    _logger.info('  skipping station <%s>: %s', station_name, msg)
     counter_dict['skipped'] += 1
     station_count[0] -= 1
-
-
-def sort_lists_by(lists, key_list=0, desc=False):
-    """
-    From https://stackoverflow.com/a/15611016
-
-    Parameters
-    ----------
-    lists
-    key_list
-    desc
-
-    Returns
-    -------
-    sorted lists
-    """
-    return zip(*sorted(zip(*lists), reverse=desc,
-                 key=lambda x: x[key_list]))
 
 
 def make_cycle(x0, smooth_cycle) -> tuple:
@@ -319,6 +306,7 @@ def make_cycle(x0, smooth_cycle) -> tuple:
     df_monthly['month_datetime'] = pd.to_datetime(df_monthly['month'], format='%m')
 
     return df_monthly['month_datetime'], df_monthly['co2']
+
 
 def plot_comparison_against_model(ref_xdata: pd.DataFrame,
                                   ref_ydata: pd.DataFrame,
@@ -348,6 +336,7 @@ def plot_comparison_against_model(ref_xdata: pd.DataFrame,
     plt.tight_layout()
     if savepath:
         mysavefig(fig=fig, plot_save_name=savepath + 'supplement_compare_against_model_lines.png')
+
 
 def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
                                       ydata: pd.DataFrame,
@@ -384,9 +373,9 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
     # --- Plot the seasonal cycle for all stations,
     #   and flip the ydata because pyplot.imshow will plot the last row on the bottom
     fig, ax = plt.subplots(1, 1, figsize=(10, num_stations*0.8))
-    im = ax.imshow(ydata.transpose().iloc[::-1], cmap='viridis', interpolation='nearest',
-                   aspect='auto',
-                   extent=(mindate, maxdate, -0.5, num_stations - 0.5))
+    im = ax.imshow(ydata.transpose().iloc[::-1],
+                   norm=mcolors.TwoSlopeNorm(vcenter=0.), cmap='RdBu_r', interpolation='nearest',
+                   aspect='auto', extent=(mindate, maxdate, -0.5, num_stations - 0.5))
     #
     # y_label_list = station_names
     ax.set_yticks(range(num_stations))
@@ -401,7 +390,7 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
         ax2.set_yticks(range(num_stations))
         ax2.set_yticklabels(rightside_labels)
     #
-    cbar = fig.colorbar(im, orientation="horizontal", pad=0.2)
+    cbar = fig.colorbar(im, orientation="horizontal", pad=(num_stations**0.5)*0.08)
     cbar.ax.set_xlabel('$CO_2$ (ppm)')
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
@@ -452,7 +441,7 @@ def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
-                        type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
+                        type=model_substring, choices=model_choices)
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')
