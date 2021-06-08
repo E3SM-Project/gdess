@@ -84,7 +84,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
 
     # --- Load CMIP model output ---
     # We will only compare against CMIP model outputs if we are analyzing the cycle for a single station
-    if compare_against_model := (len(stations_to_analyze) < 2):
+    if compare_against_model := ((len(stations_to_analyze) < 2) & bool(opts.model_name)):
         _logger.info('*Processing CMIP model output*')
         new_self, loaded_from_file = cmipCollection._recipe_base(datastore='cmip6', verbose=verbose,
                                                                  from_file=None, skip_selections=True)
@@ -440,7 +440,7 @@ def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
     parser
     """
     add_shared_arguments_for_recipes(parser)
-    parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
+    parser.add_argument('--model_name', default='',
                         type=model_substring, choices=model_choices)
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
