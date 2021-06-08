@@ -17,7 +17,7 @@ _logger = logging.getLogger(__name__)
 
 # Define functions to be imported by *, e.g. from the local __init__ file
 #   (also to avoid adding above imports to other namespaces)
-__all__ = ['print_var_summary', 'get_var_stats', 'shared_constants']
+__all__ = ['print_var_summary', 'get_var_stats']
 
 
 def where_am_i():
