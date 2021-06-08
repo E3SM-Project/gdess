@@ -2,13 +2,11 @@
 """ This is the command line interface for running co2 diagnostics
 
 Example usage:
-    >> ./bin/bgcdess --help
-    >> ./bin/cdess trend --help
-    >> ./bin/cdess trend raw_data/noaa-obspack/nc/ --figure_savepath ./
-    >> ./bin/cdess seasonal --help
+    >> ./bin/gdess --help
+    >> ./bin/gdess trend --help
+    >> ./bin/gdess trend raw_data/noaa-obspack/nc/ --figure_savepath ./
+    >> ./bin/gdess seasonal --help
 """
-
-# Generic/Built-in
 import sys
 from argparse import ArgumentParser
 
@@ -17,13 +15,10 @@ from co2_diag.recipes.surface_trends import add_surface_trends_args_to_parser
 
 
 def main(args):
-    """
-    """
     # Get the argument values. Then clear them from the namespace so the subcommands do not encounter them.
     verbosity = args.verbose
-    del args.verbose
     recipe_name = args.subparser_name
-    del args.subparser_name
+    del (args.verbose, args.subparser_name)
 
     # Run the selected recipe
     if recipe_name == 'seasonal':
@@ -72,6 +67,4 @@ def parse_cli():
 
 
 if __name__ == '__main__':
-    parsed_args = parse_cli()
-
-    sys.exit(main(parsed_args))
+    sys.exit(main(parse_cli()))
