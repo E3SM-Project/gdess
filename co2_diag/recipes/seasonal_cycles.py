@@ -1,4 +1,4 @@
-""" This produces a plot of multidecadal trends of atmospheric CO2
+""" This produces plots of seasonal cycles of atmospheric CO2
 This function parses:
  - observational data from Globalview+ surface stations
  - model output from CMIP6
