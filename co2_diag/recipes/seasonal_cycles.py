@@ -349,6 +349,8 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
     #
     plt.legend(ydata.columns.values, loc='upper left')
     #
+    ax.set_ylabel('$CO_2$ (ppm)')
+    #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
     month_fmt = mdates.DateFormatter('%b')
     # ax.xaxis.set_major_formatter(month_fmt)
