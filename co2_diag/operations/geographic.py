@@ -24,7 +24,17 @@ def get_closest_mdl_cell_dict(dataset: xr.Dataset,
                               lon: float,
                               coords_as_dimensions: bool = True
                               ) -> dict:
-    """Find the nearest point in the model output
+    """Find the point in the model output that is closest to specified lat/lon pair
+
+    Examples
+    --------
+    To get the data subset at a location:
+    -- For CMIP outputs --
+        >>> closest_point = get_closest_mdl_cell_dict(dataset, lat=24.3, lon=137.8, coords_as_dimensions=True)
+        >>> dataset.stack(coord_pair=['lat', 'lon']).isel(coord_pair=closest_point['index'])
+    -- For E3SM native grid --
+        >>> closest_mdl_point = get_closest_mdl_cell_dict(dataset, lat=lat, lon=lon, coords_as_dimensions=False)
+        >>> dataset.where(dataset['ncol'] == closest_mdl_point['index'], drop=True)
 
     Parameters
     ----------
