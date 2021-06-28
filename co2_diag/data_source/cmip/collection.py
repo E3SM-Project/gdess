@@ -91,7 +91,8 @@ class Collection(Multiset):
 
         if not loaded_from_file_bool:
             # Data are formatted into the basic data structure common to various diagnostics.
-            new_self.preprocess(new_self.datastore_url, model_name)
+            new_self._load_data(method='pangeo', url=new_self.datastore_url, model_name=model_name)
+            new_self.preprocess()
 
             if not skip_selections:
                 _logger.debug(' applying selected bounds: %s', selection)
@@ -310,87 +311,74 @@ class Collection(Multiset):
 
         return new_self
 
-    def preprocess(self,
+    def _load_data(self,
+                   method: str = '',
                    url: str = default_cmip6_datastore_url,
-                   model_name: Union[str, list] = None
-                   ) -> None:
-        """Set up the datasets that are common to every diagnostic
+                   model_name: Union[str, list] = None):
+        """
 
         Parameters
         ----------
-        url: str
-        model_name: Union[str, list]
-        """
-        _loader_logger.debug("Preprocessing...")
-
-        _loader_logger.debug(' Opening the ESM datastore catalog, using URL == %s', url)
-        self.catalog_dataframe = intake.open_esm_datastore(url)
-
-        """
-        We use the intake package's search to load a catalog into the attribute "latest_searched_model_catalog"
-        Acceptable search arguments include: 
-            experiment_id
-            table_id
-            variable_id
-            institution_id
-            member_id
-            grid_label
-        """
-        search_parameters = {'experiment_id': 'esm-hist',
-                             'table_id': ['Amon'],
-                             'variable_id': 'co2'}
-        _loader_logger.debug(' Searching for model output subset, with parameters = %s', search_parameters)
-        self.latest_searched_model_catalog = self.catalog_dataframe.search(**search_parameters)
-        _loader_logger.debug(f"  {self.latest_searched_model_catalog.df.shape[0]} model members identified")
-
-        self._load_datasets_from_search(model_name)
-
-        _loader_logger.debug("Preprocessing is done.")
-
-    def _load_datasets_from_search(self,
-                                   model_name: list
-                                   ) -> None:
-        """Load datasets into memory."""
-        _loader_logger.debug(' Loading into memory the following models: %s', model_name)
-        self.stepA_original_datasets = DatasetDict(self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
-        # Extract all (or only the specified) datasets, and create a copy of each.
-        if model_name:
-            if isinstance(model_name, str):
-                model_name = [model_name]
-        else:
-            model_name = self.stepA_original_datasets.keys()
-        self.stepB_preprocessed_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
-
-        _loader_logger.debug("Converting units to ppm..")
-        self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm,
-                                                               co2_var_name='co2',
-                                                               inplace=True)
-        self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
-        _loader_logger.debug("all converted.")
-        _loader_logger.debug("Keys for models that have been preprocessed:")
-        _loader_logger.debug(' ' + '\n '.join(self.stepB_preprocessed_datasets.keys()))
-
-    @staticmethod
-    def latlon_select(xr_ds: xr.Dataset,
-                      lat: float,
-                      lon: float,
-                      ) -> xr.Dataset:
-        """Select from dataset the column that is closest to specified lat/lon pair
-
-        Parameters
-        ----------
-        xr_ds: xr.Dataset
-        lat: float
-        lon: float
+        method
+        url
+        model_name
 
         Returns
         -------
-        An xarray.Dataset
-        """
-        closest_point_dict = get_closest_mdl_cell_dict(xr_ds, lat=lat, lon=lon,
-                                                       coords_as_dimensions=True)
 
-        return xr_ds.stack(coord_pair=['lat', 'lon']).isel(coord_pair=closest_point_dict['index'])
+        """
+        if method == 'pangeo':
+            # --- Search for datasets in ESM data catalog ---
+            _logger.debug(' Opening the ESM datastore catalog, using URL == %s', url)
+            self.catalog_dataframe = intake.open_esm_datastore(url)
+            """
+            We use the intake package's search to load a catalog into the attribute "latest_searched_model_catalog"
+            Acceptable search arguments include: 
+                experiment_id
+                table_id
+                variable_id
+                institution_id
+                member_id
+                grid_label
+            """
+            search_parameters = {'experiment_id': 'esm-hist',
+                                 'table_id': ['Amon'],
+                                 'variable_id': 'co2'}
+            _logger.debug(' Searching for model output subset, with parameters = %s', search_parameters)
+            self.latest_searched_model_catalog = self.catalog_dataframe.search(**search_parameters)
+            _logger.debug(f"  {self.latest_searched_model_catalog.df.shape[0]} model members identified")
+
+            # --- Load datasets into memory ---
+            _logger.debug(' Loading into memory the following models: %s', model_name)
+            self.stepA_original_datasets = DatasetDict(
+                self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
+            # Extract all (or only the specified) datasets, and create a copy of each.
+            if model_name:
+                if isinstance(model_name, str):
+                    model_name = [model_name]
+            else:
+                model_name = self.stepA_original_datasets.keys()
+            self.stepA_original_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
+
+        if method == 'local':
+            pass
+
+    def preprocess(self) -> None:
+        """Set up the datasets that are common to every diagnostic
+        """
+        msg = "Preprocessing..."
+        msg += "\nConverting units to ppm.."
+        _logger.debug(msg)
+
+        self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
+        self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm, co2_var_name='co2', inplace=True)
+        self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
+
+        msg = "all converted."
+        msg += "\nKeys for models that have been preprocessed:"
+        msg += '\n ' + '\n '.join(self.stepB_preprocessed_datasets.keys())
+        msg += "\nPreprocessing is done."
+        _logger.debug(msg)
 
     def plot_timeseries(self) -> (plt.Figure, plt.Axes, tuple):
         """Make timeseries plot of co2 concentrations from or more CMIP models
