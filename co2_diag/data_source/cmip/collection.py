@@ -13,12 +13,11 @@ from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 from co2_diag.recipes.utils import benchmark_recipe, nullable_str, parse_recipe_options, add_shared_arguments_for_recipes
 
-from co2_diag.graphics.single_source_plots import plot_annual_series
+from co2_diag.graphics.single_source_plots import plot_annual_series, plot_zonal_mean
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 
 # Packages for using NCAR's intake
 import intake
-import intake_esm
 
 import logging
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
@@ -232,8 +231,9 @@ class Collection(Multiset):
             opts.member_key = new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist()
 
         # --- Plotting ---
-        fig, ax, bbox_artists = new_self.plot_zonal_mean(opts.model_name, opts.member_key,
-                                                         titlestr=f"{opts.model_name} ({opts.member_key})")
+        #
+        darray = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)['co2']
+        fig, ax, bbox_artists = plot_zonal_mean(darray, titlestr=f"{opts.model_name} ({opts.member_key})")
         if opts.figure_savepath:
             mysavefig(fig, opts.figure_savepath, 'cmip_zonal_mean_plot', bbox_extra_artists=bbox_artists)
 
@@ -453,36 +453,6 @@ class Collection(Multiset):
         bbox_artists = (leg,)
 
         return fig, ax, bbox_artists
-
-    def plot_zonal_mean(self, model_name, member_key, titlestr) -> (plt.Figure, plt.Axes, tuple):
-        """Make zonal mean plot of co2 concentrations.
-
-        Returns
-        -------
-        matplotlib figure
-        matplotlib axis
-        tuple
-            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
-        """
-        # --- Extract a single model member  ---
-        darray = self.stepC_prepped_datasets[model_name].sel(member_id=member_key)['co2']
-
-        # --- Make Figure ---
-        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
-
-        darray.plot.contourf(ax=ax, x='lat', y='plev', levels=40,
-                             cbar_kwargs={'label': '$CO_2$ (ppm)', 'spacing': 'proportional'})
-        #
-        ax.invert_yaxis()
-        ax.set_title(titlestr, fontsize=12)
-        #
-        ax.grid(linestyle='--', color='lightgray', alpha=0.3)
-        for k in ax.spines.keys():
-            ax.spines[k].set_alpha(0.5)
-        bbox_artists = ()
-
-        return fig, ax, bbox_artists
-
 
     def __repr__(self) -> str:
         """String representation is built."""

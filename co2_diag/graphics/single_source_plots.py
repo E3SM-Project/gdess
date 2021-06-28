@@ -1,4 +1,5 @@
 import pandas as pd
+import xarray as xr
 import matplotlib.pyplot as plt
 
 
@@ -49,5 +50,34 @@ def plot_annual_series(df_anomaly_yearly: pd.DataFrame,
     #         for k in ax.spines.keys():
     #             ax.spines[k].set_alpha(0.5)
     bbox_artists = (leg,)
+
+    return fig, ax, bbox_artists
+
+
+def plot_zonal_mean(darray: xr.DataArray,
+                    titlestr: str
+                    ) -> (plt.Figure, plt.Axes, tuple):
+    """Make zonal mean plot of co2 concentrations.
+
+    Returns
+    -------
+    matplotlib figure
+    matplotlib axis
+    tuple
+        Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+    """
+    # --- Make Figure ---
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
+
+    darray.plot.contourf(ax=ax, x='lat', y='plev', levels=40,
+                         cbar_kwargs={'label': '$CO_2$ (ppm)', 'spacing': 'proportional'})
+    #
+    ax.invert_yaxis()
+    ax.set_title(titlestr, fontsize=12)
+    #
+    ax.grid(linestyle='--', color='lightgray', alpha=0.3)
+    for k in ax.spines.keys():
+        ax.spines[k].set_alpha(0.5)
+    bbox_artists = ()
 
     return fig, ax, bbox_artists
