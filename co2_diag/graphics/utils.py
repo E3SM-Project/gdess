@@ -29,12 +29,16 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
     -------
 
     """
+    path = os.path.join(results_dir, plot_save_name)
+    # If path doesn't have an extension, we will default to png.
+    if not path.lower().endswith(('.png', '.pdf', '.tif', '.tiff', '.jpg', '.jpeg')):
+        path += '.png'
+
     def append_date_before_extension(filename):
-        today_str = datetime.today().strftime('%Y-%m-%d')
+        today_str = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.%f')
         return "{0}_{2}{1}".format(*os.path.splitext(filename) + (today_str,))
 
-    fig.savefig(append_date_before_extension(os.path.join(results_dir, plot_save_name)),
-                bbox_inches='tight', **kwargs)
+    fig.savefig(append_date_before_extension(path), bbox_inches='tight', **kwargs)
 
 
 def limits_with_zero(t: tuple):
