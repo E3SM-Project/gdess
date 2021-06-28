@@ -14,7 +14,7 @@ from co2_diag.recipes.utils import benchmark_recipe, add_shared_arguments_for_re
 import matplotlib.pyplot as plt
 
 import logging
-_loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
+_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 
 class Collection(Multiset):
@@ -26,7 +26,7 @@ class Collection(Multiset):
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
 
         super().__init__(verbose=verbose)
 
@@ -90,7 +90,7 @@ class Collection(Multiset):
         -------
         Collection object for E3SM that was used to generate the diagnostic
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_e3sm_collection_args_to_parser)
 
         new_self, loaded_from_file = cls._recipe_base(verbose=verbose,
@@ -102,7 +102,7 @@ class Collection(Multiset):
 
         # --- Apply diagnostic parameters and prep data for plotting ---
         if not loaded_from_file:
-            _loader_logger.info('Applying selected bounds..')
+            _logger.info('Applying selected bounds..')
             new_self.validate_time_options(opts.start_datetime, opts.end_datetime)
 
             selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
@@ -155,16 +155,16 @@ class Collection(Multiset):
         ----------
         filepath: str
         """
-        _loader_logger.info("Preprocessing...")
+        _logger.info("Preprocessing...")
 
-        _loader_logger.debug(' Opening the file..')
+        _logger.debug(' Opening the file..')
         self.stepA_original_datasets = DatasetDict({'main': xr.open_dataset(filepath)})
         self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
 
-        _loader_logger.debug(' Setting coords, formatting time, converting to ppm..')
+        _logger.debug(' Setting coords, formatting time, converting to ppm..')
         self.stepB_preprocessed_datasets.apply_function_to_all(self._preprocess_functions, inplace=True)
 
-        _loader_logger.info("Preprocessing is done.")
+        _logger.info("Preprocessing is done.")
 
     def plot_timeseries(self) -> (plt.Figure, plt.Axes, tuple):
         """Make timeseries plot of co2 concentrations from the E3SM output

@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 
 import logging
-_loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
+_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 # Define the stations that will be included in the dataset and available for diagnostic plots
 station_dict = {'nmb': {'name': 'Gobabeb'},
@@ -246,7 +246,7 @@ class Collection(Multiset):
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
 
         self.df_combined_and_resampled = None
         # Define the stations that will be included in the dataset and available for diagnostic plots
@@ -277,7 +277,7 @@ class Collection(Multiset):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
 
         # An empty instance is created.
@@ -322,7 +322,7 @@ class Collection(Multiset):
         -------
         Collection object for Obspack that was used to generate the diagnostic
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
 
         # An empty instance is created.
@@ -332,7 +332,7 @@ class Collection(Multiset):
         # Data are formatted into the basic data structure common to various diagnostics.
         new_self.preprocess(datadir=opts.ref_data)
 
-        _loader_logger.info('Applying selected bounds..')
+        _logger.info('Applying selected bounds..')
         # Data are resampled
         new_self.df_combined_and_resampled = (new_self
                                               .get_resampled_dataframe(new_self.stepA_original_datasets[opts.station_code],
@@ -367,7 +367,7 @@ class Collection(Multiset):
         datadir
         station_name
         """
-        _loader_logger.debug("Preprocessing...")
+        _logger.debug("Preprocessing...")
         if not station_name:
             # Use predefined dictionary of stations at the top of this module
             stations = self.station_dict
@@ -378,7 +378,7 @@ class Collection(Multiset):
             stations = dict((k, self.station_dict[k]) for k in station_name)
 
         self.stepA_original_datasets = DatasetDict(self._load_stations_by_namedict(stations, datadir))
-        _loader_logger.debug("Preprocessing is done.")
+        _logger.debug("Preprocessing is done.")
 
     @staticmethod
     def get_resampled_dataframe(dataset_obs,
@@ -396,7 +396,7 @@ class Collection(Multiset):
         -------
         A pandas.DataFrame with columnds of time, original data, and resampled data
         """
-        _loader_logger.debug('Resampling obspack observations..')
+        _logger.debug('Resampling obspack observations..')
         # --- OBSERVATIONS ---
         # Time period is selected.
         ds_sub_obs = select_between(dataset=dataset_obs,
@@ -428,8 +428,8 @@ class Collection(Multiset):
                     .loc[:, ['time', 'obs_original_resolution', 'obs_resampled_resolution']]
                     )
 
-        _loader_logger.debug('  First resampled row: %s', df_prepd.iloc[0, :])
-        _loader_logger.debug('Done.')
+        _logger.debug('  First resampled row: %s', df_prepd.iloc[0, :])
+        _logger.debug('Done.')
 
         return df_prepd
 
@@ -472,14 +472,14 @@ class Collection(Multiset):
         """
         ds_obs_dict = {}
         for stationcode, _ in station_dict.items():
-            _loader_logger.debug(stationcode)
-            _loader_logger.debug('data directory: %s', datadir)
+            _logger.debug(stationcode)
+            _logger.debug('data directory: %s', datadir)
 
             file_list = glob.glob(os.path.join(datadir, f"co2_{stationcode}*.nc"))
             # print("files: ")
             # print(*[os.path.basename(x) for x in file_list], sep = "\n")
 
-            _loader_logger.debug('Station files: %s', ', '.join([os.path.basename(x) for x in file_list]))
+            _logger.debug('Station files: %s', ', '.join([os.path.basename(x) for x in file_list]))
             ds_obs_dict[stationcode] = co2ops.obspack.load.dataset_from_filelist(file_list)
 
             # Simple unit check - for the Altitude variable
@@ -501,14 +501,14 @@ class Collection(Multiset):
             if meanlon < 0:
                 meanlon = meanlon + 360
             station_latlonalt = {'lat': lats.mean(), 'lon': meanlon, 'alts': alts.mean()}
-            _loader_logger.debug("  %s" % station_latlonalt)
+            _logger.debug("  %s" % station_latlonalt)
 
             station_dict[stationcode].update(station_latlonalt)
 
         # Wrangle -- Do the things to the Obs dataset.
-        _loader_logger.debug("Converting datetime format and units...")
+        _logger.debug("Converting datetime format and units...")
         for i, (k, v) in enumerate(ds_obs_dict.items()):
-            _loader_logger.debug('  %s', k)
+            _logger.debug('  %s', k)
             ds_obs_dict[k] = (v
                               .set_coords(['time', 'time_decimal', 'latitude', 'longitude', 'altitude'])
                               .sortby(['time'])
@@ -518,10 +518,10 @@ class Collection(Multiset):
                               .pipe(co2_molfrac_to_ppm, co2_var_name='co2')
                               )
             if i == 0:
-                _loader_logger.debug("  the first DataSet has a time range of <%s> to <%s>.",
-                                     np.datetime_as_string(ds_obs_dict[k]['time'].values[0], unit='D'),
-                                     np.datetime_as_string(ds_obs_dict[k]['time'].values[-1], unit='D'))
-        _loader_logger.debug("Converting is done.")
+                _logger.debug("  the first DataSet has a time range of <%s> to <%s>.",
+                              np.datetime_as_string(ds_obs_dict[k]['time'].values[0], unit='D'),
+                              np.datetime_as_string(ds_obs_dict[k]['time'].values[-1], unit='D'))
+        _logger.debug("Converting is done.")
 
         return ds_obs_dict
 

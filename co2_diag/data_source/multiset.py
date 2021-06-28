@@ -13,7 +13,7 @@ from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.operations.time import ensure_datetime64_array, ensure_dataset_datetime64
 
 import logging
-_multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
+_multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "multiset"))
 
 
 class Multiset:

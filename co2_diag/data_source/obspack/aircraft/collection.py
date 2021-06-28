@@ -19,7 +19,7 @@ from co2_diag.data_source.datasetdict import DatasetDict
 from co2_diag.graphics.mapping import make_my_base_map
 
 import logging
-_loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
+_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 
 class Collection(Multiset):
@@ -31,7 +31,7 @@ class Collection(Multiset):
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
 
         self.df_combined_and_resampled = None
         # Define the stations that will be included in the dataset and available for diagnostic plots
@@ -41,7 +41,7 @@ class Collection(Multiset):
         #                      'smo': {'name': 'American Samoa'},
         #                      'zep': {'name': 'Zeppelin Observatory'},
         #                      'psa': {'name': 'Palmer Station'}}
-        # _loader_logger.info("Loading data for %d observing stations..", len(self.station_dict))
+        # _logger.info("Loading data for %d observing stations..", len(self.station_dict))
 
         super().__init__(verbose=verbose)
 

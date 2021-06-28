@@ -21,7 +21,7 @@ import intake
 import intake_esm
 
 import logging
-_loader_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
+_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 default_cmip6_datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
 
@@ -38,9 +38,9 @@ class Collection(Multiset):
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         # Set up the level of verbosity, i.e. how many log messages are displayed.
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
         self._progressbar = True
-        if _loader_logger.level > 10:  # 10 is debug, 20 is info, etc.
+        if _logger.level > 10:  # 10 is debug, 20 is info, etc.
             self._progressbar = False
 
         self.latest_searched_model_catalog = None
@@ -86,15 +86,15 @@ class Collection(Multiset):
         # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
         # otherwise, this is False.
         loaded_from_file_bool = new_self.datasets_from_file(filename=from_file, replace=True)
-        _loader_logger.debug(' loaded from file? --> %s', loaded_from_file_bool)
-        _loader_logger.debug(' skip_selections: %s', skip_selections)
+        _logger.debug(' loaded from file? --> %s', loaded_from_file_bool)
+        _logger.debug(' skip_selections: %s', skip_selections)
 
         if not loaded_from_file_bool:
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self.preprocess(new_self.datastore_url, model_name)
 
             if not skip_selections:
-                _loader_logger.debug(' applying selected bounds: %s', selection)
+                _logger.debug(' applying selected bounds: %s', selection)
                 new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
                                                                                                        inplace=False)
                 # Spatial mean is calculated, leaving us with a time series.
@@ -131,7 +131,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
 
         # Apply diagnostic options and prep data for plotting
@@ -174,7 +174,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
 
         # Apply diagnostic options and prep data for plotting
@@ -216,7 +216,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
 
         # Apply diagnostic options and prep data for plotting
@@ -226,8 +226,8 @@ class Collection(Multiset):
                                                       model_name=opts.model_name)
 
         if not opts.member_key:
-            _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
-                                 new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist())
+            _logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
+                          new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist())
             opts.member_key = new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist()
 
         # --- Plotting ---
@@ -264,7 +264,7 @@ class Collection(Multiset):
         -------
         Collection object for CMIP6 that was used to generate the diagnostic
         """
-        set_verbose(_loader_logger, verbose)
+        set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
 
         # Apply diagnostic options and prep data for plotting
@@ -275,8 +275,8 @@ class Collection(Multiset):
                                                       model_name=opts.model_name)
 
         if not opts.member_key:
-            _loader_logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
-                                 new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist())
+            _logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
+                          new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist())
             opts.member_key = new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist()
 
         # The mean is calculated across ensemble members if there are multiple.
@@ -284,7 +284,7 @@ class Collection(Multiset):
             df_list_of_means = []
             df_list_of_yearly_cycles = []
             for mi, m in enumerate(opts.member_key):
-                _loader_logger.debug(' selecting model=%s, member=%s', opts.model_name, m)
+                _logger.debug(' selecting model=%s, member=%s', opts.model_name, m)
                 ds = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=m)
 
                 df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname='co2')
@@ -538,7 +538,7 @@ class Collection(Multiset):
             member_counts.append(len(ds_to_check[k]['member_id'].values))
         nmodels = len(member_counts)
         if not suppress_log_message:
-            _loader_logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
+            _logger.info(f"There are <%s> members for each of the %d models.", member_counts, nmodels)
 
         return nmodels, member_counts
 
