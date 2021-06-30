@@ -1,2 +1,3 @@
 recursive-include co2_diag/config *
 recursive-include co2_diag/graphics/colormaps *
+include co2_diag/config/defaults.ini
