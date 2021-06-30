@@ -1,4 +1,4 @@
-# e3sm_co2_diag
+# Greenhouse gas Diagnostics for Earth System Simulations
 
 [![test status](https://github.com/dkauf42/e3sm_co2_diag/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/dkauf42/e3sm_co2_diag/actions/workflows/lint_and_test.yml)
 [![codecov](https://codecov.io/gh/dkauf42/e3sm_co2_diag/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/dkauf42/e3sm_co2_diag)
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This package facilitates comparison of simulated atmospheric CO<sub>2</sub> against observational data. 
+GDESS facilitates comparison of simulated atmospheric CO<sub>2</sub> against observational data. 
 Specifically, it selects, loads, and parses the observational datasets and model simulations to be in a consistent structure 
 and generates data visualizations for several diagnostic use cases.
 
