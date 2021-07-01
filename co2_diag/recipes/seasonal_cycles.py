@@ -81,8 +81,8 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         stations_to_analyze = [opts.station_code]
 
     # --- Load CMIP model output ---
-    # We will only compare against CMIP model outputs if we are analyzing the cycle for a single station
-    if compare_against_model := ((len(stations_to_analyze) < 2) & bool(opts.model_name)):
+    # We will only compare against CMIP model outputs if a model_name is supplied
+    if compare_against_model := bool(opts.model_name):
         _logger.info('*Processing CMIP model output*')
         new_self, loaded_from_file = cmipCollection._recipe_base(datastore='cmip6', verbose=verbose,
                                                                  from_file=None, skip_selections=True)
@@ -95,9 +95,8 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     # --- Load Surface station observations ---
     _logger.info('*Processing Observations*')
     counter = {'current': 1, 'skipped': 0}
-    station_filts = []
-    processed_station_metadata = {'lat': [], 'lon': [], 'code': [], 'fullname': []}
-    cycle_list_with_each_station = []
+    processed_station_metadata = dict(lat=[], lon=[], code=[], fullname=[])
+    cycles_of_each_station = dict(ref=[], mdl=[])
     num_stations = [len(stations_to_analyze)]
     for station in stations_to_analyze:
         _logger.info("Station %s of %s: %s", counter['current'], num_stations[0], station)
@@ -154,13 +153,25 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                    original_x=ds_obs['time_decimal'].values, #df_surface_station['time_decimal'].values,
                                    original_y=ds_obs['co2'].values,  #df_surface_station['co2'].values,
                                    figure_title=f'obs, station {station}',
-                                   savepath=opts.figure_savepath + '_supplement1ref_' + station + '.png')
+                                   savepath=append_before_extension(opts.figure_savepath, '_supplement1ref_' + station))
+            if compare_against_model:
+                plot_filter_components(filt_mdl,
+                                       original_x=da_mdl['time_decimal'].values,
+                                       original_y=da_mdl.values,
+                                       figure_title=f'model [{opts.model_name}]',
+                                       savepath=append_before_extension(opts.figure_savepath, 'supplement1_mdl'))
 
         # --- Compute the annual climatological cycle ---
         ref_dt, ref_vals = make_cycle(x0=filt_ref.xinterp,
-                                     smooth_cycle=filt_ref.getHarmonicValue(filt_ref.xinterp) + filt_ref.smooth - filt_ref.trend)
-        #
-        cycle_list_with_each_station.append(pd.DataFrame.from_dict({"month": ref_dt, f"{station}": ref_vals}))
+                                      smooth_cycle=filt_ref.getHarmonicValue(
+                                          filt_ref.xinterp) + filt_ref.smooth - filt_ref.trend)
+        cycles_of_each_station['ref'].append(pd.DataFrame.from_dict({"month": ref_dt, f"{station}": ref_vals}))
+        #   (ii) CMIP data
+        if compare_against_model:
+            mdl_dt, mdl_vals = make_cycle(x0=filt_mdl.xinterp,
+                                          smooth_cycle=filt_mdl.getHarmonicValue(
+                                              filt_mdl.xinterp) + filt_mdl.smooth - filt_mdl.trend)
+            cycles_of_each_station['mdl'].append(pd.DataFrame.from_dict({"month": mdl_dt, f"{station}": mdl_vals}))
 
         # Gather together the metadata for this station now that it's been processed.
         processed_station_metadata['lon'].append(obs_collection.station_dict[station]['lon'])
@@ -174,67 +185,76 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     _logger.info("Done -- %s stations fully processed. %s stations skipped.",
                  len(cycle_list_with_each_station), counter['skipped'])
 
-    if compare_against_model:
-        mdl_dt, mdl_vals = make_cycle(x0=filt_mdl.xinterp,
-                   smooth_cycle=filt_mdl.getHarmonicValue(filt_mdl.xinterp) + filt_mdl.smooth - filt_mdl.trend)
-        if opts.plot_filter_components:
-            plot_filter_components(filt_mdl,
-                                   original_x=da_mdl['time_decimal'].values,
-                                   original_y=da_mdl.values,
-                                   figure_title=f'model [{opts.model_name}]',
-                                   savepath=opts.figure_savepath + 'supplement1_mdl.png')
-
-    df_station_metadata = pd.DataFrame.from_dict(processed_station_metadata)
-    # Dataframes for each station are combined so we have one 'month' column, and a single column for each station.
+    # Dataframes for each location are combined so we have one 'month' column, and a single column for each station.
     # First, dataframes are sorted by latitude, then combined, then the duplicate 'month' columns are removed.
-    cycle_list_with_each_station = [x for _, x
-                                    in sorted(zip(list(df_station_metadata['lat']), cycle_list_with_each_station))]
-    df_cycles_for_all_stations = pd.concat(cycle_list_with_each_station, axis=1, sort=False)
-    df_cycles_for_all_stations = df_cycles_for_all_stations.loc[:, ~df_cycles_for_all_stations.columns.duplicated()]
-    df_station_metadata.sort_values(by='lat', ascending=True, inplace=True)  # sort the metadata after using it for sorting the cycle list
+    df_station_metadata = pd.DataFrame.from_dict(processed_station_metadata)
+    df_all_cycles = dict(ref=None, mdl=None)
+    #   (i) Globalview+ data
+    cycles_of_each_station['ref'] = [x for _, x
+                                     in sorted(zip(list(df_station_metadata['lat']), cycles_of_each_station['ref']))]
+    df_all_cycles['ref'] = pd.concat(cycles_of_each_station['ref'], axis=1, sort=False)
+    df_all_cycles['ref'] = df_all_cycles['ref'].loc[:, ~df_all_cycles['ref'].columns.duplicated()]
+    #   (ii) CMIP data
+    if compare_against_model:
+        cycles_of_each_station['mdl'] = [x for _, x
+                                         in sorted(zip(list(df_station_metadata['lat']), cycles_of_each_station['mdl']))]
+        df_all_cycles['mdl'] = pd.concat(cycles_of_each_station['mdl'], axis=1, sort=False)
+        df_all_cycles['mdl'] = df_all_cycles['mdl'].loc[:, ~df_all_cycles['mdl'].columns.duplicated()]
+    #
+    # Sort the metadata after using it for sorting the cycle list(s)
+    df_station_metadata.sort_values(by='lat', ascending=True, inplace=True)
 
-    heatmap_rightside_labels = [numstr(x, decimalpoints=2) for x in df_station_metadata['lat']]
+    # --- Optional binning by latitude ---
     if opts.latitude_bin_size:
-        # We determine bins to which each station is assigned.
-        step = opts.latitude_bin_size
-        to_bin = lambda x: np.floor(x / step) * step
-        df_station_metadata["latbin"] = df_station_metadata['lat'].map(to_bin)
-        df_station_metadata["lonbin"] = df_station_metadata['lon'].map(to_bin)
-
-        # Add the coordinates and binning information to the dataframe with seasonal cycle values
-        new_df = df_cycles_for_all_stations.transpose()
-        new_df.columns = new_df.loc['month']  # .map(lambda x: x.strftime('%m'))
-        new_df = (new_df
-                  .drop(labels='month', axis=0, inplace=False)
-                  .apply(pd.to_numeric, axis=0)
-                  .reset_index()
-                  .rename(columns={'index': 'code'})
-                  .merge(df_station_metadata.loc[:, ['code', 'fullname', 'lat', 'latbin']], on='code'))
-
-        # Take the means of each latitude bin and transpose dataframe
-        groups = new_df.groupby(["latbin"], as_index=False)
-        binned_df = (groups.mean()
-                     .drop('lat', axis=1)
-                     .sort_values(by='latbin', ascending=True)
-                     .set_index('latbin')
-                     .transpose()
-                     .reset_index()
-                     .rename(columns={'index': 'month'}))
-        df_cycles_for_all_stations = binned_df
+        # we won't use additional latitude labels for the heatmap, because the left side will be latitude bins
         heatmap_rightside_labels = None
 
-    # --- Plot the seasonal cycles for all stations
-    xdata = df_cycles_for_all_stations['month']
-    ydata = df_cycles_for_all_stations.loc[:, (df_cycles_for_all_stations.columns != 'month')]
-    station_names = ydata.columns.values
-    #
-    if compare_against_model:
-        plot_comparison_against_model(ref_dt, ref_vals, f'obs [{opts.station_code}]',
-                                      mdl_dt, mdl_vals, f'model [{opts.model_name}]',
-                                      savepath=opts.figure_savepath)
+        # We determine bins to which each station is assigned.
+        def to_bin(x): return np.floor(x / opts.latitude_bin_size) * opts.latitude_bin_size
+        df_station_metadata["latbin"] = df_station_metadata['lat'].map(to_bin)
+        df_station_metadata["lonbin"] = df_station_metadata['lon'].map(to_bin)
+        #
+        df_all_cycles['ref'] = calc_binned_means(df_all_cycles['ref'], df_station_metadata)
+        if compare_against_model:
+            df_all_cycles['mdl'] = calc_binned_means(df_all_cycles['mdl'], df_station_metadata)
     else:
-        plot_lines_for_all_station_cycles(xdata, ydata.iloc[:, ::-1], savepath=opts.figure_savepath)
-        plot_heatmap_of_all_stations(xdata, ydata, rightside_labels=heatmap_rightside_labels, savepath=opts.figure_savepath)
+        heatmap_rightside_labels = [numstr(x, decimalpoints=2) for x in df_station_metadata['lat']]
+
+    # --- MAKE PLOTS ---
+    # --- Plot lineplot comparing model and observations
+    # if compare_against_model:
+    #     pass
+    #     plot_comparison_against_model(ref_dt, ref_vals, f'obs [{opts.station_code}]',
+    #                                   mdl_dt, mdl_vals, f'model [{opts.model_name}]',
+    #                                   savepath=opts.figure_savepath)
+    # else:
+    # --- Plot the seasonal cycles at all station locations
+    xdata = df_all_cycles['ref']['month']
+    #   (i) Globalview+ data
+    ydata_gv = df_all_cycles['ref'].loc[:, (df_all_cycles['ref'].columns != 'month')]
+    plot_lines_for_all_station_cycles(xdata, ydata_gv.iloc[:, ::-1], figure_title="GV+",
+                                      savepath=append_before_extension(opts.figure_savepath, '_obs_lineplot'))
+    plot_heatmap_of_all_stations(xdata, ydata_gv, rightside_labels=heatmap_rightside_labels, figure_title="obs",
+                                 savepath=append_before_extension(opts.figure_savepath, '_obs_heatmap'))
+
+    if compare_against_model:
+        if not xdata.equals(df_all_cycles['mdl']['month']):
+            raise ValueError('Unexpected discrepancy, xdata for reference observations does not equal xdata for models')
+
+        #   (ii) CMIP data
+        ydata_cmip = df_all_cycles['mdl'].loc[:, (df_all_cycles['mdl'].columns != 'month')]
+        plot_lines_for_all_station_cycles(xdata, ydata_cmip.iloc[:, ::-1], figure_title="CMIP",
+                                          savepath=append_before_extension(opts.figure_savepath, '_mdl_lineplot'))
+        plot_heatmap_of_all_stations(xdata, ydata_cmip, rightside_labels=heatmap_rightside_labels, figure_title="mdl",
+                                     savepath=append_before_extension(opts.figure_savepath, '_mdl_heatmap'))
+
+        #   (iii) Model - obs difference
+        ydiff = ydata_cmip - ydata_gv
+        plot_lines_for_all_station_cycles(xdata, ydiff.iloc[:, ::-1], figure_title="Difference",
+                                          savepath=append_before_extension(opts.figure_savepath, '_diff_lineplot'))
+        plot_heatmap_of_all_stations(xdata, ydiff, rightside_labels=heatmap_rightside_labels,
+                                     figure_title=f"model - obs",
+                                     savepath=append_before_extension(opts.figure_savepath, '_diff_heatmap'))
 
     # --- Make a supplemental figure for filter components ---
     #
@@ -266,13 +286,46 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     # plt.tight_layout()
     # #
     # if opts.figure_savepath:
-    #     mysavefig(fig=fig, plot_save_name=opts.figure_savepath + 'supplement2.png')
+    #     mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'supplement2'))
 
-    if compare_against_model:
-        returnval = df_cycles_for_all_stations, cycle_list_with_each_station, df_station_metadata, mdl_dt, mdl_vals
-    else:
-        returnval = df_cycles_for_all_stations, cycle_list_with_each_station, df_station_metadata
-    return returnval
+    return df_all_cycles, cycles_of_each_station, df_station_metadata
+
+
+def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame, df_station_metadata: pd.DataFrame
+                      ) -> pd.DataFrame:
+    """Calculate means for each bin
+
+    Note, this function expects a DataFrame column titled "latbin" designating bin assignments.
+
+    Parameters
+    ----------
+    df_cycles_for_all_stations_ref
+    df_station_metadata
+
+    Returns
+    -------
+
+    """
+    # Add the coordinates and binning information to the dataframe with seasonal cycle values
+    new_df = df_cycles_for_all_stations_ref.transpose()
+    new_df.columns = new_df.loc['month']  # .map(lambda x: x.strftime('%m'))
+    new_df = (new_df
+              .drop(labels='month', axis=0, inplace=False)
+              .apply(pd.to_numeric, axis=0)
+              .reset_index()
+              .rename(columns={'index': 'code'})
+              .merge(df_station_metadata.loc[:, ['code', 'fullname', 'lat', 'latbin']], on='code'))
+
+    # Take the means of each latitude bin and transpose dataframe
+    groups = new_df.groupby(["latbin"], as_index=False)
+    binned_df = (groups.mean()
+                 .drop('lat', axis=1)
+                 .sort_values(by='latbin', ascending=True)
+                 .set_index('latbin')
+                 .transpose()
+                 .reset_index()
+                 .rename(columns={'index': 'month'}))
+    return binned_df
 
 
 def update_for_skipped_station(msg, station_name, station_count, counter_dict):
