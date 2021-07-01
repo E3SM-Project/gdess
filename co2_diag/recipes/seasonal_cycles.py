@@ -92,7 +92,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     else:
         ds_mdl = None
 
-    # --- Load Surface station observations ---
+    # --- Observation data is processed for each station location. ---
     _logger.info('*Processing Observations*')
     counter = {'current': 1, 'skipped': 0}
     processed_station_metadata = dict(lat=[], lon=[], code=[], fullname=[])
@@ -103,7 +103,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
         obs_collection.preprocess(datadir=opts.ref_data, station_name=station)
         ds_obs = obs_collection.stepA_original_datasets[station]
-        _logger.info('  %s', obs_collection.station_dict[station])
+        _logger.info('  %s', obs_collection.station_dict.get(station))
 
         # if opts.use_mlo_for_detrending:
         #     ds_mlo_ref = obs_collection.stepA_original_datasets['mlo']
@@ -112,8 +112,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         try:
             if compare_against_model:
                 da_obs, da_mdl = make_comparable(ds_obs, ds_mdl,
-                                                 time_limits=(np.datetime64(opts.start_yr),
-                                                              np.datetime64(opts.end_yr)),
+                                                 time_limits=(np.datetime64(opts.start_yr), np.datetime64(opts.end_yr)),
                                                  latlon=(ds_obs['latitude'].values[0], ds_obs['longitude'].values[0]),
                                                  global_mean=False)
             else:
@@ -122,10 +121,9 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         except RuntimeError as re:
             update_for_skipped_station(re, station, num_stations, counter)
             continue
-
+        #
         # Check that there is at least one year's worth of data for this station.
-        num_months = da_obs.time.values.max().astype('datetime64[M]') - da_obs.time.values.min().astype('datetime64[M]')
-        if num_months < 12:
+        if (da_obs.time.values.max().astype('datetime64[M]') - da_obs.time.values.min().astype('datetime64[M]')) < 12:
             msg = '  insufficient number of months of data for station <%s>' % station
             update_for_skipped_station(msg, station, num_stations, counter)
             continue
@@ -148,6 +146,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         #
         station_filts.append(filt_ref)
 
+        # Optional plotting of components of the filtering process
         if opts.plot_filter_components:
             plot_filter_components(filt_ref,
                                    original_x=ds_obs['time_decimal'].values, #df_surface_station['time_decimal'].values,
@@ -162,6 +161,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                        savepath=append_before_extension(opts.figure_savepath, 'supplement1_mdl'))
 
         # --- Compute the annual climatological cycle ---
+        #   (i) Globalview+ data
         ref_dt, ref_vals = make_cycle(x0=filt_ref.xinterp,
                                       smooth_cycle=filt_ref.getHarmonicValue(
                                           filt_ref.xinterp) + filt_ref.smooth - filt_ref.trend)
@@ -173,12 +173,11 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                               filt_mdl.xinterp) + filt_mdl.smooth - filt_mdl.trend)
             cycles_of_each_station['mdl'].append(pd.DataFrame.from_dict({"month": mdl_dt, f"{station}": mdl_vals}))
 
-        # Gather together the metadata for this station now that it's been processed.
+        # Gather together the station's metadata at the loop end, when we're sure that this station has been processed.
         processed_station_metadata['lon'].append(obs_collection.station_dict[station]['lon'])
         processed_station_metadata['lat'].append(obs_collection.station_dict[station]['lat'])
         processed_station_metadata['fullname'].append(obs_collection.station_dict[station]['name'])
         processed_station_metadata['code'].append(station)
-
         counter['current'] += 1
         # END of station loop
 
