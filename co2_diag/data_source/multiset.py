@@ -1,6 +1,6 @@
 from co2_diag import set_verbose
-import co2_diag.data_source as co2ops
-from co2_diag.data_source import DatasetDict
+from co2_diag.operations.anomalies import monthly_anomalies
+from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import ensure_datetime64_array, ensure_dataset_datetime64
 import numpy as np
 import pandas as pd
@@ -125,7 +125,7 @@ class Multiset:
                             type(data))
 
         # Calculate
-        df_anomaly = co2ops.obspack.anomalies.monthly_anomalies(data, varname=varname)
+        df_anomaly = monthly_anomalies(data, varname=varname)
         # Reformat data structures for plotting
         _df_anomaly_yearly = df_anomaly.pivot(index='moy', columns='year', values='monthly_anomaly_from_year')
         _df_anomaly_mean_cycle = df_anomaly.groupby('moy').mean().reset_index()

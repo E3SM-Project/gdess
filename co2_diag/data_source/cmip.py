@@ -1,6 +1,6 @@
 from co2_diag import set_verbose
-from co2_diag.data_source.cmip.load_utils import model_substring, model_choices
-from co2_diag.data_source import DatasetDict, Multiset
+from co2_diag.data_source.multiset import Multiset
+from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 from co2_diag.recipes.utils import benchmark_recipe, nullable_str, parse_recipe_options, add_shared_arguments_for_recipes

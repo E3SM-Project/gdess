@@ -1,6 +1,7 @@
 from co2_diag import set_verbose
 from co2_diag.data_source.obspack.load import load_data_with_regex, dataset_from_filelist
-from co2_diag.data_source import DatasetDict, Multiset
+from co2_diag.data_source.multiset import Multiset
+from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import select_between, ensure_dataset_datetime64, ensure_datetime64_array
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 from co2_diag.graphics.single_source_plots import plot_annual_series

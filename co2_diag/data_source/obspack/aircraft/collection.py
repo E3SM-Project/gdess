@@ -14,7 +14,8 @@ from co2_diag import set_verbose
 import co2_diag.data_source as co2ops
 from co2_diag.data_source.obspack.load import load_data_with_regex
 from co2_diag.recipes.utils import benchmark_recipe
-from co2_diag.data_source import DatasetDict, Multiset
+from co2_diag.data_source.multiset import Multiset
+from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.graphics.mapping import make_my_base_map
 
 import logging

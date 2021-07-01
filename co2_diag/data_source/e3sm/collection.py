@@ -1,6 +1,7 @@
 from co2_diag import set_verbose
 from co2_diag.data_source.e3sm.calculation import getPMID
-from co2_diag.data_source import DatasetDict, Multiset
+from co2_diag.data_source.multiset import Multiset
+from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import to_datetimeindex
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig

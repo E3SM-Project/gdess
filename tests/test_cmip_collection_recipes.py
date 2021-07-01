@@ -1,7 +1,7 @@
 import pytest
 
-from co2_diag.data_source.cmip.collection import Collection
-from co2_diag.data_source import DatasetDict
+from co2_diag.data_source.cmip import Collection
+from co2_diag.operations.datasetdict import DatasetDict
 
 
 @pytest.fixture
