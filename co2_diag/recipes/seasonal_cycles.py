@@ -6,8 +6,7 @@ This function parses:
 """
 from co2_diag import set_verbose
 from co2_diag.formatters import append_before_extension, numstr
-from co2_diag.data_source.cmip import Collection as cmipCollection
-from co2_diag.data_source.cmip import model_substring, model_choices
+from co2_diag.data_source.cmip import Collection as cmipCollection, model_substring, model_choices
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
 from co2_diag.operations.time import t2dt
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options

@@ -17,6 +17,10 @@ _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 default_cmip6_datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
 
+# -- Define valid model choices --
+model_choices = ['CMIP.CNRM-CERFACS.CNRM-ESM2-1.esm-hist.Amon.gr', 'CMIP.NCAR.CESM2.esm-hist.Amon.gn',
+                 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn', 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1']
+
 
 class Collection(Multiset):
     def __init__(self, datastore='cmip6', verbose: Union[bool, str] = False):
@@ -505,3 +509,30 @@ def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--plev', default=100000, type=int)
     parser.add_argument('--model_name', default=None, type=model_substring, choices=model_choices)
     parser.add_argument('--member_key', default=None, type=nullable_str)
+
+
+def cmip_recipe_basics(func):
+    """A decorator for starting a cmip recipe
+    """
+    def parse_and_run(*args, **kwargs):
+        set_verbose(_logger, kwargs.get('verbose'))
+        opts = parse_recipe_options(kwargs.get('options'), add_cmip_collection_args_to_parser)
+        # Recipe is run.
+        returnval = func(*args, **kwargs)
+
+        return returnval
+    return parse_and_run
+
+
+def model_substring(s: str) -> str:
+    """Function used to allow specification of model names by only supplying a partial string match
+
+    Example
+    -------
+    >>> model_substring('BCC')
+    returns 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
+    """
+    options = [c for c in model_choices if s in c]
+    if len(options) == 1:
+        return options[0]
+    return s

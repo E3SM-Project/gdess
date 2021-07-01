@@ -4,13 +4,14 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
+import co2_diag.data_source.cmip
 from co2_diag import set_verbose
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
 import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
-import co2_diag.data_source.cmip.collection as cmip_collection_module
+import co2_diag.data_source.cmip as cmip_collection_module
 import numpy as np
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
@@ -173,7 +174,7 @@ def add_surface_trends_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
-                        type=cmip_collection_module.model_substring, choices=cmip_collection_module.model_choices)
+                        type=co2_diag.data_source.cmip.model_substring, choices=co2_diag.data_source.cmip.model_choices)
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')
