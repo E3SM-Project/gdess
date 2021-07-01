@@ -11,7 +11,7 @@ from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
 from co2_diag.operations.time import t2dt
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
+import co2_diag.data_source.obspack.gvplus_surface as obspack_surface_collection_module
 
 from ccgcrv.ccg_filter import ccgFilter
 from ccgcrv.ccg_dates import decimalDateFromDatetime

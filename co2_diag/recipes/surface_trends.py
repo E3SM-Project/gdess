@@ -10,7 +10,7 @@ from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
-import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
+import co2_diag.data_source.obspack.gvplus_surface as obspack_surface_collection_module
 import co2_diag.data_source.cmip as cmip_collection_module
 import numpy as np
 import matplotlib.pyplot as plt

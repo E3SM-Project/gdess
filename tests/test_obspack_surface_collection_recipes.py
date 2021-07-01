@@ -2,7 +2,7 @@ import os
 import pytest
 import xarray as xr
 
-from co2_diag.data_source.obspack.surface_stations.collection import Collection
+from co2_diag.data_source.obspack.gvplus_surface import Collection
 
 
 @pytest.fixture
