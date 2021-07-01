@@ -386,6 +386,7 @@ def plot_comparison_against_model(ref_xdata: pd.DataFrame,
 
 def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
                                       ydata: pd.DataFrame,
+                                      figure_title: str = '',
                                       savepath=None) -> None:
     # --- Plot the seasonal cycle for all stations
     fig, ax = plt.subplots(1, 1, figsize=(10, 4))
@@ -396,6 +397,8 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
     plt.legend(ydata.columns.values, loc='upper left')
     #
     ax.set_ylabel('$CO_2$ (ppm)')
+    if figure_title:
+        ax.set_title(figure_title)
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
     month_fmt = mdates.DateFormatter('%b')
@@ -411,6 +414,7 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
 def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
                                  ydata: pd.DataFrame,
                                  rightside_labels: list = None,
+                                 figure_title: str = '',
                                  savepath=None) -> None:
     mindate = mdates.date2num(xdata.tolist()[0])
     maxdate = mdates.date2num(xdata.tolist()[-1])
@@ -446,6 +450,9 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
     # ax.xaxis.set_major_formatter(month_fmt)
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda z, pos=None: month_fmt(z)[0]))
+    #
+    if figure_title:
+        ax.set_title(figure_title)
     #
     if savepath:
         mysavefig(fig=fig, plot_save_name=savepath)
