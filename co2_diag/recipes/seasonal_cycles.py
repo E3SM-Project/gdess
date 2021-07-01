@@ -381,7 +381,7 @@ def plot_comparison_against_model(ref_xdata: pd.DataFrame,
     #
     plt.tight_layout()
     if savepath:
-        mysavefig(fig=fig, plot_save_name=savepath + 'supplement_compare_against_model_lines.png')
+        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, 'supplement_compare_against_model_lines'))
 
 
 def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
@@ -405,7 +405,7 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
     #
     plt.tight_layout()
     if savepath:
-        mysavefig(fig=fig, plot_save_name=savepath + 'supplement_allstations_lines.png')
+        mysavefig(fig=fig, plot_save_name=savepath)
 
 
 def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
@@ -448,7 +448,7 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda z, pos=None: month_fmt(z)[0]))
     #
     if savepath:
-        mysavefig(fig=fig, plot_save_name=savepath + 'supplement_allstations_heatmap.png')
+        mysavefig(fig=fig, plot_save_name=savepath)
 
 
 def plot_filter_components(filter_object, original_x, original_y,
@@ -477,7 +477,7 @@ def plot_filter_components(filter_object, original_x, original_y,
     plt.tight_layout()
     #
     if savepath:
-        mysavefig(fig=fig, plot_save_name=savepath + 'supplement1_mdl.png')
+        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, '_filter_components'))
 
 
 def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
