@@ -1,7 +1,6 @@
 import pytest
 
-from co2_diag.recipes.utils import options_to_args, valid_year_string, \
-    is_some_none, nullable_str, nullable_int
+from co2_diag.formatters.args import options_to_args, is_some_none, nullable_int, nullable_str, valid_year_string
 
 
 def test_options_to_args():

@@ -25,7 +25,8 @@ from dateutil.rrule import rrule, DAILY
 from ccgcrv.ccg_filter import ccgFilter
 from ccgcrv.ccg_dates import calendarDate, decimalDateFromDatetime, datetimeFromDecimalDate
 
-from co2_diag.recipes.utils import options_to_args
+from co2_diag.formatters.args import options_to_args
+
 
 ##########################################################################
 def check_export(options):
