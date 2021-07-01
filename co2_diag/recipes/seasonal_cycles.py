@@ -129,22 +129,18 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
             continue
 
         # --- Curve fitting ---
-        # CMIP data at the location of the station
+        #   (i) Globalview+ data
+        filt_ref = ccgFilter(xp=da_obs['time_decimal'].values, yp=da_obs['co2'].values,
+                             numpolyterms=3, numharmonics=4, timezero=int(da_obs['time_decimal'].values[0]))
+        #   (ii) CMIP data
         if compare_against_model:
-            xp = da_mdl['time_decimal'].values
-            yp = da_mdl.values
             try:
-                filt_mdl = ccgFilter(xp=xp, yp=yp, numpolyterms=3, numharmonics=4, timezero=int(xp[0]))
+                filt_mdl = ccgFilter(xp=da_mdl['time_decimal'].values, yp=da_mdl.values,
+                                     numpolyterms=3, numharmonics=4, timezero=int(da_mdl['time_decimal'].values[0]))
             except TypeError as te:
                 _logger.info('--- Curve filtering error ---')
                 update_for_skipped_station(te, station, num_stations, counter)
                 continue
-        # Surface stations
-        xp = da_obs['time_decimal'].values
-        yp = da_obs['co2'].values
-        filt_ref = ccgFilter(xp=xp, yp=yp, numpolyterms=3, numharmonics=4, timezero=int(xp[0]))
-        #
-        station_filts.append(filt_ref)
 
         # Optional plotting of components of the filtering process
         if opts.plot_filter_components:
