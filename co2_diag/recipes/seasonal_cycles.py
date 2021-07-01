@@ -178,7 +178,7 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         # END of station loop
 
     _logger.info("Done -- %s stations fully processed. %s stations skipped.",
-                 len(cycle_list_with_each_station), counter['skipped'])
+                 len(cycles_of_each_station['ref']), counter['skipped'])
 
     # Dataframes for each location are combined so we have one 'month' column, and a single column for each station.
     # First, dataframes are sorted by latitude, then combined, then the duplicate 'month' columns are removed.
