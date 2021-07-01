@@ -1,8 +1,7 @@
-import pickle
 import xarray as xr
 from dask.diagnostics import ProgressBar
+import pickle, logging
 
-import logging
 _datasetdict_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 

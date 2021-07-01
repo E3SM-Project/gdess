@@ -1,5 +1,6 @@
-import logging
 from typing import Union
+import logging
+
 
 def set_verbose(logger,
                 verbose: Union[bool, str] = False

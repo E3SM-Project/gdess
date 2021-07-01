@@ -1,4 +1,4 @@
-import re
+import os, re
 
 
 def tex_escape(text):

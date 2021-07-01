@@ -1,6 +1,5 @@
 import numpy as np
 import xarray as xr
-
 import logging
 
 _logger = logging.getLogger(__name__)

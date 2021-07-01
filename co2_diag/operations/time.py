@@ -1,13 +1,11 @@
-import datetime as pydt
-from datetime import timedelta
-from typing import Sequence
-
 import numpy as np
 import pandas as pd
 import xarray as xr
-import cftime
+import datetime as pydt
+from datetime import timedelta
+from typing import Sequence
+import cftime, logging
 
-import logging
 _logger = logging.getLogger(__name__)
 
 

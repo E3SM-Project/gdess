@@ -7,11 +7,10 @@ Example usage:
     >> ./bin/gdess trend raw_data/noaa-obspack/nc/ --figure_savepath ./
     >> ./bin/gdess seasonal --help
 """
-import sys
-from argparse import ArgumentParser
-
 from co2_diag.recipes.seasonal_cycles import add_seasonal_cycle_args_to_parser
 from co2_diag.recipes.surface_trends import add_surface_trends_args_to_parser
+from argparse import ArgumentParser
+import sys
 
 
 def main(args):

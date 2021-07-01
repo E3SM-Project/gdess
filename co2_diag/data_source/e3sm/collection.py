@@ -1,19 +1,15 @@
-import argparse
-import xarray as xr
-from typing import Union
-
 from co2_diag import set_verbose
 from co2_diag.data_source.e3sm.calculation import getPMID
-from co2_diag.data_source.multiset import Multiset
-from co2_diag.data_source.datasetdict import DatasetDict
-from co2_diag.operations.time import to_datetimeindex, year_to_datetime64
+from co2_diag.data_source import DatasetDict, Multiset
+from co2_diag.operations.time import to_datetimeindex
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from co2_diag.recipes.utils import benchmark_recipe, add_shared_arguments_for_recipes, parse_recipe_options
-
+import xarray as xr
 import matplotlib.pyplot as plt
+from typing import Union
+import argparse, logging
 
-import logging
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 

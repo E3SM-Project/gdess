@@ -1,14 +1,11 @@
+from co2_diag.operations.time import ensure_dataset_datetime64
+from co2_diag.operations.geographic import get_closest_mdl_cell_dict
+from ccgcrv.ccg_dates import decimalDateFromDatetime
 import numpy as np
 import pandas as pd
 import xarray as xr
-# #
-from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
-from co2_diag.operations.geographic import get_closest_mdl_cell_dict
-import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
-
-from ccgcrv.ccg_dates import datetimeFromDecimalDate, calendarDate, decimalDateFromDatetime
-
 import logging
+
 _logger = logging.getLogger(__name__)
 
 

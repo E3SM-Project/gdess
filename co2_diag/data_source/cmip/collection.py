@@ -1,23 +1,18 @@
-import argparse
-from typing import Union
-import pandas as pd
-import matplotlib.pyplot as plt
-
 from co2_diag import set_verbose
 from co2_diag.data_source.cmip.load_utils import model_substring, model_choices
-from co2_diag.data_source.multiset import Multiset
-from co2_diag.data_source.datasetdict import DatasetDict
+from co2_diag.data_source import DatasetDict, Multiset
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 from co2_diag.recipes.utils import benchmark_recipe, nullable_str, parse_recipe_options, add_shared_arguments_for_recipes
-
 from co2_diag.graphics.single_source_plots import plot_annual_series, plot_zonal_mean
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-
-# Packages for using NCAR's intake
 import intake
+import pandas as pd
+import xarray as xr
+import matplotlib.pyplot as plt
+from typing import Union
+import os, argparse, configparser, logging
 
-import logging
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 default_cmip6_datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"

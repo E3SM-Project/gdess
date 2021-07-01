@@ -4,31 +4,29 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-import argparse
-from typing import Union
-import numpy as np
-import pandas as pd
-from dask.diagnostics import ProgressBar
-
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib import ticker
-import matplotlib.colors as mcolors
-
 from co2_diag import set_verbose
-from co2_diag.formatters.nums import numstr
-import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
+from co2_diag.formatters import append_before_extension, numstr
 from co2_diag.data_source.cmip import Collection as cmipCollection
 from co2_diag.data_source.cmip import model_substring, model_choices
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
 from co2_diag.operations.time import t2dt
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
+import co2_diag.data_source.obspack.surface_stations.collection as obspack_surface_collection_module
 
 from ccgcrv.ccg_filter import ccgFilter
 from ccgcrv.ccg_dates import decimalDateFromDatetime
 
-import logging
+import numpy as np
+import pandas as pd
+from dask.diagnostics import ProgressBar
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.colors as mcolors
+from matplotlib import ticker
+from typing import Union
+import argparse, logging
+
 _logger = logging.getLogger(__name__)
 
 

@@ -2,7 +2,7 @@ import pytest
 import os
 
 from co2_diag.data_source.e3sm import Collection as co2e3sm
-from co2_diag.data_source.datasetdict import DatasetDict
+from co2_diag.data_source import DatasetDict
 
 
 @pytest.fixture

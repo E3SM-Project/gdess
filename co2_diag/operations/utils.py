@@ -7,12 +7,9 @@ Created September 2020
 This code is meant to serve as a collection of tools for use with the CO2 diagnostics development
 Most of the routines are designed to work with xarray.DataArray types
 """
-
-import os
-import numpy as np
 import xarray as xr
+import os, logging
 
-import logging
 _logger = logging.getLogger(__name__)
 
 # Define functions to be imported by *, e.g. from the local __init__ file

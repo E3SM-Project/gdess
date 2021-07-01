@@ -1,12 +1,7 @@
-import os
-import argparse
-import shlex
-import time
+from co2_diag.operations.time import year_to_datetime64
 from typing import Union, Callable
+import os, argparse, shlex, time, logging
 
-from co2_diag.operations.time import ensure_dataset_datetime64, year_to_datetime64
-
-import logging
 _logger = logging.getLogger(__name__)
 
 

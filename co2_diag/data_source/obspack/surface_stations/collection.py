@@ -1,31 +1,20 @@
-import os
-import re
-import glob
-import argparse
-from typing import Union
-
-import numpy as np
-import pandas as pd
-import xarray as xr
-
 from co2_diag import set_verbose
-import co2_diag.data_source as co2ops
-from co2_diag.data_source.obspack.load import load_data_with_regex
-from co2_diag.data_source.multiset import Multiset
-from co2_diag.data_source.datasetdict import DatasetDict
-
-from co2_diag.operations.time import select_between, ensure_dataset_datetime64, \
-    ensure_datetime64_array, year_to_datetime64
+from co2_diag.data_source.obspack.load import load_data_with_regex, dataset_from_filelist
+from co2_diag.data_source import DatasetDict, Multiset
+from co2_diag.operations.time import select_between, ensure_dataset_datetime64, ensure_datetime64_array
 from co2_diag.operations.convert import co2_molfrac_to_ppm
-
 from co2_diag.graphics.single_source_plots import plot_annual_series
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from co2_diag.recipes.utils import benchmark_recipe, add_shared_arguments_for_recipes, parse_recipe_options
 
+import numpy as np
+import pandas as pd
+import xarray as xr
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
+from typing import Union
+import os, re, glob, argparse, logging
 
-import logging
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 # Define the stations that will be included in the dataset and available for diagnostic plots
@@ -480,7 +469,7 @@ class Collection(Multiset):
             # print(*[os.path.basename(x) for x in file_list], sep = "\n")
 
             _logger.debug('Station files: %s', ', '.join([os.path.basename(x) for x in file_list]))
-            ds_obs_dict[stationcode] = co2ops.obspack.load.dataset_from_filelist(file_list)
+            ds_obs_dict[stationcode] = dataset_from_filelist(file_list)
 
             # Simple unit check - for the Altitude variable
             check_altitude_unit = ds_obs_dict[stationcode]['altitude'].attrs['units'] == 'm'
