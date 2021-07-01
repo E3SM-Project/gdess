@@ -5,8 +5,9 @@ import numpy as np
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 
-colormap_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            'colormaps')
+from co2_diag.formatters import append_before_extension
+
+colormap_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'colormaps')
 
 
 def aesthetic_grid_no_spines(axis):
@@ -30,15 +31,13 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
 
     """
     path = os.path.join(results_dir, plot_save_name)
-    # If path doesn't have an extension, we will default to png.
+    # If the path doesn't have an extension, we will default to png.
     if not path.lower().endswith(('.png', '.pdf', '.tif', '.tiff', '.jpg', '.jpeg')):
         path += '.png'
+    # A datetime stamp is added immediately before the extension.
+    path_with_datetime = append_before_extension(path, datetime.today().strftime('%Y-%m-%dT%H:%M:%S.%f'))
 
-    def append_date_before_extension(filename):
-        today_str = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.%f')
-        return "{0}_{2}{1}".format(*os.path.splitext(filename) + (today_str,))
-
-    fig.savefig(append_date_before_extension(path), bbox_inches='tight', **kwargs)
+    fig.savefig(path_with_datetime, bbox_inches='tight', **kwargs)
 
 
 def limits_with_zero(t: tuple):
