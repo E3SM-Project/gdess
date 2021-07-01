@@ -70,14 +70,12 @@ def make_comparable(ref, com, **keywords):
     # Only the first ensemble member is selected, if there are more than one
     # (TODO: enable the selection of a specific ensemble member)
     if 'member_id' in ds_com['co2'].coords:
-        ds_com = (ds_com
-                  .isel(member_id=0)
-                  .copy())
+        ds_com = ds_com.isel(member_id=0)
         _logger.info('  -- member_id=0')
-    else:
-        ds_com = ds_com.copy()
+    if 'bnds' in ds_com['co2'].coords:
+        ds_com = ds_com.isel(bnds=0)
 
-    # Surface values are selected.
+    # Surface co2 values are selected.
     ds_com = ds_com['co2'].isel(plev=0)
     _logger.info('  -- plev=0')
 
@@ -85,26 +83,24 @@ def make_comparable(ref, com, **keywords):
     # TODO: Add option for hemispheric averages as well.
     #  And average not only the CMIP model outputs the stations, but also the surface stations within that hemisphere.
     if global_mean:
-        da_mdl = ds_com.mean(dim=('lat', 'lon'))
+        da_com = ds_com.mean(dim=('lat', 'lon'))
         _logger.info('  -- mean over lat and lon dimensions')
     else:
-        obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
         mdl_cell = get_closest_mdl_cell_dict(ds_com,
                                              lat=latlon[0], lon=latlon[1],
                                              coords_as_dimensions=True)
-        da_mdl = (ds_com
-                  .where(ds_com.lat == mdl_cell['lat'], drop=True)
-                  .where(ds_com.lon == mdl_cell['lon'], drop=True)
-                  )
+        da_com = (ds_com
+                  .sel(lat=mdl_cell['lat'])
+                  .sel(lon=mdl_cell['lon']))
         _logger.info('  -- lat=%s', mdl_cell['lat'])
         _logger.info('  -- lon=%s', mdl_cell['lon'])
 
     # Lazy computations are executed.
     _logger.info('Applying selected bounds...')
-    da_mdl = da_mdl.squeeze().compute()
+    da_com = da_com.squeeze().compute()
     _logger.info('done.')
 
-    return ds_ref, da_mdl
+    return ds_ref, da_com
 
 
 def apply_time_bounds(ds: xr.Dataset,
