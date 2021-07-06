@@ -1,4 +1,5 @@
 setuptools
+tqdm
 
 # Data operations packages
 numpy
