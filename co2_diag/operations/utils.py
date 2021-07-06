@@ -8,6 +8,7 @@ This code is meant to serve as a collection of tools for use with the CO2 diagno
 Most of the routines are designed to work with xarray.DataArray types
 """
 import xarray as xr
+from typing import Union, Sequence
 import os, logging
 
 _logger = logging.getLogger(__name__)
@@ -54,6 +55,71 @@ def print_var_summary(dataset: xr.Dataset, varname='CO2', return_dataset=False):
 
     if return_dataset:
         return dataset
+
+
+def has_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
+                            expected_dims: Sequence[str],
+                            expected_shape: Union[dict, list] = None
+                            ) -> bool:
+    """
+
+    If an expected_shape argument isn't provided, we ignore the shapes (dim lengths).
+
+    Parameters
+    ----------
+    data : xr.Dataset or xr.DataArray
+    expected_dims : list
+        names of the expected dimensions
+    expected_shape : list or dict (Optional)
+        Expected lengths for each dimension
+        Note: If a list is provided, the order must match the dimension order of the expected_dims argument.
+
+    Raises
+    ------
+    AssertionError, if the dimensions don't match the given expected names.
+    TypeError, if the arguments types are incorrect.
+    ValueError, if the expected shapes and dimensions don't match.
+
+    Returns
+    -------
+    True, if the given names (and shapes, if given) match the data.
+    """
+    dims_dict = dict(data.dims)
+
+    # Names of the data dimensions are checked.
+    dims_match = (A := set(dims_dict)) == (B := set(expected_dims))
+    if not dims_match:
+        msg = ""
+        if A - B:
+            msg += f"Dimesions {A - B} are in the data, but were not expected. "
+        if B - A:
+            msg += f"Dimesions {B - A} were expected, but are not in the data. "
+        raise AssertionError(msg)
+
+    # Lengths of the data dimensions are checked.
+    if expected_shape:
+        if len(expected_shape) != len(expected_dims):
+            raise ValueError("Expected dimensions and shape must match.")
+
+        expected_shapes_dict = expected_shape
+        if isinstance(expected_shape, dict):
+            pass
+        elif isinstance(expected_shape, list):
+            # For a list, we assume that the list order matches the order given in the expected_dims argument.
+            expected_shapes_dict = {k: v for k, v in zip(expected_dims, expected_shape)}
+        else:
+            raise TypeError("The expected_shape argument should be list or dict. A <%s> was provided."
+                            % type(expected_shape))
+        shapes_match = all((v == expected_shapes_dict[k]) for k, v in dims_dict.items())
+
+        if not shapes_match:
+            msg = f"Dimension lengths in the data are {dims_dict}, not the expected {expected_shapes_dict}"
+            raise AssertionError(msg)
+
+    return True
+
+
+
 
 
 def get_var_stats(dataarray):
