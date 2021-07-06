@@ -83,8 +83,8 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     # We will only compare against CMIP model outputs if a model_name is supplied
     if compare_against_model := bool(opts.model_name):
         _logger.info('*Processing CMIP model output*')
-        new_self, loaded_from_file = cmipCollection._recipe_base(datastore='cmip6', verbose=verbose,
-                                                                 from_file=None, skip_selections=True)
+        new_self, loaded_from_pickle = cmipCollection._recipe_base(datastore='cmip6', verbose=verbose,
+                                                                 pickle_file=None, skip_selections=True)
         ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
         ds_mdl = ds_mdl.assign_coords(time_decimal=('time', [decimalDateFromDatetime(x)
                                                              for x in pd.DatetimeIndex(ds_mdl['time'].values)]))

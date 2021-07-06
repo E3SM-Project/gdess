@@ -30,7 +30,7 @@ class Collection(Multiset):
     @classmethod
     def _recipe_base(cls,
                      verbose: Union[bool, str] = False,
-                     from_file: Union[bool, str] = None,
+                     pickle_file: str = None,
                      nc_file: str = None
                      ) -> ('Collection', bool):
         """Create an instance, and either preprocess or load already processed data.
@@ -38,7 +38,7 @@ class Collection(Multiset):
         Parameters
         ----------
         verbose: Union[bool, str]
-        from_file: Union[bool, str]
+        pickle_file: str
         nc_file: str
 
         Returns
@@ -46,26 +46,26 @@ class Collection(Multiset):
         tuple
             Collection
             bool
-                Whether datasets were loaded from file or not. (If not, there is probably more processing needed.)
+                Whether datasets were loaded from a pickle file or not. (If not, there is probably more processing needed.)
         """
         # An empty instance is created.
         new_self = cls(verbose=verbose)
 
         # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
         # otherwise, this is False.
-        loaded_from_file_bool = new_self.datasets_from_file(filename=from_file, replace=True)
+        loaded_from_pickle_bool = new_self.datasets_from_pickle(filename=pickle_file, replace=True)
 
-        if not loaded_from_file_bool:
+        if not loaded_from_pickle_bool:
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self.preprocess(filepath=nc_file)
 
-        return new_self, loaded_from_file_bool
+        return new_self, loaded_from_pickle_bool
 
     @classmethod
     @benchmark_recipe
     def run_recipe_for_timeseries(cls,
                                   verbose: Union[bool, str] = False,
-                                  load_from_file=None,
+                                  pickle_file=None,
                                   options: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
@@ -74,7 +74,7 @@ class Collection(Multiset):
         ----------
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file
+        pickle_file
             (str): path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
@@ -90,15 +90,15 @@ class Collection(Multiset):
         set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_e3sm_collection_args_to_parser)
 
-        new_self, loaded_from_file = cls._recipe_base(verbose=verbose,
-                                                      from_file=load_from_file,
-                                                      nc_file=opts.ref_data)
+        new_self, loaded_from_pickle = cls._recipe_base(verbose=verbose,
+                                                        pickle_file=pickle_file,
+                                                        nc_file=opts.ref_data)
         n_lev = len(new_self.stepB_preprocessed_datasets['main'].lev)  # get last level
         if not opts.lev_index:
             opts.lev_index = n_lev-1
 
         # --- Apply diagnostic parameters and prep data for plotting ---
-        if not loaded_from_file:
+        if not loaded_from_pickle:
             _logger.info('Applying selected bounds..')
             new_self.validate_time_options(opts.start_datetime, opts.end_datetime)
 

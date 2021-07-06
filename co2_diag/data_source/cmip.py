@@ -54,7 +54,7 @@ class Collection(Multiset):
     def _recipe_base(cls,
                      datastore='cmip6',
                      verbose: Union[bool, str] = False,
-                     from_file: Union[bool, str] = None,
+                     pickle_file: str = None,
                      skip_selections: bool = False,
                      selection: dict = None,
                      mean_dims: tuple = None,
@@ -66,7 +66,7 @@ class Collection(Multiset):
         ----------
         datastore: str
         verbose: Union[bool, str]
-        from_file: Union[bool, str]
+        pickle_file: str
         selection: dict
         mean_dims: tuple
 
@@ -75,18 +75,18 @@ class Collection(Multiset):
         tuple: (Collection, bool)
             Collection
             bool
-                Whether datasets were loaded from file or not. (If not, there is probably more processing needed.)
+                Whether datasets were loaded from a pickle file or not. (If not, there is probably more processing needed.)
         """
         # An empty instance is created.
         new_self = cls(datastore=datastore, verbose=verbose)
 
         # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
         # otherwise, this is False.
-        loaded_from_file_bool = new_self.datasets_from_file(filename=from_file, replace=True)
-        _logger.debug(' loaded from file? --> %s', loaded_from_file_bool)
+        loaded_from_pickle_bool = new_self.datasets_from_pickle(filename=pickle_file, replace=True)
+        _logger.debug(' loaded from pickle? --> %s', loaded_from_pickle_bool)
         _logger.debug(' skip_selections: %s', skip_selections)
 
-        if not loaded_from_file_bool:
+        if not loaded_from_pickle_bool:
             # Data are formatted into the basic data structure common to various diagnostics.
             new_self._load_data(method='pangeo', url=new_self.datastore_url, model_name=model_name)
             new_self.preprocess()
@@ -100,14 +100,14 @@ class Collection(Multiset):
                 # The lazily loaded selections and computations are here actually processed.
                 new_self.stepC_prepped_datasets.execute_all(inplace=True)
 
-        return new_self, loaded_from_file_bool
+        return new_self, loaded_from_pickle_bool
 
     @classmethod
     @benchmark_recipe
     def run_recipe_for_timeseries(cls,
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
-                                  load_from_file: Union[bool, str] = None,
+                                  pickle_file: str = None,
                                   options: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
@@ -117,7 +117,7 @@ class Collection(Multiset):
         datastore: str
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file: Union[bool, str]
+        pickle_file: str
             path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
@@ -135,7 +135,7 @@ class Collection(Multiset):
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
                      'plev': opts.plev}
-        new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
+        new_self, loaded_from_pickle = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
                                                       selection=selection, mean_dims=('lon', 'lat'),
                                                       model_name=opts.model_name)
 
@@ -151,7 +151,7 @@ class Collection(Multiset):
     def run_recipe_for_vertical_profile(cls,
                                         datastore='cmip6',
                                         verbose: Union[bool, str] = False,
-                                        load_from_file: Union[bool, str] = None,
+                                        pickle_file: str = None,
                                         options: dict = None
                                         ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
@@ -161,7 +161,7 @@ class Collection(Multiset):
         datastore: str
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file: str
+        pickle_file: str
             path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
@@ -177,7 +177,7 @@ class Collection(Multiset):
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
-        new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
+        new_self, loaded_from_pickle = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
                                                       selection=selection, mean_dims=('lon', 'lat', 'time'),
                                                       model_name=opts.model_name)
 
@@ -193,7 +193,7 @@ class Collection(Multiset):
     def run_recipe_for_zonal_mean(cls,
                                   datastore='cmip6',
                                   verbose: Union[bool, str] = False,
-                                  load_from_file: Union[bool, str] = None,
+                                  pickle_file: str = None,
                                   options: dict = None
                                   ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
@@ -203,7 +203,7 @@ class Collection(Multiset):
         datastore: str
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file: Union[bool, str]
+        pickle_file: str
             path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
@@ -219,7 +219,7 @@ class Collection(Multiset):
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
-        new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
+        new_self, loaded_from_pickle = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
                                                       selection=selection, mean_dims=('lon', 'time'),
                                                       model_name=opts.model_name)
 
@@ -242,7 +242,7 @@ class Collection(Multiset):
     def run_recipe_for_annual_series(cls,
                                      datastore='cmip6',
                                      verbose: Union[bool, str] = False,
-                                     load_from_file: Union[bool, str] = None,
+                                     pickle_file: str = None,
                                      options: dict = None
                                      ) -> 'Collection':
         """Execute a series of preprocessing steps and generate a diagnostic result.
@@ -252,7 +252,7 @@ class Collection(Multiset):
         datastore: str
         verbose: Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        load_from_file: Union[bool, str]
+        pickle_file: str
             path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
@@ -269,7 +269,7 @@ class Collection(Multiset):
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
                      'plev': opts.plev}
-        new_self, loaded_from_file = cls._recipe_base(datastore=datastore, verbose=verbose, from_file=load_from_file,
+        new_self, loaded_from_pickle = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
                                                       selection=selection, mean_dims=('lon', 'lat'),
                                                       model_name=opts.model_name)
 

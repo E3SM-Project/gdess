@@ -65,8 +65,8 @@ def surface_trends(options: dict,
     # --- CMIP model output ---
     _logger.info('*Processing CMIP model output*')
     cmip_collection = cmip_collection_module.Collection(verbose=verbose)
-    new_self, loaded_from_file = cmip_collection._recipe_base(datastore='cmip6', verbose=verbose,
-                                                              from_file=None, skip_selections=True)
+    new_self, loaded_from_pickle = cmip_collection._recipe_base(datastore='cmip6', verbose=verbose,
+                                                              pickle_file=None, skip_selections=True)
     ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
 
     # --- Obspack and CMIP are now handled Together ---

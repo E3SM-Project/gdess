@@ -45,9 +45,9 @@ class Multiset:
     #     with open(filename, 'wb') as f:
     #         pickle.dump(self.latest_executed_datasets, f, pickle.HIGHEST_PROTOCOL)
 
-    def datasets_from_file(self,
-                           filename: str = 'cmip_collection.latest_executed_datasets.pickle',
-                           replace: bool = False) -> Union[bool, DatasetDict]:
+    def datasets_from_pickle(self,
+                             filename: str = 'cmip_collection.latest_executed_datasets.pickle',
+                             replace: bool = False) -> Union[bool, DatasetDict]:
         """Load a dataset dictionary from a saved pickle file.
 
         Parameters
