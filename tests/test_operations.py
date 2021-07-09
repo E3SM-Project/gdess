@@ -1,6 +1,7 @@
 from co2_diag.operations.time import ensure_datetime64_array, ensure_cftime_array, monthlist, dt2t
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
-from co2_diag.operations.utils import print_var_summary, has_expected_dimensions
+from co2_diag.operations.utils import print_var_summary, assert_expected_dimensions
+from co2_diag.operations.Confrontation import lowest_nonnull_altitude
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -111,25 +112,25 @@ def test_conversion_of_datetime_to_a_decimalyear_time():
 
 def test_expected_dimension_names_raises_assertionerror(dataset_withco2andzg, caplog):
     with pytest.raises(AssertionError):
-        has_expected_dimensions(dataset_withco2andzg, expected_dims=['beebop'])
+        assert_expected_dimensions(dataset_withco2andzg, expected_dims=['beebop'])
 
 
 def test_expected_dimensions_shape_raises_assertionerror(dataset_withco2andzg, caplog):
     with pytest.raises(AssertionError):
-        has_expected_dimensions(dataset_withco2andzg, expected_dims=['lat', 'plev', 'lon', 'time'],
-                            expected_shape=[5, 90, 3, 3])
+        assert_expected_dimensions(dataset_withco2andzg, expected_dims=['lat', 'plev', 'lon', 'time'],
+                                   expected_shape=[5, 90, 3, 3])
 
 
 def test_expected_dimensions_validates_with_list(dataset_withco2andzg, caplog):
-    assert has_expected_dimensions(dataset_withco2andzg,
-                                   expected_dims=['lat', 'plev', 'lon', 'time'],
-                                   expected_shape=[5, 3, 5, 4])
+    assert assert_expected_dimensions(dataset_withco2andzg,
+                                      expected_dims=['lat', 'plev', 'lon', 'time'],
+                                      expected_shape=[5, 3, 5, 4])
 
 
 def test_expected_dimensions_validates_with_dict(dataset_withco2andzg, caplog):
-    assert has_expected_dimensions(dataset_withco2andzg,
-                                   expected_dims=['lat', 'plev', 'lon', 'time'],
-                                   expected_shape={'lat': 5, 'time': 4, 'lon': 5, 'plev': 3})
+    assert assert_expected_dimensions(dataset_withco2andzg,
+                                      expected_dims=['lat', 'plev', 'lon', 'time'],
+                                      expected_shape={'lat': 5, 'time': 4, 'lon': 5, 'plev': 3})
 
 
 def test_print_netcdf_var_summary(dataset_withco2andzg, caplog):

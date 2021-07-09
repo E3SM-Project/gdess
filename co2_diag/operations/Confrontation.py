@@ -1,5 +1,6 @@
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
+from co2_diag.operations.utils import assert_expected_dimensions
 from ccgcrv.ccg_dates import decimalDateFromDatetime
 import numpy as np
 import pandas as pd
@@ -75,9 +76,7 @@ def make_comparable(ref, com, **keywords):
     if 'bnds' in ds_com['co2'].coords:
         ds_com = ds_com.isel(bnds=0)
 
-    # Surface co2 values are selected.
-    ds_com = ds_com['co2'].isel(plev=0)
-    _logger.info('  -- plev=0')
+    assert_expected_dimensions(ds_com, expected_dims=['time', 'plev', 'lon', 'lat'], optional_dims=['bnds'])
 
     # A specific lat/lon is selected, or a global mean is calculated.
     # TODO: Add option for hemispheric averages as well.

@@ -57,28 +57,31 @@ def print_var_summary(dataset: xr.Dataset, varname='CO2', return_dataset=False):
         return dataset
 
 
-def has_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
-                            expected_dims: Sequence[str],
-                            expected_shape: Union[dict, list] = None
-                            ) -> bool:
-    """
+def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
+                               expected_dims: Sequence[str],
+                               optional_dims: Sequence[str] = None,
+                               expected_shape: Union[dict, list] = None
+                               ) -> bool:
+    """Raises an AssertionError if data dimensions don't match the given names or shape.
 
     If an expected_shape argument isn't provided, we ignore the shapes (dim lengths).
 
     Parameters
     ----------
     data : xr.Dataset or xr.DataArray
-    expected_dims : list
+    expected_dims : Sequence[str]
         names of the expected dimensions
+    optional_dims : Sequence[str] (Optional)
+        names of dimensions that will not raise an error whether they are present or not
     expected_shape : list or dict (Optional)
         Expected lengths for each dimension
         Note: If a list is provided, the order must match the dimension order of the expected_dims argument.
 
     Raises
     ------
-    AssertionError, if the dimensions don't match the given expected names.
+    AssertionError, if the data dimensions or shape don't match those given.
     TypeError, if the arguments types are incorrect.
-    ValueError, if the expected shapes and dimensions don't match.
+    ValueError, if the given shape and dimension arguments don't match.
 
     Returns
     -------
@@ -86,14 +89,20 @@ def has_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
     """
     dims_dict = dict(data.dims)
 
-    # Names of the data dimensions are checked.
-    dims_match = (A := set(dims_dict)) == (B := set(expected_dims))
-    if not dims_match:
-        msg = ""
-        if A - B:
-            msg += f"Dimesions {A - B} are in the data, but were not expected. "
-        if B - A:
-            msg += f"Dimesions {B - A} were expected, but are not in the data. "
+    # Names of the data dimensions are checked against the expected names.
+    # Optional names are discarded before deciding whether to raise an AssertionError.
+    missing_from_data = set(expected_dims) - set(dims_dict)
+    missing_from_expected = set(dims_dict) - set(expected_dims)
+    if optional_dims:
+        for d in optional_dims:
+            missing_from_data.discard(d)
+            missing_from_expected.discard(d)
+    msg = ""
+    if missing_from_expected:
+        msg += f"Dimesions {missing_from_expected} are in the data, but were not expected. "
+    if missing_from_data:
+        msg += f"Dimesions {missing_from_data} were expected, but are not in the data. "
+    if msg:
         raise AssertionError(msg)
 
     # Lengths of the data dimensions are checked.
@@ -117,9 +126,6 @@ def has_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
             raise AssertionError(msg)
 
     return True
-
-
-
 
 
 def get_var_stats(dataarray):
