@@ -1,5 +1,24 @@
 from typing import Union
+import os, pkg_resources, configparser
 import logging
+
+
+def load_config_file() -> configparser.ConfigParser:
+    """
+
+    Returns
+    -------
+
+    """
+    config = configparser.ConfigParser(os.environ,
+                                       interpolation=configparser.ExtendedInterpolation(),
+                                       comment_prefixes=('#', ';'))
+
+    path = 'config/defaults.ini'  # always use slash
+    filepath = pkg_resources.resource_filename(__package__, path)
+    config.read(filepath)
+
+    return config
 
 
 def set_verbose(logger,

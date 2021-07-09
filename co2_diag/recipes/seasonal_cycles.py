@@ -46,6 +46,9 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
             ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
             model_name (str): 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1' is default
             station_code (str): a three letter code to specify the desired surface observing station; 'mlo' is default
+            cmip_load_method (str):
+                either 'pangeo' (which uses a stored url),
+                or 'local' (which uses the path defined in config file)
             start_yr (str): '1960' is default
             end_yr (str): '2015' is default
             latitude_bin_size (numeric): None is default
@@ -83,8 +86,8 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     # We will only compare against CMIP model outputs if a model_name is supplied
     if compare_against_model := bool(opts.model_name):
         _logger.info('*Processing CMIP model output*')
-        new_self, loaded_from_pickle = cmipCollection._recipe_base(datastore='cmip6', verbose=verbose,
-                                                                 pickle_file=None, skip_selections=True)
+        new_self, _ = cmipCollection._recipe_base(datastore='cmip6', verbose=verbose,
+                                                                   load_method=opts.cmip_load_method, skip_selections=True)
         ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
         ds_mdl = ds_mdl.assign_coords(time_decimal=('time', [decimalDateFromDatetime(x)
                                                              for x in pd.DatetimeIndex(ds_mdl['time'].values)]))

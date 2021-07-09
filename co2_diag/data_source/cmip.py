@@ -1,4 +1,4 @@
-from co2_diag import set_verbose
+from co2_diag import set_verbose, load_config_file
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import ensure_dataset_datetime64
@@ -11,8 +11,8 @@ import intake
 import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
-from typing import Union
-import os, argparse, configparser, logging
+from typing import Union, Sequence
+import argparse, re, logging
 
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
@@ -54,6 +54,7 @@ class Collection(Multiset):
     def _recipe_base(cls,
                      datastore='cmip6',
                      verbose: Union[bool, str] = False,
+                     load_method: str = 'pangeo',
                      pickle_file: str = None,
                      skip_selections: bool = False,
                      selection: dict = None,
@@ -66,7 +67,10 @@ class Collection(Multiset):
         ----------
         datastore: str
         verbose: Union[bool, str]
+        load_method: str
+            either 'pangeo', 'local', or 'pickle'
         pickle_file: str
+            (Optional) path to a saved pickle file is used if argument load_method=='pickle
         selection: dict
         mean_dims: tuple
 
@@ -80,15 +84,15 @@ class Collection(Multiset):
         # An empty instance is created.
         new_self = cls(datastore=datastore, verbose=verbose)
 
-        # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
-        # otherwise, this is False.
-        loaded_from_pickle_bool = new_self.datasets_from_pickle(filename=pickle_file, replace=True)
-        _logger.debug(' loaded from pickle? --> %s', loaded_from_pickle_bool)
-        _logger.debug(' skip_selections: %s', skip_selections)
-
-        if not loaded_from_pickle_bool:
+        loaded_from_pickle_bool = False
+        if load_method == 'pickle':
+            # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
+            # otherwise, this is False.
+            loaded_from_pickle_bool = new_self.datasets_from_pickle(filename=pickle_file, replace=True)
+            _logger.debug(' loaded from pickle? --> %s', loaded_from_pickle_bool)
+        else:
             # Data are formatted into the basic data structure common to various diagnostics.
-            new_self._load_data(method='pangeo', url=new_self.datastore_url, model_name=model_name)
+            new_self._load_data(method=load_method, url=new_self.datastore_url, model_name=model_name)
             new_self.preprocess()
 
             if not skip_selections:
@@ -135,9 +139,9 @@ class Collection(Multiset):
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
                      'plev': opts.plev}
-        new_self, loaded_from_pickle = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
-                                                      selection=selection, mean_dims=('lon', 'lat'),
-                                                      model_name=opts.model_name)
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                                        selection=selection, mean_dims=('lon', 'lat'),
+                                                        model_name=opts.model_name)
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
@@ -177,9 +181,9 @@ class Collection(Multiset):
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
-        new_self, loaded_from_pickle = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
-                                                      selection=selection, mean_dims=('lon', 'lat', 'time'),
-                                                      model_name=opts.model_name)
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                                        selection=selection, mean_dims=('lon', 'lat', 'time'),
+                                                        model_name=opts.model_name)
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_vertical_profiles()
@@ -219,7 +223,7 @@ class Collection(Multiset):
 
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
-        new_self, loaded_from_pickle = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
                                                       selection=selection, mean_dims=('lon', 'time'),
                                                       model_name=opts.model_name)
 
@@ -269,9 +273,9 @@ class Collection(Multiset):
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
                      'plev': opts.plev}
-        new_self, loaded_from_pickle = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
-                                                      selection=selection, mean_dims=('lon', 'lat'),
-                                                      model_name=opts.model_name)
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                                        selection=selection, mean_dims=('lon', 'lat'),
+                                                        model_name=opts.model_name)
 
         if not opts.member_key:
             _logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
@@ -312,18 +316,17 @@ class Collection(Multiset):
     def _load_data(self,
                    method: str = '',
                    url: str = default_cmip6_datastore_url,
-                   model_name: Union[str, list] = None):
+                   model_name: Sequence[str] = None
+                   ) -> None:
         """
 
         Parameters
         ----------
-        method
-        url
-        model_name
-
-        Returns
-        -------
-
+        method: str
+            either 'pangeo' or 'local'
+        url: str
+            (Optional) only used if argument method=='pangeo'
+        model_name: str
         """
         if method == 'pangeo':
             # --- Search for datasets in ESM data catalog ---
@@ -359,7 +362,21 @@ class Collection(Multiset):
             self.stepA_original_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
 
         if method == 'local':
-            pass
+            # A configuration object (for holding paths and settings) is read in to get the path to the data.
+            config = load_config_file()
+            cmip_data_path = config.get('CMIP', 'source')
+            _logger.debug(f"Loading local CMIP output files from path <{cmip_data_path}>..")
+
+            # NetCDF files are loaded. Each model has its own DatasetDict key.
+            dd = DatasetDict()
+            model_shortnames = ['MPI-ESM.esm-hist', 'BCC.esm-hist']
+            for mdl_name in model_shortnames:
+                mdl_name_dict = model_name_dict_from_valid_form(mdl_name)
+                ds = xr.open_mfdataset(f"{cmip_data_path}/*{mdl_name_dict['sourceid']}*{mdl_name_dict['experimentid']}*.nc", decode_times=True)
+                key = matched_model_and_experiment(ds.attrs['parent_source_id'] + '.' + ds.attrs['experiment_id'])
+                dd[key] = ds
+
+            self.stepA_original_datasets = dd
 
     def preprocess(self) -> None:
         """Set up the datasets that are common to every diagnostic
