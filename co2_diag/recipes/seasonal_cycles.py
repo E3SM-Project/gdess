@@ -6,7 +6,7 @@ This function parses:
 """
 from co2_diag import set_verbose
 from co2_diag.formatters import append_before_extension, numstr
-from co2_diag.data_source.cmip import Collection as cmipCollection, model_substring, model_choices
+from co2_diag.data_source.cmip import Collection as cmipCollection, matched_model_and_experiment, model_choices
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
 from co2_diag.operations.time import t2dt
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
@@ -498,7 +498,9 @@ def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--model_name', default='',
-                        type=model_substring, choices=model_choices)
+                        type=matched_model_and_experiment, choices=model_choices)
+    parser.add_argument('--cmip_load_method', default='pangeo',
+                        type=str, choices=['pangeo', 'local'])
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')

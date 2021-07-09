@@ -174,7 +174,7 @@ def add_surface_trends_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
-                        type=co2_diag.data_source.cmip.model_substring, choices=co2_diag.data_source.cmip.model_choices)
+                        type=co2_diag.data_source.cmip.matched_model_and_experiment, choices=co2_diag.data_source.cmip.model_choices)
     parser.add_argument('--station_code', default='mlo',
                         type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--difference', action='store_true')

@@ -1,6 +1,6 @@
 import pytest
 
-from co2_diag.data_source.cmip import Collection
+from co2_diag.data_source.cmip import Collection, matched_model_and_experiment
 from co2_diag.operations.datasetdict import DatasetDict
 
 
@@ -10,8 +10,29 @@ def newEmptyCMIPCollection():
     return myCMIPInstance
 
 
-def test_simplest_preprocessed_type(newEmptyCMIPCollection):
-    newEmptyCMIPCollection.preprocess()
+def test_full_model_name_is_valid():
+    retval = matched_model_and_experiment('CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn')
+    assert retval == 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
+
+def test_model_source_and_exp_substring_validates_to_full_name():
+    retval = matched_model_and_experiment('BCC-CSM2-MR.esm-hist')
+    assert retval == 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
+
+def test_model_source_shortname_with_exp_validates_to_full_name():
+    retval = matched_model_and_experiment('BCC.esm-hist')
+    assert retval == 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
+
+def test_model_sourceid_only_is_invalid_and_raises_exception():
+    with pytest.raises(ValueError):
+        matched_model_and_experiment('BCC-CSM2-MR')
+
+def test_valid_form_but_incorrect_expid_returns_unchanged_input():
+    retval = matched_model_and_experiment('BCC-CSM2-MR.fakeexp')
+    assert retval == 'BCC-CSM2-MR.fakeexp'
+
+
+def test_simplest_loading(newEmptyCMIPCollection):
+    newEmptyCMIPCollection._load_data(method='pangeo')
     assert isinstance(newEmptyCMIPCollection.stepA_original_datasets, DatasetDict)
 
 
