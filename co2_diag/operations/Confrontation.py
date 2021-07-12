@@ -58,6 +58,9 @@ def make_comparable(ref, com, **keywords):
     global_mean = keywords.get("global_mean", False)
     verbose = keywords.get("verbose", "INFO")
 
+    if verbose:
+        ProgressBar().register()
+
     # Check the temporal domain of both
     # if ref.time != com.time:
     #     msg = "%s Datasets are not uniformly temporal: " % logstring
