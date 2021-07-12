@@ -56,17 +56,17 @@ def surface_trends(options: dict,
     _logger.debug("Parsing diagnostic parameters...")
     opts = parse_recipe_options(options, add_surface_trends_args_to_parser)
 
-    # --- Surface observations ---
+    # --- Globalview+ data ---
     _logger.info('*Processing Observations*')
     obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
     obs_collection.preprocess(datadir=opts.ref_data, station_name=opts.station_code)
     ds_obs = obs_collection.stepA_original_datasets[opts.station_code]
     _logger.info('%s', obs_collection.station_dict[opts.station_code])
 
-    # --- CMIP model output ---
+    # --- CMIP data ---
     _logger.info('*Processing CMIP model output*')
     cmip_collection = cmip_collection_module.Collection(verbose=verbose)
-    new_self, loaded_from_pickle = cmip_collection._recipe_base(datastore='cmip6', verbose=verbose,
+    new_self, _ = cmip_collection._recipe_base(datastore='cmip6', verbose=verbose,
                                                               pickle_file=None, skip_selections=True)
     ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
 

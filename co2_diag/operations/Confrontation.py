@@ -98,7 +98,6 @@ def make_comparable(ref, com, **keywords):
     _logger.info('Applying selected bounds...')
     ds_com = ds_com.compute()
 
-    _logger.info('Extracting particular altitude...')
     if altitude_method == 'interp':
         da_com = interpolate_to_altitude(data=ds_com['co2'], altitude=altitude, height_data=ds_com['zg'])
     elif altitude_method == 'lowest':
@@ -169,8 +168,6 @@ def lowest_nonnull_altitude(data: xr.DataArray) -> xr.DataArray:
         # print(data.plev[np.isfinite(data)])
         return data[np.isfinite(data)][0]
 
-    print(data.plev)
-
     da_final = xr.apply_ufunc(
         first_nonnull_1d,  # first the function
         data,
@@ -240,7 +237,8 @@ def apply_time_bounds(ds: xr.Dataset,
     Parameters
     ----------
     ds
-    time_limits
+    time_limits: tuple of datetime
+        (start time, end time)
 
     Returns
     -------
