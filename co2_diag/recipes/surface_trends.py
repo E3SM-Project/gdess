@@ -9,7 +9,7 @@ from co2_diag import set_verbose
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
+from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options, benchmark_recipe
 import co2_diag.data_source.obspack.gvplus_surface as obspack_surface_collection_module
 import co2_diag.data_source.cmip as cmip_collection_module
 import numpy as np
@@ -21,6 +21,7 @@ import argparse, logging
 _logger = logging.getLogger(__name__)
 
 
+@benchmark_recipe
 def surface_trends(options: dict,
                    verbose: Union[bool, str] = False,
                    ):

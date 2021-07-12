@@ -9,7 +9,7 @@ from co2_diag.formatters import append_before_extension, numstr
 from co2_diag.data_source.cmip import Collection as cmipCollection, matched_model_and_experiment, model_choices
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
 from co2_diag.operations.time import t2dt
-from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options
+from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options, benchmark_recipe
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 import co2_diag.data_source.obspack.gvplus_surface as obspack_surface_collection_module
 
@@ -29,6 +29,7 @@ import argparse, logging
 _logger = logging.getLogger(__name__)
 
 
+@benchmark_recipe
 def seasonal_cycles(options: Union[dict, argparse.Namespace],
                     verbose: Union[bool, str] = False,
                     ) -> tuple:
