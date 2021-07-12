@@ -58,7 +58,8 @@ def test_timeseries_recipe_completes_with_no_errors(newEmptyCMIPCollection):
     recipe_options = {
         'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
-        'end_yr': "1990"}
+        'end_yr': "1990",
+        'figure_savepath': './test_figure_annual_cmip_series'}
     try:
         newEmptyCMIPCollection.run_recipe_for_timeseries(verbose='DEBUG', options=recipe_options)
     except Exception as exc:
@@ -70,7 +71,8 @@ def test_zonal_recipe_completes_with_no_errors(newEmptyCMIPCollection):
         'model_name': 'CMIP.NCAR.CESM2.esm-hist.Amon.gn',
         'member_key': 'r1i1p1f1',
         'start_yr': "1980",
-        'end_yr': "1990"}
+        'end_yr': "1990",
+        'figure_savepath': './test_figure_zonal_cmip_series'}
     try:
         newEmptyCMIPCollection.run_recipe_for_zonal_mean(verbose='DEBUG', options=recipe_options)
     except Exception as exc:
@@ -81,7 +83,8 @@ def test_annual_series_recipe_completes_with_no_errors(newEmptyCMIPCollection):
     recipe_options = {
         'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
-        'end_yr': "1990"}
+        'end_yr': "1990",
+        'figure_savepath': './test_figure_annual_cmip_series'}
     try:
         newEmptyCMIPCollection.run_recipe_for_annual_series(verbose='DEBUG', options=recipe_options)
     except Exception as exc:
@@ -92,7 +95,8 @@ def test_vertical_profile_recipe_completes_with_no_errors(newEmptyCMIPCollection
     recipe_options = {
         'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
-        'end_yr': "1990"}
+        'end_yr': "1990",
+        'figure_savepath': './test_figure_vertical_cmip'}
     try:
         newEmptyCMIPCollection.run_recipe_for_vertical_profile(verbose='DEBUG', options=recipe_options)
     except Exception as exc:

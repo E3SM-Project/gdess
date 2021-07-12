@@ -5,6 +5,7 @@ from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
 from co2_diag.recipes.utils import benchmark_recipe, parse_recipe_options, add_shared_arguments_for_recipes
 from co2_diag.formatters.args import nullable_str
+from co2_diag.formatters import append_before_extension
 from co2_diag.graphics.single_source_plots import plot_annual_series, plot_zonal_mean
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 import intake
@@ -150,7 +151,8 @@ class Collection(Multiset):
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
         if opts.figure_savepath:
-            mysavefig(fig, opts.figure_savepath, 'cmip_timeseries', bbox_extra_artists=bbox_artists)
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'cmip_timeseries'),
+                      bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -192,7 +194,8 @@ class Collection(Multiset):
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_vertical_profiles()
         if opts.figure_savepath:
-            mysavefig(fig, opts.figure_savepath, 'cmip_vertical_plot', bbox_extra_artists=bbox_artists)
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'cmip_vertical_plot'),
+                      bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -241,7 +244,8 @@ class Collection(Multiset):
         darray = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)['co2']
         fig, ax, bbox_artists = plot_zonal_mean(darray, titlestr=f"{opts.model_name} ({opts.member_key})")
         if opts.figure_savepath:
-            mysavefig(fig, opts.figure_savepath, 'cmip_zonal_mean_plot', bbox_extra_artists=bbox_artists)
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'cmip_zonal_mean_plot'),
+                      bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -313,7 +317,8 @@ class Collection(Multiset):
                 horizontalalignment='left', verticalalignment='center', transform=ax.transAxes)
 
         if opts.figure_savepath:
-            mysavefig(fig, opts.figure_savepath, 'cmip_annual_series', bbox_extra_artists=bbox_artists)
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'cmip_annual_series'),
+                      bbox_extra_artists=bbox_artists)
 
         return new_self
 
