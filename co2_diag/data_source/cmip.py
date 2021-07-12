@@ -348,7 +348,7 @@ class Collection(Multiset):
             """
             search_parameters = {'experiment_id': 'esm-hist',
                                  'table_id': ['Amon'],
-                                 'variable_id': ['co2', 'zg']}
+                                 'variable_id': ['co2']}
             _logger.debug(' Searching for model output subset, with parameters = %s', search_parameters)
             self.latest_searched_model_catalog = self.catalog_dataframe.search(**search_parameters,
                                                                                require_all_on=["source_id"])
