@@ -80,8 +80,8 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install -e .
-      #      - name: Setup tmate session
-      #        uses: mxschmitt/action-tmate@v3
+            - name: Setup tmate session
+              uses: mxschmitt/action-tmate@v3
 
       - name: Test and generate coverage report
         shell: bash -l {0}
