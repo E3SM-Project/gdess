@@ -37,7 +37,7 @@ def test_recipe_input_stationcode_error(rootdir):
 
     recipe_options = {
         'ref_data': test_path,
-        'model_name': 'BCC',
+        'model_name': 'BCC.esm-hist',
         'station_code': 'asdkjhfasg',
         'start_yr': "1980",
         'end_yr': "2010",
