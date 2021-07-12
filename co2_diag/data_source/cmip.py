@@ -591,7 +591,10 @@ def matched_model_and_experiment(s: str) -> str:
     valid_source_names = [v['sourceid'] for v in valid]
 
     # The supplied string is expected to be either in a shortened form <source>.<experiment> or a full name.
-    supplied = model_name_dict_from_valid_form(s)
+    if nullable_str(s):
+        supplied = model_name_dict_from_valid_form(s)
+    else:
+        return s
 
     # match the substring to one of the full model names
     options = [(i, c) for i, c in enumerate(valid_source_names)
