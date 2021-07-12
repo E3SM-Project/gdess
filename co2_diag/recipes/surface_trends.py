@@ -74,7 +74,7 @@ def surface_trends(options: dict,
                                      time_limits=(np.datetime64(opts.start_yr), np.datetime64(opts.end_yr)),
                                      latlon=(ds_obs['latitude'].values[0], ds_obs['longitude'].values[0]),
                                      altitude=ds_obs['altitude'].values[0], altitude_method='lowest',
-                                     global_mean=False, verbose=verbose)
+                                     global_mean=opts.globalmean, verbose=verbose)
 
     # --- Create Graphic ---
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
