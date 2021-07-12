@@ -10,6 +10,12 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
 
 jobs:
   test1:
@@ -81,8 +87,10 @@ jobs:
         run: |
           pip install -e .
 
+      # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
 
       - name: Test and generate coverage report
         shell: bash -l {0}
@@ -90,6 +98,7 @@ jobs:
           conda install pytest
           conda install pytest-cov
           pytest --cov=./ --cov-report=xml
+
       - name: Send coverage report to codecov
         uses: codecov/codecov-action@v1
         with:
