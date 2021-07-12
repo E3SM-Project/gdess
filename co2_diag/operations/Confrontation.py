@@ -69,16 +69,7 @@ def make_comparable(ref, com, **keywords):
     #     raise VarsNotComparable()
 
     _logger.info('Selected bounds for both:')
-
-    # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
-    ds_ref, initial_ref_time, final_ref_time = apply_time_bounds(ref, time_limits)
-    ds_com, initial_com_time, final_com_time = apply_time_bounds(com, (initial_ref_time, final_ref_time))
-    # decimal years are added as a coordinate if not already there.
-    if not ('time_decimal' in ds_com.coords):
-        ds_com = ds_com.assign_coords(time_decimal=('time',
-                                                    [decimalDateFromDatetime(x) for x in
-                                                     pd.DatetimeIndex(ds_com['time'].values)]))
-    _logger.info('  -- time>=%s  &  time<=%s', time_limits[0], time_limits[1])
+    ds_com, ds_ref = mutual_time_bounds(com, ref, time_limits)
 
     _logger.info('Selected bounds for Comparison dataset:')
     # _logger.info('  -- model=%s', opts.model_name)
@@ -117,6 +108,19 @@ def make_comparable(ref, com, **keywords):
     _logger.info('done.')
 
     return ds_ref, da_com
+
+
+def mutual_time_bounds(com, ref, time_limits):
+    # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
+    ds_ref, initial_ref_time, final_ref_time = apply_time_bounds(ref, time_limits)
+    ds_com, initial_com_time, final_com_time = apply_time_bounds(com, (initial_ref_time, final_ref_time))
+    # decimal years are added as a coordinate if not already there.
+    if not ('time_decimal' in ds_com.coords):
+        ds_com = ds_com.assign_coords(time_decimal=('time',
+                                                    [decimalDateFromDatetime(x) for x in
+                                                     pd.DatetimeIndex(ds_com['time'].values)]))
+    _logger.info('  -- time>=%s  &  time<=%s', time_limits[0], time_limits[1])
+    return ds_com, ds_ref
 
 
 def extract_site_data_from_dataset(dataset: xr.Dataset,
