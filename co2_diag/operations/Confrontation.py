@@ -99,7 +99,7 @@ def make_comparable(ref, com, **keywords):
         ds_com = ds_com.mean(dim=('lat', 'lon'))
         _logger.info('  -- mean over lat and lon dimensions')
     else:
-        ds_com = extract_site_data_from_dataset(ds_com, lat=latlon[0], lon=latlon[1])
+        ds_com = extract_site_data_from_dataset(ds_com, lat=latlon[0], lon=latlon[1], drop=True)
 
     assert_expected_dimensions(ds_com, expected_dims=['time', 'plev'], optional_dims=['bnds'])
 
@@ -120,14 +120,16 @@ def make_comparable(ref, com, **keywords):
 
 
 def extract_site_data_from_dataset(dataset: xr.Dataset,
-                                   lat, lon) -> Union[xr.Dataset, xr.DataArray]:
+                                   lat: float, lon: float,
+                                   drop: bool) -> Union[xr.Dataset, xr.DataArray]:
     """A specific lat/lon is selected
 
     Parameters
     ----------
-    dataset
-    lat
-    lon
+    dataset: xarray.Dataset
+    lat: float
+    lon: float
+    drop: bool
 
     Raises
     ------
@@ -138,12 +140,10 @@ def extract_site_data_from_dataset(dataset: xr.Dataset,
     An xarray Dataset or DataArray
     """
     mdl_cell = get_closest_mdl_cell_dict(dataset, lat=lat, lon=lon, coords_as_dimensions=True)
-    # data_subset = dataset.sel(lat=mdl_cell['lat'], lon=mdl_cell['lon'])
-    data_subset = (dataset
-                   .where(dataset.lat == mdl_cell['lat'], drop=True)
-                   .where(dataset.lon == mdl_cell['lon'], drop=True)
-                   .squeeze()
-                   )
+    data_subset = dataset.sel({'lat': mdl_cell['lat'],
+                               'lon': mdl_cell['lon']},
+                              drop=drop)
+
     _logger.info('  -- lat=%s', mdl_cell['lat'])
     _logger.info('  -- lon=%s', mdl_cell['lon'])
 

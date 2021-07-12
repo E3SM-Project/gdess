@@ -137,3 +137,10 @@ def test_print_netcdf_var_summary(dataset_withco2andzg, caplog):
     print_var_summary(dataset_withco2andzg, varname='co2', return_dataset=False)
     for record in caplog.records:
         assert record.levelname == "INFO"
+
+
+def test_extract_site_data(dataset_withco2andzg):
+    da = extract_site_data_from_dataset(dataset_withco2andzg, lon=-99.32, lat=42.21, drop=True)
+    assert assert_expected_dimensions(da,
+                                      expected_dims=['plev', 'time'],
+                                      expected_shape={'plev': 3, 'time': 4})
