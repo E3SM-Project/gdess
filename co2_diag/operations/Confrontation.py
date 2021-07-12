@@ -5,6 +5,8 @@ from ccgcrv.ccg_dates import decimalDateFromDatetime
 import numpy as np
 import pandas as pd
 import xarray as xr
+from dask.diagnostics import ProgressBar
+from typing import Union
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -27,6 +29,12 @@ def make_comparable(ref, com, **keywords):
         the start and end times
     latlon : tuple
         the latitude and longitude
+    altitude_method : str
+        either "interp" (provided with an altitude value) or "lowest" (default)
+    altitude : float
+        If altitude_method=='interp', altitude must be provided
+    height_data : xarray.DataArray
+        If altitude_method=='interp', height_data must be provided
     global_mean : bool
         whether to calculate the global mean instead of grabbing the nearest model location to the station
     verbose : Union[bool, str]
@@ -44,6 +52,9 @@ def make_comparable(ref, com, **keywords):
     # Process keywords
     time_limits = keywords.get("time_limits", (None, None))
     latlon = keywords.get("latlon", (None, None))
+    altitude_method = keywords.get("altitude_method", "lowest")
+    altitude = keywords.get("altitude", None)
+    height_data = keywords.get("height_data", None)
     global_mean = keywords.get("global_mean", False)
     verbose = keywords.get("verbose", "INFO")
 
@@ -74,7 +85,7 @@ def make_comparable(ref, com, **keywords):
         ds_com = ds_com.isel(member_id=0)
         _logger.info('  -- member_id=0')
     if 'bnds' in ds_com['co2'].coords:
-        ds_com = ds_com.isel(bnds=0)
+        ds_com = ds_com.isel(bnds=0, drop=True)
 
     assert_expected_dimensions(ds_com, expected_dims=['time', 'plev', 'lon', 'lat'], optional_dims=['bnds'])
 
@@ -82,24 +93,160 @@ def make_comparable(ref, com, **keywords):
     # TODO: Add option for hemispheric averages as well.
     #  And average not only the CMIP model outputs the stations, but also the surface stations within that hemisphere.
     if global_mean:
-        da_com = ds_com.mean(dim=('lat', 'lon'))
+        ds_com = ds_com.mean(dim=('lat', 'lon'))
         _logger.info('  -- mean over lat and lon dimensions')
     else:
-        mdl_cell = get_closest_mdl_cell_dict(ds_com,
-                                             lat=latlon[0], lon=latlon[1],
-                                             coords_as_dimensions=True)
-        da_com = (ds_com
-                  .sel(lat=mdl_cell['lat'])
-                  .sel(lon=mdl_cell['lon']))
-        _logger.info('  -- lat=%s', mdl_cell['lat'])
-        _logger.info('  -- lon=%s', mdl_cell['lon'])
+        ds_com = extract_site_data_from_dataset(ds_com, lat=latlon[0], lon=latlon[1])
+
+    assert_expected_dimensions(ds_com, expected_dims=['time', 'plev'], optional_dims=['bnds'])
 
     # Lazy computations are executed.
     _logger.info('Applying selected bounds...')
-    da_com = da_com.squeeze().compute()
+    ds_com = ds_com.compute()
+
+    _logger.info('Extracting particular altitude...')
+    da_com = extract_data_at_an_altitude(ds_com['co2'],
+                                         altitude_method=altitude_method,
+                                         altitude=altitude, height_data=ds_com['zg'])
+
+    # Lazy computations are executed.
+    da_com = da_com.squeeze()
     _logger.info('done.')
 
     return ds_ref, da_com
+
+
+def extract_site_data_from_dataset(dataset: xr.Dataset,
+                                   lat, lon) -> Union[xr.Dataset, xr.DataArray]:
+    """A specific lat/lon is selected
+
+    Parameters
+    ----------
+    dataset
+    lat
+    lon
+
+    Raises
+    ------
+    ValueError, if an unexpected value for the method argument is given.
+
+    Returns
+    -------
+    An xarray Dataset or DataArray
+    """
+    mdl_cell = get_closest_mdl_cell_dict(dataset, lat=lat, lon=lon, coords_as_dimensions=True)
+    # data_subset = dataset.sel(lat=mdl_cell['lat'], lon=mdl_cell['lon'])
+    data_subset = (dataset
+                   .where(dataset.lat == mdl_cell['lat'], drop=True)
+                   .where(dataset.lon == mdl_cell['lon'], drop=True)
+                   .squeeze()
+                   )
+    _logger.info('  -- lat=%s', mdl_cell['lat'])
+    _logger.info('  -- lon=%s', mdl_cell['lon'])
+
+    return data_subset
+
+
+def extract_data_at_an_altitude(data: xr.DataArray, altitude_method: str,
+                                altitude: float, height_data: xr.DataArray = None
+                                ) -> xr.DataArray:
+    """Get values at a particular altitude
+    If altitude_method is 'interp', then the 'altitude' and 'height_data' arguments are required.
+
+
+    Parameters
+    ----------
+    data
+    altitude_method
+    altitude
+    height_data
+
+    Returns
+    -------
+
+    """
+    if altitude_method == 'interp':
+        data = interpolate_to_altitude(data=data, altitude=altitude, height_data=height_data)
+    elif altitude_method == 'lowest':
+        data = lowest_nonnull_altitude(data=data)
+    else:
+        raise ValueError('Unexpected altitude matching method, %s, for getting site data.'
+                         % altitude_method)
+    return data
+
+
+def lowest_nonnull_altitude(data: xr.DataArray) -> xr.DataArray:
+    """Get the lowest (i.e., first) non-null value, that is nearest to the surface
+
+    Note: this assumes that data are ordered from the surface to top-of-atmosphere.
+    """
+    def first_nonnull_1d(data):
+        # print(np.where(np.isfinite(data))[0][0])
+        # print(np.isfinite(data))
+        # print(data.plev[np.isfinite(data)])
+        return data[np.isfinite(data)][0]
+
+    print(data.plev)
+
+    da_final = xr.apply_ufunc(
+        first_nonnull_1d,  # first the function
+        data,
+        input_core_dims=[["plev"]],  # list with one entry per arg
+        exclude_dims=set(("plev",)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    return da_final
+
+
+def interpolate_to_altitude(data: xr.DataArray,
+                            altitude: float,
+                            height_data: xr.DataArray
+                            ) -> xr.DataArray:
+    """ Interpolate timeseries data to a given altitude
+
+    Parameters
+    ----------
+    data: xarray.DataArray
+        The carbon dioxide ('co2') variable
+    altitude: float
+    height_data: xarray.DataArray
+        The geopotential height ('zg') variable.
+
+    """
+    if not all(x in data.data_vars for x in ['co2', 'zg']):
+        raise ValueError("Variables 'co2' and 'zg' must be present to use interpolate_to_altitude()."
+                         "Dataset only contains <%s>." % list(data.data_vars))
+
+    def interp1d_np(data, x, xi):
+        """
+        data: y-coordinates of the data points (fp), e.g., array of plev
+        x: x-coordinates of the data points (xp), e.g., array of zg
+        xi: x-coordinate (e.g., zg) at which to evaluate an interpolated data point (e.g., plev)
+        """
+        return np.interp(xi, x, data)
+
+    # For the given altitude (zg), a pressure level (plev) is interpolated at each time along the time dimension.
+    da_plev_points = xr.apply_ufunc(
+        interp1d_np,  # first the function
+        data['plev'],
+        height_data,
+        altitude,
+        input_core_dims=[["plev"], ["plev"], []],  # list with one entry per arg
+        exclude_dims=set(("plev",)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    # For the given pressure level (plev) at each time,
+    #   a concentration (co2) is interpolated at each time along the time dimension.
+    da_final = xr.apply_ufunc(
+        interp1d_np,  # first the function
+        data['co2'],
+        data['plev'],
+        da_plev_points,
+        input_core_dims=[["plev"], ["plev"], []],  # list with one entry per arg
+        exclude_dims=set(("plev",)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    return da_final
 
 
 def apply_time_bounds(ds: xr.Dataset,

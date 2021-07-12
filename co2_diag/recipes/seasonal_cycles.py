@@ -116,11 +116,12 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                 da_obs, da_mdl = make_comparable(ds_obs, ds_mdl,
                                                  time_limits=(np.datetime64(opts.start_yr), np.datetime64(opts.end_yr)),
                                                  latlon=(ds_obs['latitude'].values[0], ds_obs['longitude'].values[0]),
-                                                 global_mean=False)
+                                                 altitude=ds_obs['altitude'].values[0], altitude_method='lowest',
+                                                 global_mean=False, verbose=verbose)
             else:
                 da_obs, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(opts.start_yr),
                                                                       np.datetime64(opts.end_yr)))
-        except RuntimeError as re:
+        except (RuntimeError, AssertionError) as re:
             update_for_skipped_station(re, station, num_stations, counter)
             continue
         #
