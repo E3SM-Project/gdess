@@ -13,6 +13,7 @@ def random_data():
     # Create random data
     np.random.seed(0)
     co2 = 10 * np.random.rand(5, 5, 3, 4)
+    co2[1, 1, 0, [0, 2]] = np.nan
     zg = [50, 75, 100] + (10 * np.random.rand(5, 5, 4, 3))
     zg = np.swapaxes(zg, 2, 3)
     lon = [-180, -90, 0, 90, 180]
