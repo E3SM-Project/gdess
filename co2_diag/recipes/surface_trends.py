@@ -6,8 +6,7 @@ This function parses:
 """
 import co2_diag.data_source.cmip
 from co2_diag import set_verbose
-from co2_diag.operations.geographic import get_closest_mdl_cell_dict
-from co2_diag.operations.time import ensure_dataset_datetime64
+from co2_diag.operations.Confrontation import make_comparable
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options, benchmark_recipe
 import co2_diag.data_source.obspack.gvplus_surface as obspack_surface_collection_module
@@ -70,56 +69,12 @@ def surface_trends(options: dict,
                                                               pickle_file=None, skip_selections=True)
     ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
 
-    # --- Obspack and CMIP are now handled Together ---
-    _logger.info('Selected bounds for both:')
-    # Time boundaries
-    ds_obs = ensure_dataset_datetime64(ds_obs)
-    ds_obs = ds_obs.where(ds_obs.time >= opts.start_datetime, drop=True)
-    ds_obs = ds_obs.where(ds_obs.time <= opts.end_datetime, drop=True)
-    #
-    ds_mdl = ensure_dataset_datetime64(ds_mdl)
-    ds_mdl = ds_mdl.where(ds_mdl.time >= opts.start_datetime, drop=True)
-    ds_mdl = ds_mdl.where(ds_mdl.time <= opts.end_datetime, drop=True)
-    _logger.info('  -- time>=%s  &  time<=%s', opts.start_datetime, opts.end_datetime)
-
-    _logger.info('Selected bounds for CMIP:')
-    _logger.info('  -- model=%s', opts.model_name)
-    # Only the first ensemble member is selected, if there are more than one
-    # (TODO: enable the selection of a specific ensemble member)
-    if 'member_id' in ds_mdl['co2'].coords:
-        ds_mdl = (ds_mdl
-                  .isel(member_id=0)
-                  .copy())
-        _logger.info('  -- member_id=0')
-    else:
-        ds_mdl = ds_mdl.copy()
-
-    # Surface values are selected.
-    ds_mdl = ds_mdl['co2'].isel(plev=0)
-    _logger.info('  -- plev=0')
-
-    # A specific lat/lon is selected, or a global mean is calculated.
-    # TODO: Add option for hemispheric averages as well.
-    #  And average not only the CMIP model outputs the stations, but also the surface stations within that hemisphere.
-    if opts.globalmean:
-        da_mdl = ds_mdl.mean(dim=('lat', 'lon'))
-        _logger.info('  -- mean over lat and lon dimensions')
-    else:
-        mdl_cell = get_closest_mdl_cell_dict(new_self.stepB_preprocessed_datasets[opts.model_name],
-                                             lat=obs_collection.station_dict[opts.station_code]['lat'],
-                                             lon=obs_collection.station_dict[opts.station_code]['lon'],
-                                             coords_as_dimensions=True)
-        da_mdl = (ds_mdl
-                  .where(ds_mdl.lat == mdl_cell['lat'], drop=True)
-                  .where(ds_mdl.lon == mdl_cell['lon'], drop=True)
-                  )
-        _logger.info('  -- lat=%s', mdl_cell['lat'])
-        _logger.info('  -- lon=%s', mdl_cell['lon'])
-
-    # Lazy computations are executed.
-    _logger.info('Applying selected bounds...')
-    da_mdl = da_mdl.squeeze().compute()
-    _logger.info('done.')
+    # --- Globalview+ and CMIP are now handled together ---
+    da_obs, da_mdl = make_comparable(ds_obs, ds_mdl,
+                                     time_limits=(np.datetime64(opts.start_yr), np.datetime64(opts.end_yr)),
+                                     latlon=(ds_obs['latitude'].values[0], ds_obs['longitude'].values[0]),
+                                     altitude=ds_obs['altitude'].values[0], altitude_method='lowest',
+                                     global_mean=False, verbose=verbose)
 
     # --- Create Graphic ---
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
