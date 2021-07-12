@@ -427,7 +427,7 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
 
     # --- Plot the seasonal cycle for all stations,
     #   and flip the ydata because pyplot.imshow will plot the last row on the bottom
-    fig, ax = plt.subplots(1, 1, figsize=(10, num_stations*0.8))
+    fig, ax = plt.subplots(1, 1, figsize=(6, num_stations*0.8))
     im = ax.imshow(ydata.transpose().iloc[::-1],
                    norm=mcolors.TwoSlopeNorm(vcenter=0.), cmap='RdBu_r', interpolation='nearest',
                    aspect='auto', extent=(mindate, maxdate, -0.5, num_stations - 0.5))
@@ -445,7 +445,7 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
         ax2.set_yticks(range(num_stations))
         ax2.set_yticklabels(rightside_labels)
     #
-    cbar = fig.colorbar(im, orientation="horizontal", pad=(num_stations**0.5)*0.08)
+    cbar = fig.colorbar(im, orientation="horizontal", pad=max([0.5, (num_stations**0.5)*0.09]))
     cbar.ax.set_xlabel('$CO_2$ (ppm)')
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...

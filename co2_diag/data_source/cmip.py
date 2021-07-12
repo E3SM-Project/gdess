@@ -86,6 +86,7 @@ class Collection(Multiset):
         """
         # An empty instance is created.
         new_self = cls(datastore=datastore, verbose=verbose)
+        _logger.debug(' skip_selections: %s', skip_selections)
 
         loaded_from_pickle_bool = False
         if load_method == 'pickle':
