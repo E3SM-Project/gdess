@@ -38,7 +38,7 @@ def test_simplest_loading(newEmptyCMIPCollection):
 
 def test_recipe_input_year_error(newEmptyCMIPCollection):
     recipe_options = {
-        'model_name': 'BCC',
+        'model_name': 'BCC.esm-hist',
         'start_yr': "198012",
         'end_yr': "201042"}
     with pytest.raises(SystemExit):
@@ -56,7 +56,7 @@ def test_recipe_input_model_error(newEmptyCMIPCollection):
 
 def test_timeseries_recipe_completes_with_no_errors(newEmptyCMIPCollection):
     recipe_options = {
-        'model_name': 'BCC',
+        'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
         'end_yr': "1990"}
     try:
@@ -79,7 +79,7 @@ def test_zonal_recipe_completes_with_no_errors(newEmptyCMIPCollection):
 
 def test_annual_series_recipe_completes_with_no_errors(newEmptyCMIPCollection):
     recipe_options = {
-        'model_name': 'BCC',
+        'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
         'end_yr': "1990"}
     try:
@@ -90,7 +90,7 @@ def test_annual_series_recipe_completes_with_no_errors(newEmptyCMIPCollection):
 
 def test_vertical_profile_recipe_completes_with_no_errors(newEmptyCMIPCollection):
     recipe_options = {
-        'model_name': 'BCC',
+        'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
         'end_yr': "1990"}
     try:

@@ -9,7 +9,7 @@ def test_recipe_input_year_error(rootdir):
 
     recipe_options = {
         'ref_data': test_path,
-        'model_name': 'BCC',
+        'model_name': 'BCC.esm-hist',
         'station_code': 'mlo',
         'start_yr': "198012",
         'end_yr': "201042",
@@ -51,7 +51,7 @@ def test_recipe_completes_with_no_errors(rootdir):
 
     recipe_options = {
         'ref_data': test_path,
-        'model_name': 'BCC',
+        'model_name': 'BCC.esm-hist',
         'station_code': 'mlo',
         'start_yr': "1980",
         'end_yr': "2010",
