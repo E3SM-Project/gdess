@@ -99,9 +99,13 @@ def make_comparable(ref, com, **keywords):
     ds_com = ds_com.compute()
 
     _logger.info('Extracting particular altitude...')
-    da_com = extract_data_at_an_altitude(ds_com['co2'],
-                                         altitude_method=altitude_method,
-                                         altitude=altitude, height_data=ds_com['zg'])
+    if altitude_method == 'interp':
+        da_com = interpolate_to_altitude(data=ds_com['co2'], altitude=altitude, height_data=ds_com['zg'])
+    elif altitude_method == 'lowest':
+        da_com = lowest_nonnull_altitude(data=ds_com['co2'])
+    else:
+        raise ValueError('Unexpected altitude matching method, %s, for getting site data.'
+                         % altitude_method)
 
     # Lazy computations are executed.
     da_com = da_com.squeeze()
@@ -152,34 +156,6 @@ def extract_site_data_from_dataset(dataset: xr.Dataset,
     _logger.info('  -- lon=%s', mdl_cell['lon'])
 
     return data_subset
-
-
-def extract_data_at_an_altitude(data: xr.DataArray, altitude_method: str,
-                                altitude: float, height_data: xr.DataArray = None
-                                ) -> xr.DataArray:
-    """Get values at a particular altitude
-    If altitude_method is 'interp', then the 'altitude' and 'height_data' arguments are required.
-
-
-    Parameters
-    ----------
-    data
-    altitude_method
-    altitude
-    height_data
-
-    Returns
-    -------
-
-    """
-    if altitude_method == 'interp':
-        data = interpolate_to_altitude(data=data, altitude=altitude, height_data=height_data)
-    elif altitude_method == 'lowest':
-        data = lowest_nonnull_altitude(data=data)
-    else:
-        raise ValueError('Unexpected altitude matching method, %s, for getting site data.'
-                         % altitude_method)
-    return data
 
 
 def lowest_nonnull_altitude(data: xr.DataArray) -> xr.DataArray:
