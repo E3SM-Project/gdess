@@ -13,7 +13,7 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 from typing import Union, Sequence
-import argparse, re, logging
+import os, re, argparse, logging
 
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
@@ -380,7 +380,7 @@ class Collection(Multiset):
         if method == 'local':
             # A configuration object (for holding paths and settings) is read in to get the path to the data.
             config = load_config_file()
-            cmip_data_path = config.get('CMIP', 'source')
+            cmip_data_path = config.get('CMIP', 'source', vars=os.environ)
             _logger.debug(f"Loading local CMIP output files from path <{cmip_data_path}>..")
 
             # NetCDF files are loaded. Each model has its own DatasetDict key.
