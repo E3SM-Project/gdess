@@ -1,3 +1,5 @@
+import warnings
+
 from co2_diag import set_verbose, load_config_file
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.operations.datasetdict import DatasetDict
@@ -315,6 +317,11 @@ class Collection(Multiset):
                 df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby('moy').mean()
             else:
                 raise ValueError('Unexpected case for member_key == <%s>' % opts.member_key)
+
+        if df_anomaly_yearly.empty:
+            # TODO: remove this bandaid if-statement.
+            warnings.warn("yearly anomaly is empty. plotting is skipped.", RuntimeWarning)
+            return new_self
 
         # --- Plotting ---
         fig, ax, bbox_artists = plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
