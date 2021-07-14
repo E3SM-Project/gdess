@@ -12,6 +12,7 @@ from co2_diag.recipes.surface_trends import add_surface_trends_args_to_parser
 from argparse import ArgumentParser
 import sys
 
+
 def main(args):
     # Get the argument values. Then clear them from the namespace so the subcommands do not encounter them.
     verbosity = args.verbose
