@@ -286,30 +286,35 @@ class Collection(Multiset):
                                        model_name=opts.model_name, load_method=opts.cmip_load_method)
         ds = new_self.stepC_prepped_datasets[opts.model_name]
 
-        if not opts.member_key:
-            _logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
-                          new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist())
-            opts.member_key = new_self.stepC_prepped_datasets[opts.model_name]['member_id'].values.tolist()
-
-        # The mean is calculated across ensemble members if there are multiple.
-        if isinstance(opts.member_key, list) and (len(opts.member_key) > 1):
-            df_list_of_means = []
-            df_list_of_yearly_cycles = []
-            for mi, m in enumerate(opts.member_key):
-                _logger.debug(' selecting model=%s, member=%s', opts.model_name, m)
-                ds = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=m)
-
-                df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname='co2')
-                df_anomaly_yearly['member_id'] = m
-                df_anomaly_mean_cycle['member_id'] = m
-                df_list_of_means.append(df_anomaly_mean_cycle)
-                df_list_of_yearly_cycles.append(df_anomaly_yearly)
-
-            df_anomaly_mean_cycle = pd.concat(df_list_of_means).groupby(['moy', 'plev']).mean().reset_index()
-            df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby('moy').mean()
+        if not ('member_id' in ds.dims.keys()):
+            df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname='co2')
         else:
-            darray = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)
-            df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(darray, varname='co2')
+            if not opts.member_key:
+                _logger.debug("No 'member_key' supplied. Using the available member(s): %s",
+                              ds['member_id'].values.tolist())
+                opts.member_key = ds['member_id'].values.tolist()
+
+            if isinstance(opts.member_key, str) or (len(opts.member_key) == 1):
+                ds = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)
+                df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname='co2')
+            elif isinstance(opts.member_key, list) and (len(opts.member_key) > 1):
+                # The mean is calculated across ensemble members if there are multiple.
+                df_list_of_means = []
+                df_list_of_yearly_cycles = []
+                for mi, m in enumerate(opts.member_key):
+                    _logger.debug(' selecting model=%s, member=%s', opts.model_name, m)
+                    ds = ds.sel(member_id=m)
+
+                    df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname='co2')
+                    df_anomaly_yearly['member_id'] = m
+                    df_anomaly_mean_cycle['member_id'] = m
+                    df_list_of_means.append(df_anomaly_mean_cycle)
+                    df_list_of_yearly_cycles.append(df_anomaly_yearly)
+
+                df_anomaly_mean_cycle = pd.concat(df_list_of_means).groupby(['moy', 'plev']).mean().reset_index()
+                df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby('moy').mean()
+            else:
+                raise ValueError('Unexpected case for member_key == <%s>' % opts.member_key)
 
         # --- Plotting ---
         fig, ax, bbox_artists = plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
