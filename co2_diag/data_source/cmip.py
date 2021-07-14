@@ -303,9 +303,9 @@ class Collection(Multiset):
                 df_list_of_yearly_cycles = []
                 for mi, m in enumerate(opts.member_key):
                     _logger.debug(' selecting model=%s, member=%s', opts.model_name, m)
-                    ds = ds.sel(member_id=m)
 
-                    df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname='co2')
+                    df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds.sel(member_id=m),
+                                                                                               varname='co2')
                     df_anomaly_yearly['member_id'] = m
                     df_anomaly_mean_cycle['member_id'] = m
                     df_list_of_means.append(df_anomaly_mean_cycle)
