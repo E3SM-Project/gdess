@@ -84,7 +84,7 @@ def test_annual_series_recipe_completes_with_no_errors(newEmptyCMIPCollection):
         'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
         'end_yr': "1990",
-        'cmip_load_method': 'local',
+        'cmip_load_method': 'pangeo',
         'figure_savepath': './test_figure_annual_cmip_series'}
     try:
         newEmptyCMIPCollection.run_recipe_for_annual_series(verbose='DEBUG', options=recipe_options)
