@@ -145,8 +145,8 @@ class Collection(Multiset):
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
                      'plev': opts.plev}
         new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
-                                                        selection=selection, mean_dims=('lon', 'lat'),
-                                                        model_name=opts.model_name)
+                                       selection=selection, mean_dims=('lon', 'lat'),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
@@ -188,8 +188,8 @@ class Collection(Multiset):
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
         new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
-                                                        selection=selection, mean_dims=('lon', 'lat', 'time'),
-                                                        model_name=opts.model_name)
+                                       selection=selection, mean_dims=('lon', 'lat', 'time'),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
 
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_vertical_profiles()
@@ -231,8 +231,8 @@ class Collection(Multiset):
         # Apply diagnostic options and prep data for plotting
         selection = {'time': slice(opts.start_datetime, opts.end_datetime)}
         new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
-                                                      selection=selection, mean_dims=('lon', 'time'),
-                                                      model_name=opts.model_name)
+                                       selection=selection, mean_dims=('lon', 'time'),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
 
         if not opts.member_key:
             _logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
@@ -282,8 +282,9 @@ class Collection(Multiset):
         selection = {'time': slice(opts.start_datetime, opts.end_datetime),
                      'plev': opts.plev}
         new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
-                                                        selection=selection, mean_dims=('lon', 'lat'),
-                                                        model_name=opts.model_name)
+                                       selection=selection, mean_dims=('lon', 'lat'),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+        ds = new_self.stepC_prepped_datasets[opts.model_name]
 
         if not opts.member_key:
             _logger.debug("No 'member_key' supplied. Averaging over the available members: %s",
@@ -537,6 +538,8 @@ def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--plev', default=100000, type=int)
     parser.add_argument('--model_name', default=None, type=matched_model_and_experiment, choices=model_choices)
     parser.add_argument('--member_key', default=None, type=nullable_str)
+    parser.add_argument('--cmip_load_method', default='pangeo',
+                        type=str, choices=['pangeo', 'local'])
 
 
 def cmip_recipe_basics(func):
