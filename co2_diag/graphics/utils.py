@@ -35,7 +35,7 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
     if not path.lower().endswith(('.png', '.pdf', '.tif', '.tiff', '.jpg', '.jpeg')):
         path += '.png'
     # A datetime stamp is added immediately before the extension.
-    path_with_datetime = append_before_extension(path, datetime.today().strftime('%Y-%m-%dT%H:%M:%S.%f'))
+    path_with_datetime = append_before_extension(path, datetime.today().strftime('%Y-%m-%dT%H%M%S.%f'))
 
     fig.savefig(path_with_datetime, bbox_inches='tight', **kwargs)
 
