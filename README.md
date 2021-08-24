@@ -32,7 +32,7 @@ for atmospheric CO<sub>2</sub> concentrations.
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
 * [Developing](#developing)
-* [Project Structure](#project-structure)
+* [Project structure](#project-structure)
 * [Credits](#credits)
 * [Disclaimer](#disclaimer)
 
@@ -117,7 +117,7 @@ pip uninstall co2_diag
 Most work will be done in the 'develop' branch, 
 so please `git checkout develop` or create a new branch before modifying code.
 
-## Project Structure
+## Project structure
 
 #### Components
 
