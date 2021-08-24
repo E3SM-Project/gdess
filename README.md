@@ -58,9 +58,9 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
 Diagnostic recipes can be run from the command line or from within a Python kernel:
 
 **Command line**
-  - Use `co2_diag/bin/gdess --help` to see the available commands
+  - Use `co2_diag/bin/gdess.py --help` to see the available commands
   - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
-    E.g. `co2_diag/bin/gdess @recipe_options_file.txt` 
+    E.g. `co2_diag/bin/gdess.py @recipe_options_file.txt` 
 
 
 **In a Python kernel** 
