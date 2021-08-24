@@ -6,9 +6,11 @@ Example usage:
     >> ./bin/gdess trend --help
     >> ./bin/gdess trend raw_data/noaa-obspack/nc/ --figure_savepath ./
     >> ./bin/gdess seasonal --help
+    >> ./bin/gdess meridional --help
 """
-from co2_diag.recipes.seasonal_cycles import add_seasonal_cycle_args_to_parser
 from co2_diag.recipes.surface_trends import add_surface_trends_args_to_parser
+from co2_diag.recipes.seasonal_cycles import add_seasonal_cycle_args_to_parser
+from co2_diag.recipes.meridional_gradient import add_meridional_args_to_parser
 from argparse import ArgumentParser
 import sys
 
@@ -20,13 +22,17 @@ def main(args):
     del (args.verbose, args.subparser_name)
 
     # Run the selected recipe
-    if recipe_name == 'seasonal':
+    if recipe_name == 'trend':
+        from co2_diag.recipes import surface_trends
+        surface_trends(args, verbose=verbosity)
+
+    elif recipe_name == 'seasonal':
         from co2_diag.recipes import seasonal_cycles
         seasonal_cycles(args, verbose=verbosity)
 
-    elif recipe_name == 'trend':
-        from co2_diag.recipes import surface_trends
-        surface_trends(args, verbose=verbosity)
+    elif recipe_name == 'meridional':
+        from co2_diag.recipes import meridional_gradient
+        meridional_gradient(args, verbose=verbosity)
 
     return 0  # a clean, no-issue, exit
 
@@ -51,11 +57,14 @@ def parse_cli():
     # A separate subparser is set up for each recipe to handle its specific input arguments.
     subparsers = parser.add_subparsers(title='available recipe subcommands', dest='subparser_name')  #, help='name of diagnostic recipe to run')
     #
+    subparser_trend = subparsers.add_parser('trend', help='generate diagnostics of multidecadal trends')
+    add_surface_trends_args_to_parser(subparser_trend)
+    #
     subparser_seasonal = subparsers.add_parser('seasonal', help='generate diagnostics of seasonal cycles')
     add_seasonal_cycle_args_to_parser(subparser_seasonal)
     #
-    subparser_trend = subparsers.add_parser('trend', help='generate diagnostics of multidecadal trends')
-    add_surface_trends_args_to_parser(subparser_trend)
+    subparser_meridional = subparsers.add_parser('meridional', help='generate diagnostics of meridional gradient')
+    add_meridional_args_to_parser(subparser_meridional)
 
     # Print the help message if no arguments are supplied at the command line.
     if len(sys.argv) == 1:
