@@ -19,12 +19,14 @@ from ccgcrv.ccg_dates import decimalDateFromDatetime
 import numpy as np
 import pandas as pd
 from dask.diagnostics import ProgressBar
+from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.colors as mcolors
 from matplotlib import ticker
 from typing import Union
-import argparse, logging
+from datetime import datetime
+import argparse, logging, csv
 
 _logger = logging.getLogger(__name__)
 
@@ -219,6 +221,23 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     else:
         heatmap_rightside_labels = [numstr(x, decimalpoints=2) for x in df_station_metadata['lat']]
 
+    # Write output data to csv
+    filename = append_before_extension(opts.figure_savepath + '.csv',
+                                       'seasonal_cycle_output_stats_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
+    fileptr = open(filename, 'w', newline='')
+    writer = csv.DictWriter(
+        fileptr, fieldnames=['station',
+                             'source',
+                             'max',
+                             'min',
+                             'mean',
+                             'median',
+                             'std',
+                             'rmse'
+                             ]
+    )
+    writer.writeheader()
+
     # --- MAKE PLOTS ---
     # --- Plot lineplot comparing model and observations
     # if compare_against_model:
@@ -235,6 +254,20 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                       savepath=append_before_extension(opts.figure_savepath, '_obs_lineplot'))
     plot_heatmap_of_all_stations(xdata, ydata_gv, rightside_labels=heatmap_rightside_labels, figure_title="obs",
                                  savepath=append_before_extension(opts.figure_savepath, '_obs_heatmap'))
+
+    # Write output data for this instance
+    for column in ydata_gv:
+        row_dict = {
+            'station': column,
+            'source': 'globalviewplus',
+            'max': ydata_gv[column].max(),
+            'min': ydata_gv[column].min(),
+            'mean': ydata_gv[column].mean(),
+            'median': ydata_gv[column].median(),
+            'std': ydata_gv[column].std(),
+            'rmse': np.nan
+        }
+        writer.writerow(row_dict)
 
     if compare_against_model:
         if not xdata.equals(df_all_cycles['mdl']['month']):
@@ -254,6 +287,22 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
         plot_heatmap_of_all_stations(xdata, ydiff, rightside_labels=heatmap_rightside_labels,
                                      figure_title=f"model - obs",
                                      savepath=append_before_extension(opts.figure_savepath, '_diff_heatmap'))
+
+        # Write output data for this instance
+        for column in ydata_cmip:
+            row_dict = {
+                'station': column,
+                'source': 'cmip',
+                'max': ydata_cmip[column].max(),
+                'min': ydata_cmip[column].min(),
+                'mean': ydata_cmip[column].mean(),
+                'median': ydata_cmip[column].median(),
+                'std': ydata_cmip[column].std(),
+                'rmse': mean_squared_error(ydata_gv[column], ydata_cmip[column], squared=False)
+            }
+            writer.writerow(row_dict)
+
+    fileptr.flush()
 
     # --- Make a supplemental figure for filter components ---
     #
