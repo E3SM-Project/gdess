@@ -1,5 +1,6 @@
 # Greenhouse gas Diagnostics for Earth System Simulations
 
+<!-- Information badges -->
 [![test status](https://github.com/dkauf42/gdess/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/dkauf42/gdess/actions/workflows/lint_and_test.yml)
 [![codecov](https://codecov.io/gh/dkauf42/gdess/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/dkauf42/gdess)
 [![Python 3.8|3.9](https://img.shields.io/badge/python-3.8|3.9-blue.svg)](https://www.python.org/downloads/release/python-380/)
@@ -22,6 +23,18 @@ There is a need to evaluate atmospheric CO<sub>2</sub> for continuing developmen
 Although there are existing diagnostic tools for Earth System Models
 (e.g. ESMValTool, ILAMB, BGC-val), they do not provide functionality specific
 for atmospheric CO<sub>2</sub> concentrations.
+
+## Contents
+
+* [Data requirements and availability](#data-requirements-and-availability)
+* [Usage](#usage)
+* [Installation](#installation)
+* [Updating](#updating)
+* [Uninstalling](#uninstalling)
+* [Developing](#developing)
+* [📁 Project Structure](#📁project-structure)
+* [Credits](#credits)
+* [Disclaimer](#disclaimer)
 
 ## Data requirements and availability
 
