@@ -57,6 +57,8 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
             latitude_bin_size (numeric): None is default
             figure_savepath (str): None is default
             difference (str): None is default
+            region_name (str): calculate averages within the region
+                (uses the name and coordinates defined in config file)
             globalmean (str):
                 either 'station', which requires specifying the <station_code> parameter,
                 or 'global', which will calculate a global mean
@@ -556,12 +558,17 @@ def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
                         type=matched_model_and_experiment, choices=model_choices)
     parser.add_argument('--cmip_load_method', default='pangeo',
                         type=str, choices=['pangeo', 'local'])
-    parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
+
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--latitude_bin_size', default=None, type=float)
+    parser.add_argument('--region_name', default=None, type=str,
+                        help="use the same name as in the config file, e.g., 'Boreal North America'.")
+
     parser.add_argument('--plot_filter_components', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
+
+    parser.add_argument('--station_code', default='mlo',
+                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
     parser.add_argument('--run_all_stations', action='store_true')
     parser.add_argument('--station_list', nargs='*')
