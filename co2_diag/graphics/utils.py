@@ -37,7 +37,7 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
     # A datetime stamp is added immediately before the extension.
     path_with_datetime = append_before_extension(path, datetime.today().strftime('%Y-%m-%dT%H%M%S.%f'))
 
-    fig.savefig(path_with_datetime, bbox_inches='tight', **kwargs)
+    fig.savefig(path_with_datetime, **kwargs)
 
 
 def limits_with_zero(t: tuple):

@@ -430,11 +430,12 @@ def plot_comparison_against_model(ref_xdata: pd.DataFrame,
     #
     aesthetic_grid_no_spines(ax)
     #
-    plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
+    lgd = plt.legend(bbox_to_anchor=(1, 1), loc='upper left', ncol=1)
     #
     plt.tight_layout()
     if savepath:
-        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, 'supplement_compare_against_model_lines'))
+        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, 'supplement_compare_against_model_lines'),
+                  bbox_inches='tight', bbox_extra_artists=(lgd, ))
 
 
 def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
@@ -447,7 +448,7 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
     #
     aesthetic_grid_no_spines(ax)
     #
-    plt.legend(ydata.columns.values, loc='upper left')
+    lgd = plt.legend(ydata.columns.values, loc='upper left')
     #
     ax.set_ylabel('$CO_2$ (ppm)')
     if figure_title:
@@ -461,7 +462,7 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
     #
     plt.tight_layout()
     if savepath:
-        mysavefig(fig=fig, plot_save_name=savepath)
+        mysavefig(fig=fig, plot_save_name=savepath, bbox_inches='tight', bbox_extra_artists=(lgd, ))
 
 
 def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
@@ -510,7 +511,7 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
         ax.set_title(figure_title)
     #
     if savepath:
-        mysavefig(fig=fig, plot_save_name=savepath)
+        mysavefig(fig=fig, plot_save_name=savepath, bbox_inches='tight')
 
 
 def plot_filter_components(filter_object, original_x, original_y,
@@ -534,12 +535,13 @@ def plot_filter_components(filter_object, original_x, original_y,
     #
     plt.title(figure_title)
     #
-    plt.legend()
+    lgd = plt.legend()
     #
     plt.tight_layout()
     #
     if savepath:
-        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, '_filter_components'))
+        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, '_filter_components'),
+                  bbox_inches='tight', bbox_extra_artists=(lgd, ))
 
 
 def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
