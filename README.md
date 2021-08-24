@@ -25,32 +25,32 @@ for atmospheric CO<sub>2</sub> concentrations.
 
 ## Data requirements and availability
 
-- **Globalview+ data** 
+**Globalview+ data** 
   - For parsing and running demo notebooks, one must first download Obspack, 
 which is available from the NOAA Global Monitoring Laboratory (GML) here:
 <https://www.esrl.noaa.gov/gmd/ccgg/obspack/data.php>
   - There is a sample file from NOAA GML included in this Git repository to enable the running of test cases.
 
-- **CMIP6** 
+**CMIP6** 
   - It seems that recipes involving CMIP data won't work when on the PNNL VPN
 (presumably because the VPN blocks retrieval of the CMIP data catalog using a web URL, 
 which is initiated by the [intake](https://github.com/intake/intake-esm) package).
   
-- **E3SM**
+**E3SM**
   - For parsing and running demo notebooks, 
     one must have access to model output history as NetCDF file(s).
 
 ## Usage
 
-Diagnostic recipes can be run from the command line or from within a Python kernel.
+Diagnostic recipes can be run from the command line or from within a Python kernel:
 
-- **Command line**
+**Command line**
   - Use `co2_diag/bin/gdess --help` to see the available commands
   - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
     E.g. `co2_diag/bin/gdess @recipe_options_file.txt` 
 
 
-- **In a Python kernel** 
+**In a Python kernel** 
   - check out the demonstration notebooks in `notebooks/demo/` for how to run recipes for CMIP6 model output, 
     NOAA Globalview+ Obspack, and E3SM model output.
 
