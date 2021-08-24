@@ -1,10 +1,10 @@
 # Greenhouse gas Diagnostics for Earth System Simulations
 
-[![test status](https://github.com/dkauf42/e3sm_co2_diag/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/dkauf42/e3sm_co2_diag/actions/workflows/lint_and_test.yml)
-[![codecov](https://codecov.io/gh/dkauf42/e3sm_co2_diag/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/dkauf42/e3sm_co2_diag)
+[![test status](https://github.com/dkauf42/gdess/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/dkauf42/gdess/actions/workflows/lint_and_test.yml)
+[![codecov](https://codecov.io/gh/dkauf42/gdess/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/dkauf42/gdess)
 [![Python 3.8|3.9](https://img.shields.io/badge/python-3.8|3.9-blue.svg)](https://www.python.org/downloads/release/python-380/)
 
-[comment]: <> ([![latest version]&#40;https://img.shields.io/badge/Current%20version-0.01a1-brightgreen.svg&#41;]&#40;https://github.com/dkauf42/e3sm_co2_diag/releases/tag/0.01b1&#41;)
+[comment]: <> ([![latest version]&#40;https://img.shields.io/badge/Current%20version-0.01a1-brightgreen.svg&#41;]&#40;https://github.com/dkauf42/gdess/releases/tag/0.01b1&#41;)
 
 ## Overview
 
@@ -45,9 +45,9 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
 Diagnostic recipes can be run from the command line or from within a Python kernel.
 
 - **Command line**
-  - Use `~/e3sm_co2_diag/co2_diag/bin/gdess --help` to see the available commands
+  - Use `co2_diag/bin/gdess --help` to see the available commands
   - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
-    E.g. `~/e3sm_co2_diag/co2_diag/bin/gdess @recipe_options_file.txt` 
+    E.g. `co2_diag/bin/gdess @recipe_options_file.txt` 
 
 
 - **In a Python kernel** 
@@ -58,7 +58,7 @@ Diagnostic recipes can be run from the command line or from within a Python kern
 
 👥 Clone this repository to the location of your choice.
 ```shell script
-git clone https://github.com/dkauf42/e3sm_co2_diag.git ~/e3sm_co2_diag
+git clone https://github.com/dkauf42/gdess.git ~/gdess
 ```
 
 🌍 Create conda environment and install dependencies. 
@@ -74,14 +74,14 @@ conda install --file requirements.txt
 
 💾 Install the package:
 ```shell script
-cd ~/e3sm_co2_diag/
+cd ~/gdess/
 pip install .
 ```
 
 ## Updating
 
 To use the latest version of this repository:
-- Enter the `e3sm_co2_diag/` directory
+- Enter the `gdess/` directory
 - Activate your desired environment
 - Run the commands:
 
@@ -112,7 +112,7 @@ so please `git checkout develop` or create a new branch before modifying code.
 
 #### Directory Tree
 ```
-e3sm_co2_diag
+gdess
 │
 ├── README.md                  <- Top-level README for users/developers of this project
 ├── requirements.txt           <- Package dependencies
