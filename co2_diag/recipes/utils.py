@@ -57,12 +57,6 @@ def parse_recipe_options(options: Union[dict, argparse.Namespace],
     else:
         raise TypeError('<%s> is an unexpected type of the recipe options', type(options))
 
-    if args.ref_data is None:
-        # A configuration object (for holding paths and settings) is read in to get the path to the data.
-        config = load_config_file()
-        args.ref_data = config.get('NOAA_Globalview', 'source', vars=os.environ)
-        _logger.debug("ref data path == %s", args.ref_data)
-
     # Convert times to numpy.datetime64
     args.start_datetime = year_to_datetime64(args.start_yr)
     args.end_datetime = year_to_datetime64(args.end_yr)
