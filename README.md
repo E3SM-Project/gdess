@@ -39,7 +39,7 @@ for atmospheric CO<sub>2</sub> concentrations.
 ## Data requirements and availability
 
 **Globalview+ data** 
-  - For parsing and running demo notebooks, one must first download Obspack, 
+  - For parsing and running demo notebooks, one must first download the Obspack, 
 which is available from the NOAA Global Monitoring Laboratory (GML) here:
 <https://www.esrl.noaa.gov/gmd/ccgg/obspack/data.php>
   - There is a sample file from NOAA GML included in this Git repository to enable the running of test cases.
@@ -201,6 +201,13 @@ Additional details regarding the curve fitting approach can be found in the foll
 * [xarray](http://xarray.pydata.org/en/stable/)
 
 Although not a dependency, ideas were also drawn from [xclim: Climate indices computations](https://github.com/Ouranosinc/xclim).
+
+- The Mauna Loa (MLO) dataset file used in the tests directory was provided via the Obspack by:
+C. D. Keeling, S. C. Piper, R. B. Bacastow, M. Wahlen, 
+T. P. Whorf, M. Heimann, and H. A. Meijer, Exchanges of atmospheric CO2 and 13CO2 with the terrestrial biosphere
+and oceans from 1978 to 2000.  I. Global aspects, SIO Reference
+Series, No. 01-06, Scripps  Institution of Oceanography, San Diego, 88
+pages, 2001.
 
 #### Funding Acknowledgment:
 
