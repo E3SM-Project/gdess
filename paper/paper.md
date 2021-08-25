@@ -28,7 +28,7 @@ affiliations:
  - name: Atmospheric Sciences and Global Change Division, Pacific Northwest National Laboratory, Richland, WA, USA
    index: 2
 date: 23 August 2021
-bibliography: gdess_ms.bib
+bibliography: paper.bib
 ---
 
 # Summary
