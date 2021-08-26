@@ -2,7 +2,7 @@
 
 <!-- Information badges -->
 [![test status](https://github.com/dkauf42/gdess/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/dkauf42/gdess/actions/workflows/lint_and_test.yml)
-[![codecov](https://codecov.io/gh/dkauf42/gdess/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/dkauf42/gdess)
+[![codecov](https://codecov.io/gh/dkauf42/e3sm_co2_diag/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/dkauf42/e3sm_co2_diag)
 [![Python 3.8|3.9](https://img.shields.io/badge/python-3.8|3.9-blue.svg)](https://www.python.org/downloads/release/python-380/)
 
 [comment]: <> ([![latest version]&#40;https://img.shields.io/badge/Current%20version-0.01a1-brightgreen.svg&#41;]&#40;https://github.com/dkauf42/gdess/releases/tag/0.01b1&#41;)
@@ -27,8 +27,8 @@ for atmospheric CO<sub>2</sub> concentrations.
 ## Contents
 
 * [Data requirements and availability](#data-requirements-and-availability)
-* [Usage](#usage)
 * [Installation](#installation)
+* [Usage](#usage)
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
 * [Developing](#developing)
@@ -39,33 +39,22 @@ for atmospheric CO<sub>2</sub> concentrations.
 ## Data requirements and availability
 
 **Globalview+ data** 
-  - For parsing and running demo notebooks, one must first download Obspack, 
+  - For parsing and running demo notebooks, one must first download the Obspack, 
 which is available from the NOAA Global Monitoring Laboratory (GML) here:
 <https://www.esrl.noaa.gov/gmd/ccgg/obspack/data.php>
   - There is a sample file from NOAA GML included in this Git repository to enable the running of test cases.
 
 **CMIP6** 
+  - CMIP6 data do not need to be downloaded before running recipes, 
+as GDESS can use the intake-esm dependency to retrieve CMIP6 data programmatically while running.
   - It seems that recipes involving CMIP data won't work when on the PNNL VPN
 (presumably because the VPN blocks retrieval of the CMIP data catalog using a web URL, 
 which is initiated by the [intake](https://github.com/intake/intake-esm) package).
   
 **E3SM**
+  - E3SM outputs do not need to be available to run recipes that compare Globalview+ and CMIP6 data.
   - For parsing and running demo notebooks, 
     one must have access to model output history as NetCDF file(s).
-
-## Usage
-
-Diagnostic recipes can be run from the command line or from within a Python kernel:
-
-**Command line**
-  - Use `co2_diag/bin/gdess.py --help` to see the available commands
-  - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
-    E.g. `co2_diag/bin/gdess.py @recipe_options_file.txt` 
-
-
-**In a Python kernel** 
-  - check out the demonstration notebooks in `notebooks/demo/` for how to run recipes for CMIP6 model output, 
-    NOAA Globalview+ Obspack, and E3SM model output.
 
 ## Installation
 
@@ -90,6 +79,20 @@ conda install --file requirements.txt
 cd ~/gdess/
 pip install .
 ```
+
+## Usage
+
+Diagnostic recipes can be run from the command line or from within a Python kernel:
+
+**Command line**
+  - Use `co2_diag/bin/gdess.py --help` to see the available commands
+  - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
+    E.g. `co2_diag/bin/gdess.py @recipe_options_file.txt` 
+
+
+**In a Python kernel** 
+  - check out the demonstration notebooks in `notebooks/demo/` for how to run recipes for CMIP6 model output, 
+    NOAA Globalview+ Obspack, and E3SM model output.
 
 ## Updating
 
@@ -198,6 +201,13 @@ Additional details regarding the curve fitting approach can be found in the foll
 * [xarray](http://xarray.pydata.org/en/stable/)
 
 Although not a dependency, ideas were also drawn from [xclim: Climate indices computations](https://github.com/Ouranosinc/xclim).
+
+- The Mauna Loa (MLO) dataset file used in the tests directory was provided via the Obspack by:
+C. D. Keeling, S. C. Piper, R. B. Bacastow, M. Wahlen, 
+T. P. Whorf, M. Heimann, and H. A. Meijer, Exchanges of atmospheric CO2 and 13CO2 with the terrestrial biosphere
+and oceans from 1978 to 2000.  I. Global aspects, SIO Reference
+Series, No. 01-06, Scripps  Institution of Oceanography, San Diego, 88
+pages, 2001.
 
 #### Funding Acknowledgment:
 
