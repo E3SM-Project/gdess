@@ -62,7 +62,7 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
 
 👥 Clone this repository to the location of your choice.
 ```shell script
-git clone https://github.com/dkauf42/gdess.git ~/gdess
+git clone https://github.com/E3SM-Project/gdess.git ~/gdess
 ```
 
 🌍 Create conda environment and install dependencies. 
