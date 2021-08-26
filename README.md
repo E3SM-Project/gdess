@@ -27,7 +27,7 @@ for atmospheric CO<sub>2</sub> concentrations.
 ## Contents
 
 * [Data requirements and availability](#data-requirements-and-availability)
-* [Installation](#installation)
+* [Getting-started](#getting-started)
 * [Usage](#usage)
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
@@ -56,7 +56,9 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
   - For parsing and running demo notebooks, 
     one must have access to model output history as NetCDF file(s).
 
-## Installation
+## Getting started
+
+### Installation
 
 👥 Clone this repository to the location of your choice.
 ```shell script
@@ -79,6 +81,19 @@ conda install --file requirements.txt
 cd ~/gdess/
 pip install .
 ```
+
+### Configuration
+
+Instead of passing data filepaths to the recipe functions each time, 
+you can define environment variables for the directory containing Globalview+ Obspack
+and CMIP model output.
+
+For example, if you are running in a bash environment you can set these in your `~/.bash_profile`:
+```bash
+export GDESS_CMIP_DATA=Path/to/Model/Output/NetCDF/Files
+export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
+```
+These variables are retrieved in the `co2_diag/config/defaults.ini` file.
 
 ## Usage
 
