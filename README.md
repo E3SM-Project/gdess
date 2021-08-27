@@ -38,20 +38,20 @@ for atmospheric CO<sub>2</sub> concentrations.
 
 ## Data requirements and availability
 
-**Globalview+ data** 
+**Observations - Globalview+ data** 
   - For parsing and running demo notebooks, one must first download the Obspack, 
 which is available from the NOAA Global Monitoring Laboratory (GML) here:
 <https://www.esrl.noaa.gov/gmd/ccgg/obspack/data.php>
   - There is a sample file from NOAA GML included in this Git repository to enable the running of test cases.
 
-**CMIP6** 
+**Model Output - CMIP6** 
   - CMIP6 data do not need to be downloaded before running recipes, 
 as GDESS can use the intake-esm dependency to retrieve CMIP6 data programmatically while running.
   - It seems that recipes involving CMIP data won't work when on the PNNL VPN
 (presumably because the VPN blocks retrieval of the CMIP data catalog using a web URL, 
 which is initiated by the [intake](https://github.com/intake/intake-esm) package).
   
-**E3SM**
+**Model Output - E3SM**
   - E3SM outputs do not need to be available to run recipes that compare Globalview+ and CMIP6 data.
   - For parsing and running demo notebooks, 
     one must have access to model output history as NetCDF file(s).
