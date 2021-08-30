@@ -154,12 +154,12 @@ gdess
 ├── co2_diag                   <- *Python package* for handling co2 diagnostics
 │   │
 │   ├── bin                  
-│   │   └── codima.py          <- Run recipes from the command line
+│   │   └── gdess.py          <- Run recipes from the command line
 │   │
 │   ├── recipes                <- Generate repeatable diagnostics that span multiple data sources available as recipes 
 │   │   ├── surface_trends.py
 │   │   ├── seasonal_cycles.py
-│   │   ├── utils.py
+│   │   ├── meridional_gradient.py
 │   │   └── ...
 │   │
 │   ├── data_source            <- Load, parse, and manipulate data from a particular source
