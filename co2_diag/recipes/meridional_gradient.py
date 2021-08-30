@@ -156,7 +156,7 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
                                    original_x=ds_obs['time_decimal'].values, #df_surface_station['time_decimal'].values,
                                    original_y=ds_obs['co2'].values,  #df_surface_station['co2'].values,
                                    figure_title=f'obs, station {station}',
-                                   savepath=append_before_extension(opts.figure_savepath, '_supplement1ref_' + station))
+                                   savepath=append_before_extension(opts.figure_savepath, 'supplement1ref_' + station))
             if compare_against_model:
                 plot_filter_components(filt_mdl,
                                        original_x=da_mdl['time_decimal'].values,
@@ -236,7 +236,7 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
     #   (i) Globalview+ data
     ydata_gv = df_all_cycles['ref'].loc[:, (df_all_cycles['ref'].columns != 'month')]
     plot_lines_for_all_station_cycles(xdata, ydata_gv.iloc[:, ::-1], figure_title="GV+",
-                                      savepath=append_before_extension(opts.figure_savepath, '_obs_lineplot'))
+                                      savepath=append_before_extension(opts.figure_savepath, 'obs_lineplot'))
     plot_heatmap_of_all_stations(xdata, ydata_gv, rightside_labels=heatmap_rightside_labels, figure_title="obs",
                                  savepath=append_before_extension(opts.figure_savepath, '_obs_heatmap'))
 
