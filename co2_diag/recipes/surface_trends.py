@@ -61,7 +61,7 @@ def surface_trends(options: dict,
     obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
     obs_collection.preprocess(datadir=opts.ref_data, station_name=opts.station_code)
     ds_obs = obs_collection.stepA_original_datasets[opts.station_code]
-    _logger.info('%s', obs_collection.station_dict[opts.station_code])
+    _logger.info('%s', stations_dict[opts.station_code])
 
     # --- CMIP data ---
     _logger.info('*Processing CMIP model output*')

@@ -2,7 +2,8 @@ import os
 import pytest
 import xarray as xr
 
-from co2_diag.data_source.obspack.gvplus_surface import Collection
+from co2_diag import load_stations_dict
+from co2_diag.data_source.observations.gvplus_surface import Collection
 
 
 @pytest.fixture
@@ -12,7 +13,8 @@ def newEmptySurfaceStation():
 
 
 def test_station_MLO_is_present(newEmptySurfaceStation):
-    assert 'mlo' in newEmptySurfaceStation.station_dict
+    station_dict = load_stations_dict()
+    assert 'mlo' in station_dict
 
 
 def test_simplest_preprocessed_type(rootdir, newEmptySurfaceStation):

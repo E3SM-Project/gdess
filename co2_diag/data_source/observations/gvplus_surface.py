@@ -1,5 +1,5 @@
 from co2_diag import set_verbose, load_stations_dict
-from co2_diag.data_source.obspack.load import load_data_with_regex, dataset_from_filelist
+from co2_diag.data_source.observations.load import load_data_with_regex, dataset_from_filelist
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import select_between, ensure_dataset_datetime64, ensure_datetime64_array
