@@ -165,7 +165,6 @@ gdess
 │   ├── data_source            <- Load, parse, and manipulate data from a particular source
 │   │   ├── models/
 │   │   ├── observations/
-│   │   ├── datasetdict.py
 │   │   ├── multiset.py
 │   │   └── ...
 │   │
@@ -173,6 +172,7 @@ gdess
 │   │   ├── geographic/
 │   │   ├── time/
 │   │   ├── convert/
+│   │   ├── datasetdict.py
 │   │   └── ...
 │   │
 │   ├── formatters             <- Manipulate formatting in desired ways
