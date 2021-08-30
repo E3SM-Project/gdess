@@ -38,5 +38,7 @@ def tex_escape(text):
 
 def append_before_extension(filename: str, text_to_append: str) -> str:
     """Take a filename and add a string to the end before the extension.
+
+    Note: an underscore is inserted in between.
     """
     return "{0}_{2}{1}".format(*os.path.splitext(filename) + (text_to_append,))
