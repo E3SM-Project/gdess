@@ -165,7 +165,7 @@ gdess
 │   ├── data_source            <- Load, parse, and manipulate data from a particular source
 │   │   ├── cmip/
 │   │   ├── e3sm/
-│   │   ├── obspack/
+│   │   ├── observations/
 │   │   ├── datasetdict.py
 │   │   ├── multiset.py
 │   │   └── ...
