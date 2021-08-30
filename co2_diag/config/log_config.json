@@ -55,12 +55,12 @@
             "level": "INFO",
             "propagate": false
         },
-        "co2_diag.data_source.datasetdict": {
+        "co2_diag.operations.datasetdict": {
             "handlers": ["rotating_file", "console"],
             "level": "INFO",
             "propagate": false
         },
-        "co2_diag.data_source.obspack.load": {
+        "co2_diag.data_source.observations.load": {
             "handlers": ["rotating_file", "console"],
             "level": "DEBUG",
             "propagate": false
