@@ -29,7 +29,6 @@ import argparse, logging
 
 _logger = logging.getLogger(__name__)
 
-stations_dict = load_stations_dict()
 
 @benchmark_recipe
 def meridional_gradient(options: Union[dict, argparse.Namespace],
@@ -81,6 +80,7 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
 
     # The list of stations to analyze is populated.
     if opts.run_all_stations:
+        stations_dict = load_stations_dict()
         stations_to_analyze = stations_dict.keys()
     elif opts.station_list:
         stations_to_analyze = opts.station_list
@@ -110,7 +110,7 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
         obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
         obs_collection.preprocess(datadir=opts.ref_data, station_name=station)
         ds_obs = obs_collection.stepA_original_datasets[station]
-        _logger.info('  %s', stations_dict.get(station))
+        _logger.info('  %s', obs_collection.station_dict.get(station))
 
         # if opts.use_mlo_for_detrending:
         #     ds_mlo_ref = obs_collection.stepA_original_datasets['mlo']
@@ -178,9 +178,9 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
             cycles_of_each_station['mdl'].append(pd.DataFrame.from_dict({"month": mdl_dt, f"{station}": mdl_vals}))
 
         # Gather together the station's metadata at the loop end, when we're sure that this station has been processed.
-        processed_station_metadata['lon'].append(stations_dict[station]['lon'])
-        processed_station_metadata['lat'].append(stations_dict[station]['lat'])
-        processed_station_metadata['fullname'].append(stations_dict[station]['name'])
+        processed_station_metadata['lon'].append(obs_collection.station_dict[station]['lon'])
+        processed_station_metadata['lat'].append(obs_collection.station_dict[station]['lat'])
+        processed_station_metadata['fullname'].append(obs_collection.station_dict[station]['name'])
         processed_station_metadata['code'].append(station)
         counter['current'] += 1
         # END of station loop
