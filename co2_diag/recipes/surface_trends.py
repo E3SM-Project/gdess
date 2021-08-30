@@ -4,7 +4,7 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-from co2_diag import set_verbose, load_stations_dict
+from co2_diag import set_verbose
 from co2_diag.operations.Confrontation import make_comparable
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipe_utils import benchmark_recipe
@@ -19,7 +19,6 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-stations_dict = load_stations_dict()
 
 @benchmark_recipe
 def surface_trends(options: dict,
@@ -61,7 +60,7 @@ def surface_trends(options: dict,
     obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
     obs_collection.preprocess(datadir=opts.ref_data, station_name=opts.station_code)
     ds_obs = obs_collection.stepA_original_datasets[opts.station_code]
-    _logger.info('%s', stations_dict[opts.station_code])
+    _logger.info('%s', obs_collection.station_dict[opts.station_code])
 
     # --- CMIP data ---
     _logger.info('*Processing CMIP model output*')
