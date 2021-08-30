@@ -288,7 +288,12 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                           savepath=append_before_extension(opts.figure_savepath, 'diff_lineplot'))
         plot_heatmap_of_all_stations(xdata, ydiff, rightside_labels=heatmap_rightside_labels,
                                      figure_title=f"model - obs",
-                                     savepath=append_before_extension(opts.figure_savepath, '_diff_heatmap'))
+                                     savepath=append_before_extension(opts.figure_savepath, 'diff_heatmap'))
+
+        #   (iv) Model and obs difference
+        plot_comparison_against_model(xdata, ydata_gv.iloc[:, ::-1], f'obs [{opts.station_code}]',
+                                      xdata, ydata_cmip.iloc[:, ::-1], f'model [{opts.model_name}]',
+                                      savepath=append_before_extension(opts.figure_savepath, 'overlapped'))
 
         # Write output data for this instance
         for column in ydata_cmip:
@@ -436,8 +441,7 @@ def plot_comparison_against_model(ref_xdata: pd.DataFrame,
     #
     plt.tight_layout()
     if savepath:
-        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, 'supplement_compare_against_model_lines'),
-                  bbox_inches='tight', bbox_extra_artists=(lgd, ))
+        mysavefig(fig=fig, plot_save_name=savepath, bbox_inches='tight', bbox_extra_artists=(lgd, ))
 
 
 def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
