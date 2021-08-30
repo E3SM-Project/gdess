@@ -1,6 +1,8 @@
 import warnings
 
 from co2_diag import set_verbose, load_config_file
+from co2_diag.data_source.models.cmip.cmip_name_utils import model_name_dict_from_valid_form, \
+    matched_model_and_experiment, cmip_model_choices
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import ensure_dataset_datetime64
@@ -16,19 +18,12 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 from typing import Union, Sequence
-import os, re, argparse, logging
+import os, argparse, logging
 
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
 default_cmip6_datastore_url = "https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json"
 
-# -- Define valid model choices --
-model_choices = ['CMIP.CNRM-CERFACS.CNRM-ESM2-1.esm-hist.Amon.gr', 'CMIP.NCAR.CESM2.esm-hist.Amon.gn',
-                 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn', 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1']
-full_model_name_pattern = re.compile(
-        r'(?P<activityid>[a-zA-Z\d\-]+)\.(?P<institutionid>[a-zA-Z\d\-]+)\.'
-        r'(?P<sourceid>[a-zA-Z\d\-]+)\.(?P<experimentid>[a-zA-Z\d\-]+)\.'
-        r'(?P<tableid>[a-zA-Z\d\-]+)\.(?P<gridlabel>[a-zA-Z\d\-]+)')
 
 class Collection(Multiset):
     def __init__(self, datastore='cmip6', verbose: Union[bool, str] = False):
@@ -549,7 +544,7 @@ def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--plev', default=100000, type=int)
-    parser.add_argument('--model_name', default=None, type=matched_model_and_experiment, choices=model_choices)
+    parser.add_argument('--model_name', default=None, type=matched_model_and_experiment, choices=cmip_model_choices)
     parser.add_argument('--member_key', default=None, type=nullable_str)
     parser.add_argument('--cmip_load_method', default='pangeo',
                         type=str, choices=['pangeo', 'local'])
@@ -568,59 +563,3 @@ def cmip_recipe_basics(func):
     return parse_and_run
 
 
-def model_name_dict_from_valid_form(s: str) -> dict:
-    """Transform model_name into a dictionary with the parts
-
-    Parameters
-    ----------
-    s: str
-
-    Raises
-    ------
-    ValueError, if the form of the input string does not match either form (1) or (2)
-    """
-    # The supplied string is expected to be either in a shortened form <source>.<experiment> or a full name.
-    short_pattern = re.compile(
-        r'(?P<sourceid>[a-zA-Z\d\-]+)\.(?P<experimentid>[a-zA-Z\d\-]+)')
-
-    if match := short_pattern.search(s):
-        return match.groupdict()
-    elif match := full_model_name_pattern.search(s):
-        return match.groupdict()
-    else:
-        raise ValueError("Expected at least a source_id with an experiment_id, in the form "
-                         "<source_id>.<experiment_id>, e.g. 'BCC.esm-hist'.")
-
-
-def matched_model_and_experiment(s: str) -> str:
-    """Function used to allow specification of model names by only supplying a partial string match
-
-    This function first checks whether the input is a string and of the form:
-        (1) source_id.experiment_id
-        or
-        (2) activity_id.institution_id.source_id.experiment_id.table_id.grid_label
-    A full name (i.e., in form (2)) will be returned, if the input matches one of the defined model choices.
-    If the input does not match a defined model choice, then the input string will be returned unchanged.
-
-    Example
-    -------
-    >>> matched_model_and_experiment('BCC.esm-hist')
-    returns 'CMIP.BCC.BCC-CSM2-MR.esm-hist.Amon.gn'
-    """
-    # Transform the full names of the model choices into a dictionary of source and experiment ids.
-    valid = [full_model_name_pattern.search(m).groupdict() for m in model_choices]
-    valid_source_names = [v['sourceid'] for v in valid]
-
-    # The supplied string is expected to be either in a shortened form <source>.<experiment> or a full name.
-    if nullable_str(s):
-        supplied = model_name_dict_from_valid_form(s)
-    else:
-        return s
-
-    # match the substring to one of the full model names
-    options = [(i, c) for i, c in enumerate(valid_source_names)
-               if supplied['sourceid'] in c]
-    if len(options) == 1:
-        if valid[options[0][0]]['experimentid'] == supplied['experimentid']:
-            return model_choices[options[0][0]]
-    return s
