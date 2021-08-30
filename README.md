@@ -185,9 +185,14 @@ gdess
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   └── config                 <- Configuration options
-│       └── log_config.json
-│    
+│   ├── config                 <- Configuration options
+│   │   ├── defaults.ini
+│   │   ├── stations_dict.json
+│   │   └── log_config.json
+│   │   
+│   ├── recipe_parsers.py
+│   ├── recipe_utils.py
+│   │   
 ├── tests                      <- Unit tests for development 
 │   ├── test_cmip_collection_recipes.py
 │   ├── test_obspack_surface_collection_recipes.py

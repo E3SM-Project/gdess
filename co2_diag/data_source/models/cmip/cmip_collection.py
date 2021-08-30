@@ -5,7 +5,8 @@ from co2_diag.data_source.multiset import Multiset
 from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
-from co2_diag.recipes.utils import benchmark_recipe, parse_recipe_options, add_shared_arguments_for_recipes
+from co2_diag.recipe_utils import benchmark_recipe
+from co2_diag.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
 from co2_diag.formatters.args import nullable_str
 from co2_diag.formatters import append_before_extension
 from co2_diag.graphics.single_source_plots import plot_annual_series, plot_zonal_mean

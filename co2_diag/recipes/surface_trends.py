@@ -7,14 +7,15 @@ This function parses:
 from co2_diag import set_verbose, load_stations_dict
 from co2_diag.operations.Confrontation import make_comparable
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options, benchmark_recipe
-import co2_diag.data_source.obspack.gvplus_surface as obspack_surface_collection_module
-import co2_diag.data_source.cmip as cmip_collection_module
+from co2_diag.recipe_utils import benchmark_recipe
+from co2_diag.recipe_parsers import parse_recipe_options, add_surface_trends_args_to_parser
+import co2_diag.data_source.observations.gvplus_surface as obspack_surface_collection_module
+import co2_diag.data_source.models.cmip.cmip_collection as cmip_collection_module
 import numpy as np
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
 from typing import Union
-import argparse, logging
+import logging
 
 _logger = logging.getLogger(__name__)
 
@@ -121,17 +122,3 @@ def surface_trends(options: dict,
     return data_output
 
 
-def add_surface_trends_args_to_parser(parser: argparse.ArgumentParser) -> None:
-    """Add recipe arguments to a parser object
-
-    Parameters
-    ----------
-    parser
-    """
-    add_shared_arguments_for_recipes(parser)
-    parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
-                        type=co2_diag.data_source.cmip.matched_model_and_experiment, choices=co2_diag.data_source.cmip.model_choices)
-    parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
-    parser.add_argument('--difference', action='store_true')
-    parser.add_argument('--globalmean', action='store_true')

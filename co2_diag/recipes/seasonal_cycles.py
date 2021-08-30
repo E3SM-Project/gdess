@@ -9,7 +9,8 @@ from co2_diag.formatters import append_before_extension, numstr
 from co2_diag.data_source.cmip import Collection as cmipCollection, matched_model_and_experiment, model_choices
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
 from co2_diag.operations.time import t2dt
-from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options, benchmark_recipe
+from co2_diag.recipe_utils import benchmark_recipe
+from co2_diag.recipe_parsers import parse_recipe_options, add_seasonal_cycle_args_to_parser
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 import co2_diag.data_source.obspack.gvplus_surface as obspack_surface_collection_module
 
@@ -545,24 +546,3 @@ def plot_filter_components(filter_object, original_x, original_y,
                   bbox_inches='tight', bbox_extra_artists=(lgd, ))
 
 
-def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
-    """Add recipe arguments to a parser object
-
-    Parameters
-    ----------
-    parser
-    """
-    add_shared_arguments_for_recipes(parser)
-    parser.add_argument('--model_name', default='',
-                        type=matched_model_and_experiment, choices=model_choices)
-    parser.add_argument('--cmip_load_method', default='pangeo',
-                        type=str, choices=['pangeo', 'local'])
-    parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=obspack_surface_collection_module.station_dict.keys())
-    parser.add_argument('--difference', action='store_true')
-    parser.add_argument('--latitude_bin_size', default=None, type=float)
-    parser.add_argument('--plot_filter_components', action='store_true')
-    parser.add_argument('--globalmean', action='store_true')
-    parser.add_argument('--use_mlo_for_detrending', action='store_true')
-    parser.add_argument('--run_all_stations', action='store_true')
-    parser.add_argument('--station_list', nargs='*')

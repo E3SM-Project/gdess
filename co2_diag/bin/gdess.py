@@ -8,9 +8,8 @@ Example usage:
     >> ./bin/gdess seasonal --help
     >> ./bin/gdess meridional --help
 """
-from co2_diag.recipes.surface_trends import add_surface_trends_args_to_parser
-from co2_diag.recipes.seasonal_cycles import add_seasonal_cycle_args_to_parser
-from co2_diag.recipes.meridional_gradient import add_meridional_args_to_parser
+from co2_diag.recipe_parsers import add_surface_trends_args_to_parser, add_seasonal_cycle_args_to_parser, \
+    add_meridional_args_to_parser
 from argparse import ArgumentParser
 import sys
 
