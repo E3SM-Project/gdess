@@ -59,10 +59,11 @@ def parse_recipe_options(options: Union[dict, argparse.Namespace],
         args = parser.parse_args(params)
     elif isinstance(options, argparse.Namespace):
         # In this case, the options have been parsed previously.
-        _logger.debug('Parameters == %s', options)
         args = options
     else:
         raise TypeError('<%s> is an unexpected type of the recipe options', type(options))
+
+    _logger.debug(f"Parsed argument parameters: {args}")
 
     # Convert times to numpy.datetime64
     args.start_datetime = year_to_datetime64(args.start_yr)
