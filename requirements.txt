@@ -20,6 +20,9 @@ intake
 intake-esm
 gcsfs
 
+# For running the jupyter notebooks
+jupyter
+
 # For development and testing purposes
 pytest
 datacompy
