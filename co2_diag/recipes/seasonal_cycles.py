@@ -6,13 +6,13 @@ This function parses:
 """
 from co2_diag import set_verbose, load_stations_dict
 from co2_diag.formatters import append_before_extension, numstr
-from co2_diag.data_source.cmip import Collection as cmipCollection, matched_model_and_experiment, model_choices
+from co2_diag.data_source.models.cmip.cmip_collection import Collection as cmipCollection
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
 from co2_diag.operations.time import t2dt
 from co2_diag.recipe_utils import benchmark_recipe
 from co2_diag.recipe_parsers import parse_recipe_options, add_seasonal_cycle_args_to_parser
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-import co2_diag.data_source.obspack.gvplus_surface as obspack_surface_collection_module
+import co2_diag.data_source.observations.gvplus_surface as obspack_surface_collection_module
 
 from ccgcrv.ccg_filter import ccgFilter
 from ccgcrv.ccg_dates import decimalDateFromDatetime
