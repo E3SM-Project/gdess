@@ -1,5 +1,5 @@
 from typing import Union
-import os, pkg_resources, configparser
+import os, pkg_resources, configparser, json
 import logging
 
 
@@ -19,6 +19,21 @@ def load_config_file() -> configparser.ConfigParser:
     config.read(filepath)
 
     return config
+
+
+def load_stations_dict() -> dict:
+    """
+
+    Returns
+    -------
+
+    """
+    path = 'config/stations_dict.json'  # always use slash
+    filepath = pkg_resources.resource_filename(__package__, path)
+    with open(filepath, 'r') as f:
+        result = json.load(f)
+
+    return result
 
 
 def set_verbose(logger,

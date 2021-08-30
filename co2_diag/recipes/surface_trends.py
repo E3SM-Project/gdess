@@ -4,8 +4,7 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-import co2_diag.data_source.cmip
-from co2_diag import set_verbose
+from co2_diag import set_verbose, load_stations_dict
 from co2_diag.operations.Confrontation import make_comparable
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipes.utils import add_shared_arguments_for_recipes, parse_recipe_options, benchmark_recipe
@@ -19,6 +18,7 @@ import argparse, logging
 
 _logger = logging.getLogger(__name__)
 
+stations_dict = load_stations_dict()
 
 @benchmark_recipe
 def surface_trends(options: dict,

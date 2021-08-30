@@ -4,7 +4,7 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-from co2_diag import set_verbose
+from co2_diag import set_verbose, load_stations_dict
 from co2_diag.formatters import append_before_extension, numstr
 from co2_diag.data_source.cmip import Collection as cmipCollection, matched_model_and_experiment, model_choices
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
@@ -30,6 +30,7 @@ import argparse, logging, csv
 
 _logger = logging.getLogger(__name__)
 
+stations_dict = load_stations_dict()
 
 @benchmark_recipe
 def seasonal_cycles(options: Union[dict, argparse.Namespace],
