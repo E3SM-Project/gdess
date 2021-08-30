@@ -1,1 +1,2 @@
 *.nc filter=lfs diff=lfs merge=lfs -text
+/Users/kauf418/projects/e3sm_co2_transport_evaluation/2_ExperimentFolder/model_output/cmip6/esm-hist/co2_Amon_BCC-CSM2-MR_esm-hist_r1i1p1f1_gn_201001-201412.nc filter=lfs diff=lfs merge=lfs -text
