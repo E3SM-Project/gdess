@@ -62,4 +62,11 @@ def valid_existing_path(p):
                 return p
     except TypeError:
         pass
-    raise argparse.ArgumentTypeError('Path must exist and be readable.')
+    raise argparse.ArgumentTypeError('Path must exist and be readable. <%s> is not.' % p)
+
+
+def valid_writable_path(p):
+    if (p is None) or (not os.access(os.path.dirname(p), os.W_OK)):
+        raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
+    else:
+        return p

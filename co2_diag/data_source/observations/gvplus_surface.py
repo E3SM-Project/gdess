@@ -1,4 +1,4 @@
-from co2_diag import set_verbose, load_stations_dict
+from co2_diag import set_verbose, load_stations_dict, load_config_file
 from co2_diag.data_source.observations.load import load_data_with_regex, dataset_from_filelist
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.operations.datasetdict import DatasetDict
@@ -162,6 +162,12 @@ class Collection(Multiset):
             if isinstance(station_name, str):
                 station_name = [station_name]
             stations = dict((k, self.station_dict[k]) for k in station_name)
+
+        if not datadir:
+            # A configuration object (for holding paths and settings) is read in to get the path to the data.
+            config = load_config_file()
+            datadir = config.get('NOAA_Globalview', 'source', vars=os.environ)
+            _logger.debug(f"Loading local Globalview data files from path <{datadir}>..")
 
         self.stepA_original_datasets = DatasetDict(self._load_stations_by_namedict(stations, datadir))
         _logger.debug("Preprocessing is done.")

@@ -1,14 +1,16 @@
-import argparse
+from co2_diag import load_stations_dict, load_config_file
+from co2_diag.data_source.models.cmip.cmip_name_utils import matched_model_and_experiment, cmip_model_choices
+from co2_diag.formatters.args import valid_existing_path, valid_year_string, options_to_args, valid_writable_path
+from co2_diag.operations.time import year_to_datetime64
+import argparse, os, logging
 from typing import Union, Callable
 
-from co2_diag import load_stations_dict
-from co2_diag.data_source.models.cmip.cmip_name_utils import matched_model_and_experiment, cmip_model_choices
-
-from co2_diag.formatters.args import valid_existing_path, valid_year_string, options_to_args
-from co2_diag.operations.time import year_to_datetime64
-from co2_diag.recipe_utils import _logger
+_logger = logging.getLogger(__name__)
 
 stations_dict = load_stations_dict()
+
+config = load_config_file()
+default_save_path = config.get('save_path', 'value', vars=os.environ)
 
 
 def add_shared_arguments_for_recipes(parser: argparse.ArgumentParser) -> None:
@@ -25,7 +27,8 @@ def add_shared_arguments_for_recipes(parser: argparse.ArgumentParser) -> None:
                         help='Initial year cutoff. Default is 1958, which is the first year of the Mauna Loa CO2 record.')
     parser.add_argument('--end_yr', default="2014", type=valid_year_string,
                         help='Final year cutoff. Default is 2014, which is the final year for CMIP6 historical runs.')
-    parser.add_argument('--figure_savepath', type=str, default=None, help='Filepath for saving generated figures')
+    parser.add_argument('--figure_savepath', default=os.path.join(default_save_path, 'gdess_output'), type=valid_writable_path,
+                        help='Filepath for saving generated figures')
 
 
 def parse_recipe_options(options: Union[dict, argparse.Namespace],
