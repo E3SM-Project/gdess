@@ -247,17 +247,33 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
         #   (ii) CMIP data
         ydata_cmip = df_all_cycles['mdl'].loc[:, (df_all_cycles['mdl'].columns != 'month')]
         plot_lines_for_all_station_cycles(xdata, ydata_cmip.iloc[:, ::-1], figure_title="CMIP",
-                                          savepath=append_before_extension(opts.figure_savepath, '_mdl_lineplot'))
+                                          savepath=append_before_extension(opts.figure_savepath, 'mdl_lineplot'))
         plot_heatmap_of_all_stations(xdata, ydata_cmip, rightside_labels=heatmap_rightside_labels, figure_title="mdl",
-                                     savepath=append_before_extension(opts.figure_savepath, '_mdl_heatmap'))
+                                     savepath=append_before_extension(opts.figure_savepath, 'mdl_heatmap'))
 
         #   (iii) Model - obs difference
         ydiff = ydata_cmip - ydata_gv
         plot_lines_for_all_station_cycles(xdata, ydiff.iloc[:, ::-1], figure_title="Difference",
-                                          savepath=append_before_extension(opts.figure_savepath, '_diff_lineplot'))
+                                          savepath=append_before_extension(opts.figure_savepath, 'diff_lineplot'))
         plot_heatmap_of_all_stations(xdata, ydiff, rightside_labels=heatmap_rightside_labels,
                                      figure_title=f"model - obs",
-                                     savepath=append_before_extension(opts.figure_savepath, '_diff_heatmap'))
+                                     savepath=append_before_extension(opts.figure_savepath, 'diff_heatmap'))
+
+        # Write output data for this instance
+        for column in ydata_cmip:
+            row_dict = {
+                'station': column,
+                'source': 'cmip',
+                'max': ydata_cmip[column].max(),
+                'min': ydata_cmip[column].min(),
+                'mean': ydata_cmip[column].mean(),
+                'median': ydata_cmip[column].median(),
+                'std': ydata_cmip[column].std(),
+                'rmse': mean_squared_error(ydata_gv[column], ydata_cmip[column], squared=False)
+            }
+            writer.writerow(row_dict)
+
+    fileptr.flush()
 
     # --- Make a supplemental figure for filter components ---
     #
@@ -492,7 +508,7 @@ def plot_filter_components(filter_object, original_x, original_y,
     plt.tight_layout()
     #
     if savepath:
-        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, '_filter_components'),
+        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, 'filter_components'),
                   bbox_inches='tight', bbox_extra_artists=(lgd, ))
 
 
