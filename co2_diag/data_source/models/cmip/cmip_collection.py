@@ -345,6 +345,10 @@ class Collection(Multiset):
             (Optional) only used if argument method=='pangeo'
         model_name: str
         """
+        if model_name:
+            if isinstance(model_name, str):
+                model_name = [model_name]
+
         if method == 'pangeo':
             # --- Search for datasets in ESM data catalog ---
             _logger.debug(' Opening the ESM datastore catalog, using URL == %s', url)
@@ -372,10 +376,7 @@ class Collection(Multiset):
             self.stepA_original_datasets = DatasetDict(
                 self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
             # Extract all (or only the specified) datasets, and create a copy of each.
-            if model_name:
-                if isinstance(model_name, str):
-                    model_name = [model_name]
-            else:
+            if not model_name:
                 model_name = self.stepA_original_datasets.keys()
             self.stepA_original_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
 
@@ -387,10 +388,13 @@ class Collection(Multiset):
 
             # NetCDF files are loaded. Each model has its own DatasetDict key.
             dd = DatasetDict()
-            model_shortnames = ['MPI-ESM.esm-hist', 'BCC.esm-hist']
-            for mdl_name in model_shortnames:
+            # model_shortnames = ['MPI-ESM.esm-hist', 'BCC.esm-hist']
+            for mdl_name in model_name:
+                _logger.debug(f"mdl_name = {mdl_name}")
                 mdl_name_dict = model_name_dict_from_valid_form(mdl_name)
-                ds = xr.open_mfdataset(f"{cmip_data_path}/*{mdl_name_dict['sourceid']}*{mdl_name_dict['experimentid']}*.nc", decode_times=True)
+                constructed_model_name = f"{cmip_data_path}/*{mdl_name_dict['sourceid']}*{mdl_name_dict['experimentid']}*.nc"
+                _logger.debug(f"  loading -- {constructed_model_name} --")
+                ds = xr.open_mfdataset(constructed_model_name, decode_times=True)
                 key = matched_model_and_experiment(ds.attrs['parent_source_id'] + '.' + ds.attrs['experiment_id'])
                 dd[key] = ds
 

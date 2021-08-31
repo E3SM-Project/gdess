@@ -1,7 +1,6 @@
-import os, re, shlex
-
 from co2_diag import load_config_file
 from co2_diag.formatters.args import nullable_str
+import os, re, shlex
 
 # -- Define valid model choices --
 # Get the default model choices from the config file. Split (on commas) the retrieved string into a list.
@@ -33,13 +32,13 @@ def model_name_dict_from_valid_form(s: str) -> dict:
     short_pattern = re.compile(
         r'(?P<sourceid>[a-zA-Z\d\-]+)\.(?P<experimentid>[a-zA-Z\d\-]+)')
 
-    if match := short_pattern.search(s):
+    if match := full_model_name_pattern.search(s):
         return match.groupdict()
-    elif match := full_model_name_pattern.search(s):
+    elif match := short_pattern.search(s):
         return match.groupdict()
     else:
         raise ValueError("Expected at least a source_id with an experiment_id, in the form "
-                         "<source_id>.<experiment_id>, e.g. 'BCC.esm-hist'.")
+                         "<source_id>.<experiment_id>, e.g. 'BCC.esm-hist'. Got <%s>" % s)
 
 
 def matched_model_and_experiment(s: str) -> str:

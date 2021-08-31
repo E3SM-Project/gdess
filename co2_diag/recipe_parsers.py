@@ -83,8 +83,8 @@ def add_surface_trends_args_to_parser(parser: argparse.ArgumentParser) -> None:
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--model_name', default='CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1',
                         type=matched_model_and_experiment, choices=cmip_model_choices)
-    parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=stations_dict.keys())
+    parser.add_argument('--cmip_load_method', default='pangeo',
+                        type=str, choices=['pangeo', 'local'])
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
 
