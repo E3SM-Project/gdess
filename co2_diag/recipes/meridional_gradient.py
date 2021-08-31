@@ -6,15 +6,14 @@ This function parses:
 """
 from co2_diag import set_verbose, benchmark_recipe
 from co2_diag.formatters import append_before_extension, numstr
-from co2_diag.data_source.models.cmip.cmip_collection import Collection as cmipCollection
 from co2_diag.operations.Confrontation import make_comparable, apply_time_bounds
 from co2_diag.operations.time import t2dt
 from co2_diag.recipe_parsers import parse_recipe_options, add_meridional_args_to_parser
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 import co2_diag.data_source.observations.gvplus_surface as obspack_surface_collection_module
+from co2_diag.recipes.recipe_utils import load_cmip_model_output, populate_station_list
 
 from ccgcrv.ccg_filter import ccgFilter
-from ccgcrv.ccg_dates import decimalDateFromDatetime
 
 import numpy as np
 import pandas as pd
@@ -77,26 +76,10 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
     _logger.debug("Parsing diagnostic parameters...")
     opts = parse_recipe_options(options, add_meridional_args_to_parser)
 
-    # The list of stations to analyze is populated.
-    if opts.run_all_stations:
-        stations_dict = load_stations_dict()
-        stations_to_analyze = stations_dict.keys()
-    elif opts.station_list:
-        stations_to_analyze = opts.station_list
-    else:
-        stations_to_analyze = [opts.station_code]
+    stations_to_analyze = populate_station_list(opts.run_all_stations, opts.station_list)
 
     # --- Load CMIP model output ---
-    # We will only compare against CMIP model outputs if a model_name is supplied
-    if compare_against_model := bool(opts.model_name):
-        _logger.info('*Processing CMIP model output*')
-        new_self, _ = cmipCollection._recipe_base(datastore='cmip6', verbose=verbose,
-                                                  load_method=opts.cmip_load_method, skip_selections=True)
-        ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
-        ds_mdl = ds_mdl.assign_coords(time_decimal=('time', [decimalDateFromDatetime(x)
-                                                             for x in pd.DatetimeIndex(ds_mdl['time'].values)]))
-    else:
-        ds_mdl = None
+    compare_against_model, ds_mdl = load_cmip_model_output(opts.model_name, opts.cmip_load_method, verbose=verbose)
 
     # --- Observation data is processed for each station location. ---
     _logger.info('*Processing Observations*')

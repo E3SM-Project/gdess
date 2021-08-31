@@ -9,7 +9,7 @@ from co2_diag.operations.Confrontation import make_comparable
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipe_parsers import parse_recipe_options, add_surface_trends_args_to_parser
 import co2_diag.data_source.observations.gvplus_surface as obspack_surface_collection_module
-import co2_diag.data_source.models.cmip.cmip_collection as cmip_collection_module
+from co2_diag.recipes.recipe_utils import load_cmip_model_output, populate_station_list
 import numpy as np
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
@@ -54,19 +54,18 @@ def surface_trends(options: dict,
     _logger.debug("Parsing diagnostic parameters...")
     opts = parse_recipe_options(options, add_surface_trends_args_to_parser)
 
+    stations_to_analyze = populate_station_list(run_all_stations=False, station_list=opts.station_list)
+    # TODO: make the below into a for loop to process numerous stations
+
+    # --- Load CMIP model output ---
+    compare_against_model, ds_mdl = load_cmip_model_output(opts.model_name, opts.cmip_load_method, verbose=verbose)
+
     # --- Globalview+ data ---
     _logger.info('*Processing Observations*')
     obs_collection = obspack_surface_collection_module.Collection(verbose=verbose)
     obs_collection.preprocess(datadir=opts.ref_data, station_name=opts.station_code)
     ds_obs = obs_collection.stepA_original_datasets[opts.station_code]
     _logger.info('%s', obs_collection.station_dict[opts.station_code])
-
-    # --- CMIP data ---
-    _logger.info('*Processing CMIP model output*')
-    cmip_collection = cmip_collection_module.Collection(verbose=verbose)
-    new_self, _ = cmip_collection._recipe_base(datastore='cmip6', verbose=verbose,
-                                                              pickle_file=None, skip_selections=True)
-    ds_mdl = new_self.stepB_preprocessed_datasets[opts.model_name]
 
     # --- Globalview+ and CMIP are now handled together ---
     da_obs, da_mdl = make_comparable(ds_obs, ds_mdl,
