@@ -1,6 +1,8 @@
 import pytest
+import os
 
-from co2_diag.formatters.args import options_to_args, is_some_none, nullable_int, nullable_str, valid_year_string
+from co2_diag.formatters.args import options_to_args, is_some_none, nullable_int, nullable_str, valid_year_string, \
+    valid_existing_path, valid_writable_path
 
 
 def test_options_to_args():
@@ -71,3 +73,13 @@ def test_nullable_integer_bad_string():
 def test_nullable_integer_bad_type():
     with pytest.raises(Exception):
         nullable_int([])
+
+
+def test_nonexistent_path_does_not_exist(rootdir):
+    with pytest.raises(Exception):
+        valid_existing_path(os.path.join(rootdir, 'nonexistent'))
+
+
+def test_nonexistent_path_is_not_writable():
+    with pytest.raises(Exception):
+        valid_writable_path('nonexistent/')
