@@ -10,7 +10,6 @@ from co2_diag.recipe_parsers import add_shared_arguments_for_recipes, parse_reci
 
 import numpy as np
 import pandas as pd
-import xarray as xr
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from typing import Union
@@ -369,7 +368,6 @@ class Collection(Multiset):
 
         return fig, ax, bbox_artists
 
-
     def __repr__(self):
         """ String representation is built."""
         strrep = f"-- Obspack Surface Station Collection -- \n" \
@@ -382,43 +380,6 @@ class Collection(Multiset):
                  '\n\t'.join(self._obj_attributes_list_str())
 
         return strrep
-
-
-def get_dict_of_all_station_filenames(datadir):
-    """Build a dictionary that contains a key for each station code,
-       and with a list of filenames for each key.
-
-    Parameters
-    ----------
-    datadir : str
-        the directory containing netcdf files for the station data
-
-    Returns
-    -------
-    A dictionary with (keys) three-letter station codes, and for each station (values) a list of data filenames
-    """
-    filepath_list = glob.glob(datadir + '*surface*.nc')
-    filenames = [os.path.basename(x) for x in filepath_list]
-
-    # regex to get the station code from each filename
-    pattern = r"co2_(?P<station_code>.*)_surface.*"
-
-    dict_to_build = dict()
-    for f in filenames:
-        result = re.match(pattern, f)['station_code']
-        if result not in dict_to_build.keys():
-            dict_to_build[result] = [f]
-        else:
-            dict_to_build[result].append(f)
-
-    return dict_to_build
-
-
-def get_dict_of_station_codes_and_names(datadir):
-    stations_dict = get_dict_of_all_station_filenames(datadir)
-    return {k: {'name': xr.open_dataset(os.path.join(datadir, stations_dict[k][0])).attrs['site_name']}
-            for k,v
-            in stations_dict.items()}
 
 
 def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:

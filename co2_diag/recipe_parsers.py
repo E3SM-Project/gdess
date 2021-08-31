@@ -1,5 +1,6 @@
 from co2_diag import load_stations_dict, load_config_file
 from co2_diag.data_source.models.cmip.cmip_name_utils import matched_model_and_experiment, cmip_model_choices
+from co2_diag.data_source.observations.gvplus_name_utils import valid_surface_stations
 from co2_diag.formatters.args import valid_existing_path, valid_year_string, options_to_args, valid_writable_path
 from co2_diag.operations.time import year_to_datetime64
 import argparse, os, logging
@@ -87,6 +88,7 @@ def add_surface_trends_args_to_parser(parser: argparse.ArgumentParser) -> None:
                         type=str, choices=['pangeo', 'local'])
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
+    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations)
 
 
 def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
@@ -101,15 +103,13 @@ def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
                         type=matched_model_and_experiment, choices=cmip_model_choices)
     parser.add_argument('--cmip_load_method', default='pangeo',
                         type=str, choices=['pangeo', 'local'])
-    parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=stations_dict.keys())
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--latitude_bin_size', default=None, type=float)
     parser.add_argument('--plot_filter_components', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
     parser.add_argument('--run_all_stations', action='store_true')
-    parser.add_argument('--station_list', nargs='*')
+    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations)
 
 
 def add_meridional_args_to_parser(parser: argparse.ArgumentParser) -> None:
@@ -124,8 +124,6 @@ def add_meridional_args_to_parser(parser: argparse.ArgumentParser) -> None:
                         type=matched_model_and_experiment, choices=cmip_model_choices)
     parser.add_argument('--cmip_load_method', default='pangeo',
                         type=str, choices=['pangeo', 'local'])
-    parser.add_argument('--station_code', default='mlo',
-                        type=str, choices=stations_dict.keys())
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--latitude_bin_size', default=None, type=float)
     parser.add_argument('--region_name', default=None, type=str,
@@ -135,4 +133,4 @@ def add_meridional_args_to_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
     parser.add_argument('--run_all_stations', action='store_true')
-    parser.add_argument('--station_list', nargs='*')
+    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations)
