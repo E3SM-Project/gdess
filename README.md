@@ -154,7 +154,8 @@ gdess
 ├── co2_diag                   <- *Python package* for handling co2 diagnostics
 │   │
 │   ├── bin                  
-│   │   └── gdess.py          <- Run recipes from the command line
+│   │   ├── gdess.py           <- Run recipes from the command line
+│   │   └── set_path_vars.sh   <- Script to set up data file paths for running examples
 │   │
 │   ├── recipes                <- Generate repeatable diagnostics that span multiple data sources available as recipes 
 │   │   ├── surface_trends.py
