@@ -4,11 +4,14 @@ import pytest
 from co2_diag.recipes import surface_trends
 
 
-def test_recipe_input_year_error(rootdir):
-    test_path = os.path.join(rootdir, 'test_data')
+@pytest.fixture
+def globalview_test_data_path(rootdir):
+    return os.path.join(rootdir, 'test_data', 'globalview')
 
+
+def test_recipe_input_year_error(globalview_test_data_path):
     recipe_options = {
-        'ref_data': test_path,
+        'ref_data': globalview_test_data_path,
         'model_name': 'BCC.esm-hist',
         'station_code': 'mlo',
         'start_yr': "198012",
@@ -18,11 +21,9 @@ def test_recipe_input_year_error(rootdir):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_model_error(rootdir):
-    test_path = os.path.join(rootdir, 'test_data')
-
+def test_recipe_input_model_error(globalview_test_data_path):
     recipe_options = {
-        'ref_data': test_path,
+        'ref_data': globalview_test_data_path,
         'model_name': 'BCasdasdjkhgC',
         'station_code': 'mlo',
         'start_yr': "1980",
@@ -32,11 +33,9 @@ def test_recipe_input_model_error(rootdir):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_stationcode_error(rootdir):
-    test_path = os.path.join(rootdir, 'test_data')
-
+def test_recipe_input_stationcode_error(globalview_test_data_path):
     recipe_options = {
-        'ref_data': test_path,
+        'ref_data': globalview_test_data_path,
         'model_name': 'BCC.esm-hist',
         'station_code': 'asdkjhfasg',
         'start_yr': "1980",
@@ -46,11 +45,9 @@ def test_recipe_input_stationcode_error(rootdir):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_completes_with_no_errors(rootdir):
-    test_path = os.path.join(rootdir, 'test_data')
-
+def test_recipe_completes_with_no_errors(globalview_test_data_path):
     recipe_options = {
-        'ref_data': test_path,
+        'ref_data': globalview_test_data_path,
         'model_name': 'BCC.esm-hist',
         'station_code': 'mlo',
         'start_yr': "1980",
