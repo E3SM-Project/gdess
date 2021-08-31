@@ -4,10 +4,9 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-from co2_diag import set_verbose
+from co2_diag import set_verbose, benchmark_recipe
 from co2_diag.operations.Confrontation import make_comparable
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipe_utils import benchmark_recipe
 from co2_diag.recipe_parsers import parse_recipe_options, add_surface_trends_args_to_parser
 import co2_diag.data_source.observations.gvplus_surface as obspack_surface_collection_module
 import co2_diag.data_source.models.cmip.cmip_collection as cmip_collection_module

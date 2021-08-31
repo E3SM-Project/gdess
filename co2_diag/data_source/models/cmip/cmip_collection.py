@@ -1,13 +1,12 @@
 import warnings
 
-from co2_diag import set_verbose, load_config_file
+from co2_diag import set_verbose, load_config_file, benchmark_recipe
 from co2_diag.data_source.models.cmip.cmip_name_utils import model_name_dict_from_valid_form, \
     matched_model_and_experiment, cmip_model_choices
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.convert import co2_molfrac_to_ppm
-from co2_diag.recipe_utils import benchmark_recipe
 from co2_diag.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
 from co2_diag.formatters.args import nullable_str
 from co2_diag.formatters import append_before_extension
