@@ -56,7 +56,7 @@ def test_recipe_completes_with_no_errors(globalview_test_data_path):
     try:
         data_dict = seasonal_cycles(verbose='DEBUG', options=recipe_options)
     except Exception as exc:
-        assert False, f"'surface_trends' raised an exception {exc}"
+        assert False, f"'seasonal_cycles' raised an exception {exc}"
 
 
 def test_recipe_bin_multiple_stations_completes_with_no_errors(globalview_test_data_path):
@@ -70,4 +70,4 @@ def test_recipe_bin_multiple_stations_completes_with_no_errors(globalview_test_d
     try:
         data_dict = seasonal_cycles(verbose='DEBUG', options=recipe_options)
     except Exception as exc:
-        assert False, f"'surface_trends' raised an exception {exc}"
+        assert False, f"'seasonal_cycles' raised an exception {exc}"
