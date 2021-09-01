@@ -88,14 +88,36 @@ Instead of passing data filepaths to the recipe functions each time,
 you can define environment variables for the directory containing Globalview+ Obspack
 and CMIP model output.
 
-For example, if you are running in a bash environment you can set these in your `~/.bash_profile`:
+To set paths to the test data, 
+specify the path to the repo on the first line of `co2_diag/bin/set_paths_to_test_data.sh`.
+Then run the following at the command line:
+```shell
+source co2_diag/bin/set_paths_to_test_data.sh
+```
+
+(Note: To set the paths for every future terminal instance (and if you are running in a bash environment), 
+set these paths in your `~/.bash_profile`:
 ```bash
 export GDESS_CMIP_DATA=Path/to/Model/Output/NetCDF/Files
 export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 ```
-These variables are retrieved in the `co2_diag/config/defaults.ini` file.
 
-## Usage
+)
+
+
+[comment]: <> (These variables are retrieved in the `co2_diag/config/defaults.ini` file.)
+
+## Example
+
+The following steps generate this figure:
+<img src="./.images/test_figuresmo_2021-09-01.png" alt="components" width="712" height="280"/>
+
+1. Install the `gdess` package according to the [installation](###installation) instructions
+2. Follow the [configuration](###configuration) instructions to use the included example data files
+3. 
+```./co2_diag/bin/gdess.py --verbose seasonal --start_yr 1980 --end_yr 2010 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
+
+## Usage description
 
 Diagnostic recipes can be run from the command line or from within a Python kernel:
 
