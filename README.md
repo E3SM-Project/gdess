@@ -88,22 +88,18 @@ Instead of passing data filepaths to the recipe functions each time,
 you can define environment variables for the directory containing Globalview+ Obspack
 and CMIP model output.
 
-To set paths to the test data, 
-specify the path to the repo on the first line of `co2_diag/bin/set_paths_to_test_data.sh`.
-Then run the following at the command line:
+- Specify the path to the repo on the first line of `co2_diag/bin/set_path_vars.sh`.
+- Set paths to the test data by running the script at the command line:
 ```shell
-source co2_diag/bin/set_paths_to_test_data.sh
+source co2_diag/bin/set_path_vars.sh
 ```
-
-(Note: To set the paths for every future terminal instance (and if you are running in a bash environment), 
+- To use stored data other than the test data, modify the other data paths in the scripts. 
+For example, to set the paths for every future terminal instance (and if you are running in a bash environment), 
 set these paths in your `~/.bash_profile`:
 ```bash
 export GDESS_CMIP_DATA=Path/to/Model/Output/NetCDF/Files
 export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 ```
-
-)
-
 
 [comment]: <> (These variables are retrieved in the `co2_diag/config/defaults.ini` file.)
 
