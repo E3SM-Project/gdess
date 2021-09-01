@@ -1,10 +1,8 @@
-from typing import Union
-import numpy as np
-import xarray as xr
-
 from co2_diag import _change_log_level, validate_verbose
 from co2_diag.formatters.nums import numstr
-
+import numpy as np
+import xarray as xr
+from typing import Union
 import logging
 
 
