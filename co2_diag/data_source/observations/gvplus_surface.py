@@ -7,7 +7,7 @@ from co2_diag.operations.convert import co2_molfrac_to_ppm
 from co2_diag.graphics.single_source_plots import plot_annual_series
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from co2_diag.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
-
+from co2_diag.formatters import append_before_extension
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -80,7 +80,8 @@ class Collection(Multiset):
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_station_time_series(stationshortname=opts.station_code)
         if opts.figure_savepath:
-            mysavefig(fig, opts.figure_savepath, 'cmip_timeseries', bbox_extra_artists=bbox_artists)
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'cmip_timeseries'),
+                      bbox_extra_artists=bbox_artists)
 
         return new_self
 
@@ -137,7 +138,8 @@ class Collection(Multiset):
         #
 
         if opts.figure_savepath:
-            mysavefig(fig, opts.figure_savepath, 'obspack_annual_series', bbox_extra_artists=bbox_artists)
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'obspack_annual_series'),
+                      bbox_extra_artists=bbox_artists)
 
         return new_self
 
