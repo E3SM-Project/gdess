@@ -84,15 +84,15 @@ def surface_trends(options: dict,
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
     if opts.difference:
         # Values at the same time
-        da_mdl_rs = ydata_mdl.resample(time="1MS").mean()
-        da_obs_rs = ydata_obs.resample(time="1MS").mean()['co2']
+        # da_mdl_rs = ydata_mdl.resample(time="1MS").mean()
+        # da_obs_rs = ydata_obs.resample(time="1MS").mean()['co2']
         #
-        da_TestMinusRef = (da_mdl_rs - da_obs_rs).dropna(dim='time')
+        da_TestMinusRef = (ydata_mdl - ydata_obs)
         #
-        data_output = {'model': da_mdl_rs, 'obs': da_obs_rs, 'diff': da_TestMinusRef}
+        data_output = {'model': ydata_mdl, 'obs': ydata_obs, 'diff': da_TestMinusRef}
         #
         # Plot
-        ax.plot(da_TestMinusRef['time'], da_TestMinusRef,
+        ax.plot(xdata_obs, da_TestMinusRef,
                 label='model - obs',
                 marker='.', linestyle='none')
         #
