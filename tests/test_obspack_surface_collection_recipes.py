@@ -18,14 +18,14 @@ def test_station_MLO_is_present(newEmptySurfaceStation):
 
 
 def test_simplest_preprocessed_type(rootdir, newEmptySurfaceStation):
-    test_path = os.path.join(rootdir, 'test_data')
+    test_path = os.path.join(rootdir, 'test_data', 'globalview')
 
     newEmptySurfaceStation.preprocess(datadir=test_path, station_name='mlo')
     assert isinstance(newEmptySurfaceStation.stepA_original_datasets['mlo'], xr.Dataset)
 
 
 def test_recipe_input_year_error(rootdir, newEmptySurfaceStation):
-    test_path = os.path.join(rootdir, 'test_data')
+    test_path = os.path.join(rootdir, 'test_data', 'globalview')
 
     recipe_options = {
         'ref_data': test_path,
@@ -37,7 +37,7 @@ def test_recipe_input_year_error(rootdir, newEmptySurfaceStation):
 
 
 def test_recipe_input_stationcode_error(rootdir, newEmptySurfaceStation):
-    test_path = os.path.join(rootdir, 'test_data')
+    test_path = os.path.join(rootdir, 'test_data', 'globalview')
 
     recipe_options = {
         'ref_data': test_path,
@@ -49,7 +49,7 @@ def test_recipe_input_stationcode_error(rootdir, newEmptySurfaceStation):
 
 
 def test_timeseries_recipe_completes_with_no_errors(rootdir, newEmptySurfaceStation):
-    test_path = os.path.join(rootdir, 'test_data')
+    test_path = os.path.join(rootdir, 'test_data', 'globalview')
 
     recipe_options = {
         'ref_data': test_path,
