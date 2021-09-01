@@ -6,10 +6,10 @@ This function parses:
 """
 from co2_diag import set_verbose, benchmark_recipe
 from co2_diag.recipe_parsers import parse_recipe_options, add_seasonal_cycle_args_to_parser
-from co2_diag.recipes.recipe_utils import load_cmip_model_output, populate_station_list
+from co2_diag.recipes.recipe_utils import populate_station_list
 from co2_diag.graphics.comparison_plots import plot_comparison_against_model, plot_heatmap_of_all_stations, \
     plot_lines_for_all_station_cycles
-from co2_diag.operations.Confrontation import Confrontation
+from co2_diag.operations.Confrontation import Confrontation, load_cmip_model_output
 from co2_diag.formatters import numstr, append_before_extension
 from dask.diagnostics import ProgressBar
 from typing import Union
