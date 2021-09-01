@@ -38,20 +38,20 @@ for atmospheric CO<sub>2</sub> concentrations.
 
 ## Data requirements and availability
 
-**Globalview+ data** 
+**Observations - Globalview+ data** 
   - For parsing and running demo notebooks, one must first download the Obspack, 
 which is available from the NOAA Global Monitoring Laboratory (GML) here:
 <https://www.esrl.noaa.gov/gmd/ccgg/obspack/data.php>
   - There is a sample file from NOAA GML included in this Git repository to enable the running of test cases.
 
-**CMIP6** 
+**Model Output - CMIP6** 
   - CMIP6 data do not need to be downloaded before running recipes, 
 as GDESS can use the intake-esm dependency to retrieve CMIP6 data programmatically while running.
   - It seems that recipes involving CMIP data won't work when on the PNNL VPN
 (presumably because the VPN blocks retrieval of the CMIP data catalog using a web URL, 
 which is initiated by the [intake](https://github.com/intake/intake-esm) package).
   
-**E3SM**
+**Model Output - E3SM**
   - E3SM outputs do not need to be available to run recipes that compare Globalview+ and CMIP6 data.
   - For parsing and running demo notebooks, 
     one must have access to model output history as NetCDF file(s).
@@ -62,7 +62,7 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
 
 👥 Clone this repository to the location of your choice.
 ```shell script
-git clone https://github.com/dkauf42/gdess.git ~/gdess
+git clone https://github.com/E3SM-Project/gdess.git ~/gdess
 ```
 
 🌍 Create conda environment and install dependencies. 
@@ -88,14 +88,36 @@ Instead of passing data filepaths to the recipe functions each time,
 you can define environment variables for the directory containing Globalview+ Obspack
 and CMIP model output.
 
-For example, if you are running in a bash environment you can set these in your `~/.bash_profile`:
+To set paths to the test data, 
+specify the path to the repo on the first line of `co2_diag/bin/set_paths_to_test_data.sh`.
+Then run the following at the command line:
+```shell
+source co2_diag/bin/set_paths_to_test_data.sh
+```
+
+(Note: To set the paths for every future terminal instance (and if you are running in a bash environment), 
+set these paths in your `~/.bash_profile`:
 ```bash
 export GDESS_CMIP_DATA=Path/to/Model/Output/NetCDF/Files
 export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 ```
-These variables are retrieved in the `co2_diag/config/defaults.ini` file.
 
-## Usage
+)
+
+
+[comment]: <> (These variables are retrieved in the `co2_diag/config/defaults.ini` file.)
+
+## Example
+
+The following steps generate this figure:
+<img src="./.images/test_figuresmo_2021-09-01.png" alt="components" width="712" height="280"/>
+
+1. Install the `gdess` package according to the [installation](###installation) instructions
+2. Follow the [configuration](###configuration) instructions to use the included example data files
+3. 
+```./co2_diag/bin/gdess.py --verbose seasonal --start_yr 1980 --end_yr 2010 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
+
+## Usage description
 
 Diagnostic recipes can be run from the command line or from within a Python kernel:
 
@@ -154,19 +176,18 @@ gdess
 ├── co2_diag                   <- *Python package* for handling co2 diagnostics
 │   │
 │   ├── bin                  
-│   │   └── codima.py          <- Run recipes from the command line
+│   │   ├── gdess.py           <- Run recipes from the command line
+│   │   └── set_path_vars.sh   <- Script to set up data file paths for running examples
 │   │
 │   ├── recipes                <- Generate repeatable diagnostics that span multiple data sources available as recipes 
 │   │   ├── surface_trends.py
 │   │   ├── seasonal_cycles.py
-│   │   ├── utils.py
+│   │   ├── meridional_gradient.py
 │   │   └── ...
 │   │
 │   ├── data_source            <- Load, parse, and manipulate data from a particular source
-│   │   ├── cmip/
-│   │   ├── e3sm/
-│   │   ├── obspack/
-│   │   ├── datasetdict.py
+│   │   ├── models/
+│   │   ├── observations/
 │   │   ├── multiset.py
 │   │   └── ...
 │   │
@@ -174,6 +195,7 @@ gdess
 │   │   ├── geographic/
 │   │   ├── time/
 │   │   ├── convert/
+│   │   ├── datasetdict.py
 │   │   └── ...
 │   │
 │   ├── formatters             <- Manipulate formatting in desired ways
@@ -186,9 +208,14 @@ gdess
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   └── config                 <- Configuration options
-│       └── log_config.json
-│    
+│   ├── config                 <- Configuration options
+│   │   ├── defaults.ini
+│   │   ├── stations_dict.json
+│   │   └── log_config.json
+│   │   
+│   ├── recipe_parsers.py
+│   ├── recipe_utils.py
+│   │   
 ├── tests                      <- Unit tests for development 
 │   ├── test_cmip_collection_recipes.py
 │   ├── test_obspack_surface_collection_recipes.py

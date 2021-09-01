@@ -1,4 +1,4 @@
-from co2_diag.data_source.e3sm import Collection as co2e3sm
+from co2_diag.data_source.models.e3sm import Collection as co2e3sm
 from co2_diag.operations.datasetdict import DatasetDict
 import os, pytest
 

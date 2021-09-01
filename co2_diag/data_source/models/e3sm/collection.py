@@ -1,11 +1,12 @@
-from co2_diag import set_verbose
-from co2_diag.data_source.e3sm.calculation import getPMID
+from co2_diag import set_verbose, benchmark_recipe
+from co2_diag.data_source.models.e3sm.calculation import getPMID
 from co2_diag.data_source.multiset import Multiset
 from co2_diag.operations.datasetdict import DatasetDict
 from co2_diag.operations.time import to_datetimeindex
 from co2_diag.operations.convert import co2_kgfrac_to_ppm
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
-from co2_diag.recipes.utils import benchmark_recipe, add_shared_arguments_for_recipes, parse_recipe_options
+from co2_diag.formatters import append_before_extension
+from co2_diag.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
 import xarray as xr
 import matplotlib.pyplot as plt
 from typing import Union
@@ -115,7 +116,8 @@ class Collection(Multiset):
         # --- Plotting ---
         fig, ax, bbox_artists = new_self.plot_timeseries()
         if opts.figure_savepath:
-            mysavefig(fig, opts.figure_savepath, 'e3sm_timeseries', bbox_extra_artists=bbox_artists)
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'e3sm_timeseries'),
+                      bbox_extra_artists=bbox_artists)
 
         return new_self
 

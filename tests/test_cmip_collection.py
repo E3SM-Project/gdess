@@ -1,6 +1,7 @@
 import pytest
 
-from co2_diag.data_source.cmip import Collection, matched_model_and_experiment
+from co2_diag.data_source.models.cmip.cmip_collection import Collection
+from co2_diag.data_source.models.cmip.cmip_name_utils import matched_model_and_experiment
 from co2_diag.operations.datasetdict import DatasetDict
 
 
