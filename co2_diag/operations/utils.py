@@ -22,6 +22,11 @@ def where_am_i():
     return os.path.dirname(os.path.abspath(__file__))
 
 
+def pipe_df_head(dataf, n_rows=5):
+    print(f"print_dataf: {dataf.head(n_rows)}")
+    return dataf
+
+
 def print_var_summary(dataset: xr.Dataset, varname='CO2', return_dataset=False):
     """Brief stats for a dataset variable are printed.
 

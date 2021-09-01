@@ -1,7 +1,14 @@
+from co2_diag import set_verbose
 from co2_diag.operations.time import ensure_dataset_datetime64
 from co2_diag.operations.geographic import get_closest_mdl_cell_dict
 from co2_diag.operations.utils import assert_expected_dimensions
+from co2_diag.formatters import append_before_extension
+from co2_diag.data_source.observations import gvplus_surface as obspack_surface_collection_module
+from co2_diag.recipes.recipe_utils import update_for_skipped_station, bin_by_latitude, get_seasonal_by_curve_fitting
 from ccgcrv.ccg_dates import decimalDateFromDatetime
+from sklearn.metrics import mean_squared_error
+from datetime import datetime
+import csv
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -12,7 +19,248 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def make_comparable(ref, com, **keywords):
+class Confrontation:
+    def __init__(self, compare_against_model, ds_mdl, opts, stations_to_analyze,
+                 verbose: Union[bool, str] = False):
+        """Instantiate a Confrontation object.
+
+        Parameters
+        ----------
+        compare_against_model
+        ds_mdl
+        opts
+        stations_to_analyze
+        verbose
+        """
+        self.compare_against_model = compare_against_model
+        self.ds_mdl = ds_mdl
+        self.opts = opts
+        self.stations_to_analyze = stations_to_analyze
+        self.verbose = verbose
+
+        set_verbose(_logger, verbose)
+
+    def looper(self, how):
+        """
+
+        Parameters
+        ----------
+        how : str
+            either 'seasonal' or 'trend'
+
+        Returns
+        -------
+        tuple
+            A bunch of things
+        """
+        valid = {'seasonal', 'trend'}
+        if how not in valid:
+            raise ValueError("'how' must be one of %r." % valid)
+
+        # --- Observation data are processed for each station location. ---
+        _logger.info('*Processing Observations*')
+        counter = {'current': 1, 'skipped': 0}
+        processed_station_metadata = dict(lat=[], lon=[], code=[], fullname=[])
+        data_dict = dict(ref=[], mdl=[])  # each key will contain a list of Dataframes.
+        num_stations = [len(self.stations_to_analyze)]
+        for station in self.stations_to_analyze:
+            _logger.info("Station %s of %s: %s", counter['current'], num_stations[0], station)
+            obs_collection = obspack_surface_collection_module.Collection(verbose=self.verbose)
+            obs_collection.preprocess(datadir=self.opts.ref_data, station_name=station)
+            ds_obs = obs_collection.stepA_original_datasets[station]
+            _logger.info('  %s', obs_collection.station_dict.get(station))
+
+            # Apply time bounds, and get the relevant model output.
+            try:
+                if self.compare_against_model:
+                    ds_obs, da_mdl = make_comparable(ds_obs, self.ds_mdl,
+                                                     time_limits=(
+                                                     np.datetime64(self.opts.start_yr), np.datetime64(self.opts.end_yr)),
+                                                     latlon=(
+                                                     ds_obs['latitude'].values[0], ds_obs['longitude'].values[0]),
+                                                     altitude=ds_obs['altitude'].values[0], altitude_method='lowest',
+                                                     global_mean=self.opts.globalmean, verbose=self.verbose)
+                else:
+                    ds_obs, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(self.opts.start_yr),
+                                                                          np.datetime64(self.opts.end_yr)))
+                    da_mdl = None
+            except (RuntimeError, AssertionError) as re:
+                update_for_skipped_station(re, station, num_stations, counter)
+                continue
+            #
+            if how == 'seasonal':
+                ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model, data_dict,
+                                                          da_mdl, ds_obs, self.opts, station)
+                if isinstance(data_dict, Exception):
+                    update_for_skipped_station(data_dict, station, num_stations, counter)
+                    continue
+                #
+                data_dict['ref'].append(pd.DataFrame.from_dict({"month": ref_dt, f"{station}": ref_vals}))
+                if self.compare_against_model:
+                    data_dict['mdl'].append(pd.DataFrame.from_dict({"month": mdl_dt, f"{station}": mdl_vals}))
+            elif how == 'trend':
+                data_dict['ref'].append(pd.DataFrame.from_dict({"time": ds_obs['time'], f"{station}": ds_obs['co2'].values}))
+                if self.compare_against_model:
+                    data_dict['mdl'].append(pd.DataFrame.from_dict({"time": da_mdl['time'], f"{station}": da_mdl.values}))
+            else:
+                raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
+
+            # Gather together station's metadata at the loop end, when we're sure that this station has been processed.
+            processed_station_metadata['lon'].append(obs_collection.station_dict[station]['lon'])
+            processed_station_metadata['lat'].append(obs_collection.station_dict[station]['lat'])
+            processed_station_metadata['fullname'].append(obs_collection.station_dict[station]['name'])
+            processed_station_metadata['code'].append(station)
+            counter['current'] += 1
+            # END of station loop
+        _logger.info("Done -- %s stations fully processed. %s stations skipped.",
+                     len(data_dict['ref']), counter['skipped'])
+
+        concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+                                                                                    processed_station_metadata)
+        if how == 'seasonal':
+            # df_concatenated, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+            #                                                                             processed_station_metadata)
+
+            # --- Optional binning by latitude ---
+            if self.opts.latitude_bin_size:
+                concatenated_dfs, df_station_metadata = bin_by_latitude(self.compare_against_model, concatenated_dfs,
+                                                                       df_station_metadata, self.opts.latitude_bin_size)
+
+        # --- FORMAT DATA FOR OUTPUT ---
+
+        # Write output data to csv
+        filename = append_before_extension(self.opts.figure_savepath + '.csv',
+                                           'seasonal_cycle_output_stats_' + datetime.now().strftime('%Y%m%d_%H%M%S'))
+        fileptr = open(filename, 'w', newline='')
+        writer = csv.DictWriter(
+            fileptr, fieldnames=['station',
+                                 'source',
+                                 'max',
+                                 'min',
+                                 'mean',
+                                 'median',
+                                 'std',
+                                 'rmse'
+                                 ]
+        )
+        writer.writeheader()
+
+        if how == 'seasonal':
+            xdata_gv = concatenated_dfs['ref']['month']
+            ydata_gv = concatenated_dfs['ref'].loc[:, (concatenated_dfs['ref'].columns != 'month')]
+        elif how == 'trend':
+            xdata_gv = concatenated_dfs['ref']['time']
+            ydata_gv = concatenated_dfs['ref'].loc[:, (concatenated_dfs['ref'].columns != 'time')]
+        else:
+            raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
+
+        # Write output data for this instance
+        for column in ydata_gv:
+            row_dict = {
+                'station': column,
+                'source': 'globalviewplus',
+                'max': ydata_gv[column].max(),
+                'min': ydata_gv[column].min(),
+                'mean': ydata_gv[column].mean(),
+                'median': ydata_gv[column].median(),
+                'std': ydata_gv[column].std(),
+                'rmse': np.nan
+            }
+            writer.writerow(row_dict)
+
+        xdata_mdl = None
+        ydata_mdl = None
+        if self.compare_against_model:
+            if how == 'seasonal':
+                xdata_mdl = concatenated_dfs['mdl']['month']
+                if not xdata_gv.equals(xdata_mdl):
+                    raise ValueError(
+                        'Unexpected discrepancy, xdata for reference observations does not equal xdata for models')
+                ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'month')]
+
+                rmse = mean_squared_error(ydata_gv[column], ydata_mdl[column], squared=False)
+
+            elif how == 'trend':
+                xdata_mdl = concatenated_dfs['mdl']['time']
+
+                begin_time_for_stats = max(xdata_gv.min(), xdata_mdl.min())
+                end_time_for_stats = min(xdata_gv.max(), xdata_mdl.max())
+                if begin_time_for_stats > end_time_for_stats:
+                    _logger.info('beginning time <%s> is after end time <%s>' %
+                                 (begin_time_for_stats, end_time_for_stats))
+                    rmse = np.nan
+                else:
+                    def month_calc(df):
+                        return (df
+                                .where((df['time'] < end_time_for_stats) & (df['time'] > begin_time_for_stats))
+                                .dropna(subset=['time'], inplace=False)
+                                .resample("1MS", on='time')
+                                .mean())
+
+                    rmse = mean_squared_error(month_calc(concatenated_dfs['ref'])[column],
+                                              month_calc(concatenated_dfs['mdl'])[column],
+                                              squared=False)
+
+                ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'time')]
+            else:
+                raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
+
+            # Write output data for this instance
+            for column in ydata_mdl:
+                row_dict = {
+                    'station': column,
+                    'source': 'cmip',
+                    'max': ydata_mdl[column].max(),
+                    'min': ydata_mdl[column].min(),
+                    'mean': ydata_mdl[column].mean(),
+                    'median': ydata_mdl[column].median(),
+                    'std': ydata_mdl[column].std(),
+                    'rmse': rmse
+                }
+                writer.writerow(row_dict)
+        fileptr.flush()
+
+        return data_dict, concatenated_dfs, df_station_metadata, xdata_gv, xdata_mdl, ydata_gv, ydata_mdl
+
+    def concatenate_stations_and_months(self, data_dict, processed_station_metadata) -> (dict, pd.DataFrame):
+        """
+
+        Parameters
+        ----------
+        data_dict : dict
+            each key contains a list of Dataframes
+        processed_station_metadata
+
+        Returns
+        -------
+        dict
+            A dictionary with two dataframes, in which each column is a different station.
+        pd.Dataframe
+            metadata for all stations.
+        """
+        # Dataframes for each location are combined so we have one 'month' column, and a single column for each station.
+        # First, dataframes are sorted by latitude, then combined, then the duplicate 'month' columns are removed.
+        df_station_metadata = pd.DataFrame.from_dict(processed_station_metadata)
+        df_concatenated = dict(ref=None, mdl=None)
+
+        #   (i) Globalview+ data
+        data_dict['ref'] = [x for _, x in sorted(zip(list(df_station_metadata['lat']), data_dict['ref']))]
+        df_concatenated['ref'] = pd.concat(data_dict['ref'], axis=1, sort=False)
+        df_concatenated['ref'] = df_concatenated['ref'].loc[:, ~df_concatenated['ref'].columns.duplicated()]
+
+        #   (ii) CMIP data
+        if self.compare_against_model:
+            data_dict['mdl'] = [x for _, x in sorted(zip(list(df_station_metadata['lat']), data_dict['mdl']))]
+            df_concatenated['mdl'] = pd.concat(data_dict['mdl'], axis=1, sort=False)
+            df_concatenated['mdl'] = df_concatenated['mdl'].loc[:, ~df_concatenated['mdl'].columns.duplicated()]
+        #
+        # Sort the metadata after using it for sorting the cycle list(s)
+        df_station_metadata.sort_values(by='lat', ascending=True, inplace=True)
+
+        return df_concatenated, df_station_metadata
+
+
+def make_comparable(ref: xr.Dataset, com: xr.Dataset, **keywords) -> (xr.Dataset, xr.DataArray):
     """Make two datasets comparable.
 
     Ensures time formats are compatible.
@@ -44,7 +292,7 @@ def make_comparable(ref, com, **keywords):
     -------
     ref : xarray.Dataset
         the modified reference variable object
-    com : xarray.Dataset
+    com : xarray.Dataarray
         the modified comparison variable object
 
     """
@@ -113,7 +361,21 @@ def make_comparable(ref, com, **keywords):
     return ds_ref, da_com
 
 
-def mutual_time_bounds(com, ref, time_limits):
+def mutual_time_bounds(com: xr.Dataset, ref: xr.Dataset, time_limits) -> (xr.Dataset, xr.Dataset):
+    """
+
+    Parameters
+    ----------
+    com : xr.Dataset
+    ref : xr.Dataset
+    time_limits : tuple of datetime
+        (start time, end time)
+
+    Returns
+    -------
+    ds_com : xr.Dataset
+    ds_ref : xr.Dataset
+    """
     # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
     ds_ref, initial_ref_time, final_ref_time = apply_time_bounds(ref, time_limits)
     ds_com, initial_com_time, final_com_time = apply_time_bounds(com, (initial_ref_time, final_ref_time))
@@ -231,20 +493,21 @@ def interpolate_to_altitude(data: xr.DataArray,
 
 def apply_time_bounds(ds: xr.Dataset,
                       time_limits: tuple
-                      ) -> tuple:
+                      ) -> (xr.Dataset, np.datetime64, np.datetime64):
     """
 
     Parameters
     ----------
-    ds
-    time_limits: tuple of datetime
+    ds : xr.Dataset
+    time_limits : tuple of datetime
         (start time, end time)
 
     Returns
     -------
-    a tuple containing:
-        a Dataset
+    ds : xr.Dataset
+    initial_ref_time : xr.Dataset
         the earliest datetime in the dataset
+    final_ref_time : xr.Dataset
         the latest datetime in the dataset
     """
     ds = ensure_dataset_datetime64(ds)
@@ -264,99 +527,3 @@ def apply_time_bounds(ds: xr.Dataset,
         ds = ds.where(ds.time <= time_limits[1], drop=True)
 
     return ds, initial_ref_time, final_ref_time
-#
-#
-# # def get_combined_dataframe(dataset_ref: xr.Dataset,
-# #                            dataset_e3sm: xr.Dataset,
-# #                            timestart: np.datetime64,
-# #                            timeend: np.datetime64,
-# #                            ref_var: str = 'value',
-# #                            e3sm_var: str = 'CO2'
-# #                            ) -> pd.DataFrame:
-# #     """Combine E3SM station data and a reference dataset
-# #     into a pandas Dataframe for a specified time period
-# #
-# #     Parameters
-# #     ----------
-# #     dataset_ref
-# #     dataset_e3sm
-# #     timestart
-# #     timeend
-# #     ref_var
-# #     e3sm_var
-# #
-# #     Returns
-# #     -------
-# #
-# #     """
-# #     # ----------------------
-# #     # ----- REFERENCE ------
-# #     # ----------------------
-# #     ds_sub_ref = select_between(dataset=dataset_ref,
-# #                                 timestart=timestart,
-# #                                 timeend=timeend,
-# #                                 varlist=['time', ref_var])
-# #     new_ref_varname = 'ref_' + ref_var
-# #     df_prepd_ref = (ds_sub_ref
-# #                     .to_dataframe()
-# #                     .reset_index()
-# #                     .rename(columns={ref_var: new_ref_varname})
-# #                     )
-# #
-# #     # # Get time-resampled resolution
-# #     # ds_prepd_ref_resamp = ds_sub_ref.where(tempmask, drop=True).copy()
-# #     # #     ds_prepd_ref_resamp = ds_prepd_ref_resamp.resample(time="1D").interpolate("linear")  # weekly average
-# #     # ds_prepd_ref_resamp = ds_prepd_ref_resamp.resample(time="1MS").mean()  # monthly average
-# #     # # ds_prepd = ds_sub.resample(time="1AS").mean()  # yearly average
-# #     # # ds_prepd = ds_sub.resample(time="Q").mean()  # quarterly average (consecutive three-month periods)
-# #     # # ds_prepd = ds_sub.resample(time="QS-DEC").mean()  # quarterly average (consecutive three-month periods), anchored at December 1st.
-# #     # #
-# #     # df_prepd_ref_resamp = (ds_prepd_ref_resamp
-# #     #                        .dropna(dim=('time'))
-# #     #                        .to_dataframe()
-# #     #                        .reset_index()
-# #     #                        .rename(columns={ref_var: 'ref_' + ref_var + '_resampled_resolution'})
-# #     #                        )
-# #
-# #     # ----------------------
-# #     # ---- E3SM Output -----
-# #     # ----------------------
-# #     ds_sub_e3sm = select_between(dataset=dataset_e3sm,
-# #                                  timestart=timestart,
-# #                                  timeend=timeend,
-# #                                  varlist=['time', e3sm_var])
-# #     new_e3sm_varname = 'e3sm_' + e3sm_var
-# #     df_prepd_e3sm = (ds_sub_e3sm
-# #                      .to_dataframe()
-# #                      .reset_index()
-# #                      .drop(columns=['ncol', 'lat', 'lon'])
-# #                      .rename(columns={e3sm_var: new_e3sm_varname})
-# #                      )
-# #     # get the vertical mean
-# #     #     ds_prepd_e3sm_orig = ds_prepd_e3sm_orig.mean(dim='lev').where(ds_mdl['ncol']==closest_mdl_point_dict['index'], drop=True)
-# #
-# #     # get the lowest level
-# #     ds_prepd_e3sm_orig = (ds_prepd_e3sm_orig
-# #                           .sel(lev=dataset_e3sm['lev'][-1])
-# #                           .where(dataset_e3sm['ncol'] == closest_mdl_point_dict['index'], drop=True)
-# #                           )
-# #
-# #     # Resample the time
-# #     #     ds_prepd_e3sm_resamp = df_prepd_e3sm_orig.resample(time="1D").interpolate("linear")  # weekly average
-# #
-# #     # ------------------
-# #     # ---- COMBINED ----
-# #     # ------------------
-# #     df_prepd = (df_prepd_ref
-# #                 .merge(df_prepd_e3sm, on='time', how='outer')
-# #                 .reset_index()
-# #                 .loc[:, ['time', new_ref_varname, new_e3sm_varname]]
-# #                 )
-# #     # df_prepd['obs_original_resolution'] = df_prepd['obs_original_resolution'].astype(float)
-# #     # df_prepd['obs_resampled_resolution'] = df_prepd['obs_resampled_resolution'].astype(float)
-# #     # df_prepd['model_original_resolution'] = df_prepd['model_original_resolution'].astype(float)
-# #     # df_prepd.rename(columns={'obs_original_resolution': 'NOAA Obs',
-# #     #                          'obs_resampled_resolution': 'NOAA Obs daily mean',
-# #     #                          'model_original_resolution': 'E3SM'}, inplace=True)
-# #
-# #     return df_prepd

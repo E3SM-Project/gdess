@@ -1,6 +1,9 @@
 import pandas as pd
 import xarray as xr
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+
+from co2_diag.formatters import append_before_extension
+from co2_diag.graphics import aesthetic_grid_no_spines, mysavefig
 
 
 def plot_annual_series(df_anomaly_yearly: pd.DataFrame,
@@ -81,3 +84,33 @@ def plot_zonal_mean(darray: xr.DataArray,
     bbox_artists = ()
 
     return fig, ax, bbox_artists
+
+
+def plot_filter_components(filter_object, original_x, original_y,
+                           figure_title='', savepath=None) -> None:
+    # --- Make the figure ---
+    fig, ax = plt.subplots(1, 1, figsize=(10, 7))
+    ax.plot(filter_object.xinterp, filter_object.getFunctionValue(filter_object.xinterp), label='Function values',
+            color=[x / 255 for x in [255, 127, 14]], alpha=1, linewidth=2.5, )
+    ax.plot(filter_object.xinterp, filter_object.getPolyValue(filter_object.xinterp), label='Poly values',
+            color=[x / 255 for x in [31, 119, 180]], alpha=1, linewidth=2.5, )
+    ax.plot(filter_object.xinterp, filter_object.getTrendValue(filter_object.xinterp), label='Trend values',
+            color=[x / 255 for x in [44, 160, 44]], alpha=1, linewidth=2.5, )
+    # ax.plot(x0, y3, label='Smooth values',
+    #        alpha=1, linewidth=2.5, )
+    ax.plot(original_x, original_y, label='original',
+            marker='.', linestyle='none', color='gray', zorder=-10, alpha=0.2)
+    ax.set_ylabel("$CO_2$ (ppm)")
+    ax.set_xlabel("year")
+    #
+    aesthetic_grid_no_spines(ax)
+    #
+    plt.title(figure_title)
+    #
+    lgd = plt.legend()
+    #
+    plt.tight_layout()
+    #
+    if savepath:
+        mysavefig(fig=fig, plot_save_name=append_before_extension(savepath, 'filter_components'),
+                  bbox_inches='tight', bbox_extra_artists=(lgd, ))
