@@ -7,9 +7,8 @@ This function parses:
 from co2_diag import set_verbose, benchmark_recipe
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from co2_diag.recipe_parsers import parse_recipe_options, add_surface_trends_args_to_parser
-from co2_diag.recipes.recipe_utils import load_cmip_model_output, populate_station_list
-from co2_diag.operations.Confrontation import Confrontation
-import numpy as np
+from co2_diag.recipes.recipe_utils import populate_station_list
+from co2_diag.operations.Confrontation import Confrontation, load_cmip_model_output
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
 from typing import Union

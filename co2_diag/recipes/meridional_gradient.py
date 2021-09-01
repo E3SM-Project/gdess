@@ -6,8 +6,8 @@ This function parses:
 """
 from co2_diag import set_verbose, benchmark_recipe
 from co2_diag.recipe_parsers import parse_recipe_options, add_meridional_args_to_parser
-from co2_diag.recipes.recipe_utils import load_cmip_model_output, populate_station_list
-from co2_diag.operations.Confrontation import Confrontation
+from co2_diag.recipes.recipe_utils import populate_station_list
+from co2_diag.operations.Confrontation import Confrontation, load_cmip_model_output
 from dask.diagnostics import ProgressBar
 from typing import Union
 import argparse, logging
