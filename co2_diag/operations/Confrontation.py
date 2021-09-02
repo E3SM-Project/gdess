@@ -385,7 +385,7 @@ def mutual_time_bounds(com: xr.Dataset, ref: xr.Dataset, time_limits) -> (xr.Dat
     """
     # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
     ds_ref, initial_ref_time, final_ref_time = apply_time_bounds(ref, time_limits)
-    ds_com, initial_com_time, final_com_time = apply_time_bounds(com, (initial_ref_time, final_ref_time))
+    ds_com, initial_com_time, final_com_time = apply_time_bounds(com, (ds_ref['time'].min().values, ds_ref['time'].max().values))
     # decimal years are added as a coordinate if not already there.
     if not ('time_decimal' in ds_com.coords):
         ds_com = ds_com.assign_coords(time_decimal=('time',
@@ -512,28 +512,28 @@ def apply_time_bounds(ds: xr.Dataset,
     Returns
     -------
     ds : xr.Dataset
-    initial_ref_time : xr.Dataset
+    initial_time : xr.Dataset
         the earliest datetime in the dataset
-    final_ref_time : xr.Dataset
+    final_time : xr.Dataset
         the latest datetime in the dataset
     """
     ds = ensure_dataset_datetime64(ds)
 
-    initial_ref_time = ds['time'].min().values
-    final_ref_time = ds['time'].max().values
+    initial_time = ds['time'].min().values
+    final_time = ds['time'].max().values
 
     if time_limits[0]:
-        if final_ref_time < time_limits[0]:
+        if final_time < time_limits[0]:
             raise RuntimeError("Final time of dataset <%s> is before the given time frame's start <%s>." %
-                               (np.datetime_as_string(final_ref_time, unit='s'), time_limits[0]))
+                               (np.datetime_as_string(final_time, unit='s'), time_limits[0]))
         ds = ds.where(ds.time >= time_limits[0], drop=True)
     if time_limits[1]:
-        if initial_ref_time > time_limits[1]:
+        if initial_time > time_limits[1]:
             raise RuntimeError("Initial time of dataset <%s> is after the given time frame's end <%s>." %
-                               (np.datetime_as_string(initial_ref_time, unit='s'), time_limits[1]))
+                               (np.datetime_as_string(initial_time, unit='s'), time_limits[1]))
         ds = ds.where(ds.time <= time_limits[1], drop=True)
 
-    return ds, initial_ref_time, final_ref_time
+    return ds, initial_time, final_time
 
 
 def update_for_skipped_station(msg, station_name, station_count, counter_dict):
