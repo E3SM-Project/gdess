@@ -28,8 +28,8 @@ def add_shared_arguments_for_recipes(parser: argparse.ArgumentParser) -> None:
                         help='Initial year cutoff. Default is 1958, which is the first year of the Mauna Loa CO2 record.')
     parser.add_argument('--end_yr', default="2014", type=valid_year_string,
                         help='Final year cutoff. Default is 2014, which is the final year for CMIP6 historical runs.')
-    parser.add_argument('--figure_savepath', default=os.path.join(default_save_path, 'gdess_output'), type=valid_writable_path,
-                        help='Filepath for saving generated figures')
+    parser.add_argument('--figure_savepath', default=default_save_path,
+                        type=valid_writable_path, help='Filepath for saving generated figures')
 
 
 def parse_recipe_options(options: Union[dict, argparse.Namespace],
