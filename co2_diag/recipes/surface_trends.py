@@ -9,6 +9,7 @@ from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_
 from co2_diag.recipe_parsers import parse_recipe_options, add_surface_trends_args_to_parser
 from co2_diag.recipes.recipe_utils import populate_station_list
 from co2_diag.operations.Confrontation import Confrontation, load_cmip_model_output
+from co2_diag.formatters import append_before_extension
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
 from typing import Union
@@ -76,9 +77,6 @@ def surface_trends(options: dict,
     conf = Confrontation(compare_against_model, ds_mdl, opts, stations_to_analyze, verbose)
     cycles_of_each_station, df_all_cycles, df_station_metadata, xdata_obs, xdata_mdl, ydata_obs, ydata_mdl = conf.looper(how='trend')
 
-    print(f"in Surface trends. ds_obs: {ydata_obs.head()}")
-    print(f"in Surface trends. ds_mdl: {ydata_mdl.head()}")
-
     # --- Create Graphic ---
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
     if opts.difference:
@@ -119,7 +117,8 @@ def surface_trends(options: dict,
     plt.tight_layout()
     #
     if opts.figure_savepath:
-        mysavefig(fig=fig, plot_save_name=opts.figure_savepath)
+        mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'trend'),
+                  bbox_inches='tight')
 
     return data_output
 
