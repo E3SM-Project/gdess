@@ -119,9 +119,9 @@ class Confrontation:
                      len(data_dict['ref']), counter['skipped'])
 
         concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
-                                                                                    processed_station_metadata)
+                                                                                     processed_station_metadata)
         if how == 'seasonal':
-            # df_concatenated, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+            # concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
             #                                                                             processed_station_metadata)
 
             # --- Optional binning by latitude ---
