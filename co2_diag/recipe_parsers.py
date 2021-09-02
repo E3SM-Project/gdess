@@ -10,9 +10,6 @@ _logger = logging.getLogger(__name__)
 
 stations_dict = load_stations_dict()
 
-config = load_config_file()
-default_save_path = config.get('save_path', 'value', vars=os.environ)
-
 
 def add_shared_arguments_for_recipes(parser: argparse.ArgumentParser) -> None:
     """Add common recipe arguments to a parser object
@@ -21,6 +18,8 @@ def add_shared_arguments_for_recipes(parser: argparse.ArgumentParser) -> None:
     ----------
     parser
     """
+    config = load_config_file()
+    default_save_path = config.get('save_path', 'value', vars=os.environ)
 
     parser.add_argument('ref_data', nargs='?', default=None, type=valid_existing_path,
                         help='Filepath to the reference data folder')
