@@ -11,7 +11,9 @@
 
 GDESS facilitates comparison of simulated atmospheric CO<sub>2</sub> against observational data. 
 Specifically, it selects, loads, and parses the observational datasets and model simulations to be in a consistent structure 
-and generates data visualizations for several diagnostic use cases.
+and generates data visualizations for several diagnostic use cases. 
+Three diagnostic recipes currently implemented examine multidecadal trends, seasonal cycles, and meridional gradients.
+
 
 #### Motivation
 
@@ -31,7 +33,7 @@ for atmospheric CO<sub>2</sub> concentrations.
 * [Usage](#usage)
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
-* [Developing](#developing)
+* [Contributing](#contributing)
 * [Project structure](#project-structure)
 * [Credits](#credits)
 * [Disclaimer](#disclaimer)
@@ -125,14 +127,14 @@ The following steps generate this figure:
 Diagnostic recipes can be run from the command line or from within a Python kernel:
 
 **Command line**
-  - Use `co2_diag/bin/gdess.py --help` to see the available commands
+  - Use `co2_diag/bin/gdess.py` followed by the recipe name and then recipe options. To see available commands, run, e.g. `co2_diag/bin/gdess.py --help` or `co2_diag/bin/gdess.py seasonal --help`  
   - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
     E.g. `co2_diag/bin/gdess.py @recipe_options_file.txt` 
 
 
 **In a Python kernel** 
-  - check out the demonstration notebooks in `notebooks/demo/` for how to run recipes for CMIP6 model output, 
-    NOAA Globalview+ Obspack, and E3SM model output.
+  - The diagnostic recipes can be called directly, with options passed as a Python `dict` object.
+  - Check out the demonstration notebooks in `gdess/notebooks/demo/`. The notebooks showing recipe usage are: `trends_recipe.ipynb` and `seasonal_cycle_recipe.ipynb`  
 
 ## Updating
 
@@ -155,10 +157,15 @@ To use the latest version of this repository:
 pip uninstall co2_diag
 ```
 
-## Developing
+## Contributing
 
-Most work will be done in the 'develop' branch, 
-so please `git checkout develop` or create a new branch before modifying code.
+If you're interested in participating in the development of `gdess`, 
+want to suggest features or report bugs, 
+please leave us a message through the [issue tracker](https://github.com/E3SM-Project/gdess/issues).
+
+Note that most work is done in the 'develop' branch, 
+so please `git checkout develop` 
+(or you can create a new branch) before modifying code.
 
 ## Project structure
 
@@ -186,6 +193,7 @@ gdess
 │   │   ├── surface_trends.py
 │   │   ├── seasonal_cycles.py
 │   │   ├── meridional_gradient.py
+│   │   ├── recipe_utils.py
 │   │   └── ...
 │   │
 │   ├── data_source            <- Load, parse, and manipulate data from a particular source
@@ -216,15 +224,14 @@ gdess
 │   │   ├── stations_dict.json
 │   │   └── log_config.json
 │   │   
-│   ├── recipe_parsers.py
-│   ├── recipe_utils.py
-│   │   
-├── tests                      <- Unit tests for development 
-│   ├── test_cmip_collection_recipes.py
-│   ├── test_obspack_surface_collection_recipes.py
-│   └── test_surface_trends_recipe.py
+│   └── recipe_parsers.py
 │
+├── tests                      <- Unit and integration tests for development 
+│   └── ...
+│
+├── LICENSE
 ├── MANIFEST.in
+├── setup.cfg
 └── setup.py
 ```
 
@@ -232,6 +239,11 @@ gdess
 
 #### Dependencies
 
+The full list of dependencies is in the `requirements.txt` file. 
+
+#### Additional acknowledgements
+
+- Although not a dependency, ideas were also drawn from [xclim: Climate indices computations](https://github.com/Ouranosinc/xclim).
 - `ccgcrv`: The curve fitting code in the ccgcrv directory has been mildly modified &mdash; 
   modified for improved code integration, i.e. the computational logic has not been changed &mdash; 
   from the code made freely available by the NOAA Global Monitoring Laboratory. 
@@ -241,12 +253,6 @@ Additional details regarding the curve fitting approach can be found in the foll
   - Thoning, K.W., P.P. Tans, and W.D. Komhyr, 1989, Atmospheric carbon dioxide at Mauna Loa Observatory, 2. Analysis of the NOAA/GMCC data, 1974 1985., J. Geophys. Res. ,94, 8549 8565. https://doi.org/10.1029/JD094iD06p08549
   - Sweeney, C., Karion, A., Wolter, S., Newberger, T., Guenther, D., Higgs, J.A., Andrews, A.E., Lang, P.M., Neff, D., Dlugokencky, E., Miller, J.B., Montzka, S.A., Miller, B.R., Masarie, K.A., Biraud, S.C., Novelli, P.C., Crotwell, M., Crotwell, A.M., Thoning, K., Tans, P.P., 2015. Seasonal climatology of CO 2 across North America from aircraft measurements in the NOAA/ESRL Global Greenhouse Gas Reference Network. J. Geophys. Res. Atmos. 120, 5155–5190. https://doi.org/10.1002/2014JD022591
 
-* [pandas](https://pandas.pydata.org/)
-* [NumPy](https://www.numpy.org)
-* [xarray](http://xarray.pydata.org/en/stable/)
-
-Although not a dependency, ideas were also drawn from [xclim: Climate indices computations](https://github.com/Ouranosinc/xclim).
-
 - The Mauna Loa (MLO) dataset file used in the tests directory was provided via the Obspack by:
 C. D. Keeling, S. C. Piper, R. B. Bacastow, M. Wahlen, 
 T. P. Whorf, M. Heimann, and H. A. Meijer, Exchanges of atmospheric CO2 and 13CO2 with the terrestrial biosphere
@@ -254,11 +260,11 @@ and oceans from 1978 to 2000.  I. Global aspects, SIO Reference
 Series, No. 01-06, Scripps  Institution of Oceanography, San Diego, 88
 pages, 2001.
 
-#### Funding Acknowledgment:
+#### Funding:
 
+* This work is made possible by the Pacific Northwest National Laboratory.
 * Data were obtained from the Energy Exascale Earth System Model project, 
   sponsored by the U.S.Department of Energy, Office of Science, Office of Biological and Environmental Research.
-* Pacific Northwest National Laboratory
 
 ## Disclaimer
 
