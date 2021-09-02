@@ -80,6 +80,6 @@ def test_nonexistent_path_does_not_exist(rootdir):
         valid_existing_path(os.path.join(rootdir, 'nonexistent'))
 
 
-def test_nonexistent_path_is_not_writable():
+def test_nonexistent_path_is_not_writable(rootdir):
     with pytest.raises(Exception):
-        valid_writable_path('nonexistent/')
+        valid_writable_path(os.path.join(rootdir, ':::/'))

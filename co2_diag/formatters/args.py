@@ -1,4 +1,4 @@
-import argparse, logging, os, shlex
+import argparse, logging, os, shlex, tempfile
 from typing import Union
 
 _logger = logging.getLogger(__name__)
@@ -65,12 +65,16 @@ def valid_existing_path(p):
 
 
 def valid_writable_path(p):
-    if (p is None) or (not os.access(os.path.dirname(p), os.W_OK)):
+    if p is None:
+        raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
+    elif not os.access(os.path.dirname(p), os.W_OK):
+        raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
+    else:
         try:
-            os.makedirs(p)
-            _logger.info("Output directory '%s' created" % p)
-            return p
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            with tempfile.NamedTemporaryFile(prefix='_temp', dir=os.path.dirname(p)) as file_object:
+                print(file_object.name)
         except:
             raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
-    else:
-        return p
+
+    return p
