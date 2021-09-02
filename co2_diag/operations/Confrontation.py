@@ -180,7 +180,6 @@ class Confrontation:
                     raise ValueError(
                         'Unexpected discrepancy, xdata for reference observations does not equal xdata for models')
                 ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'month')]
-
                 rmse_y_true = ydata_gv
                 rmse_y_pred = ydata_mdl
 
@@ -192,8 +191,8 @@ class Confrontation:
                 if begin_time_for_stats > end_time_for_stats:
                     _logger.info('beginning time <%s> is after end time <%s>' %
                                  (begin_time_for_stats, end_time_for_stats))
-                    rmse_y_true = np.nan
-                    rmse_y_pred = np.nan
+                    rmse_y_true = None
+                    rmse_y_pred = None
                 else:
                     def month_calc(df):
                         return (df
@@ -212,6 +211,9 @@ class Confrontation:
             else:
                 raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
 
+            if rmse_y_true is not None:
+                rmse = mean_squared_error(rmse_y_true[column], rmse_y_pred[column], squared=False)
+
             # Write output data for this instance
             for column in ydata_mdl:
                 row_dict = {
@@ -222,7 +224,7 @@ class Confrontation:
                     'mean': ydata_mdl[column].mean(),
                     'median': ydata_mdl[column].median(),
                     'std': ydata_mdl[column].std(),
-                    'rmse': mean_squared_error(rmse_y_true[column], rmse_y_pred[column], squared=False)
+                    'rmse': rmse
                 }
                 writer.writerow(row_dict)
         fileptr.flush()
