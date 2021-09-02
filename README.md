@@ -27,7 +27,7 @@ for atmospheric CO<sub>2</sub> concentrations.
 ## Contents
 
 * [Data requirements and availability](#data-requirements-and-availability)
-* [Getting-started](#getting-started)
+* [Getting started](#getting-started)
 * [Usage](#usage)
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
@@ -63,6 +63,7 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
 👥 Clone this repository to the location of your choice.
 ```shell script
 git clone https://github.com/E3SM-Project/gdess.git ~/gdess
+cd ~/gdess
 ```
 
 🌍 Create conda environment and install dependencies. 
@@ -78,7 +79,6 @@ conda install --file requirements.txt
 
 💾 Install the package:
 ```shell script
-cd ~/gdess/
 pip install .
 ```
 
@@ -88,10 +88,11 @@ Instead of passing data filepaths to the recipe functions each time,
 you can define environment variables for the directory containing Globalview+ Obspack
 and CMIP model output.
 
-- Specify the path to the repo on the first line of `co2_diag/bin/set_path_vars.sh`.
+- Specify the path to the repo on the first line of `co2_diag/bin/set_path_vars.sh`. 
+For instance, by executing: `export GDESS_REPO=${HOME}/gdess`
 - Set paths to the test data by running the script at the command line:
 ```shell
-source co2_diag/bin/set_path_vars.sh
+source ./co2_diag/bin/set_path_vars.sh
 ```
 - To use stored data other than the test data, modify the other data paths in the scripts. 
 For example, to set the paths for every future terminal instance (and if you are running in a bash environment), 
