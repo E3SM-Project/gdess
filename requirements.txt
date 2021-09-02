@@ -1,5 +1,6 @@
 setuptools
 tqdm
+git-lfs
 
 # Data operations packages
 numpy
