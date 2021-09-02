@@ -82,6 +82,12 @@ conda install --file requirements.txt
 pip install .
 ```
 
+To run the tests, now retrieve the example data files using:
+```shell
+git lfs install
+git lfs pull
+```
+
 ### Configuration
 
 Instead of passing data filepaths to the recipe functions each time, 
