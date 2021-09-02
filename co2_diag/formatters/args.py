@@ -1,8 +1,7 @@
-import argparse
-import os
-import shlex
+import argparse, logging, os, shlex
 from typing import Union
 
+_logger = logging.getLogger(__name__)
 
 def options_to_args(options: dict) -> list:
     """Convert a dictionary to a list of strings so that an ArgumentParser can parse it.
@@ -67,6 +66,11 @@ def valid_existing_path(p):
 
 def valid_writable_path(p):
     if (p is None) or (not os.access(os.path.dirname(p), os.W_OK)):
-        raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
+        try:
+            os.makedirs(p)
+            _logger.info("Output directory '%s' created" % p)
+            return p
+        except:
+            raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
     else:
         return p
