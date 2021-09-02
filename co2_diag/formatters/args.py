@@ -65,16 +65,17 @@ def valid_existing_path(p):
 
 
 def valid_writable_path(p):
-    if p is None:
-        raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
-    elif not os.access(os.path.dirname(p), os.W_OK):
-        raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
-    else:
+    def makeit_or_bust():
         try:
             os.makedirs(os.path.dirname(p), exist_ok=True)
             with tempfile.NamedTemporaryFile(prefix='_temp', dir=os.path.dirname(p)) as file_object:
                 print(file_object.name)
         except:
             raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
+
+    if p is None:
+        raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
+    else:
+        makeit_or_bust()
 
     return p
