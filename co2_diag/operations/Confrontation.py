@@ -181,7 +181,8 @@ class Confrontation:
                         'Unexpected discrepancy, xdata for reference observations does not equal xdata for models')
                 ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'month')]
 
-                rmse = mean_squared_error(ydata_gv[column], ydata_mdl[column], squared=False)
+                rmse_y_true = ydata_gv
+                rmse_y_pred = ydata_mdl
 
             elif how == 'trend':
                 xdata_mdl = concatenated_dfs['mdl']['time']
@@ -191,18 +192,21 @@ class Confrontation:
                 if begin_time_for_stats > end_time_for_stats:
                     _logger.info('beginning time <%s> is after end time <%s>' %
                                  (begin_time_for_stats, end_time_for_stats))
-                    rmse = np.nan
+                    rmse_y_true = np.nan
+                    rmse_y_pred = np.nan
                 else:
                     def month_calc(df):
                         return (df
                                 .where((df['time'] < end_time_for_stats) & (df['time'] > begin_time_for_stats))
-                                .dropna(subset=['time'], inplace=False)
+                                .dropna(subset=['time'], how='any', inplace=False)
                                 .resample("1MS", on='time')
-                                .mean())
-
-                    rmse = mean_squared_error(month_calc(concatenated_dfs['ref'])[column],
-                                              month_calc(concatenated_dfs['mdl'])[column],
-                                              squared=False)
+                                .mean()
+                                .reset_index())
+                    rmse_y_true = month_calc(concatenated_dfs['ref'])
+                    rmse_y_pred = month_calc(concatenated_dfs['mdl'])
+                    common_time = set(rmse_y_true['time']).intersection(set(rmse_y_pred['time']))
+                    rmse_y_true = rmse_y_true.loc[rmse_y_true['time'].isin(common_time), :]
+                    rmse_y_pred = rmse_y_pred.loc[rmse_y_pred['time'].isin(common_time), :]
 
                 ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'time')]
             else:
@@ -218,7 +222,7 @@ class Confrontation:
                     'mean': ydata_mdl[column].mean(),
                     'median': ydata_mdl[column].median(),
                     'std': ydata_mdl[column].std(),
-                    'rmse': rmse
+                    'rmse': mean_squared_error(rmse_y_true[column], rmse_y_pred[column], squared=False)
                 }
                 writer.writerow(row_dict)
         fileptr.flush()
