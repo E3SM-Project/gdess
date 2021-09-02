@@ -392,7 +392,7 @@ class Collection(Multiset):
             for mdl_name in model_name:
                 _logger.debug(f"mdl_name = {mdl_name}")
                 mdl_name_dict = model_name_dict_from_valid_form(mdl_name)
-                constructed_model_name = f"{cmip_data_path}/*{mdl_name_dict['sourceid']}*{mdl_name_dict['experimentid']}*.nc"
+                constructed_model_name = os.path.normpath(f"{cmip_data_path}/*{mdl_name_dict['sourceid']}*{mdl_name_dict['experimentid']}*.nc")
                 _logger.debug(f"  loading -- {constructed_model_name} --")
                 ds = xr.open_mfdataset(constructed_model_name, decode_times=True)
                 key = matched_model_and_experiment(ds.attrs['parent_source_id'] + '.' + ds.attrs['experiment_id'])
