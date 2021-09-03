@@ -1,0 +1,8 @@
+--verbose
+seasonal
+--start_yr 1980
+--end_yr 2015
+--model_name BCC.esm-hist
+--cmip_load_method local
+--station_list smo
+

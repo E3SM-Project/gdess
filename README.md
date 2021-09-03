@@ -129,7 +129,7 @@ Diagnostic recipes can be run from the command line or from within a Python kern
 **Command line**
   - Use `co2_diag/bin/gdess.py` followed by the recipe name and then recipe options. To see available commands, run, e.g. `co2_diag/bin/gdess.py --help` or `co2_diag/bin/gdess.py seasonal --help`  
   - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
-    E.g. `co2_diag/bin/gdess.py @recipe_options_file.txt` 
+    For example, using the provided file: `co2_diag/bin/gdess.py @recipe_options_example.txt` 
 
 
 **In a Python kernel** 
