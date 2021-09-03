@@ -7,7 +7,9 @@ This function parses:
 from co2_diag import set_verbose, benchmark_recipe
 from co2_diag.recipe_parsers import parse_recipe_options, add_meridional_args_to_parser
 from co2_diag.recipes.recipe_utils import populate_station_list
+from co2_diag.graphics.comparison_plots import plot_heatmap_of_all_stations
 from co2_diag.operations.Confrontation import Confrontation, load_cmip_model_output
+from co2_diag.formatters import numstr, append_before_extension
 from dask.diagnostics import ProgressBar
 from typing import Union
 import argparse, logging
@@ -72,9 +74,28 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
     compare_against_model, ds_mdl = load_cmip_model_output(opts.model_name, opts.cmip_load_method, verbose=verbose)
 
     # --- Observation data is processed for each station location. ---
-    # data_dict, df_all_cycles, df_station_metadata = loop_through_stations_and_calculate_monthly_patterns(
-    #     compare_against_model, ds_mdl, opts, stations_to_analyze, verbose)
     conf = Confrontation(compare_against_model, ds_mdl, opts, stations_to_analyze, verbose)
     cycles_of_each_station, df_all_cycles, df_station_metadata, xdata_gv, xdata_mdl, ydata_gv, ydata_mdl = conf.looper(how='seasonal')
+
+    heatmap_rightside_labels = None
+    if opts.latitude_bin_size:
+        # we won't use additional latitude labels for the heatmap, because the left side will be latitude bins
+        heatmap_rightside_labels = [numstr(x, decimalpoints=2) for x in df_station_metadata['lat']]
+
+    # --- Plot the heatmap with all station locations
+    plot_heatmap_of_all_stations(xdata_gv, ydata_gv, rightside_labels=heatmap_rightside_labels, figure_title="obs",
+                                 savepath=append_before_extension(opts.figure_savepath, 'obs_heatmap'))
+
+    if ydata_mdl is not None:
+        #   (ii) CMIP data
+        plot_heatmap_of_all_stations(xdata_gv, ydata_mdl, rightside_labels=heatmap_rightside_labels,
+                                     figure_title="mdl",
+                                     savepath=append_before_extension(opts.figure_savepath, 'mdl_heatmap'))
+
+        #   (iii) Model - obs difference
+        ydiff = ydata_mdl - ydata_gv
+        plot_heatmap_of_all_stations(xdata_gv, ydiff, rightside_labels=heatmap_rightside_labels,
+                                     figure_title=f"model - obs",
+                                     savepath=append_before_extension(opts.figure_savepath, 'diff_heatmap'))
 
     return df_all_cycles, cycles_of_each_station, df_station_metadata

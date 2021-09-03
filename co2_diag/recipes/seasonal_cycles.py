@@ -7,8 +7,7 @@ This function parses:
 from co2_diag import set_verbose, benchmark_recipe
 from co2_diag.recipe_parsers import parse_recipe_options, add_seasonal_cycle_args_to_parser
 from co2_diag.recipes.recipe_utils import populate_station_list
-from co2_diag.graphics.comparison_plots import plot_comparison_against_model, plot_heatmap_of_all_stations, \
-    plot_lines_for_all_station_cycles
+from co2_diag.graphics.comparison_plots import plot_comparison_against_model, plot_lines_for_all_station_cycles
 from co2_diag.operations.Confrontation import Confrontation, load_cmip_model_output
 from co2_diag.formatters import numstr, append_before_extension
 from dask.diagnostics import ProgressBar
@@ -77,32 +76,19 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     conf = Confrontation(compare_against_model, ds_mdl, opts, stations_to_analyze, verbose)
     cycles_of_each_station, df_all_cycles, df_station_metadata, xdata_gv, xdata_mdl, ydata_gv, ydata_mdl = conf.looper(how='seasonal')
 
-    heatmap_rightside_labels = None
-    if opts.latitude_bin_size:
-        # we won't use additional latitude labels for the heatmap, because the left side will be latitude bins
-        heatmap_rightside_labels = [numstr(x, decimalpoints=2) for x in df_station_metadata['lat']]
-
     # --- Plot the seasonal cycles at all station locations
     plot_lines_for_all_station_cycles(xdata_gv, ydata_gv.iloc[:, ::-1], figure_title="GV+",
                                       savepath=append_before_extension(opts.figure_savepath, 'obs_lineplot'))
-    plot_heatmap_of_all_stations(xdata_gv, ydata_gv, rightside_labels=heatmap_rightside_labels, figure_title="obs",
-                                 savepath=append_before_extension(opts.figure_savepath, 'obs_heatmap'))
 
     if ydata_mdl is not None:
         #   (ii) CMIP data
         plot_lines_for_all_station_cycles(xdata_gv, ydata_mdl.iloc[:, ::-1], figure_title="CMIP",
                                           savepath=append_before_extension(opts.figure_savepath, 'mdl_lineplot'))
-        plot_heatmap_of_all_stations(xdata_gv, ydata_mdl, rightside_labels=heatmap_rightside_labels,
-                                     figure_title="mdl",
-                                     savepath=append_before_extension(opts.figure_savepath, 'mdl_heatmap'))
 
         #   (iii) Model - obs difference
         ydiff = ydata_mdl - ydata_gv
         plot_lines_for_all_station_cycles(xdata_gv, ydiff.iloc[:, ::-1], figure_title="Difference",
                                           savepath=append_before_extension(opts.figure_savepath, 'diff_lineplot'))
-        plot_heatmap_of_all_stations(xdata_gv, ydiff, rightside_labels=heatmap_rightside_labels,
-                                     figure_title=f"model - obs",
-                                     savepath=append_before_extension(opts.figure_savepath, 'diff_heatmap'))
 
         #   (iv) Model and obs difference
         plot_comparison_against_model(xdata_gv, ydata_gv, f'obs',
