@@ -51,7 +51,7 @@ As shown in \autoref{fig:code_schematic}, `gdess` is organized into modular comp
 
 ![Schematic of the `gdess` code structure.\label{fig:code_schematic}](graphics/gdess_structure_schematic_20210816.png){ width=70% }
 
-`gdess` can process data from three sources: Globalview+, CMIP, and E3SM. Data from surface observing stations must be retrieved from the NOAA Global Monitoring Laboratory (GML) Globalview+ version $6.0$ Observation package (Obspack; @globalview:20200911).  In situ and flask measurements can be used from approximately 200 stations whose data in Obspack spans **at least a 12 month period** (\autoref{fig:surface_station_map}).
+`gdess` can process data from three sources: Globalview+, CMIP, and E3SM. Data from surface observing stations must be retrieved from the NOAA Global Monitoring Laboratory (GML) Globalview+ version $6.0$ Observation package (Obspack; @globalview:20200911).  In situ and flask measurements can be used from approximately 200 stations whose data in Obspack spans at least a 12 month period (\autoref{fig:surface_station_map}).
 
 ![Global map showing surface observing station locations (red circles) and their three-letter site codes, as recorded in Obspack and used in `gdess`.\label{fig:surface_station_map}](graphics/surf_station_map.png){ width=65% }
 
