@@ -22,17 +22,21 @@ _logger = logging.getLogger(__name__)
 
 
 class Confrontation:
-    def __init__(self, compare_against_model, ds_mdl, opts, stations_to_analyze,
+    def __init__(self,
+                 compare_against_model: bool,
+                 ds_mdl,
+                 opts,
+                 stations_to_analyze,
                  verbose: Union[bool, str] = False):
         """Instantiate a Confrontation object.
 
         Parameters
         ----------
-        compare_against_model
-        ds_mdl
-        opts
-        stations_to_analyze
-        verbose
+        compare_against_model : bool
+        ds_mdl : xarray Dataset
+        opts : dict
+        stations_to_analyze : list
+        verbose : Union[bool, str], default False
         """
         self.compare_against_model = compare_against_model
         self.ds_mdl = ds_mdl
@@ -91,7 +95,7 @@ class Confrontation:
                 continue
             #
             if how == 'seasonal':
-                ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model, data_dict,
+                ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model,
                                                           da_mdl, ds_obs, self.opts, station)
                 if isinstance(data_dict, Exception):
                     update_for_skipped_station(data_dict, station, num_stations, counter)
@@ -409,10 +413,10 @@ def extract_site_data_from_dataset(dataset: xr.Dataset,
 
     Parameters
     ----------
-    dataset: xarray.Dataset
-    lat: float
-    lon: float
-    drop: bool
+    dataset : xarray.Dataset
+    lat : float
+    lon : float
+    drop : bool
 
     Raises
     ------
@@ -462,10 +466,10 @@ def interpolate_to_altitude(data: xr.DataArray,
 
     Parameters
     ----------
-    data: xarray.DataArray
+    data : xarray.DataArray
         The carbon dioxide ('co2') variable
-    altitude: float
-    height_data: xarray.DataArray
+    altitude : float
+    height_data : xarray.DataArray
         The geopotential height ('zg') variable.
 
     """
@@ -559,13 +563,14 @@ def load_cmip_model_output(model_name: str,
 
     Parameters
     ----------
-    model_name
-    cmip_load_method
-    verbose
+    model_name : str
+    cmip_load_method : str
+    verbose : bool, default True
 
     Returns
     -------
-
+    bool
+    xarray.Dataset
     """
     if compare_against_model := bool(model_name):
         _logger.info('*Processing CMIP model output*')
@@ -580,19 +585,25 @@ def load_cmip_model_output(model_name: str,
     return compare_against_model, ds_mdl
 
 
-def bin_by_latitude(compare_against_model, data_dict, df_metadata, latitude_bin_size):
+def bin_by_latitude(compare_against_model: bool,
+                    data_dict: dict,
+                    df_metadata: pd.DataFrame,
+                    latitude_bin_size: int
+                    ) -> tuple:
     """
 
     Parameters
     ----------
-    compare_against_model
-    data_dict
-    df_metadata
-    latitude_bin_size
+    compare_against_model : bool
+    data_dict : dict
+        each key contains a list of Dataframes
+    df_metadata : pandas.Dataframe
+    latitude_bin_size : int
 
     Returns
     -------
-
+    dict
+    pandas.Dataframe
     """
     # We determine bins to which each station is assigned.
     def to_bin(x):
@@ -608,23 +619,27 @@ def bin_by_latitude(compare_against_model, data_dict, df_metadata, latitude_bin_
     return data_dict, df_metadata
 
 
-def get_seasonal_by_curve_fitting(compare_against_model, data_dict, da_mdl, ds_obs,
+def get_seasonal_by_curve_fitting(compare_against_model: bool,
+                                  da_mdl, ds_obs,
                                   opts, station):
     """
 
     Parameters
     ----------
-    compare_against_model: (bool)
-    data_dict: (dict) each key contains a list of Dataframes
-    da_mdl
-    da_obs
-    ds_obs
-    opts
-    station
+    compare_against_model : bool
+    da_mdl : xarray.Dataarray
+    da_obs : xarray.Dataarray
+    ds_obs : xarray.Dataset
+    opts : dict
+    station : str
+
+    Raises
+    ------
+    ValueError
 
     Returns
     -------
-
+    tuple
     """
     # Check that there is at least one year's worth of data for this station.
     if (ds_obs.time.values.max().astype('datetime64[M]') - ds_obs.time.values.min().astype('datetime64[M]')) < 12:
@@ -674,7 +689,8 @@ def get_seasonal_by_curve_fitting(compare_against_model, data_dict, da_mdl, ds_o
     return ref_dt, ref_vals, mdl_dt, mdl_vals
 
 
-def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame, df_station_metadata: pd.DataFrame
+def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame,
+                      df_station_metadata: pd.DataFrame
                       ) -> pd.DataFrame:
     """Calculate means for each bin
 
@@ -682,12 +698,12 @@ def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame, df_station_m
 
     Parameters
     ----------
-    df_cycles_for_all_stations_ref
-    df_station_metadata
+    df_cycles_for_all_stations_ref : pandas.Dataframe
+    df_station_metadata : pandas.Dataframe
 
     Returns
     -------
-
+    pandas.Dataframe
     """
     # Add the coordinates and binning information to the dataframe with seasonal cycle values
     new_df = df_cycles_for_all_stations_ref.transpose()

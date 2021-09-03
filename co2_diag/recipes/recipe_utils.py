@@ -11,12 +11,12 @@ def populate_station_list(run_all_stations: bool,
 
     Parameters
     ----------
-    run_all_stations
-    station_list
+    run_all_stations : bool
+    station_list : Union[bool, list, str]
 
     Returns
     -------
-
+    list
     """
     if run_all_stations:
         stations_dict = load_stations_dict()

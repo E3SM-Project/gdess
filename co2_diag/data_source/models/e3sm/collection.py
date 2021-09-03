@@ -21,7 +21,7 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        verbose: Union[bool, str]
+        verbose: Union[bool, str], default False
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         set_verbose(_logger, verbose)
@@ -38,9 +38,9 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        verbose: Union[bool, str]
-        pickle_file: str
-        nc_file: str
+        verbose : Union[bool, str], default False
+        pickle_file : str, default None
+        nc_file : str, default None
 
         Returns
         -------
@@ -75,14 +75,15 @@ class Collection(Multiset):
         ----------
         verbose
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        pickle_file
-            (str): path to pickled datastore
-        options
-            A dictionary with zero or more of these parameter keys:
-                test_data (str): path to NetCDF file of E3SM model output
-                start_yr (str): '1960' is default
-                end_yr (str): None is default
-                lev (int): last value is default
+        pickle_file : str, default None
+            path to pickled datastore
+        options : dict
+            Contains zero or more of these parameter keys:
+                test_data : str
+                    path to NetCDF file of E3SM model output
+                start_yr : str, default '1960'
+                end_yr : str, default None
+                lev : int, default is the last value
 
         Returns
         -------
@@ -132,7 +133,7 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        dataset: xr.Dataset
+        dataset : xr.Dataset
 
         Returns
         -------
@@ -152,7 +153,7 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        filepath: str
+        filepath : str
         """
         _logger.info("Preprocessing...")
 
@@ -212,7 +213,7 @@ def add_e3sm_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
 
     Parameters
     ----------
-    parser
+    parser : argparse.ArgumentParser
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--lev_index', default=None, type=int)

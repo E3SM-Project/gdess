@@ -28,19 +28,27 @@ def surface_trends(options: dict,
 
     Parameters
     ----------
-    options: dict
+    options : Union[dict, argparse.Namespace]
         Recipe options specified as key:value pairs. It can contain the following keys:
-            ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
-            model_name (str): 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1' is default
-            start_yr (str): '1960' is default
-            end_yr (str): '2015' is default
-            figure_savepath (str): None is default
-            difference (str): None is default
-            globalmean (str):
+            ref_data : str
+                (required) directory containing the NOAA Obspack NetCDF files
+            model_name : str, default 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1'
+            cmip_load_method : str, default 'pangeo'
+                either 'pangeo' (which uses a stored url),
+                or 'local' (which uses the path defined in config file)
+            start_yr : str, default '1960'
+            end_yr : str, default '2015'
+            figure_savepath : str, default None
+            difference : str, default None
+            region_name : str
+                calculate averages within the region (uses the name and coordinates defined in config file)
+            globalmean : str
                 either 'station', which requires specifying the <station_code> parameter,
                 or 'global', which will calculate a global mean
-            station_list
-    verbose: Union[bool, str]
+            station_list : str, default 'mlo'
+                a sequence of three letter codes (space-delimited) to specify
+                the desired surface observing station
+    verbose : Union[bool, str]
         can be either True, False, or a string for level such as "INFO, DEBUG, etc."
 
     Returns

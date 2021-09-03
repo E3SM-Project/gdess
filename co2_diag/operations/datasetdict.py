@@ -58,8 +58,8 @@ class DatasetDict(dict):
 
         Parameters
         ----------
-        dim
-        kwargs
+        dim : str
+        kwargs : dict
 
         Returns
         -------
@@ -83,7 +83,7 @@ class DatasetDict(dict):
         ----------
         fnc
         args
-        kwargs:
+        kwargs : dict
             'inplace' (bool): whether the functions should be applied to this DatasetDict or
                 whether a copy should be returned with the operations applied.
 
@@ -123,8 +123,8 @@ class DatasetDict(dict):
 
         Parameters
         ----------
-        progressbar
-        inplace
+        progressbar : bool, default True
+        inplace : bool, default True
 
         Returns
         -------
@@ -148,12 +148,12 @@ class DatasetDict(dict):
             new_datasetdict[k] = v.copy(deep=True)
         return new_datasetdict
 
-    def to_pickle(self, filename: str = 'datasetdict.pickle',) -> None:
+    def to_pickle(self, filename: str = 'datasetdict.pickle') -> None:
         """Pickle this DatasetDict using the highest protocol available.
 
         Parameters
         ----------
-        filename
+        filename : str, default 'datasetdict.pickle'
         """
         with open(filename, 'wb') as f:
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
@@ -165,8 +165,12 @@ class DatasetDict(dict):
 
         Parameters
         ----------
-        filename
-        replace
+        filename : str, default 'cmip_collection.latest_executed_datasets.pickle'
+        replace : bool, default False
+
+        Returns
+        -------
+        DatasetDict
         """
         with open(filename, 'rb') as f:
             # The protocol version used is detected automatically, so we do not have to specify it.

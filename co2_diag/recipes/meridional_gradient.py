@@ -28,25 +28,28 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
 
     Parameters
     ----------
-    options: Union[dict, argparse.Namespace]
+    options : Union[dict, argparse.Namespace]
         Recipe options specified as key:value pairs. It can contain the following keys:
-            ref_data (str): Required. directory containing the NOAA Obspack NetCDF files
-            model_name (str): 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1' is default
-            station_code (str): a three letter code to specify the desired surface observing station; 'mlo' is default
-            cmip_load_method (str):
+            ref_data : str
+                (required) directory containing the NOAA Obspack NetCDF files
+            model_name : str, default 'CMIP.NOAA-GFDL.GFDL-ESM4.esm-hist.Amon.gr1'
+            cmip_load_method : str, default 'pangeo'
                 either 'pangeo' (which uses a stored url),
                 or 'local' (which uses the path defined in config file)
-            start_yr (str): '1960' is default
-            end_yr (str): '2015' is default
-            latitude_bin_size (numeric): None is default
-            figure_savepath (str): None is default
-            difference (str): None is default
-            region_name (str): calculate averages within the region
-                (uses the name and coordinates defined in config file)
-            globalmean (str):
+            start_yr : str, default '1960'
+            end_yr : str, default '2015'
+            latitude_bin_size : numeric, default None
+            figure_savepath : str, default None
+            difference : str, default None
+            region_name : str
+                calculate averages within the region (uses the name and coordinates defined in config file)
+            globalmean : str
                 either 'station', which requires specifying the <station_code> parameter,
                 or 'global', which will calculate a global mean
-    verbose: Union[bool, str]
+            station_list : str, default 'mlo'
+                a sequence of three letter codes (space-delimited) to specify
+                the desired surface observing station
+    verbose : Union[bool, str]
         can be either True, False, or a string for level such as "INFO, DEBUG, etc."
 
     Returns

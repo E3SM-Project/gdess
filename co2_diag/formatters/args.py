@@ -3,14 +3,23 @@ from typing import Union
 
 _logger = logging.getLogger(__name__)
 
+
 def options_to_args(options: dict) -> list:
     """Convert a dictionary to a list of strings so that an ArgumentParser can parse it.
+
+    Parameters
+    ----------
+    options : dict
 
     Examples
     --------
     a = {'start_yr': "1980", 'end_yr': "2010"}
     >>> options_to_args(a)
     returns ['--start_yr', '1980', '--end_yr', '2010']
+
+    Returns
+    -------
+    list
     """
     return shlex.split(' '.join([f"--{k} {v}" for k, v in options.items()]))
 
@@ -44,7 +53,7 @@ def nullable_str(val) -> Union[None, str]:
 
 
 def valid_year_string(y) -> Union[None, str]:
-    """Function used to validate 'year' argument passed in as a recipe option"""
+    """Validate 'year' argument passed in as a recipe option"""
     if is_some_none(y):
         return None
     elif isinstance(y, str) | isinstance(y, int):
@@ -54,7 +63,7 @@ def valid_year_string(y) -> Union[None, str]:
 
 
 def valid_existing_path(p):
-    """Function used to validate a file path argument passed in as a recipe option"""
+    """Validate a filepath argument passed in as a recipe option"""
     try:
         if os.path.exists(p):
             if os.access(p, os.R_OK):
@@ -65,6 +74,7 @@ def valid_existing_path(p):
 
 
 def valid_writable_path(p):
+    """Validate a filepath argument passed in as a recipe option"""
     def canmakeit():
         try:
             os.makedirs(os.path.dirname(p), exist_ok=True)

@@ -1,5 +1,3 @@
-import warnings
-
 from co2_diag import set_verbose, load_config_file, benchmark_recipe
 from co2_diag.data_source.models.cmip.cmip_name_utils import model_name_dict_from_valid_form, \
     matched_model_and_experiment, cmip_model_choices
@@ -18,7 +16,7 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 from typing import Union, Sequence
-import os, argparse, logging
+import os, argparse, logging, warnings
 
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
@@ -31,9 +29,9 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datastore: str
+        datastore : str
             a shortened name of an ESM catalog that we will query for model outputs.
-        verbose: Union[bool, str]
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         # Set up the level of verbosity, i.e. how many log messages are displayed.
@@ -67,18 +65,18 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datastore: str
-        verbose: Union[bool, str]
-        load_method: str
+        datastore : str, default 'cmip6'
+        verbose : Union[bool, str], default False
+        load_method : str, default 'pangeo'
             either 'pangeo', 'local', or 'pickle'
-        pickle_file: str
+        pickle_file : str
             (Optional) path to a saved pickle file is used if argument load_method=='pickle
-        selection: dict
-        mean_dims: tuple
+        selection : dict
+        mean_dims : tuple
 
         Returns
         -------
-        tuple: (Collection, bool)
+        tuple : (Collection, bool)
             Collection
             bool
                 Whether datasets were loaded from a pickle file or not. (If not, there is probably more processing needed.)
@@ -121,16 +119,16 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datastore: str
-        verbose: Union[bool, str]
+        datastore : str, default 'cmip6'
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        pickle_file: str
+        pickle_file : str
             path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
-                start_yr (str): '1960' is default
-                end_yr (str): None is default
-                plev (int): 100000 is default
+                start_yr : str, default '1960'
+                end_yr : str, default None
+                plev : int, default 100000
 
         Returns
         -------
@@ -166,15 +164,15 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datastore: str
-        verbose: Union[bool, str]
+        datastore : str
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        pickle_file: str
+        pickle_file : str
             path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
-                start_yr (str): '1960' is default
-                end_yr (str): None is default
+                start_yr : str, default '1960'
+                end_yr : str, default None
 
         Returns
         -------
@@ -209,15 +207,15 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datastore: str
-        verbose: Union[bool, str]
+        datastore : str
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        pickle_file: str
+        pickle_file : str
             path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
-                start_yr (str): '1960' is default
-                end_yr (str): None is default
+                start_yr : str, default '1960'
+                end_yr : str, default None
 
         Returns
         -------
@@ -259,15 +257,15 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datastore: str
-        verbose: Union[bool, str]
+        datastore : str
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        pickle_file: str
+        pickle_file : str
             path to pickled datastore
         options
             A dictionary with zero or more of these parameter keys:
-                start_yr (str): '1960' s default
-                end_yr (str): None is default
+                start_yr : str, default '1960'
+                end_yr : str, default None
 
         Returns
         -------
@@ -340,11 +338,11 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        method: str
+        method : str
             either 'pangeo' or 'local'
-        url: str
+        url : str
             (Optional) only used if argument method=='pangeo'
-        model_name: str
+        model_name : str
         """
         if model_name:
             if isinstance(model_name, str):
@@ -517,7 +515,7 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        suppress_log_message: bool
+        suppress_log_message : bool, default False
 
         Returns
         -------
@@ -548,7 +546,7 @@ def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -> None:
 
     Parameters
     ----------
-    parser
+    parser : argparse.ArgumentParser
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--plev', default=100000, type=int)

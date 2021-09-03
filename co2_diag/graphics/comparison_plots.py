@@ -43,7 +43,6 @@ def plot_comparison_against_model(ref_xdata: pd.DataFrame,
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
     month_fmt = mdates.DateFormatter('%b')
-    # ax.xaxis.set_major_formatter(month_fmt)
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda z, pos=None: month_fmt(z)[0]))
     #
@@ -75,7 +74,6 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
                    norm=mcolors.TwoSlopeNorm(vcenter=0.), cmap='RdBu_r', interpolation='nearest',
                    aspect='auto', extent=(mindate, maxdate, -0.5, num_stations - 0.5))
     #
-    # y_label_list = station_names
     ax.set_yticks(range(num_stations))
     ax.set_yticklabels(station_labels)
     #
@@ -94,7 +92,6 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
     month_fmt = mdates.DateFormatter('%b')
-    # ax.xaxis.set_major_formatter(month_fmt)
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda z, pos=None: month_fmt(z)[0]))
     #
@@ -123,7 +120,6 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
     month_fmt = mdates.DateFormatter('%b')
-    # ax.xaxis.set_major_formatter(month_fmt)
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda z, pos=None: month_fmt(z)[0]))
     #
