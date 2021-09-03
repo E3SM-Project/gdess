@@ -11,13 +11,12 @@ from co2_diag.data_source.observations import gvplus_surface as obspack_surface_
 from ccgcrv.ccg_dates import decimalDateFromDatetime
 from sklearn.metrics import mean_squared_error
 from datetime import datetime
-import csv
 import numpy as np
 import pandas as pd
 import xarray as xr
 from dask.diagnostics import ProgressBar
 from typing import Union
-import logging
+import csv, sys, logging
 
 _logger = logging.getLogger(__name__)
 
@@ -115,8 +114,14 @@ class Confrontation:
             processed_station_metadata['code'].append(station)
             counter['current'] += 1
             # END of station loop
-        _logger.info("Done -- %s stations fully processed. %s stations skipped.",
-                     len(data_dict['ref']), counter['skipped'])
+
+        if len(data_dict['ref']) < 1:
+            _logger.info("No station data to process (%s stations skipped). Exiting.", counter['skipped'])
+            sys.exit()
+        else:
+            _logger.info("Done -- %s stations fully processed. %s stations skipped.",
+                         len(data_dict['ref']), counter['skipped'])
+
 
         concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
                                                                                      processed_station_metadata)
