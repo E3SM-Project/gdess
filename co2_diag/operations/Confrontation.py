@@ -54,6 +54,10 @@ class Confrontation:
         how : str
             either 'seasonal' or 'trend'
 
+        Raises
+        ------
+        ValueError
+
         Returns
         -------
         tuple
@@ -395,8 +399,9 @@ def mutual_time_bounds(com: xr.Dataset, ref: xr.Dataset, time_limits) -> (xr.Dat
 
     Returns
     -------
-    ds_com : xr.Dataset
-    ds_ref : xr.Dataset
+    tuple
+        ds_com : xr.Dataset
+        ds_ref : xr.Dataset
     """
     # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
     ds_ref, initial_ref_time, final_ref_time = apply_time_bounds(ref, time_limits)
@@ -521,7 +526,7 @@ def apply_time_bounds(ds: xr.Dataset,
     Parameters
     ----------
     ds : xr.Dataset
-    time_limits : tuple of datetime
+    time_limits : tuple of datetime or list with length 2
         (start time, end time)
 
     Returns
