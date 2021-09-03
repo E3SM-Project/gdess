@@ -74,25 +74,27 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
     compare_against_model, ds_mdl = load_cmip_model_output(opts.model_name, opts.cmip_load_method, verbose=verbose)
 
     conf = Confrontation(compare_against_model, ds_mdl, opts, stations_to_analyze, verbose)
-    cycles_of_each_station, df_all_cycles, df_station_metadata, xdata_gv, xdata_mdl, ydata_gv, ydata_mdl = conf.looper(how='seasonal')
+    cycles_of_each_station, concatenated_dfs, df_station_metadata, \
+        xdata_obs, xdata_mdl, ydata_obs, ydata_mdl, \
+        rmse_y_true, rmse_y_pred = conf.looper(how='seasonal')
 
     # --- Plot the seasonal cycles at all station locations
-    plot_lines_for_all_station_cycles(xdata_gv, ydata_gv.iloc[:, ::-1], figure_title="GV+",
+    plot_lines_for_all_station_cycles(xdata_obs, ydata_obs.iloc[:, ::-1], figure_title="GV+",
                                       savepath=append_before_extension(opts.figure_savepath, 'obs_lineplot'))
 
     if ydata_mdl is not None:
         #   (ii) CMIP data
-        plot_lines_for_all_station_cycles(xdata_gv, ydata_mdl.iloc[:, ::-1], figure_title="CMIP",
+        plot_lines_for_all_station_cycles(xdata_obs, ydata_mdl.iloc[:, ::-1], figure_title="CMIP",
                                           savepath=append_before_extension(opts.figure_savepath, 'mdl_lineplot'))
 
         #   (iii) Model - obs difference
-        ydiff = ydata_mdl - ydata_gv
-        plot_lines_for_all_station_cycles(xdata_gv, ydiff.iloc[:, ::-1], figure_title="Difference",
+        ydiff = ydata_mdl - ydata_obs
+        plot_lines_for_all_station_cycles(xdata_obs, ydiff.iloc[:, ::-1], figure_title="Difference",
                                           savepath=append_before_extension(opts.figure_savepath, 'diff_lineplot'))
 
         #   (iv) Model and obs difference
-        plot_comparison_against_model(xdata_gv, ydata_gv, f'obs',
-                                      xdata_gv, ydata_mdl, f'model',
+        plot_comparison_against_model(xdata_obs, ydata_obs, f'obs',
+                                      xdata_obs, ydata_mdl, f'model',
                                       savepath=append_before_extension(opts.figure_savepath, 'overlapped'))
 
-    return df_all_cycles, cycles_of_each_station, df_station_metadata
+    return concatenated_dfs, cycles_of_each_station, df_station_metadata

@@ -164,13 +164,14 @@ class Confrontation:
         writer.writeheader()
 
         if how == 'seasonal':
-            xdata_gv = concatenated_dfs['ref']['month']
-            ydata_gv = concatenated_dfs['ref'].loc[:, (concatenated_dfs['ref'].columns != 'month')]
+            timecolumn = 'month'
         elif how == 'trend':
-            xdata_gv = concatenated_dfs['ref']['time']
-            ydata_gv = concatenated_dfs['ref'].loc[:, (concatenated_dfs['ref'].columns != 'time')]
+            timecolumn = 'time'
         else:
             raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
+
+        xdata_gv = concatenated_dfs['ref'][timecolumn]
+        ydata_gv = concatenated_dfs['ref'].loc[:, (concatenated_dfs['ref'].columns != timecolumn)]
 
         # Write output data for this instance
         for column in ydata_gv:
@@ -188,26 +189,26 @@ class Confrontation:
 
         xdata_mdl = None
         ydata_mdl = None
+        rmse_y_true = None
+        rmse_y_pred = None
         if self.compare_against_model:
+            xdata_mdl = concatenated_dfs['mdl'][timecolumn]
+            ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != timecolumn)]
+
+            rmse = np.nan
             if how == 'seasonal':
-                xdata_mdl = concatenated_dfs['mdl']['month']
                 if not xdata_gv.equals(xdata_mdl):
                     raise ValueError(
                         'Unexpected discrepancy, xdata for reference observations does not equal xdata for models')
-                ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'month')]
                 rmse_y_true = ydata_gv
                 rmse_y_pred = ydata_mdl
 
             elif how == 'trend':
-                xdata_mdl = concatenated_dfs['mdl']['time']
-
                 begin_time_for_stats = max(xdata_gv.min(), xdata_mdl.min())
                 end_time_for_stats = min(xdata_gv.max(), xdata_mdl.max())
                 if begin_time_for_stats > end_time_for_stats:
                     _logger.info('beginning time <%s> is after end time <%s>' %
                                  (begin_time_for_stats, end_time_for_stats))
-                    rmse_y_true = None
-                    rmse_y_pred = None
                 else:
                     def month_calc(df):
                         return (df
@@ -221,12 +222,9 @@ class Confrontation:
                     common_time = set(rmse_y_true['time']).intersection(set(rmse_y_pred['time']))
                     rmse_y_true = rmse_y_true.loc[rmse_y_true['time'].isin(common_time), :]
                     rmse_y_pred = rmse_y_pred.loc[rmse_y_pred['time'].isin(common_time), :]
-
-                ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'time')]
             else:
                 raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
 
-            rmse = np.nan
             if rmse_y_true is not None:
                 yt = rmse_y_true[column]
                 yp = rmse_y_pred[column]
@@ -248,7 +246,9 @@ class Confrontation:
                 writer.writerow(row_dict)
         fileptr.flush()
 
-        return data_dict, concatenated_dfs, df_station_metadata, xdata_gv, xdata_mdl, ydata_gv, ydata_mdl
+        return data_dict, concatenated_dfs, df_station_metadata, \
+               xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+               rmse_y_true, rmse_y_pred
 
     def concatenate_stations_and_months(self, data_dict, processed_station_metadata) -> (dict, pd.DataFrame):
         """

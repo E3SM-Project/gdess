@@ -75,7 +75,9 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
 
     # --- Observation data is processed for each station location. ---
     conf = Confrontation(compare_against_model, ds_mdl, opts, stations_to_analyze, verbose)
-    cycles_of_each_station, df_all_cycles, df_station_metadata, xdata_gv, xdata_mdl, ydata_gv, ydata_mdl = conf.looper(how='seasonal')
+    cycles_of_each_station, concatenated_dfs, df_station_metadata, \
+        xdata_obs, xdata_mdl, ydata_obs, ydata_mdl, \
+        rmse_y_true, rmse_y_pred = conf.looper(how='seasonal')
 
     heatmap_rightside_labels = None
     if opts.latitude_bin_size:
@@ -83,19 +85,19 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
         heatmap_rightside_labels = [numstr(x, decimalpoints=2) for x in df_station_metadata['lat']]
 
     # --- Plot the heatmap with all station locations
-    plot_heatmap_of_all_stations(xdata_gv, ydata_gv, rightside_labels=heatmap_rightside_labels, figure_title="obs",
+    plot_heatmap_of_all_stations(xdata_obs, ydata_obs, rightside_labels=heatmap_rightside_labels, figure_title="obs",
                                  savepath=append_before_extension(opts.figure_savepath, 'obs_heatmap'))
 
     if ydata_mdl is not None:
         #   (ii) CMIP data
-        plot_heatmap_of_all_stations(xdata_gv, ydata_mdl, rightside_labels=heatmap_rightside_labels,
+        plot_heatmap_of_all_stations(xdata_obs, ydata_mdl, rightside_labels=heatmap_rightside_labels,
                                      figure_title="mdl",
                                      savepath=append_before_extension(opts.figure_savepath, 'mdl_heatmap'))
 
         #   (iii) Model - obs difference
-        ydiff = ydata_mdl - ydata_gv
-        plot_heatmap_of_all_stations(xdata_gv, ydiff, rightside_labels=heatmap_rightside_labels,
+        ydiff = ydata_mdl - ydata_obs
+        plot_heatmap_of_all_stations(xdata_obs, ydiff, rightside_labels=heatmap_rightside_labels,
                                      figure_title=f"model - obs",
                                      savepath=append_before_extension(opts.figure_savepath, 'diff_heatmap'))
 
-    return df_all_cycles, cycles_of_each_station, df_station_metadata
+    return concatenated_dfs, cycles_of_each_station, df_station_metadata

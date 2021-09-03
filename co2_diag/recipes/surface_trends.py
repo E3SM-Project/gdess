@@ -75,7 +75,9 @@ def surface_trends(options: dict,
     #                                  global_mean=opts.globalmean, verbose=verbose)
 
     conf = Confrontation(compare_against_model, ds_mdl, opts, stations_to_analyze, verbose)
-    cycles_of_each_station, df_all_cycles, df_station_metadata, xdata_obs, xdata_mdl, ydata_obs, ydata_mdl = conf.looper(how='trend')
+    cycles_of_each_station, concatenated_dfs, df_station_metadata, \
+        xdata_obs, xdata_mdl, ydata_obs, ydata_mdl, \
+        rmse_y_true, rmse_y_pred = conf.looper(how='trend')
 
     # --- Create Graphic ---
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
