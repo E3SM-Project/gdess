@@ -97,4 +97,5 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                       xdata_obs, ydata_mdl, f'model',
                                       savepath=append_before_extension(opts.figure_savepath, 'overlapped'))
 
+    _logger.info("Saved at <%s>" % opts.figure_savepath)
     return concatenated_dfs, cycles_of_each_station, df_station_metadata

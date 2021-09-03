@@ -101,4 +101,5 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
                                      figure_title=f"model - obs",
                                      savepath=append_before_extension(opts.figure_savepath, 'diff_heatmap'))
 
+    _logger.info("Saved at <%s>" % opts.figure_savepath)
     return concatenated_dfs, cycles_of_each_station, df_station_metadata

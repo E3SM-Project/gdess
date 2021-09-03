@@ -110,9 +110,10 @@ def surface_trends(options: dict,
     plt.tight_layout()
     #
     if opts.figure_savepath:
-        mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, 'trend'),
+        savepath = append_before_extension(opts.figure_savepath, 'trend')
+        mysavefig(fig=fig, plot_save_name=savepath,
                   bbox_inches='tight')
-
+        _logger.info("Saved at <%s>" % savepath)
     return data_output
 
 
