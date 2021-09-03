@@ -87,7 +87,7 @@ def add_surface_trends_args_to_parser(parser: argparse.ArgumentParser) -> None:
                         type=str, choices=['pangeo', 'local'])
     parser.add_argument('--difference', action='store_true')
     parser.add_argument('--globalmean', action='store_true')
-    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations)
+    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations, default='mlo')
 
 
 def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
@@ -108,7 +108,7 @@ def add_seasonal_cycle_args_to_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
     parser.add_argument('--run_all_stations', action='store_true')
-    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations)
+    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations, default='mlo')
 
 
 def add_meridional_args_to_parser(parser: argparse.ArgumentParser) -> None:
@@ -132,4 +132,4 @@ def add_meridional_args_to_parser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--globalmean', action='store_true')
     parser.add_argument('--use_mlo_for_detrending', action='store_true')
     parser.add_argument('--run_all_stations', action='store_true')
-    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations)
+    parser.add_argument('--station_list', nargs='*', type=valid_surface_stations, default='mlo')
