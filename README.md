@@ -30,7 +30,8 @@ for atmospheric CO<sub>2</sub> concentrations.
 
 * [Data requirements and availability](#data-requirements-and-availability)
 * [Getting started](#getting-started)
-* [Usage](#usage)
+* [Example](#xample)
+* [Usage](#usage-description)
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
 * [Contributing](#contributing)
