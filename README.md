@@ -122,6 +122,12 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
   3. 
 ```./co2_diag/bin/gdess.py --verbose seasonal --start_yr 1980 --end_yr 2015 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
 
+- Other examples are given in the provided jupyter notebooks, 
+which show recipe usage (`trends_recipe.ipynb`, `seasonal_cycle_recipe.ipynb`, and `meridional_recipe.ipynb`). To run them:
+  1. Enable your conda environment via: `python -m ipykernel install --user --name=myenv`
+  2. Start jupyter by entering: `jupyter notebook`
+  3. Navigate within jupyter to `gdess/notebooks/demo/`
+
 ## Usage description
 
 Diagnostic recipes can be run from the command line or from within a Python kernel:
@@ -134,7 +140,7 @@ Diagnostic recipes can be run from the command line or from within a Python kern
 
 **In a Python kernel** 
   - The diagnostic recipes can be called directly, with options passed as a Python `dict` object.
-  - Check out the demonstration notebooks in `gdess/notebooks/demo/`. The notebooks showing recipe usage are: `trends_recipe.ipynb` and `seasonal_cycle_recipe.ipynb`  
+  - Check out the demonstration notebooks in `gdess/notebooks/demo/`. The notebooks show recipe usage.
 
 ## Updating
 
@@ -253,7 +259,8 @@ Additional details regarding the curve fitting approach can be found in the foll
   - Thoning, K.W., P.P. Tans, and W.D. Komhyr, 1989, Atmospheric carbon dioxide at Mauna Loa Observatory, 2. Analysis of the NOAA/GMCC data, 1974 1985., J. Geophys. Res. ,94, 8549 8565. https://doi.org/10.1029/JD094iD06p08549
   - Sweeney, C., Karion, A., Wolter, S., Newberger, T., Guenther, D., Higgs, J.A., Andrews, A.E., Lang, P.M., Neff, D., Dlugokencky, E., Miller, J.B., Montzka, S.A., Miller, B.R., Masarie, K.A., Biraud, S.C., Novelli, P.C., Crotwell, M., Crotwell, A.M., Thoning, K., Tans, P.P., 2015. Seasonal climatology of CO 2 across North America from aircraft measurements in the NOAA/ESRL Global Greenhouse Gas Reference Network. J. Geophys. Res. Atmos. 120, 5155–5190. https://doi.org/10.1002/2014JD022591
 
-- The Mauna Loa (MLO) dataset file used in the tests directory was provided via the Obspack by:
+- The Mauna Loa (MLO), American Samoa (SMO), South Pole (SPO), and Barrow Observatory (BRW) dataset files 
+used in the tests directory was provided via the Obspack (GLOBALVIEWplus_v6.0_2020-09-11) by:
 C. D. Keeling, S. C. Piper, R. B. Bacastow, M. Wahlen, 
 T. P. Whorf, M. Heimann, and H. A. Meijer, Exchanges of atmospheric CO2 and 13CO2 with the terrestrial biosphere
 and oceans from 1978 to 2000.  I. Global aspects, SIO Reference
