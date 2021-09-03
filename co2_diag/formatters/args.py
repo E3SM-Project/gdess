@@ -79,7 +79,7 @@ def valid_writable_path(p):
         try:
             os.makedirs(os.path.dirname(p), exist_ok=True)
             with tempfile.NamedTemporaryFile(prefix='_temp', dir=os.path.dirname(p)) as file_object:
-                print(f"Testing - successfully created temporary file ({file_object.name}).")
+                _logger.debug("Testing - successfully created temporary file (%s)." % file_object.name)
         except:
             raise argparse.ArgumentTypeError('Path must be valid and writable. <%s> is not.' % p)
         return True
