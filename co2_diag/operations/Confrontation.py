@@ -91,7 +91,7 @@ class Confrontation:
                                                      altitude=ds_obs['altitude'].values[0], altitude_method='lowest',
                                                      global_mean=self.opts.globalmean, verbose=self.verbose)
                 else:
-                    ds_obs, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(self.opts.start_yr),
+                    ds_obs, _, _, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(self.opts.start_yr),
                                                                           np.datetime64(self.opts.end_yr)))
                     da_mdl = None
             except (RuntimeError, AssertionError) as re:
@@ -406,8 +406,16 @@ def mutual_time_bounds(com: xr.Dataset, ref: xr.Dataset, time_limits) -> (xr.Dat
         ds_ref : xr.Dataset
     """
     # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
-    ds_ref, initial_ref_time, final_ref_time = apply_time_bounds(ref, time_limits)
-    ds_com, initial_com_time, final_com_time = apply_time_bounds(com, (ds_ref['time'].min().values, ds_ref['time'].max().values))
+    ds_ref, initial_ref_time, final_ref_time, revised_initial_time, revised_final_time = apply_time_bounds(ref,
+                                                                                                           time_limits)
+    new_limits = [time_limits[0], time_limits[1]]
+    if revised_initial_time > time_limits[0]:
+        new_limits[0] = revised_initial_time
+    if revised_final_time < time_limits[1]:
+        new_limits[1] = revised_final_time
+    _logger.debug('  revised time limits are %s' % new_limits)
+    ds_com, initial_com_time, final_com_time, revised_initial_time, revised_final_time = apply_time_bounds(com,
+                                                                                                           new_limits)
     # decimal years are added as a coordinate if not already there.
     if not ('time_decimal' in ds_com.coords):
         ds_com = ds_com.assign_coords(time_decimal=('time',
@@ -521,8 +529,8 @@ def interpolate_to_altitude(data: xr.DataArray,
 
 
 def apply_time_bounds(ds: xr.Dataset,
-                      time_limits: tuple
-                      ) -> (xr.Dataset, np.datetime64, np.datetime64):
+                      time_limits: Union[tuple, list]
+                      ) -> (xr.Dataset, np.datetime64, np.datetime64, np.datetime64, np.datetime64):
     """
 
     Parameters
@@ -533,29 +541,40 @@ def apply_time_bounds(ds: xr.Dataset,
 
     Returns
     -------
-    ds : xr.Dataset
-    initial_time : xr.Dataset
-        the earliest datetime in the dataset
-    final_time : xr.Dataset
-        the latest datetime in the dataset
+    tuple
+        ds : xr.Dataset
+        original_initial_time : np.datetime64
+            the earliest datetime in the dataset
+        original_final_time : np.datetime64
+            the latest datetime in the dataset
+        revised_initial_time : np.datetime64
+            the earliest datetime in the dataset
+        revised_final_time : np.datetime64
+            the latest datetime in the dataset
     """
     ds = ensure_dataset_datetime64(ds)
 
-    initial_time = ds['time'].min().values
-    final_time = ds['time'].max().values
+    original_initial_time = ds['time'].min().values
+    original_final_time = ds['time'].max().values
 
-    if time_limits[0]:
-        if final_time < time_limits[0]:
+    t1 = np.datetime64(time_limits[0])
+    t2 = np.datetime64(time_limits[1])
+
+    if t1 is not None:
+        if original_final_time < t1:
             raise RuntimeError("Final time of dataset <%s> is before the given time frame's start <%s>." %
-                               (np.datetime_as_string(final_time, unit='s'), time_limits[0]))
-        ds = ds.where(ds.time >= time_limits[0], drop=True)
-    if time_limits[1]:
-        if initial_time > time_limits[1]:
+                               (np.datetime_as_string(original_final_time, unit='s'), time_limits[0]))
+        ds = ds.where(ds.time >= t1, drop=True)
+    if t2 is not None:
+        if original_initial_time > t2:
             raise RuntimeError("Initial time of dataset <%s> is after the given time frame's end <%s>." %
-                               (np.datetime_as_string(initial_time, unit='s'), time_limits[1]))
-        ds = ds.where(ds.time <= time_limits[1], drop=True)
+                               (np.datetime_as_string(original_initial_time, unit='s'), time_limits[1]))
+        ds = ds.where(ds.time <= t2, drop=True)
 
-    return ds, initial_time, final_time
+    revised_initial_time = ds['time'].min().values
+    revised_final_time = ds['time'].max().values
+
+    return ds, original_initial_time, original_final_time, revised_initial_time, revised_final_time
 
 
 def update_for_skipped_station(msg, station_name, station_count, counter_dict):
