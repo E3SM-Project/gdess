@@ -40,8 +40,6 @@ def surface_trends(options: dict,
             end_yr : str, default '2015'
             figure_savepath : str, default None
             difference : str, default None
-            region_name : str
-                calculate averages within the region (uses the name and coordinates defined in config file)
             globalmean : str
                 either 'station', which requires specifying the <station_code> parameter,
                 or 'global', which will calculate a global mean

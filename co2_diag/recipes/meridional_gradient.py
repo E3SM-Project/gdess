@@ -43,8 +43,6 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
             latitude_bin_size : numeric, default None
             figure_savepath : str, default None
             difference : str, default None
-            region_name : str
-                calculate averages within the region (uses the name and coordinates defined in config file)
             globalmean : str
                 either 'station', which requires specifying the <station_code> parameter,
                 or 'global', which will calculate a global mean
