@@ -26,7 +26,7 @@ class Confrontation:
                  compare_against_model: bool,
                  ds_mdl,
                  opts,
-                 stations_to_analyze,
+                 stations_to_analyze: list,
                  verbose: Union[bool, str] = False):
         """Instantiate a Confrontation object.
 
