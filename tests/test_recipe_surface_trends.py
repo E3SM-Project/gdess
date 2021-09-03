@@ -16,7 +16,7 @@ def test_recipe_input_year_error(globalview_test_data_path):
         'start_yr': "198012",
         'end_yr': "201042",
         'figure_savepath': './outputs',
-        'station_list': 'mlo',}
+        'station_list': 'mlo'}
     with pytest.raises(SystemExit):
         surface_trends(verbose='DEBUG', options=recipe_options)
 
