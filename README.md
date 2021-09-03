@@ -115,7 +115,7 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 ## Example
 
 - The following steps generate this figure:
-<img src="./.images/test_figuresmo_2021-09-01.png" alt="components" width="712" height="280"/>
+<img src="./.images/overlapped_2021-09-03.png" alt="components" width="712" height="280"/>
 
   1. Install the `gdess` package according to the [installation](###installation) instructions
   2. Follow the [configuration](###configuration) instructions to use the included example data files
@@ -177,7 +177,7 @@ so please `git checkout develop`
 
 #### Components
 
-<img src="./.images/structure_diagram_20210512.png" alt="components" width="607" height="384"/>
+<img src="./.images/structure_diagram_20210903.png" alt="components" width="607" height="384"/>
 
 #### Directory Tree
 ```
