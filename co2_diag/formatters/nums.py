@@ -20,14 +20,14 @@ def numstr(number, decimalpoints: int) -> str:
     return fmtstr.format(number)
 
 
-def my_round(x, nearest: int = 10, direction: str = 'up'
+def my_round(x, nearest=10, direction: str = 'up'
              ) -> int:
     """Round to the nearest specified whole number
 
     Parameters
     ----------
     x : numeric
-    nearest : int, default 10
+    nearest : numeric, default 10
     direction : str, default 'up'
 
     Returns
