@@ -183,56 +183,67 @@ so please `git checkout develop`
 ```
 gdess
 │
-├── README.md                  <- Top-level README for users/developers of this project
-├── requirements.txt           <- Package dependencies
+├── README.md                            <- Top-level README for users/developers of this project
+├── requirements.txt                     <- Package dependencies
+├── recipe_options_example.txt
 │
-├── notebooks                  <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
+├── notebooks                            <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
 │   └──demo/
 │
-├── co2_diag                   <- *Python package* for handling co2 diagnostics
+├── co2_diag                             <- *Python package* for handling co2 diagnostics
 │   │
 │   ├── bin                  
-│   │   ├── gdess.py           <- Run recipes from the command line
-│   │   └── set_path_vars.sh   <- Script to set up data file paths for running examples
+│   │   ├── gdess.py                     <- Run recipes from the command line
+│   │   ├── set_path_vars.sh             <- Script to set up data file paths for running examples
+│   │   └── concat_and_remap_E3SM_co2.sh <- Script template for post-processing of E3SM output
 │   │
-│   ├── recipes                <- Generate repeatable diagnostics that span multiple data sources available as recipes 
+│   ├── recipes                          <- Generate repeatable diagnostics that span multiple data sources available as recipes 
 │   │   ├── surface_trends.py
 │   │   ├── seasonal_cycles.py
 │   │   ├── meridional_gradient.py
 │   │   ├── recipe_utils.py
 │   │   └── ...
 │   │
-│   ├── data_source            <- Load, parse, and manipulate data from a particular source
+│   ├── data_source                      <- Load, parse, and manipulate data from a particular source
 │   │   ├── models/
 │   │   ├── observations/
 │   │   ├── multiset.py
 │   │   └── ...
 │   │
-│   ├── operations             <- Manipulate datasets (e.g. spatially or temporally) 
-│   │   ├── geographic/
-│   │   ├── time/
-│   │   ├── convert/
+│   ├── operations                       <- Manipulate datasets (e.g. spatially or temporally) 
+│   │   ├── Confrontation.py
+│   │   ├── geographic.py
+│   │   ├── time.py
+│   │   ├── convert.py
 │   │   ├── datasetdict.py
 │   │   └── ...
 │   │
-│   ├── formatters             <- Manipulate formatting in desired ways
+│   ├── formatters                       <- Manipulate formatting in desired ways
+│   │   ├── args.py
 │   │   ├── nums.py
 │   │   ├── strings.py
 │   │   └── ...
 │   │
-│   ├── graphics               <- Make repeated graphic actions available 
-│   │   ├── mapping.py
+│   ├── graphics                         <- Make repeated graphic actions available 
+│   │   ├── comparison_plots.py
+│   │   ├── single_source_plots.py
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   ├── config                 <- Configuration options
+│   ├── config                           <- Configuration options
 │   │   ├── defaults.ini
 │   │   ├── stations_dict.json
 │   │   └── log_config.json
 │   │   
 │   └── recipe_parsers.py
 │
-├── tests                      <- Unit and integration tests for development 
+├── tests                                <- Unit and integration tests for development 
+│   └── ...
+├── ccgcrv                               <- Curve fitting code from NOAA GML (see credits in the README)  
+│   └── ...
+├── ci                                   <- Environment specification for continuous integration  
+│   └── ...
+├── paper                                <- Manuscript for the Journal of Open Source Software (JOSS)  
 │   └── ...
 │
 ├── LICENSE
