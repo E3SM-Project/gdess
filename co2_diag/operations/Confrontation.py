@@ -34,7 +34,7 @@ class Confrontation:
         ----------
         compare_against_model : bool
         ds_mdl : xarray Dataset
-        opts : dict
+        opts : argparse.Namespace
         stations_to_analyze : list
         verbose : Union[bool, str], default False
         """
@@ -634,7 +634,7 @@ def get_seasonal_by_curve_fitting(compare_against_model: bool,
     da_mdl : xarray.Dataarray
     da_obs : xarray.Dataarray
     ds_obs : xarray.Dataset
-    opts : dict
+    opts : argparse.Namespace
     station : str
 
     Raises
