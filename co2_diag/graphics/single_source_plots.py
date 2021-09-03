@@ -12,6 +12,12 @@ def plot_annual_series(df_anomaly_yearly: pd.DataFrame,
                        ) -> (plt.Figure, plt.Axes, tuple):
     """Make timeseries plot with annual anomalies of co2 concentration.
 
+    Parameters
+    ----------
+    df_anomaly_yearly : pd.DataFrame,
+    df_anomaly_cycle : pd.DataFrame,
+    titlestr : str
+
     Returns
     -------
     matplotlib figure
@@ -62,6 +68,11 @@ def plot_zonal_mean(darray: xr.DataArray,
                     ) -> (plt.Figure, plt.Axes, tuple):
     """Make zonal mean plot of co2 concentrations.
 
+    Parameters
+    ----------
+    darray : xr.DataArray,
+    titlestr : str
+
     Returns
     -------
     matplotlib figure
@@ -88,6 +99,16 @@ def plot_zonal_mean(darray: xr.DataArray,
 
 def plot_filter_components(filter_object, original_x, original_y,
                            figure_title='', savepath=None) -> None:
+    """
+
+    Parameters
+    ----------
+    filter_object
+    original_x
+    original_y
+    figure_title : str
+    savepath : str
+    """
     # --- Make the figure ---
     fig, ax = plt.subplots(1, 1, figsize=(10, 7))
     ax.plot(filter_object.xinterp, filter_object.getFunctionValue(filter_object.xinterp), label='Function values',

@@ -11,9 +11,9 @@ def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
 
     Parameters
     ----------
-    xr_ds_
+    xr_ds_ : xarray.Dataset
         A dataset containing a CO2 variable
-    co2_var_name
+    co2_var_name : str, default 'co2'
         Variable name for CO2 in the dataset
 
     Returns
@@ -55,9 +55,9 @@ def co2_kgfrac_to_ppm(xr_ds_: xr.Dataset,
 
     Parameters
     ----------
-    xr_ds_
+    xr_ds_ : xarray.Dataset
         A dataset containing a CO2 variable
-    co2_var_name
+    co2_var_name : str, default 'co2'
         Variable name for CO2 in the dataset
 
     Returns

@@ -1,14 +1,25 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
-
 import logging
+
 _logger = logging.getLogger(__name__)
 
 
 def daily_anomalies(dataset: xr.Dataset,
                     varname: str = 'co2'
                     ) -> pd.DataFrame:
+    """
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default 'co2'
+
+    Returns
+    -------
+    A pandas Dataframe
+    """
     varlist = ['time', varname]
     tempds = dataset[varlist]
 
@@ -44,6 +55,17 @@ def daily_anomalies(dataset: xr.Dataset,
 def monthly_anomalies(dataset: xr.Dataset,
                       varname: str = 'co2'
                       ) -> pd.DataFrame:
+    """
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default 'co2'
+
+    Returns
+    -------
+    A pandas Dataframe
+    """
     varlist = ['time', varname]
     tempds = dataset[varlist]
 
@@ -72,6 +94,17 @@ def monthly_anomalies(dataset: xr.Dataset,
 def seasonal_anomalies(dataset: xr.Dataset,
                        varname: str = 'co2'
                        ) -> pd.DataFrame:
+    """
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default 'co2'
+
+    Returns
+    -------
+    A pandas Dataframe
+    """
     varlist = ['time', varname]
     tempds = dataset[varlist]
 

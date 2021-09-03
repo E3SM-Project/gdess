@@ -22,7 +22,7 @@ def model_name_dict_from_valid_form(s: str) -> dict:
 
     Parameters
     ----------
-    s: str
+    s : str
 
     Raises
     ------

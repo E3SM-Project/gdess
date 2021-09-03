@@ -11,29 +11,32 @@ from co2_diag.data_source.observations import gvplus_surface as obspack_surface_
 from ccgcrv.ccg_dates import decimalDateFromDatetime
 from sklearn.metrics import mean_squared_error
 from datetime import datetime
-import csv
 import numpy as np
 import pandas as pd
 import xarray as xr
 from dask.diagnostics import ProgressBar
 from typing import Union
-import logging
+import csv, sys, logging
 
 _logger = logging.getLogger(__name__)
 
 
 class Confrontation:
-    def __init__(self, compare_against_model, ds_mdl, opts, stations_to_analyze,
+    def __init__(self,
+                 compare_against_model: bool,
+                 ds_mdl,
+                 opts,
+                 stations_to_analyze: list,
                  verbose: Union[bool, str] = False):
         """Instantiate a Confrontation object.
 
         Parameters
         ----------
-        compare_against_model
-        ds_mdl
-        opts
-        stations_to_analyze
-        verbose
+        compare_against_model : bool
+        ds_mdl : xarray Dataset
+        opts : argparse.Namespace
+        stations_to_analyze : list
+        verbose : Union[bool, str], default False
         """
         self.compare_against_model = compare_against_model
         self.ds_mdl = ds_mdl
@@ -50,6 +53,10 @@ class Confrontation:
         ----------
         how : str
             either 'seasonal' or 'trend'
+
+        Raises
+        ------
+        ValueError
 
         Returns
         -------
@@ -84,7 +91,7 @@ class Confrontation:
                                                      altitude=ds_obs['altitude'].values[0], altitude_method='lowest',
                                                      global_mean=self.opts.globalmean, verbose=self.verbose)
                 else:
-                    ds_obs, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(self.opts.start_yr),
+                    ds_obs, _, _, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(self.opts.start_yr),
                                                                           np.datetime64(self.opts.end_yr)))
                     da_mdl = None
             except (RuntimeError, AssertionError) as re:
@@ -92,10 +99,12 @@ class Confrontation:
                 continue
             #
             if how == 'seasonal':
-                ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model, data_dict,
-                                                          da_mdl, ds_obs, self.opts, station)
-                if isinstance(data_dict, Exception):
-                    update_for_skipped_station(data_dict, station, num_stations, counter)
+                try:
+                    ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model,
+                                                                                       da_mdl, ds_obs,
+                                                                                       self.opts, station)
+                except RuntimeError as re:
+                    update_for_skipped_station(re, station, num_stations, counter)
                     continue
                 #
                 data_dict['ref'].append(pd.DataFrame.from_dict({"month": ref_dt, f"{station}": ref_vals}))
@@ -115,8 +124,13 @@ class Confrontation:
             processed_station_metadata['code'].append(station)
             counter['current'] += 1
             # END of station loop
-        _logger.info("Done -- %s stations fully processed. %s stations skipped.",
-                     len(data_dict['ref']), counter['skipped'])
+
+        if len(data_dict['ref']) < 1:
+            _logger.info("No station data to process (%s stations skipped). Exiting.", counter['skipped'])
+            sys.exit()
+        else:
+            _logger.info("Done -- %s stations fully processed. %s stations skipped.",
+                         len(data_dict['ref']), counter['skipped'])
 
         concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
                                                                                      processed_station_metadata)
@@ -149,13 +163,14 @@ class Confrontation:
         writer.writeheader()
 
         if how == 'seasonal':
-            xdata_gv = concatenated_dfs['ref']['month']
-            ydata_gv = concatenated_dfs['ref'].loc[:, (concatenated_dfs['ref'].columns != 'month')]
+            timecolumn = 'month'
         elif how == 'trend':
-            xdata_gv = concatenated_dfs['ref']['time']
-            ydata_gv = concatenated_dfs['ref'].loc[:, (concatenated_dfs['ref'].columns != 'time')]
+            timecolumn = 'time'
         else:
             raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
+
+        xdata_gv = concatenated_dfs['ref'][timecolumn]
+        ydata_gv = concatenated_dfs['ref'].loc[:, (concatenated_dfs['ref'].columns != timecolumn)]
 
         # Write output data for this instance
         for column in ydata_gv:
@@ -173,26 +188,26 @@ class Confrontation:
 
         xdata_mdl = None
         ydata_mdl = None
+        rmse_y_true = None
+        rmse_y_pred = None
         if self.compare_against_model:
+            xdata_mdl = concatenated_dfs['mdl'][timecolumn]
+            ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != timecolumn)]
+
+            rmse = np.nan
             if how == 'seasonal':
-                xdata_mdl = concatenated_dfs['mdl']['month']
                 if not xdata_gv.equals(xdata_mdl):
                     raise ValueError(
                         'Unexpected discrepancy, xdata for reference observations does not equal xdata for models')
-                ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'month')]
                 rmse_y_true = ydata_gv
                 rmse_y_pred = ydata_mdl
 
             elif how == 'trend':
-                xdata_mdl = concatenated_dfs['mdl']['time']
-
                 begin_time_for_stats = max(xdata_gv.min(), xdata_mdl.min())
                 end_time_for_stats = min(xdata_gv.max(), xdata_mdl.max())
                 if begin_time_for_stats > end_time_for_stats:
                     _logger.info('beginning time <%s> is after end time <%s>' %
                                  (begin_time_for_stats, end_time_for_stats))
-                    rmse_y_true = None
-                    rmse_y_pred = None
                 else:
                     def month_calc(df):
                         return (df
@@ -206,13 +221,14 @@ class Confrontation:
                     common_time = set(rmse_y_true['time']).intersection(set(rmse_y_pred['time']))
                     rmse_y_true = rmse_y_true.loc[rmse_y_true['time'].isin(common_time), :]
                     rmse_y_pred = rmse_y_pred.loc[rmse_y_pred['time'].isin(common_time), :]
-
-                ydata_mdl = concatenated_dfs['mdl'].loc[:, (concatenated_dfs['mdl'].columns != 'time')]
             else:
                 raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
 
             if rmse_y_true is not None:
-                rmse = mean_squared_error(rmse_y_true[column], rmse_y_pred[column], squared=False)
+                yt = rmse_y_true[column]
+                yp = rmse_y_pred[column]
+                okayvals = yt.notnull() & yp.notnull()
+                rmse = mean_squared_error(yt[okayvals], yp[okayvals], squared=False)
 
             # Write output data for this instance
             for column in ydata_mdl:
@@ -229,7 +245,9 @@ class Confrontation:
                 writer.writerow(row_dict)
         fileptr.flush()
 
-        return data_dict, concatenated_dfs, df_station_metadata, xdata_gv, xdata_mdl, ydata_gv, ydata_mdl
+        return data_dict, concatenated_dfs, df_station_metadata, \
+               xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+               rmse_y_true, rmse_y_pred
 
     def concatenate_stations_and_months(self, data_dict, processed_station_metadata) -> (dict, pd.DataFrame):
         """
@@ -382,12 +400,21 @@ def mutual_time_bounds(com: xr.Dataset, ref: xr.Dataset, time_limits) -> (xr.Dat
 
     Returns
     -------
-    ds_com : xr.Dataset
-    ds_ref : xr.Dataset
+    tuple
+        ds_com : xr.Dataset
+        ds_ref : xr.Dataset
     """
     # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
-    ds_ref, initial_ref_time, final_ref_time = apply_time_bounds(ref, time_limits)
-    ds_com, initial_com_time, final_com_time = apply_time_bounds(com, (ds_ref['time'].min().values, ds_ref['time'].max().values))
+    ds_ref, initial_ref_time, final_ref_time, revised_initial_time, revised_final_time = apply_time_bounds(ref,
+                                                                                                           time_limits)
+    new_limits = [time_limits[0], time_limits[1]]
+    if revised_initial_time > time_limits[0]:
+        new_limits[0] = revised_initial_time
+    if revised_final_time < time_limits[1]:
+        new_limits[1] = revised_final_time
+    _logger.debug('  revised time limits are %s' % new_limits)
+    ds_com, initial_com_time, final_com_time, revised_initial_time, revised_final_time = apply_time_bounds(com,
+                                                                                                           new_limits)
     # decimal years are added as a coordinate if not already there.
     if not ('time_decimal' in ds_com.coords):
         ds_com = ds_com.assign_coords(time_decimal=('time',
@@ -404,10 +431,10 @@ def extract_site_data_from_dataset(dataset: xr.Dataset,
 
     Parameters
     ----------
-    dataset: xarray.Dataset
-    lat: float
-    lon: float
-    drop: bool
+    dataset : xarray.Dataset
+    lat : float
+    lon : float
+    drop : bool
 
     Raises
     ------
@@ -457,10 +484,10 @@ def interpolate_to_altitude(data: xr.DataArray,
 
     Parameters
     ----------
-    data: xarray.DataArray
+    data : xarray.DataArray
         The carbon dioxide ('co2') variable
-    altitude: float
-    height_data: xarray.DataArray
+    altitude : float
+    height_data : xarray.DataArray
         The geopotential height ('zg') variable.
 
     """
@@ -501,41 +528,52 @@ def interpolate_to_altitude(data: xr.DataArray,
 
 
 def apply_time_bounds(ds: xr.Dataset,
-                      time_limits: tuple
-                      ) -> (xr.Dataset, np.datetime64, np.datetime64):
+                      time_limits: Union[tuple, list]
+                      ) -> (xr.Dataset, np.datetime64, np.datetime64, np.datetime64, np.datetime64):
     """
 
     Parameters
     ----------
     ds : xr.Dataset
-    time_limits : tuple of datetime
+    time_limits : tuple of datetime or list with length 2
         (start time, end time)
 
     Returns
     -------
-    ds : xr.Dataset
-    initial_time : xr.Dataset
-        the earliest datetime in the dataset
-    final_time : xr.Dataset
-        the latest datetime in the dataset
+    tuple
+        ds : xr.Dataset
+        original_initial_time : np.datetime64
+            the earliest datetime in the dataset
+        original_final_time : np.datetime64
+            the latest datetime in the dataset
+        revised_initial_time : np.datetime64
+            the earliest datetime in the dataset
+        revised_final_time : np.datetime64
+            the latest datetime in the dataset
     """
     ds = ensure_dataset_datetime64(ds)
 
-    initial_time = ds['time'].min().values
-    final_time = ds['time'].max().values
+    original_initial_time = ds['time'].min().values
+    original_final_time = ds['time'].max().values
 
-    if time_limits[0]:
-        if final_time < time_limits[0]:
+    t1 = np.datetime64(time_limits[0])
+    t2 = np.datetime64(time_limits[1])
+
+    if t1 is not None:
+        if original_final_time < t1:
             raise RuntimeError("Final time of dataset <%s> is before the given time frame's start <%s>." %
-                               (np.datetime_as_string(final_time, unit='s'), time_limits[0]))
-        ds = ds.where(ds.time >= time_limits[0], drop=True)
-    if time_limits[1]:
-        if initial_time > time_limits[1]:
+                               (np.datetime_as_string(original_final_time, unit='s'), time_limits[0]))
+        ds = ds.where(ds.time >= t1, drop=True)
+    if t2 is not None:
+        if original_initial_time > t2:
             raise RuntimeError("Initial time of dataset <%s> is after the given time frame's end <%s>." %
-                               (np.datetime_as_string(initial_time, unit='s'), time_limits[1]))
-        ds = ds.where(ds.time <= time_limits[1], drop=True)
+                               (np.datetime_as_string(original_initial_time, unit='s'), time_limits[1]))
+        ds = ds.where(ds.time <= t2, drop=True)
 
-    return ds, initial_time, final_time
+    revised_initial_time = ds['time'].min().values
+    revised_final_time = ds['time'].max().values
+
+    return ds, original_initial_time, original_final_time, revised_initial_time, revised_final_time
 
 
 def update_for_skipped_station(msg, station_name, station_count, counter_dict):
@@ -554,13 +592,14 @@ def load_cmip_model_output(model_name: str,
 
     Parameters
     ----------
-    model_name
-    cmip_load_method
-    verbose
+    model_name : str
+    cmip_load_method : str
+    verbose : bool, default True
 
     Returns
     -------
-
+    bool
+    xarray.Dataset
     """
     if compare_against_model := bool(model_name):
         _logger.info('*Processing CMIP model output*')
@@ -575,19 +614,25 @@ def load_cmip_model_output(model_name: str,
     return compare_against_model, ds_mdl
 
 
-def bin_by_latitude(compare_against_model, data_dict, df_metadata, latitude_bin_size):
+def bin_by_latitude(compare_against_model: bool,
+                    data_dict: dict,
+                    df_metadata: pd.DataFrame,
+                    latitude_bin_size: int
+                    ) -> tuple:
     """
 
     Parameters
     ----------
-    compare_against_model
-    data_dict
-    df_metadata
-    latitude_bin_size
+    compare_against_model : bool
+    data_dict : dict
+        each key contains a list of Dataframes
+    df_metadata : pandas.Dataframe
+    latitude_bin_size : int
 
     Returns
     -------
-
+    dict
+    pandas.Dataframe
     """
     # We determine bins to which each station is assigned.
     def to_bin(x):
@@ -603,28 +648,31 @@ def bin_by_latitude(compare_against_model, data_dict, df_metadata, latitude_bin_
     return data_dict, df_metadata
 
 
-def get_seasonal_by_curve_fitting(compare_against_model, data_dict, da_mdl, ds_obs,
+def get_seasonal_by_curve_fitting(compare_against_model: bool,
+                                  da_mdl, ds_obs,
                                   opts, station):
     """
 
     Parameters
     ----------
-    compare_against_model: (bool)
-    data_dict: (dict) each key contains a list of Dataframes
-    da_mdl
-    da_obs
-    ds_obs
-    opts
-    station
+    compare_against_model : bool
+    da_mdl : xarray.Dataarray
+    da_obs : xarray.Dataarray
+    ds_obs : xarray.Dataset
+    opts : argparse.Namespace
+    station : str
+
+    Raises
+    ------
+    RuntimeError
 
     Returns
     -------
-
+    tuple
     """
     # Check that there is at least one year's worth of data for this station.
     if (ds_obs.time.values.max().astype('datetime64[M]') - ds_obs.time.values.min().astype('datetime64[M]')) < 12:
-        _logger.info('  insufficient number of months of data for station <%s>' % station)
-        return ValueError
+        raise RuntimeError('  insufficient number of months of data for station <%s>' % station)
 
     # --- Curve fitting ---
     #   (i) Globalview+ data
@@ -636,11 +684,10 @@ def get_seasonal_by_curve_fitting(compare_against_model, data_dict, da_mdl, ds_o
             filt_mdl = ccgFilter(xp=da_mdl['time_decimal'].values, yp=da_mdl.values,
                                  numpolyterms=3, numharmonics=4, timezero=int(da_mdl['time_decimal'].values[0]))
         except TypeError as te:
-            _logger.info('--- Curve filtering error ---')
-            return te
+            raise RuntimeError('  --- Curve filtering error --- (%s)' % te)
 
     # Optional plotting of components of the filtering process
-    if co2_diag.graphics.single_source_plots.plot_filter_components:
+    if opts.plot_filter_components:
         plot_filter_components(filt_ref,
                                original_x=ds_obs['time_decimal'].values,
                                # df_surface_station['time_decimal'].values,
@@ -669,7 +716,8 @@ def get_seasonal_by_curve_fitting(compare_against_model, data_dict, da_mdl, ds_o
     return ref_dt, ref_vals, mdl_dt, mdl_vals
 
 
-def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame, df_station_metadata: pd.DataFrame
+def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame,
+                      df_station_metadata: pd.DataFrame
                       ) -> pd.DataFrame:
     """Calculate means for each bin
 
@@ -677,12 +725,12 @@ def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame, df_station_m
 
     Parameters
     ----------
-    df_cycles_for_all_stations_ref
-    df_station_metadata
+    df_cycles_for_all_stations_ref : pandas.Dataframe
+    df_station_metadata : pandas.Dataframe
 
     Returns
     -------
-
+    pandas.Dataframe
     """
     # Add the coordinates and binning information to the dataframe with seasonal cycle values
     new_df = df_cycles_for_all_stations_ref.transpose()

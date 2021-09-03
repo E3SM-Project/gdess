@@ -67,17 +67,17 @@
         },
         "co2_diag.data_source.observations.load": {
             "handlers": ["rotating_file", "console"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": false
         },
         "co2_diag.formatters": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": false
         },
         "co2_diag.graphics": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": false
         },
         "co2_diag.operations": {
@@ -89,6 +89,11 @@
             "handlers": ["console"],
             "level": "INFO",
             "propagate": false
+        },
+        "google.auth": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": true
         }
     },
 

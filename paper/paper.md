@@ -51,7 +51,7 @@ As shown in \autoref{fig:code_schematic}, `gdess` is organized into modular comp
 
 ![Schematic of the `gdess` code structure.\label{fig:code_schematic}](graphics/gdess_structure_schematic_20210816.png){ width=70% }
 
-`gdess` can process data from three sources: Globalview+, CMIP, and E3SM. Data from surface observing stations must be retrieved from the NOAA Global Monitoring Laboratory (GML) Globalview+ version $6.0$ Observation package (Obspack; @globalview:20200911).  In situ and flask measurements can be used from approximately 200 stations whose data in Obspack spans **at least a 12 month period** (\autoref{fig:surface_station_map}).
+`gdess` can process data from three sources: Globalview+, CMIP, and E3SM. Data from surface observing stations must be retrieved from the NOAA Global Monitoring Laboratory (GML) Globalview+ version $6.0$ Observation package (Obspack; @globalview:20200911).  In situ and flask measurements can be used from approximately 200 stations whose data in Obspack spans at least a 12 month period (\autoref{fig:surface_station_map}).
 
 ![Global map showing surface observing station locations (red circles) and their three-letter site codes, as recorded in Obspack and used in `gdess`.\label{fig:surface_station_map}](graphics/surf_station_map.png){ width=65% }
 
@@ -67,19 +67,19 @@ This section describes and provides example output from the three diagnostic rec
 
 Skillful simulation of the historical multidecadal trend in atmospheric CO~2~ is a necessary condition for an ESM to be an effective tool for conducting climatological projections and analyses. The research questions one might address with this diagnostic recipe (see example output in \autoref{fig:surface_trend}) include: What are the long-term biases in the model simulation?  How does the simulated increase in CO~2~ mixing ratios compare to surface measurements?
 
-![Example output of the ``surface_trends`` recipe, showing (a) individual time series and (b) differences between simulated and observed concentrations of surface-level atmospheric CO~2~ at the Mauna Loa Observatory, Hawaii (MLO).\label{fig:surface_trend}](graphics/trends/combined_20210804.png){ width=90% }
+![Example output of the ``surface_trends`` recipe, showing (a) individual time series and (b) differences between simulated and observed concentrations of surface-level atmospheric CO~2~ at the Mauna Loa Observatory, Hawaii (MLO).\label{fig:surface_trend}](graphics/trends/combined_20210903.png){ width=90% }
 
 ##### Seasonal cycle
 
 Because of the substantial impact primary production and respiration have on CO~2~ concentrations, evaluating the seasonal cycle at a given location can help disentangle the effects of biological from physical processes. The seasonal cycle can be quantified by "the projection of an atmospheric time series onto a suitably defined subset of orthogonal basis functions, the choice of which depends on the length of the series involved" [@straus1983ams].  For computing the seasonal cycle, we detrend the time series by fitting a function composed of both polynomial and harmonic terms, following the procedure of @Sweeney2015b and originally proposed by @Thoning1989jgr. Example output of the ``seasonal cycle`` recipe is shown in \autoref{fig:seasonal_cycle}.
 
-![Example output of the ``seasonal_cycle`` recipe, comparing annual climatologies of surface atmospheric CO~2~ concentrations at the American Samoa Observatory, Tutuila Island (SMO).\label{fig:seasonal_cycle}](graphics/seasonal/test_figuresmo_2021-05-25.png){ width=75% }
+![Example output of the ``seasonal_cycle`` recipe, comparing annual climatologies of surface atmospheric CO~2~ concentrations at the American Samoa Observatory, Tutuila Island (SMO).\label{fig:seasonal_cycle}](graphics/seasonal/overlapped_2021-09-03.png){ width=75% }
 
 ##### Meridional gradient
 
 By comparing CO~2~ concentrations across observing sites distributed globally, we can assess whether simulated transport and mixing is skillfully reproducing spatial gradients. For instance, the surface CO~2~ flux signals at lower latitudes (30-45N) are moved to northern boreal latitudes and also to the south by large scale circulation. Spatial analysis can reveal evidence of southward movement toward (sub)tropical convection that becomes mixed with Hadley circulation or northward movement toward midlatitude synoptic weather patterns and the Ferrell circulation [@DenningEtAl1999tellusb; @StephensEtAl2007science; @SchuhEtAl2019gbc]. \autoref{fig:meridional} shows example output of the ``meridional`` recipe.
 
-![Example output of the ``meridional`` recipe, comparing the seasonal cycle across latitudes, at locations of user-specified surface stations.\label{fig:meridional}](graphics/meridional/stations_cycles_heatmap_2021-06-08.png){ width=75% }
+![Example output of the ``meridional`` recipe, comparing the seasonal cycle across latitudes, at locations of user-specified surface stations.\label{fig:meridional}](graphics/meridional/meridional_heatmap_2021-09-03.png){ width=75% }
 
 # Outlook
 

@@ -1,34 +1,35 @@
-import os
-from datetime import datetime
-import numpy as np
-
+from co2_diag.formatters import append_before_extension
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
-
-from co2_diag.formatters import append_before_extension
+import numpy as np
+from datetime import datetime
+import os
 
 colormap_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'colormaps')
 
 
-def aesthetic_grid_no_spines(axis):
+def aesthetic_grid_no_spines(axis) -> None:
+    """Add dashed grid lines and remove axis spines
+
+    Parameters
+    ----------
+    axis : plt.Axes
+    """
     axis.grid(True, linestyle='--', color='gray', alpha=1)
     for spine in axis.spines.values():
         spine.set_visible(False)
 
 
-def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs):
+def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs) -> None:
     """Append today's date to the file path and save with a tight bbox
 
     Parameters
     ----------
-    fig
-    results_dir: str
-    plot_save_name: str
+    fig : plt.Figure
+    results_dir : str
+    plot_save_name : str, default 'test'
     kwargs
-
-    Returns
-    -------
-
+        keyword arguments to pass to savefig
     """
     path = os.path.join(results_dir, plot_save_name)
     # If the path doesn't have an extension, we will default to png.
@@ -69,7 +70,24 @@ def limits_with_zero(t: tuple):
         raise ValueError("Unexpected condition")
 
 
-def get_colormap(colormap=None, colormap_search_dir=None):
+def get_colormap(colormap=None, colormap_search_dir=None) -> LinearSegmentedColormap:
+    """
+
+    Parameters
+    ----------
+    colormap : str
+        filename for an .rgb colormap file
+    colormap_search_dir : str
+        where the colormap files are located
+
+    Raises
+    ------
+    IOError
+
+    Returns
+    -------
+    colormap
+    """
     if not colormap:
         colormap = "WhiteBlueGreenYellowRed.rgb"
     if not colormap_search_dir:

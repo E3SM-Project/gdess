@@ -30,7 +30,8 @@ for atmospheric CO<sub>2</sub> concentrations.
 
 * [Data requirements and availability](#data-requirements-and-availability)
 * [Getting started](#getting-started)
-* [Usage](#usage)
+* [Example](#xample)
+* [Usage](#usage-description)
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
 * [Contributing](#contributing)
@@ -55,8 +56,9 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
   
 **Model Output - E3SM**
   - E3SM outputs do not need to be available to run recipes that compare Globalview+ and CMIP6 data.
-  - For parsing and running demo notebooks, 
-    one must have access to model output history as NetCDF file(s).
+  - For parsing and running recipes from E3SM Collection, 
+    one must have access to model output history as NetCDF file(s), 
+and a script for post-processing E3SM output is provided in `co2_diag/bin/`.
 
 ## Getting started
 
@@ -114,13 +116,19 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 
 ## Example
 
-The following steps generate this figure:
-<img src="./.images/test_figuresmo_2021-09-01.png" alt="components" width="712" height="280"/>
+- The following steps generate this figure:
+<img src="./.images/seasonal_example_20210903.png" alt="components" width="712" height="280"/>
 
-1. Install the `gdess` package according to the [installation](###installation) instructions
-2. Follow the [configuration](###configuration) instructions to use the included example data files
-3. 
-```./co2_diag/bin/gdess.py --verbose seasonal --start_yr 1980 --end_yr 2010 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
+  1. Install the `gdess` package according to the [installation](###installation) instructions
+  2. Follow the [configuration](###configuration) instructions to use the included example data files
+  3. 
+```./co2_diag/bin/gdess.py --verbose seasonal --start_yr 1980 --end_yr 2015 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
+
+- Other examples are given in the provided jupyter notebooks, 
+which show recipe usage (`trends_recipe.ipynb`, `seasonal_cycle_recipe.ipynb`, and `meridional_recipe.ipynb`). To run them:
+  1. Enable your conda environment via: `python -m ipykernel install --user --name=myenv`
+  2. Start jupyter by entering: `jupyter notebook`
+  3. Navigate within jupyter to `gdess/notebooks/demo/`
 
 ## Usage description
 
@@ -129,12 +137,12 @@ Diagnostic recipes can be run from the command line or from within a Python kern
 **Command line**
   - Use `co2_diag/bin/gdess.py` followed by the recipe name and then recipe options. To see available commands, run, e.g. `co2_diag/bin/gdess.py --help` or `co2_diag/bin/gdess.py seasonal --help`  
   - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
-    E.g. `co2_diag/bin/gdess.py @recipe_options_file.txt` 
+    For example, using the provided file: `co2_diag/bin/gdess.py @recipe_options_example.txt` 
 
 
 **In a Python kernel** 
   - The diagnostic recipes can be called directly, with options passed as a Python `dict` object.
-  - Check out the demonstration notebooks in `gdess/notebooks/demo/`. The notebooks showing recipe usage are: `trends_recipe.ipynb` and `seasonal_cycle_recipe.ipynb`  
+  - Check out the demonstration notebooks in `gdess/notebooks/demo/`. The notebooks show recipe usage.
 
 ## Updating
 
@@ -171,62 +179,73 @@ so please `git checkout develop`
 
 #### Components
 
-<img src="./.images/structure_diagram_20210512.png" alt="components" width="607" height="384"/>
+<img src="./.images/structure_diagram_20210903.png" alt="components" width="607" height="384"/>
 
 #### Directory Tree
 ```
 gdess
 │
-├── README.md                  <- Top-level README for users/developers of this project
-├── requirements.txt           <- Package dependencies
+├── README.md                            <- Top-level README for users/developers of this project
+├── requirements.txt                     <- Package dependencies
+├── recipe_options_example.txt
 │
-├── notebooks                  <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
+├── notebooks                            <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
 │   └──demo/
 │
-├── co2_diag                   <- *Python package* for handling co2 diagnostics
+├── co2_diag                             <- *Python package* for handling co2 diagnostics
 │   │
 │   ├── bin                  
-│   │   ├── gdess.py           <- Run recipes from the command line
-│   │   └── set_path_vars.sh   <- Script to set up data file paths for running examples
+│   │   ├── gdess.py                     <- Run recipes from the command line
+│   │   ├── set_path_vars.sh             <- Script to set up data file paths for running examples
+│   │   └── concat_and_remap_E3SM_co2.sh <- Script template for post-processing of E3SM output
 │   │
-│   ├── recipes                <- Generate repeatable diagnostics that span multiple data sources available as recipes 
+│   ├── recipes                          <- Generate repeatable diagnostics that span multiple data sources available as recipes 
 │   │   ├── surface_trends.py
 │   │   ├── seasonal_cycles.py
 │   │   ├── meridional_gradient.py
 │   │   ├── recipe_utils.py
 │   │   └── ...
 │   │
-│   ├── data_source            <- Load, parse, and manipulate data from a particular source
+│   ├── data_source                      <- Load, parse, and manipulate data from a particular source
 │   │   ├── models/
 │   │   ├── observations/
 │   │   ├── multiset.py
 │   │   └── ...
 │   │
-│   ├── operations             <- Manipulate datasets (e.g. spatially or temporally) 
-│   │   ├── geographic/
-│   │   ├── time/
-│   │   ├── convert/
+│   ├── operations                       <- Manipulate datasets (e.g. spatially or temporally) 
+│   │   ├── Confrontation.py
+│   │   ├── geographic.py
+│   │   ├── time.py
+│   │   ├── convert.py
 │   │   ├── datasetdict.py
 │   │   └── ...
 │   │
-│   ├── formatters             <- Manipulate formatting in desired ways
+│   ├── formatters                       <- Manipulate formatting in desired ways
+│   │   ├── args.py
 │   │   ├── nums.py
 │   │   ├── strings.py
 │   │   └── ...
 │   │
-│   ├── graphics               <- Make repeated graphic actions available 
-│   │   ├── mapping.py
+│   ├── graphics                         <- Make repeated graphic actions available 
+│   │   ├── comparison_plots.py
+│   │   ├── single_source_plots.py
 │   │   ├── utils.py
 │   │   └── ...
 │   │
-│   ├── config                 <- Configuration options
+│   ├── config                           <- Configuration options
 │   │   ├── defaults.ini
 │   │   ├── stations_dict.json
 │   │   └── log_config.json
 │   │   
 │   └── recipe_parsers.py
 │
-├── tests                      <- Unit and integration tests for development 
+├── tests                                <- Unit and integration tests for development 
+│   └── ...
+├── ccgcrv                               <- Curve fitting code from NOAA GML (see credits in the README)  
+│   └── ...
+├── ci                                   <- Environment specification for continuous integration  
+│   └── ...
+├── paper                                <- Manuscript for the Journal of Open Source Software (JOSS)  
 │   └── ...
 │
 ├── LICENSE
@@ -253,7 +272,8 @@ Additional details regarding the curve fitting approach can be found in the foll
   - Thoning, K.W., P.P. Tans, and W.D. Komhyr, 1989, Atmospheric carbon dioxide at Mauna Loa Observatory, 2. Analysis of the NOAA/GMCC data, 1974 1985., J. Geophys. Res. ,94, 8549 8565. https://doi.org/10.1029/JD094iD06p08549
   - Sweeney, C., Karion, A., Wolter, S., Newberger, T., Guenther, D., Higgs, J.A., Andrews, A.E., Lang, P.M., Neff, D., Dlugokencky, E., Miller, J.B., Montzka, S.A., Miller, B.R., Masarie, K.A., Biraud, S.C., Novelli, P.C., Crotwell, M., Crotwell, A.M., Thoning, K., Tans, P.P., 2015. Seasonal climatology of CO 2 across North America from aircraft measurements in the NOAA/ESRL Global Greenhouse Gas Reference Network. J. Geophys. Res. Atmos. 120, 5155–5190. https://doi.org/10.1002/2014JD022591
 
-- The Mauna Loa (MLO) dataset file used in the tests directory was provided via the Obspack by:
+- The Mauna Loa (MLO), American Samoa (SMO), South Pole (SPO), and Barrow Observatory (BRW) dataset files 
+used in the tests directory was provided via the Obspack (GLOBALVIEWplus_v6.0_2020-09-11) by:
 C. D. Keeling, S. C. Piper, R. B. Bacastow, M. Wahlen, 
 T. P. Whorf, M. Heimann, and H. A. Meijer, Exchanges of atmospheric CO2 and 13CO2 with the terrestrial biosphere
 and oceans from 1978 to 2000.  I. Global aspects, SIO Reference

@@ -25,7 +25,7 @@ class Multiset:
 
         Parameters
         ----------
-        verbose: Union[bool, str]
+        verbose : Union[bool, str], default False
             either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.stepA_original_datasets: Union[DatasetDict, None] = None
@@ -52,8 +52,8 @@ class Multiset:
 
         Parameters
         ----------
-        filename: str
-        replace: bool
+        filename : str, default 'cmip_collection.latest_executed_datasets.pickle'
+        replace : bool, default False
 
         Returns
         -------
@@ -78,7 +78,7 @@ class Multiset:
             else:
                 return pickle.load(f)
 
-    def validate_time_options(self, starttime_option, endtime_option):
+    def validate_time_options(self, starttime_option, endtime_option) -> None:
         """Check whether the specified start time is before the data's end time
             and the specified end time is after the data's start time.
 
@@ -87,9 +87,9 @@ class Multiset:
         starttime_option
         endtime_option
 
-        Returns
-        -------
-
+        Raises
+        ------
+        ValueError
         """
         for k, v in self.stepB_preprocessed_datasets.items():
             data_starttime = v['time'].min().values
@@ -109,12 +109,18 @@ class Multiset:
 
         Parameters
         ----------
-        data
-        varname
+        data : Union[xr.DataArray, xr.Dataset]
+        varname : str
+
+        Raises
+        ------
+        TypeError
 
         Returns
         -------
-
+        tuple
+            A pandas Dataframe
+            A pandas Dataframe
         """
         if isinstance(data, xr.DataArray):
             data = ensure_datetime64_array(data)
@@ -140,12 +146,12 @@ class Multiset:
         """
         Parameters
         ----------
-        nc: int
+        nc : int
             number of categories
-        nsc: int
+        nsc : int
             number of subcategories
-        cmap: str
-        continuous: bool
+        cmap : str, default 'tab10'
+        continuous : bool, default False
 
         Returns
         -------
@@ -190,19 +196,16 @@ class Multiset:
             if not k.startswith('_'):
                 if isinstance(self.__dict__[k], pd.DataFrame) | isinstance(self.__dict__[k], pd.Series):
                     # Pandas object truth value can't be compared without .empty
-                    if (not self.__dict__[k].empty):
+                    if not self.__dict__[k].empty:
                         list_builder.append(f"{k}: empty")
                     else:
                         list_builder.append(k)
-                elif (not self.__dict__[k]):
+                elif not self.__dict__[k]:
                     list_builder.append(f"{k}: empty")
                 else:
                     list_builder.append(f"{k}: {type(k)}")
 
         return sorted(list_builder)
-        # return sorted([f"{k}: empty" if (not self.__dict__[k]) else k
-        #                for k in self.__dict__.keys()
-        #                if not k.startswith('_')])
 
     def _original_datasets_list_str(self) -> str:
         """ Get a list of the identifying keys for each dataset

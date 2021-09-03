@@ -4,20 +4,35 @@ import math
 def numstr(number, decimalpoints: int) -> str:
     """ Print big numbers nicely.
     Add commas, and restrict decimal places
+
+    Parameters
+    ----------
+    number : numeric
+    decimalpoints : int
+        Number of decimal points to which the output string is restricted
+
+    Returns
+    -------
+    str
+        nicely formatted number
     """
     fmtstr = '{:,.%sf}' % str(decimalpoints)
     return fmtstr.format(number)
 
 
-def my_round(x, nearest: int = 10, direction: str = 'up'
+def my_round(x, nearest=10, direction: str = 'up'
              ) -> int:
     """Round to the nearest specified whole number
 
     Parameters
     ----------
-    x
-    nearest
-    direction
+    x : numeric
+    nearest : numeric, default 10
+    direction : str, default 'up'
+
+    Returns
+    -------
+    int
     """
     # rounding method
     if direction == 'up':

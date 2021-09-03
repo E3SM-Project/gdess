@@ -1,6 +1,10 @@
+from co2_diag.formatters.nums import my_round
 import pandas as pd
 from cycler import cycler
+import matplotlib as mpl
 from matplotlib import pyplot as plt, dates as mdates, ticker, colors as mcolors
+# import mpl_toolkits
+# from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from co2_diag.graphics import aesthetic_grid_no_spines, mysavefig
 
@@ -43,7 +47,6 @@ def plot_comparison_against_model(ref_xdata: pd.DataFrame,
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
     month_fmt = mdates.DateFormatter('%b')
-    # ax.xaxis.set_major_formatter(month_fmt)
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda z, pos=None: month_fmt(z)[0]))
     #
@@ -69,15 +72,27 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
 
     # --- Plot the seasonal cycle for all stations,
     #   and flip the ydata because pyplot.imshow will plot the last row on the bottom
-    totalfigheight = (num_stations*0.8) + (num_stations*0.8)*0.15  # Add 0.15 for the colorbar
-    fig, ax = plt.subplots(1, 1, figsize=(6, totalfigheight))
+    totalfigheight = max([1.5, (num_stations*0.8) + (num_stations*0.8)*0.15])  # Add 0.15 for the colorbar
+    gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[1+int(1/my_round((0.6 / num_stations), 0.1, 'up')), 1])
+    fig = plt.figure(figsize=(6, totalfigheight))
+    # fig, ax = plt.subplots(1, 1, figsize=(6, totalfigheight))
+    # ax = plt.gca()
+    ax = fig.add_subplot(gs[0, 0])
+    cbar_ax = fig.add_subplot(gs[1, 0])
+
     im = ax.imshow(ydata.transpose().iloc[::-1],
                    norm=mcolors.TwoSlopeNorm(vcenter=0.), cmap='RdBu_r', interpolation='nearest',
                    aspect='auto', extent=(mindate, maxdate, -0.5, num_stations - 0.5))
     #
-    # y_label_list = station_names
     ax.set_yticks(range(num_stations))
     ax.set_yticklabels(station_labels)
+    #
+    # divider = make_axes_locatable(ax)
+    # cbar_ax = divider.append_axes("bottom", size="20%", pad=fig_height*0.1)
+    _, fig_height = fig.get_size_inches()
+    cbar = plt.colorbar(im, cax=cbar_ax, orientation="horizontal", pad=fig_height*0.2)
+    cbar.ax.set_xlabel('$CO_2$ (ppm)')
+    cbar.ax.set_xticklabels(cbar.ax.get_xticklabels(), rotation='vertical')
     #
     # Add secondary y-axis on the right side to show station latitudes
     if rightside_labels:
@@ -88,13 +103,8 @@ def plot_heatmap_of_all_stations(xdata: pd.DataFrame,
         ax2.set_yticks(range(num_stations))
         ax2.set_yticklabels(rightside_labels)
     #
-    cbar = fig.colorbar(im, orientation="horizontal", pad=max([0.5, (num_stations - 0.5)*0.008]))
-    cbar.ax.set_xlabel('$CO_2$ (ppm)')
-    cbar.ax.set_xticklabels(cbar.ax.get_xticklabels(), rotation='vertical')
-    #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
     month_fmt = mdates.DateFormatter('%b')
-    # ax.xaxis.set_major_formatter(month_fmt)
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda z, pos=None: month_fmt(z)[0]))
     #
@@ -123,7 +133,6 @@ def plot_lines_for_all_station_cycles(xdata: pd.DataFrame,
     #
     # Specify the xaxis tick labels format -- %b gives us Jan, Feb...
     month_fmt = mdates.DateFormatter('%b')
-    # ax.xaxis.set_major_formatter(month_fmt)
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda z, pos=None: month_fmt(z)[0]))
     #

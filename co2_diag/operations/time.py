@@ -11,7 +11,16 @@ _logger = logging.getLogger(__name__)
 
 def ensure_dataset_datetime64(dataset: xr.Dataset
                               ) -> xr.Dataset:
-    # It is more convenient to work with the `time` variable as type `datetime64`.
+    """Often it is more convenient to work with the `time` variable as type `datetime64`.
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+
+    Returns
+    -------
+    xarray.Dataset
+    """
     dataset = xr.decode_cf(dataset)
     dataset['time'] = ensure_datetime64_array(dataset['time'])
 
@@ -27,8 +36,16 @@ def year_to_datetime64(yr: str):
 
 def to_datetimeindex(dataset: xr.Dataset
                      ) -> xr.Dataset:
-    # For model output, it is often more convenient to work with the `time` variable as type `datetime64`.
+    """It is often more convenient to work with the `time` variable as type `datetime64`.
 
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+
+    Returns
+    -------
+    xarray.Dataset
+    """
     # Check if it's already a datetimeindex
     if isinstance(dataset.indexes['time'], pd.core.indexes.datetimes.DatetimeIndex):
         _logger.debug('already a datetimeindex, no conversion done.')
@@ -58,7 +75,7 @@ def ensure_cftime_array(time: Sequence):
 
     Parameters
     ----------
-    time
+    time : Sequence
 
     Returns
     -------
@@ -96,7 +113,7 @@ def select_between(dataset: xr.Dataset,
 
     Parameters
     ----------
-    dataset
+    dataset : xarray.Dataset
     timestart
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
@@ -104,15 +121,12 @@ def select_between(dataset: xr.Dataset,
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
     varlist
-    drop
-        True (default) / False
-    drop_dups
-        True (default) / False
+    drop : bool, default True
+    drop_dups : bool, default True
 
     Returns
     -------
     a subset of the original dataset with only times between timestart and timeend
-
     """
     if varlist is None:
         ds_sub = dataset.copy()
@@ -136,8 +150,8 @@ def monthlist(dates) -> list:
 
     Parameters
     ----------
-    dates
-        A list of length=2, with a start and end date, in the format of "%Y-%m-%d"
+    dates : list
+        Of length==2, with a start and end date, in the format of "%Y-%m-%d"
 
     Returns
     -------
