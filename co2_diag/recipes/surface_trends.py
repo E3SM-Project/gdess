@@ -66,14 +66,6 @@ def surface_trends(options: dict,
     # --- Load CMIP model output ---
     compare_against_model, ds_mdl = load_cmip_model_output(opts.model_name, opts.cmip_load_method, verbose=verbose)
 
-    #
-    # # --- Globalview+ and CMIP are now handled together ---
-    # da_obs, da_mdl = make_comparable(ds_obs, ds_mdl,
-    #                                  time_limits=(np.datetime64(opts.start_yr), np.datetime64(opts.end_yr)),
-    #                                  latlon=(ds_obs['latitude'].values[0], ds_obs['longitude'].values[0]),
-    #                                  altitude=ds_obs['altitude'].values[0], altitude_method='lowest',
-    #                                  global_mean=opts.globalmean, verbose=verbose)
-
     conf = Confrontation(compare_against_model, ds_mdl, opts, stations_to_analyze, verbose)
     cycles_of_each_station, concatenated_dfs, df_station_metadata, \
         xdata_obs, xdata_mdl, ydata_obs, ydata_mdl, \
@@ -81,35 +73,34 @@ def surface_trends(options: dict,
 
     # --- Create Graphic ---
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
+    diffs = {}
     if opts.difference:
         # Values at the same time
-        # da_mdl_rs = ydata_mdl.resample(time="1MS").mean()
-        # da_obs_rs = ydata_obs.resample(time="1MS").mean()['co2']
-        #
-        da_TestMinusRef = (ydata_mdl - ydata_obs)
-        #
-        data_output = {'model': ydata_mdl, 'obs': ydata_obs, 'diff': da_TestMinusRef}
-        #
-        # Plot
-        ax.plot(xdata_obs, da_TestMinusRef,
-                label='model - obs',
-                marker='.', linestyle='none')
+        for station in stations_to_analyze:
+            merged = rmse_y_pred.loc[:, ['time', station]].merge(rmse_y_true.loc[:, ['time', station]],
+                                                                 on='time', suffixes=("_pred", "_true"),)
+            merged['diff'] = merged[station + '_pred'] - merged[station + '_true']
+            # Plot
+            ax.plot(merged['time'], merged['diff'],
+                    label=f"model - obs [{station}]",
+                    marker='.', linestyle='none')
+            diffs[station] = merged['diff']
         #
         ax.set_ylim(limits_with_zero(ax.get_ylim()))
+        #
+        data_output = {'model': rmse_y_pred, 'obs': rmse_y_true, 'diff': diffs}
 
     else:
-        # x_mdl = xdata_mdl[~np.isnan(ydata_mdl.values)]
-        # y_mdl = ydata_mdl.values[~np.isnan(ydata_mdl.values)]
-        #
         data_output = {'model': ydata_mdl, 'obs': ydata_obs}
         #
-        # Plot
-        ax.plot(xdata_obs, ydata_obs,
-                # label=f'Obs [{station_code}]',
-                color='k')
-        ax.plot(xdata_mdl, ydata_mdl,
-                label=f'Model [{opts.model_name}]',
-                color='r', linestyle='-')
+        for station in stations_to_analyze:
+            # Plot
+            ax.plot(concatenated_dfs['ref']['time'], concatenated_dfs['ref'][station],
+                    label=f"Obs [{station}]",
+                    color='k')
+            ax.plot(concatenated_dfs['mdl']['time'], concatenated_dfs['mdl'][station],
+                    label=f'Model [{opts.model_name}]',
+                    color='r', linestyle='-')
 
     ax.set_ylabel('$CO_2$ (ppm)')
     aesthetic_grid_no_spines(ax)

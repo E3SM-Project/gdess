@@ -132,7 +132,6 @@ class Confrontation:
             _logger.info("Done -- %s stations fully processed. %s stations skipped.",
                          len(data_dict['ref']), counter['skipped'])
 
-
         concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
                                                                                      processed_station_metadata)
         if how == 'seasonal':
@@ -688,7 +687,7 @@ def get_seasonal_by_curve_fitting(compare_against_model: bool,
             raise RuntimeError('  --- Curve filtering error --- (%s)' % te)
 
     # Optional plotting of components of the filtering process
-    if co2_diag.graphics.single_source_plots.plot_filter_components:
+    if opts.plot_filter_components:
         plot_filter_components(filt_ref,
                                original_x=ds_obs['time_decimal'].values,
                                # df_surface_station['time_decimal'].values,
