@@ -220,8 +220,12 @@ class Confrontation:
             else:
                 raise ValueError("Unexpected value for 'how' to do the Confrontation. Got %s." % how)
 
+            rmse = np.nan
             if rmse_y_true is not None:
-                rmse = mean_squared_error(rmse_y_true[column], rmse_y_pred[column], squared=False)
+                yt = rmse_y_true[column]
+                yp = rmse_y_pred[column]
+                okayvals = yt.notnull() & yp.notnull()
+                rmse = mean_squared_error(yt[okayvals], yp[okayvals], squared=False)
 
             # Write output data for this instance
             for column in ydata_mdl:
