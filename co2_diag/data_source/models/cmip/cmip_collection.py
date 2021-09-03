@@ -13,6 +13,7 @@ from co2_diag.formatters import append_before_extension
 from co2_diag.graphics.single_source_plots import plot_annual_series, plot_zonal_mean
 from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
 import intake
+import numpy as np
 import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
@@ -410,6 +411,10 @@ class Collection(Multiset):
         self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
         self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm, co2_var_name='co2', inplace=True)
         self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
+
+        _logger.debug("  the first DataSet has a time range of <%s> to <%s>.",
+                      np.datetime_as_string(list(self.stepB_preprocessed_datasets.items())[0][1]['time'].values[0], unit='D'),
+                      np.datetime_as_string(list(self.stepB_preprocessed_datasets.items())[0][1]['time'].values[-1], unit='D'))
 
         msg = "all converted."
         msg += "\nKeys for models that have been preprocessed:"
