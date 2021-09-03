@@ -99,10 +99,12 @@ class Confrontation:
                 continue
             #
             if how == 'seasonal':
-                ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model,
-                                                          da_mdl, ds_obs, self.opts, station)
-                if isinstance(data_dict, Exception):
-                    update_for_skipped_station(data_dict, station, num_stations, counter)
+                try:
+                    ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model,
+                                                                                       da_mdl, ds_obs,
+                                                                                       self.opts, station)
+                except RuntimeError as re:
+                    update_for_skipped_station(re, station, num_stations, counter)
                     continue
                 #
                 data_dict['ref'].append(pd.DataFrame.from_dict({"month": ref_dt, f"{station}": ref_vals}))
@@ -644,7 +646,7 @@ def get_seasonal_by_curve_fitting(compare_against_model: bool,
 
     Raises
     ------
-    ValueError
+    RuntimeError
 
     Returns
     -------
@@ -652,8 +654,7 @@ def get_seasonal_by_curve_fitting(compare_against_model: bool,
     """
     # Check that there is at least one year's worth of data for this station.
     if (ds_obs.time.values.max().astype('datetime64[M]') - ds_obs.time.values.min().astype('datetime64[M]')) < 12:
-        _logger.info('  insufficient number of months of data for station <%s>' % station)
-        return ValueError
+        raise RuntimeError('  insufficient number of months of data for station <%s>' % station)
 
     # --- Curve fitting ---
     #   (i) Globalview+ data
@@ -665,8 +666,7 @@ def get_seasonal_by_curve_fitting(compare_against_model: bool,
             filt_mdl = ccgFilter(xp=da_mdl['time_decimal'].values, yp=da_mdl.values,
                                  numpolyterms=3, numharmonics=4, timezero=int(da_mdl['time_decimal'].values[0]))
         except TypeError as te:
-            _logger.info('--- Curve filtering error ---')
-            return te
+            raise RuntimeError('  --- Curve filtering error --- (%s)' % te)
 
     # Optional plotting of components of the filtering process
     if co2_diag.graphics.single_source_plots.plot_filter_components:
