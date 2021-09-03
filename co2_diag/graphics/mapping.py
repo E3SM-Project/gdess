@@ -114,7 +114,8 @@ def add_site_labels(ax: plt.Axes, labels: Sequence, lats: Sequence, lons: Sequen
     labels : Sequence
     lats : Sequence
     lons : Sequence
-    kwargs : dict
+    kwargs
+        keyword arguments to pass to the adjust_text function
     """
     texts = []
     for label, lat, lon in zip(labels, lats, lons):

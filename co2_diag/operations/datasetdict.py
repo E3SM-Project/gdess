@@ -58,8 +58,9 @@ class DatasetDict(dict):
 
         Parameters
         ----------
-        dim : str
-        kwargs : dict
+        dim : dict
+        kwargs
+            keyword arguments to pass to the mean functions
 
         Returns
         -------
@@ -83,9 +84,11 @@ class DatasetDict(dict):
         ----------
         fnc
         args
-        kwargs : dict
-            'inplace' (bool): whether the functions should be applied to this DatasetDict or
-                whether a copy should be returned with the operations applied.
+        kwargs
+            keyword arguments, e.g.
+                inplace : bool
+                    whether the functions should be applied to this DatasetDict or
+                    whether a copy should be returned with the operations applied.
 
         Returns
         -------

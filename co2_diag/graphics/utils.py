@@ -28,7 +28,8 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs) -> None:
     fig : plt.Figure
     results_dir : str
     plot_save_name : str, default 'test'
-    kwargs : dict
+    kwargs
+        keyword arguments to pass to savefig
     """
     path = os.path.join(results_dir, plot_save_name)
     # If the path doesn't have an extension, we will default to png.
