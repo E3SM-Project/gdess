@@ -91,7 +91,7 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
     if ydata_mdl is not None:
         #   (ii) CMIP data
         plot_heatmap_of_all_stations(xdata_obs, ydata_mdl, rightside_labels=heatmap_rightside_labels,
-                                     figure_title="mdl",
+                                     figure_title="model",
                                      savepath=append_before_extension(opts.figure_savepath, 'mdl_heatmap'))
 
         #   (iii) Model - obs difference
