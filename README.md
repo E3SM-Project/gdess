@@ -56,8 +56,9 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
   
 **Model Output - E3SM**
   - E3SM outputs do not need to be available to run recipes that compare Globalview+ and CMIP6 data.
-  - For parsing and running demo notebooks, 
-    one must have access to model output history as NetCDF file(s).
+  - For parsing and running recipes from E3SM Collection, 
+    one must have access to model output history as NetCDF file(s), 
+and a script for post-processing E3SM output is provided in `co2_diag/bin/`.
 
 ## Getting started
 
