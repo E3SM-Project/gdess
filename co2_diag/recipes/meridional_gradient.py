@@ -79,9 +79,10 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
         xdata_obs, xdata_mdl, ydata_obs, ydata_mdl, \
         rmse_y_true, rmse_y_pred = conf.looper(how='seasonal')
 
-    heatmap_rightside_labels = None
     if opts.latitude_bin_size:
         # we won't use additional latitude labels for the heatmap, because the left side will be latitude bins
+        heatmap_rightside_labels = None
+    else:
         heatmap_rightside_labels = [numstr(x, decimalpoints=2) for x in df_station_metadata['lat']]
 
     # --- Plot the heatmap with all station locations
