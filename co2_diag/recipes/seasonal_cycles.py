@@ -96,4 +96,13 @@ def seasonal_cycles(options: Union[dict, argparse.Namespace],
                                       savepath=append_before_extension(opts.figure_savepath, 'overlapped'))
 
     _logger.info("Saved at <%s>" % opts.figure_savepath)
+
+    if opts.data_savepath:
+        data_output = {'xdata_obs': xdata_obs, 'ydata_obs': ydata_obs, 'ydata_mdl': ydata_mdl, 'ydiff': ydiff}
+        savepath = append_before_extension(opts.data_savepath, 'seasonal')
+        for k, v in data_output.items():
+            fp = append_before_extension(savepath, str(k))
+            v.to_csv(fp)
+            _logger.info("Saved %s at <%s>" % (k, fp))
+
     return concatenated_dfs, cycles_of_each_station, df_station_metadata

@@ -112,6 +112,13 @@ def surface_trends(options: dict,
         mysavefig(fig=fig, plot_save_name=savepath,
                   bbox_inches='tight')
         _logger.info("Saved at <%s>" % savepath)
+    if opts.data_savepath:
+        savepath = append_before_extension(opts.data_savepath, 'trend')
+        for k, v in data_output.items():
+            fp = append_before_extension(savepath, str(k))
+            v.to_csv(fp)
+            _logger.info("Saved %s at <%s>" % (k, fp))
+
     return data_output
 
 

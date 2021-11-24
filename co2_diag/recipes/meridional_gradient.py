@@ -99,5 +99,19 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
                                      figure_title=f"model - obs",
                                      savepath=append_before_extension(opts.figure_savepath, 'diff_heatmap'))
 
+        data_output = {'xdata_obs': xdata_obs, 'xdata_mdl': xdata_mdl,
+                       'ydata_obs': ydata_obs, 'ydata_mdl': ydata_mdl, 'ydiff': ydiff}
+    else:
+        data_output = {'xdata_obs': xdata_obs, 'xdata_mdl': xdata_mdl,
+                       'ydata_obs': ydata_obs, 'ydata_mdl': ydata_mdl}
+
     _logger.info("Saved at <%s>" % opts.figure_savepath)
+
+    if opts.data_savepath:
+        savepath = append_before_extension(opts.data_savepath, 'seasonal')
+        for k, v in data_output.items():
+            fp = append_before_extension(savepath, str(k))
+            v.to_csv(fp)
+            _logger.info("Saved %s at <%s>" % (k, fp))
+
     return concatenated_dfs, cycles_of_each_station, df_station_metadata
