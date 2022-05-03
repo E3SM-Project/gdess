@@ -89,4 +89,8 @@ Currently, `gdess` is helping to assess simulations using the biogeochemistry co
 
 We thank Drs. Colm Sweeney and Kirk Thoning, at the NOAA Global Monitoring Laboratory, for providing code and support for implementing the curve fitting methods. A dataset file provided via the Obspack from the Mauna Loa surface observing station is included in the tests directory with permission from the data provider, @KeelingEtAl2001sioref. This research was supported as part of the Energy Exascale Earth System Model (E3SM) project, funded by the U.S. Department of Energy (DOE), Office of Science, Office of Biological and Environmental Research. Data analysis described in this work relied on computational resources provided by the National Energy Research Scientific Computing Center, a DOE Office of Science User Facility supported by the Office of Science of the U.S. Department of Energy under Contract DE-AC02-05CH11231. The Pacific Northwest National Laboratory (PNNL) is operated for DOE by Battelle Memorial Institute under Contract DE-AC05-76RLO1830.
 
+# Author contributions
+
+D.K., K.C., B.H., and S.B. initially conceived the study. D.K. was the main code contributor of the gdess software and wrote the initial version of the paper. S.F. contributed to code testing. S.F., B.H., and S.B. ideated the experiment examples and priorities. All authors discussed the results, commented, and contributed to writing of the final version of the paper. K.C. supervised the study.
+
 # References
