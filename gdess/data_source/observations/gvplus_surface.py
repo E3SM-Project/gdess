@@ -365,7 +365,7 @@ class Collection(Multiset):
                          fontsize=12)
         for lh in leg.legendHandles:
             lh.set_alpha(1)
-            lh._legmarker.set_alpha(1)
+
         bbox_artists = (leg,)
 
         return fig, ax, bbox_artists

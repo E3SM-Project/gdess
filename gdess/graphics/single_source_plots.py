@@ -53,7 +53,6 @@ def plot_annual_series(df_anomaly_yearly: pd.DataFrame,
                     loc='best', fontsize=12)
     for lh in leg.legendHandles:
         lh.set_alpha(1)
-        lh._legmarker.set_alpha(1)
     #
     #         ax.grid(linestyle='--', color='lightgray')
     #         for k in ax.spines.keys():
