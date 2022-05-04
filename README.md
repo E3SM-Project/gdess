@@ -128,7 +128,7 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
   1. Install the `gdess` package according to the [installation](###installation) instructions
   2. Follow the [configuration](###configuration) instructions to use the included example data files
   3. 
-```./co2_diag/bin/gdess.py --verbose seasonal --start_yr 1980 --end_yr 2015 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
+```./gdess/bin/gdess_cli.py --verbose seasonal --start_yr 1980 --end_yr 2015 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
 
 - Other examples are given in the provided jupyter notebooks, 
 which show recipe usage (`trends_recipe.ipynb`, `seasonal_cycle_recipe.ipynb`, and `meridional_recipe.ipynb`). To run them:
@@ -141,9 +141,9 @@ which show recipe usage (`trends_recipe.ipynb`, `seasonal_cycle_recipe.ipynb`, a
 Diagnostic recipes can be run from the command line or from within a Python kernel:
 
 **Command line**
-  - Use `co2_diag/bin/gdess.py` followed by the recipe name and then recipe options. To see available commands, run, e.g. `co2_diag/bin/gdess.py --help` or `co2_diag/bin/gdess.py seasonal --help`  
+  - Use `gdess/bin/gdess_cli.py` followed by the recipe name and then recipe options. To see available commands, run, e.g. `gdess/bin/gdess_cli.py --help` or `gdess/bin/gdess_cli.py seasonal --help`  
   - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
-    For example, using the provided file: `co2_diag/bin/gdess.py @recipe_options_example.txt` 
+    For example, using the provided file: `gdess/bin/gdess_cli.py @recipe_options_example.txt` 
 
 
 **In a Python kernel** 
@@ -201,7 +201,7 @@ gdess
 ├── gdess                                <- *Python package* for handling co2 diagnostics
 │   │
 │   ├── bin                  
-│   │   ├── gdess.py                     <- Run recipes from the command line
+│   │   ├── gdess_cli.py                 <- Run recipes from the command line
 │   │   ├── set_path_vars.sh             <- Script to set up data file paths for running examples
 │   │   └── concat_and_remap_E3SM_co2.sh <- Script template for post-processing of E3SM output
 │   │
