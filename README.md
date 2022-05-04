@@ -71,26 +71,29 @@ and a script for post-processing E3SM output is provided in `gdess/bin/`.
 
 3. Then, finish setting it up with the following configuration steps... 
 
-## Configuration
+### Configuration
 
 Instead of passing data filepaths to the recipe functions each time, 
-you can define environment variables for the directory containing Globalview+ Obspack
+environment variables should be defined for the directory containing Globalview+ Obspack
 and CMIP model output.
 
 ##### On a Mac/Linux OS:
+- To set the paths for every future terminal instance (and if you are running in a bash environment), 
+set these paths in your `~/.bash_profile`:
+```bash
+export GDESS_CMIP_DATA=Path/to/Model/Output/NetCDF/Files
+export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
+export GDESS_SAVEPATH=Path/to/desired/location/for/outputs
+```
+(If working with the code repository directly, one can use the supplied path-setting script:
 - Specify the path to the repo on the first line of `gdess/bin/set_path_vars.sh`. 
 For instance, by executing: `export GDESS_REPO=${HOME}/gdess`
 - Set paths to the test data by running the script at the command line:
 ```shell
 source ./gdess/bin/set_path_vars.sh
 ```
-- To use stored data other than the test data, modify the other data paths in the scripts. 
-For example, to set the paths for every future terminal instance (and if you are running in a bash environment), 
-set these paths in your `~/.bash_profile`:
-```bash
-export GDESS_CMIP_DATA=Path/to/Model/Output/NetCDF/Files
-export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
-```
+To use stored data other than the test data, modify the other data paths in the scripts.
+)
 
 ##### On a Windows OS:
 - Follow the instructions provided in `./gdess/bin/set_path_vars.bat`
