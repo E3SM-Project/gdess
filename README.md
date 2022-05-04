@@ -30,11 +30,13 @@ for atmospheric CO<sub>2</sub> concentrations.
 ## Contents
 
 * [Data requirements and availability](#data-requirements-and-availability)
-* [Getting started](#getting-started)
+* [Installation](#installation)
+* [Configuration](#configuration)
 * [Example](#xample)
 * [Usage](#usage-description)
-* [Updating](#updating)
 * [Uninstalling](#uninstalling)
+* [Development](#development-environment-instructions)
+* [Updating](#updating)
 * [Contributing](#contributing)
 * [Project structure](#project-structure)
 * [Credits](#credits)
@@ -61,39 +63,15 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
     one must have access to model output history as NetCDF file(s), 
 and a script for post-processing E3SM output is provided in `gdess/bin/`.
 
-## Getting started
+## Installation
 
-### Installation
+1. Before installing `gdess`, set up the `cartopy` dependency with conda (it has less issues with conda than with pip): `conda install -c conda-forge cartopy`.
 
-👥 Clone this repository to the location of your choice.
-```shell script
-git clone https://github.com/E3SM-Project/gdess.git ~/gdess
-cd ~/gdess
-```
+2. `pip install gdess`
 
-🌍 Create conda environment and install dependencies. 
-*Note: Replace “myenv” with the preferred name of your environment, e.g. "gdess_env". 
-From here on we’ll use “myenv” to refer to our environment.*
+3. Then, finish setting it up with the following configuration steps... 
 
-```shell script
-conda create -n myenv python=3.8
-conda activate myenv
-conda config --add channels conda-forge
-conda install --file requirements.txt
-```
-
-💾 Install the package:
-```shell script
-pip install .
-```
-
-To run the tests, now retrieve the example data files using:
-```shell
-git lfs install
-git lfs pull
-```
-
-### Configuration
+## Configuration
 
 Instead of passing data filepaths to the recipe functions each time, 
 you can define environment variables for the directory containing Globalview+ Obspack
@@ -150,7 +128,46 @@ Diagnostic recipes can be run from the command line or from within a Python kern
   - The diagnostic recipes can be called directly, with options passed as a Python `dict` object.
   - Check out the demonstration notebooks in `gdess/notebooks/demo/`. The notebooks show recipe usage.
 
-## Updating
+## Uninstalling
+
+🚮 To remove this package from your environment:
+
+```
+pip uninstall gdess
+```
+
+
+## Development environment instructions
+👥 Clone the `gdess` repository to the location of your choice.
+```shell script
+git clone https://github.com/E3SM-Project/gdess.git ~/gdess
+cd ~/gdess
+```
+
+🌍 Create conda environment and install dependencies. 
+*Note: Replace “myenv” with the preferred name of your environment, e.g. "gdess_env". 
+From here on we’ll use “myenv” to refer to our environment.*
+
+```shell script
+conda create -n myenv python=3.8
+conda activate myenv
+conda config --add channels conda-forge
+conda install --file requirements.txt
+```
+
+💾 Install the package:
+```shell script
+pip install .
+```
+
+To run the tests, now retrieve the example data files using:
+```shell
+git lfs install
+git lfs pull
+```
+
+
+### Updating the development version
 
 To use the latest version of this repository:
 - Enter the `gdess/` directory
@@ -163,13 +180,6 @@ To use the latest version of this repository:
    pip install . --upgrade
    ```
 
-## Uninstalling
-
-🚮 To remove this package from your environment:
-
-```
-pip uninstall gdess
-```
 
 ## Contributing
 
