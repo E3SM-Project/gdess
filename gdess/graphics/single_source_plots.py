@@ -2,8 +2,8 @@ import pandas as pd
 import xarray as xr
 from matplotlib import pyplot as plt
 
-from co2_diag.formatters import append_before_extension
-from co2_diag.graphics import aesthetic_grid_no_spines, mysavefig
+from gdess.formatters import append_before_extension
+from gdess.graphics import aesthetic_grid_no_spines, mysavefig
 
 
 def plot_annual_series(df_anomaly_yearly: pd.DataFrame,

@@ -1,4 +1,4 @@
-from co2_diag.formatters import append_before_extension
+from gdess.formatters import append_before_extension
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np

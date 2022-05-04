@@ -1,5 +1,5 @@
-from co2_diag import load_config_file
-from co2_diag.formatters.args import nullable_str
+from gdess import load_config_file
+from gdess.formatters.args import nullable_str
 import os, re, shlex
 
 # -- Define valid model choices --

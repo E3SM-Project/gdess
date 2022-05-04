@@ -1,13 +1,13 @@
-import co2_diag.graphics
+import gdess.graphics
 from ccgcrv.ccg_filter import ccgFilter
-from co2_diag import set_verbose
-from co2_diag.data_source.models.cmip.cmip_collection import Collection as cmipCollection
-from co2_diag.graphics.single_source_plots import plot_filter_components
-from co2_diag.operations.time import ensure_dataset_datetime64, t2dt
-from co2_diag.operations.geographic import get_closest_mdl_cell_dict
-from co2_diag.operations.utils import assert_expected_dimensions
-from co2_diag.formatters import append_before_extension
-from co2_diag.data_source.observations import gvplus_surface as obspack_surface_collection_module
+from gdess import set_verbose
+from gdess.data_source.models.cmip.cmip_collection import Collection as cmipCollection
+from gdess.graphics.single_source_plots import plot_filter_components
+from gdess.operations.time import ensure_dataset_datetime64, t2dt
+from gdess.operations.geographic import get_closest_mdl_cell_dict
+from gdess.operations.utils import assert_expected_dimensions
+from gdess.formatters import append_before_extension
+from gdess.data_source.observations import gvplus_surface as obspack_surface_collection_module
 from ccgcrv.ccg_dates import decimalDateFromDatetime
 from sklearn.metrics import mean_squared_error
 from datetime import datetime

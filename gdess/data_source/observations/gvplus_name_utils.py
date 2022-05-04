@@ -1,4 +1,4 @@
-from co2_diag import load_stations_dict
+from gdess import load_stations_dict
 import xarray as xr
 import glob, os, re, argparse, shlex
 

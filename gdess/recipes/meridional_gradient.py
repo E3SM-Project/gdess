@@ -4,12 +4,12 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-from co2_diag import set_verbose, benchmark_recipe
-from co2_diag.recipe_parsers import parse_recipe_options, add_meridional_args_to_parser
-from co2_diag.recipes.recipe_utils import populate_station_list
-from co2_diag.graphics.comparison_plots import plot_heatmap_of_all_stations
-from co2_diag.operations.Confrontation import Confrontation, load_cmip_model_output
-from co2_diag.formatters import numstr, append_before_extension
+from gdess import set_verbose, benchmark_recipe
+from gdess.recipe_parsers import parse_recipe_options, add_meridional_args_to_parser
+from gdess.recipes.recipe_utils import populate_station_list
+from gdess.graphics.comparison_plots import plot_heatmap_of_all_stations
+from gdess.operations.Confrontation import Confrontation, load_cmip_model_output
+from gdess.formatters import numstr, append_before_extension
 from dask.diagnostics import ProgressBar
 from typing import Union
 import argparse, logging
@@ -23,7 +23,7 @@ def meridional_gradient(options: Union[dict, argparse.Namespace],
                         ) -> tuple:
     """Execute a series of preprocessing steps and generate a diagnostic result.
 
-    Relevant co2_diag collections are instantiated and processed.
+    Relevant gdess collections are instantiated and processed.
 
     If one station is specified, then that will be compared against model data at the same location
     If more than one station is specified, then no model data will be compared against it.
