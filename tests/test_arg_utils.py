@@ -1,7 +1,7 @@
 import pytest
 import os
 
-from co2_diag.formatters.args import options_to_args, is_some_none, nullable_int, nullable_str, valid_year_string, \
+from gdess.formatters.args import options_to_args, is_some_none, nullable_int, nullable_str, valid_year_string, \
     valid_existing_path, valid_writable_path
 
 

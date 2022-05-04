@@ -100,11 +100,11 @@ you can define environment variables for the directory containing Globalview+ Ob
 and CMIP model output.
 
 ##### On a Mac/Linux OS:
-- Specify the path to the repo on the first line of `co2_diag/bin/set_path_vars.sh`. 
+- Specify the path to the repo on the first line of `gdess/bin/set_path_vars.sh`. 
 For instance, by executing: `export GDESS_REPO=${HOME}/gdess`
 - Set paths to the test data by running the script at the command line:
 ```shell
-source ./co2_diag/bin/set_path_vars.sh
+source ./gdess/bin/set_path_vars.sh
 ```
 - To use stored data other than the test data, modify the other data paths in the scripts. 
 For example, to set the paths for every future terminal instance (and if you are running in a bash environment), 

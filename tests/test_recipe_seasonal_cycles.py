@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from co2_diag.recipes import seasonal_cycles
+from gdess.recipes import seasonal_cycles
 
 
 @pytest.fixture

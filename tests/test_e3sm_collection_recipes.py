@@ -1,5 +1,5 @@
-from co2_diag.data_source.models.e3sm import Collection as co2e3sm
-from co2_diag.operations.datasetdict import DatasetDict
+from gdess.data_source.models.e3sm import Collection as co2e3sm
+from gdess.operations.datasetdict import DatasetDict
 import os, pytest
 
 
