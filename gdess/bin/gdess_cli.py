@@ -2,11 +2,11 @@
 """ This is the command line interface for running co2 diagnostics
 
 Example usage:
-    >> ./bin/gdess --help
-    >> ./bin/gdess trend --help
-    >> ./bin/gdess trend raw_data/noaa-obspack/nc/ --figure_savepath ./
-    >> ./bin/gdess seasonal --help
-    >> ./bin/gdess meridional --help
+    >> ./bin/gdess_cli.py --help
+    >> ./bin/gdess_cli.py trend --help
+    >> ./bin/gdess_cli.py trend raw_data/noaa-obspack/nc/ --figure_savepath ./
+    >> ./bin/gdess_cli.py seasonal --help
+    >> ./bin/gdess_cli.py meridional --help
 """
 from gdess.recipe_parsers import add_surface_trends_args_to_parser, add_seasonal_cycle_args_to_parser, \
     add_meridional_args_to_parser
