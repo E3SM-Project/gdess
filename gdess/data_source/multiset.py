@@ -1,7 +1,7 @@
-from co2_diag import set_verbose
-from co2_diag.operations.anomalies import monthly_anomalies
-from co2_diag.operations.datasetdict import DatasetDict
-from co2_diag.operations.time import ensure_datetime64_array, ensure_dataset_datetime64
+from gdess import set_verbose
+from gdess.operations.anomalies import monthly_anomalies
+from gdess.operations.datasetdict import DatasetDict
+from gdess.operations.time import ensure_datetime64_array, ensure_dataset_datetime64
 import numpy as np
 import pandas as pd
 import xarray as xr

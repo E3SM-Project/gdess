@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from co2_diag.recipes import surface_trends
+from gdess.recipes import surface_trends
 
 
 @pytest.fixture

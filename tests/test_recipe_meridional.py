@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from co2_diag.recipes import meridional_gradient
+from gdess.recipes import meridional_gradient
 
 
 @pytest.fixture

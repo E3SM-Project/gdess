@@ -1,6 +1,6 @@
 import pytest
 
-from co2_diag.formatters import numstr, my_round, \
+from gdess.formatters import numstr, my_round, \
     tex_escape
 
 

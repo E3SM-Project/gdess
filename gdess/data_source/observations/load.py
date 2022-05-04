@@ -1,6 +1,6 @@
-from co2_diag.operations.time import ensure_dataset_datetime64
-from co2_diag.operations.datasetdict import DatasetDict
-from co2_diag.operations.convert import co2_molfrac_to_ppm
+from gdess.operations.time import ensure_dataset_datetime64
+from gdess.operations.datasetdict import DatasetDict
+from gdess.operations.convert import co2_molfrac_to_ppm
 import numpy as np
 import xarray as xr
 import os, logging

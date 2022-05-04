@@ -1,15 +1,15 @@
-from co2_diag import set_verbose, load_config_file, benchmark_recipe
-from co2_diag.data_source.models.cmip.cmip_name_utils import model_name_dict_from_valid_form, \
+from gdess import set_verbose, load_config_file, benchmark_recipe
+from gdess.data_source.models.cmip.cmip_name_utils import model_name_dict_from_valid_form, \
     matched_model_and_experiment, cmip_model_choices
-from co2_diag.data_source.multiset import Multiset
-from co2_diag.operations.datasetdict import DatasetDict
-from co2_diag.operations.time import ensure_dataset_datetime64
-from co2_diag.operations.convert import co2_molfrac_to_ppm
-from co2_diag.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
-from co2_diag.formatters.args import nullable_str
-from co2_diag.formatters import append_before_extension
-from co2_diag.graphics.single_source_plots import plot_annual_series, plot_zonal_mean
-from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig
+from gdess.data_source.multiset import Multiset
+from gdess.operations.datasetdict import DatasetDict
+from gdess.operations.time import ensure_dataset_datetime64
+from gdess.operations.convert import co2_molfrac_to_ppm
+from gdess.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
+from gdess.formatters.args import nullable_str
+from gdess.formatters import append_before_extension
+from gdess.graphics.single_source_plots import plot_annual_series, plot_zonal_mean
+from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig
 import intake
 import numpy as np
 import pandas as pd

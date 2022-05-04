@@ -3,8 +3,8 @@ import pytest
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 
-from co2_diag.graphics.utils import limits_with_zero, get_colormap
-from co2_diag.graphics.mapping import make_my_base_map
+from gdess.graphics.utils import limits_with_zero, get_colormap
+from gdess.graphics.mapping import make_my_base_map
 
 
 def test_limits_with_zero():

@@ -2,13 +2,13 @@
 """ This is the command line interface for running co2 diagnostics
 
 Example usage:
-    >> ./bin/gdess --help
-    >> ./bin/gdess trend --help
-    >> ./bin/gdess trend raw_data/noaa-obspack/nc/ --figure_savepath ./
-    >> ./bin/gdess seasonal --help
-    >> ./bin/gdess meridional --help
+    >> ./bin/gdess_cli.py --help
+    >> ./bin/gdess_cli.py trend --help
+    >> ./bin/gdess_cli.py trend raw_data/noaa-obspack/nc/ --figure_savepath ./
+    >> ./bin/gdess_cli.py seasonal --help
+    >> ./bin/gdess_cli.py meridional --help
 """
-from co2_diag.recipe_parsers import add_surface_trends_args_to_parser, add_seasonal_cycle_args_to_parser, \
+from gdess.recipe_parsers import add_surface_trends_args_to_parser, add_seasonal_cycle_args_to_parser, \
     add_meridional_args_to_parser
 from argparse import ArgumentParser
 import sys
@@ -22,15 +22,15 @@ def main(args):
 
     # Run the selected recipe
     if recipe_name == 'trend':
-        from co2_diag.recipes import surface_trends
+        from gdess.recipes import surface_trends
         surface_trends(args, verbose=verbosity)
 
     elif recipe_name == 'seasonal':
-        from co2_diag.recipes import seasonal_cycles
+        from gdess.recipes import seasonal_cycles
         seasonal_cycles(args, verbose=verbosity)
 
     elif recipe_name == 'meridional':
-        from co2_diag.recipes import meridional_gradient
+        from gdess.recipes import meridional_gradient
         meridional_gradient(args, verbose=verbosity)
 
     return 0  # a clean, no-issue, exit

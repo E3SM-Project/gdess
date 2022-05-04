@@ -4,12 +4,12 @@ This function parses:
  - model output from CMIP6
 ================================================================================
 """
-from co2_diag import set_verbose, benchmark_recipe
-from co2_diag.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
-from co2_diag.recipe_parsers import parse_recipe_options, add_surface_trends_args_to_parser
-from co2_diag.recipes.recipe_utils import populate_station_list
-from co2_diag.operations.Confrontation import Confrontation, load_cmip_model_output
-from co2_diag.formatters import append_before_extension
+from gdess import set_verbose, benchmark_recipe
+from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
+from gdess.recipe_parsers import parse_recipe_options, add_surface_trends_args_to_parser
+from gdess.recipes.recipe_utils import populate_station_list
+from gdess.operations.Confrontation import Confrontation, load_cmip_model_output
+from gdess.formatters import append_before_extension
 import matplotlib.pyplot as plt
 from dask.diagnostics import ProgressBar
 from typing import Union
@@ -24,7 +24,7 @@ def surface_trends(options: dict,
                    ):
     """Execute a series of preprocessing steps and generate a diagnostic result.
 
-    Relevant co2_diag collections are instantiated and processed.
+    Relevant gdess collections are instantiated and processed.
 
     Parameters
     ----------

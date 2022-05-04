@@ -59,7 +59,7 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
   - E3SM outputs do not need to be available to run recipes that compare Globalview+ and CMIP6 data.
   - For parsing and running recipes from E3SM Collection, 
     one must have access to model output history as NetCDF file(s), 
-and a script for post-processing E3SM output is provided in `co2_diag/bin/`.
+and a script for post-processing E3SM output is provided in `gdess/bin/`.
 
 ## Getting started
 
@@ -72,7 +72,7 @@ cd ~/gdess
 ```
 
 🌍 Create conda environment and install dependencies. 
-*Note: Replace “myenv” with the preferred name of your environment, e.g. "co2_diagnostics". 
+*Note: Replace “myenv” with the preferred name of your environment, e.g. "gdess_env". 
 From here on we’ll use “myenv” to refer to our environment.*
 
 ```shell script
@@ -100,11 +100,11 @@ you can define environment variables for the directory containing Globalview+ Ob
 and CMIP model output.
 
 ##### On a Mac/Linux OS:
-- Specify the path to the repo on the first line of `co2_diag/bin/set_path_vars.sh`. 
+- Specify the path to the repo on the first line of `gdess/bin/set_path_vars.sh`. 
 For instance, by executing: `export GDESS_REPO=${HOME}/gdess`
 - Set paths to the test data by running the script at the command line:
 ```shell
-source ./co2_diag/bin/set_path_vars.sh
+source ./gdess/bin/set_path_vars.sh
 ```
 - To use stored data other than the test data, modify the other data paths in the scripts. 
 For example, to set the paths for every future terminal instance (and if you are running in a bash environment), 
@@ -115,10 +115,10 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 ```
 
 ##### On a Windows OS:
-- Follow the instructions provided in `./co2_diag/bin/set_path_vars.bat`
+- Follow the instructions provided in `./gdess/bin/set_path_vars.bat`
 
 
-[comment]: <> (These variables are retrieved in the `co2_diag/config/defaults.ini` file.)
+[comment]: <> (These variables are retrieved in the `gdess/config/defaults.ini` file.)
 
 ## Example
 
@@ -128,7 +128,7 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
   1. Install the `gdess` package according to the [installation](###installation) instructions
   2. Follow the [configuration](###configuration) instructions to use the included example data files
   3. 
-```./co2_diag/bin/gdess.py --verbose seasonal --start_yr 1980 --end_yr 2015 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
+```./gdess/bin/gdess_cli.py --verbose seasonal --start_yr 1980 --end_yr 2015 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
 
 - Other examples are given in the provided jupyter notebooks, 
 which show recipe usage (`trends_recipe.ipynb`, `seasonal_cycle_recipe.ipynb`, and `meridional_recipe.ipynb`). To run them:
@@ -141,9 +141,9 @@ which show recipe usage (`trends_recipe.ipynb`, `seasonal_cycle_recipe.ipynb`, a
 Diagnostic recipes can be run from the command line or from within a Python kernel:
 
 **Command line**
-  - Use `co2_diag/bin/gdess.py` followed by the recipe name and then recipe options. To see available commands, run, e.g. `co2_diag/bin/gdess.py --help` or `co2_diag/bin/gdess.py seasonal --help`  
+  - Use `gdess/bin/gdess_cli.py` followed by the recipe name and then recipe options. To see available commands, run, e.g. `gdess/bin/gdess_cli.py --help` or `gdess/bin/gdess_cli.py seasonal --help`  
   - To specify options from a file [recommended for repeated tests], use the `@` symbol prefix for the filename. 
-    For example, using the provided file: `co2_diag/bin/gdess.py @recipe_options_example.txt` 
+    For example, using the provided file: `gdess/bin/gdess_cli.py @recipe_options_example.txt` 
 
 
 **In a Python kernel** 
@@ -168,7 +168,7 @@ To use the latest version of this repository:
 🚮 To remove this package from your environment:
 
 ```
-pip uninstall co2_diag
+pip uninstall gdess
 ```
 
 ## Contributing
@@ -195,13 +195,13 @@ gdess
 ├── requirements.txt                     <- Package dependencies
 ├── recipe_options_example.txt
 │
-├── notebooks                            <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
+├── notebooks                            <- Example jupyter notebooks to see diagnostic capabilities of gdess
 │   └──demo/
 │
-├── co2_diag                             <- *Python package* for handling co2 diagnostics
+├── gdess                                <- *Python package* for handling co2 diagnostics
 │   │
 │   ├── bin                  
-│   │   ├── gdess.py                     <- Run recipes from the command line
+│   │   ├── gdess_cli.py                 <- Run recipes from the command line
 │   │   ├── set_path_vars.sh             <- Script to set up data file paths for running examples
 │   │   └── concat_and_remap_E3SM_co2.sh <- Script template for post-processing of E3SM output
 │   │

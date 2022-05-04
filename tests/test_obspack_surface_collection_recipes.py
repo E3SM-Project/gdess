@@ -2,8 +2,8 @@ import os
 import pytest
 import xarray as xr
 
-from co2_diag import load_stations_dict
-from co2_diag.data_source.observations.gvplus_surface import Collection
+from gdess import load_stations_dict
+from gdess.data_source.observations.gvplus_surface import Collection
 
 
 @pytest.fixture

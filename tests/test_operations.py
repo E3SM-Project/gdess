@@ -1,7 +1,7 @@
-from co2_diag.operations.time import ensure_datetime64_array, ensure_cftime_array, monthlist, dt2t
-from co2_diag.operations.convert import co2_kgfrac_to_ppm
-from co2_diag.operations.utils import print_var_summary, assert_expected_dimensions
-from co2_diag.operations.Confrontation import extract_site_data_from_dataset
+from gdess.operations.time import ensure_datetime64_array, ensure_cftime_array, monthlist, dt2t
+from gdess.operations.convert import co2_kgfrac_to_ppm
+from gdess.operations.utils import print_var_summary, assert_expected_dimensions
+from gdess.operations.Confrontation import extract_site_data_from_dataset
 import numpy as np
 import pandas as pd
 import xarray as xr
