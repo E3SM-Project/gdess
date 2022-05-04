@@ -1,4 +1,4 @@
-name: co2_diag_env
+name: gdess_env
 channels:
   - conda-forge
   - defaults
