@@ -59,7 +59,7 @@ which is initiated by the [intake](https://github.com/intake/intake-esm) package
   - E3SM outputs do not need to be available to run recipes that compare Globalview+ and CMIP6 data.
   - For parsing and running recipes from E3SM Collection, 
     one must have access to model output history as NetCDF file(s), 
-and a script for post-processing E3SM output is provided in `co2_diag/bin/`.
+and a script for post-processing E3SM output is provided in `gdess/bin/`.
 
 ## Getting started
 
@@ -72,7 +72,7 @@ cd ~/gdess
 ```
 
 🌍 Create conda environment and install dependencies. 
-*Note: Replace “myenv” with the preferred name of your environment, e.g. "co2_diagnostics". 
+*Note: Replace “myenv” with the preferred name of your environment, e.g. "gdess_env". 
 From here on we’ll use “myenv” to refer to our environment.*
 
 ```shell script
@@ -115,10 +115,10 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 ```
 
 ##### On a Windows OS:
-- Follow the instructions provided in `./co2_diag/bin/set_path_vars.bat`
+- Follow the instructions provided in `./gdess/bin/set_path_vars.bat`
 
 
-[comment]: <> (These variables are retrieved in the `co2_diag/config/defaults.ini` file.)
+[comment]: <> (These variables are retrieved in the `gdess/config/defaults.ini` file.)
 
 ## Example
 
@@ -168,7 +168,7 @@ To use the latest version of this repository:
 🚮 To remove this package from your environment:
 
 ```
-pip uninstall co2_diag
+pip uninstall gdess
 ```
 
 ## Contributing
@@ -195,10 +195,10 @@ gdess
 ├── requirements.txt                     <- Package dependencies
 ├── recipe_options_example.txt
 │
-├── notebooks                            <- Example jupyter notebooks to see diagnostic capabilities of co2_diag
+├── notebooks                            <- Example jupyter notebooks to see diagnostic capabilities of gdess
 │   └──demo/
 │
-├── co2_diag                             <- *Python package* for handling co2 diagnostics
+├── gdess                                <- *Python package* for handling co2 diagnostics
 │   │
 │   ├── bin                  
 │   │   ├── gdess.py                     <- Run recipes from the command line
