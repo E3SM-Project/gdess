@@ -1,2 +1,2 @@
-recursive-include co2_diag/config *
-recursive-include co2_diag/graphics/colormaps *
+recursive-include gdess/config *
+recursive-include gdess/graphics/colormaps *
