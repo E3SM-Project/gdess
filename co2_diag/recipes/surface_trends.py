@@ -71,8 +71,9 @@ def surface_trends(options: dict,
 
     # --- Create Graphic ---
     fig, ax = plt.subplots(1, 1, figsize=(6, 4))
-    diffs = {}
     if opts.difference:
+        xdiffs = {}
+        ydiffs = {}
         # Values at the same time
         for station in stations_to_analyze:
             merged = rmse_y_pred.loc[:, ['time', station]].merge(rmse_y_true.loc[:, ['time', station]],
@@ -82,21 +83,27 @@ def surface_trends(options: dict,
             ax.plot(merged['time'], merged['diff'],
                     label=f"model - obs [{station}]",
                     marker='.', linestyle='none')
-            diffs[station] = merged['diff']
+            xdiffs[station] = merged['time']
+            ydiffs[station] = merged['diff']
         #
         ax.set_ylim(limits_with_zero(ax.get_ylim()))
         #
-        data_output = {'model': rmse_y_pred, 'obs': rmse_y_true, 'diff': diffs}
+        data_output = {'model': rmse_y_pred, 'obs': rmse_y_true, 'xdiff': xdiffs, 'ydiff': ydiffs}
 
     else:
-        data_output = {'model': ydata_mdl, 'obs': ydata_obs}
+        xdata_obs = concatenated_dfs['ref']['time']
+        xdata_mdl = concatenated_dfs['mdl']['time']
+
+        data_output = {'xdata_obs': xdata_obs, 'xdata_mdl': xdata_mdl,
+                       'ydata_obs': ydata_obs, 'ydata_mdl': ydata_mdl}
+        # data_output = {'model': ydata_mdl, 'obs': ydata_obs}
         #
         for station in stations_to_analyze:
             # Plot
-            ax.plot(concatenated_dfs['ref']['time'], concatenated_dfs['ref'][station],
+            ax.plot(xdata_obs, concatenated_dfs['ref'][station],
                     label=f"Obs [{station}]",
                     color='k')
-            ax.plot(concatenated_dfs['mdl']['time'], concatenated_dfs['mdl'][station],
+            ax.plot(xdata_mdl, concatenated_dfs['mdl'][station],
                     label=f'Model [{opts.model_name}]',
                     color='r', linestyle='-')
 
