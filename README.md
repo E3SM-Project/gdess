@@ -31,7 +31,7 @@ for atmospheric CO<sub>2</sub> concentrations.
 
 * [Data requirements and availability](#data-requirements-and-availability)
 * [Getting started](#getting-started)
-* [Example](#xample)
+* [Example](#example)
 * [Usage](#usage-description)
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
@@ -125,8 +125,8 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 - The following steps generate this figure:
 <img src="./.images/seasonal_example_20210903.png" alt="components" width="712" height="280"/>
 
-  1. Install the `gdess` package according to the [installation](###installation) instructions
-  2. Follow the [configuration](###configuration) instructions to use the included example data files
+  1. Install the `gdess` package according to the [installation](#installation) instructions
+  2. Follow the [configuration](#configuration) instructions to use the included example data files
   3. 
 ```./gdess/bin/gdess_cli.py --verbose seasonal --start_yr 1980 --end_yr 2015 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
 
