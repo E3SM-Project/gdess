@@ -36,6 +36,7 @@ for atmospheric CO<sub>2</sub> concentrations.
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
 * [Contributing](#contributing)
+* [Running built-in tests](#running-the-code-tests)
 * [Project structure](#project-structure)
 * [Credits](#credits)
 * [Disclaimer](#disclaimer)
@@ -87,7 +88,7 @@ conda install --file requirements.txt
 pip install .
 ```
 
-To run the tests, now retrieve the example data files using:
+(Optional) Retrieve the example data files used for running tests:
 ```shell
 git lfs install
 git lfs pull
@@ -180,6 +181,13 @@ please leave us a message through the [issue tracker](https://github.com/E3SM-Pr
 Note that most work is done in the 'develop' branch, 
 so please `git checkout develop` 
 (or you can create a new branch) before modifying code.
+
+## Running the code tests
+
+To run the built-in tests:
+```shell
+pytest
+```
 
 ## Project structure
 
