@@ -31,11 +31,12 @@ for atmospheric CO<sub>2</sub> concentrations.
 
 * [Data requirements and availability](#data-requirements-and-availability)
 * [Getting started](#getting-started)
-* [Example](#xample)
+* [Example](#example)
 * [Usage](#usage-description)
 * [Updating](#updating)
 * [Uninstalling](#uninstalling)
 * [Contributing](#contributing)
+* [Running built-in tests](#running-the-code-tests)
 * [Project structure](#project-structure)
 * [Credits](#credits)
 * [Disclaimer](#disclaimer)
@@ -87,7 +88,7 @@ conda install --file requirements.txt
 pip install .
 ```
 
-To run the tests, now retrieve the example data files using:
+(Optional) Retrieve the example data files used for running tests:
 ```shell
 git lfs install
 git lfs pull
@@ -125,8 +126,8 @@ export GDESS_GLOBALVIEW_DATA=Path/to/Obspack/NetCDF/Files
 - The following steps generate this figure:
 <img src="./.images/seasonal_example_20210903.png" alt="components" width="712" height="280"/>
 
-  1. Install the `gdess` package according to the [installation](###installation) instructions
-  2. Follow the [configuration](###configuration) instructions to use the included example data files
+  1. Install the `gdess` package according to the [installation](#installation) instructions
+  2. Follow the [configuration](#configuration) instructions to use the included example data files
   3. 
 ```./gdess/bin/gdess_cli.py --verbose seasonal --start_yr 1980 --end_yr 2015 --model_name BCC.esm-hist --cmip_load_method local --station_list smo```
 
@@ -180,6 +181,13 @@ please leave us a message through the [issue tracker](https://github.com/E3SM-Pr
 Note that most work is done in the 'develop' branch, 
 so please `git checkout develop` 
 (or you can create a new branch) before modifying code.
+
+## Running the code tests
+
+To run the built-in tests:
+```shell
+pytest
+```
 
 ## Project structure
 
