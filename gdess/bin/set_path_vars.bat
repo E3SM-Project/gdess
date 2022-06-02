@@ -5,10 +5,16 @@ rem
 rem  This script sets the variables that GDESS accesses
 rem+  when looking for data filepaths and where to save outputs.
 rem
+rem Instructions Start ***********************************************
 rem Note that the value of the GDESS_REPO environment variable must
-rem+ be set prior to calling this script by running in the command 
-rem+ line:
+rem+ be set prior to calling this script by running in the  
+rem+ command line (where path_to_gdess includes the gdess home  
+rem+ directory (i.e. the directory containing the gdess outputs 
+rem+ folder)):
 rem+ set GDESS_REPO=path_to_gdess
+rem+ Then, at the command line (and from the gdess home directory),
+rem+ run: ./gdess/bin/set_path_vars.bat
+rem Instructions End ***********************************************
 rem
 rem Author: O'Meara, S.P.
 rem Creation date: April 2022
