@@ -33,7 +33,7 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs) -> None:
     """
     path = os.path.join(results_dir, plot_save_name)
     # If the path doesn't have an extension, we will default to png.
-    if not path.lower().endswith(('.png', '.pdf', '.tif', '.tiff', '.jpg', '.jpeg')):
+    if not path.lower().endswith(('.png', '.pdf', '.tif', '.tiff', '.jpg', '.jpeg', '.svg', '.eps')):
         path += '.png'
     # A datetime stamp is added immediately before the extension.
     path_with_datetime = append_before_extension(path, datetime.today().strftime('%Y-%m-%dT%H%M%S.%f'))
