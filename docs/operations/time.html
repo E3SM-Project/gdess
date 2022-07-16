@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>gdess.operations.time API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>gdess.operations.time</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+import pandas as pd
+import xarray as xr
+import datetime as pydt
+from datetime import timedelta
+from typing import Sequence
+import cftime, logging
+
+_logger = logging.getLogger(__name__)
+
+
+def ensure_dataset_datetime64(dataset: xr.Dataset
+                              ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Often it is more convenient to work with the `time` variable as type `datetime64`.
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+
+    Returns
+    -------
+    xarray.Dataset
+    &#34;&#34;&#34;
+    dataset = xr.decode_cf(dataset)
+    dataset[&#39;time&#39;] = ensure_datetime64_array(dataset[&#39;time&#39;])
+
+    return dataset
+
+
+def year_to_datetime64(yr: str):
+    if yr is not None:
+        return np.datetime64(yr, &#39;D&#39;)
+    else:
+        return None
+
+
+def to_datetimeindex(dataset: xr.Dataset
+                     ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;It is often more convenient to work with the `time` variable as type `datetime64`.
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+
+    Returns
+    -------
+    xarray.Dataset
+    &#34;&#34;&#34;
+    # Check if it&#39;s already a datetimeindex
+    if isinstance(dataset.indexes[&#39;time&#39;], pd.core.indexes.datetimes.DatetimeIndex):
+        _logger.debug(&#39;already a datetimeindex, no conversion done.&#39;)
+    else:
+        dataset[&#39;time&#39;] = dataset.indexes[&#39;time&#39;].to_datetimeindex()
+        return dataset
+
+
+def ensure_datetime64_array(time: Sequence):
+    &#34;&#34;&#34;Convert an input 1D array to an array of numpy.datetime64 objects.
+    &#34;&#34;&#34;
+    if isinstance(time, xr.DataArray):
+        time = time.indexes[&#34;time&#34;]
+    elif isinstance(time, np.ndarray):
+        time = pd.DatetimeIndex(time)
+    if isinstance(time[0], np.datetime64):
+        return time
+    if isinstance(time[0], pydt.datetime) | isinstance(time[0], cftime.datetime):
+        return np.array(
+            [np.datetime64(ele) for ele in time]
+        )
+    raise ValueError(&#34;Unable to cast array to numpy.datetime64 dtype&#34;)
+
+
+def ensure_cftime_array(time: Sequence):
+    &#34;&#34;&#34;Convert an input 1D array to an array of cftime objects.
+
+    Parameters
+    ----------
+    time : Sequence
+
+    Returns
+    -------
+    Python&#39;s datetime are converted to cftime.DatetimeGregorian.
+
+    Raises
+    ------
+    ValueError when unable to cast the input.
+    &#34;&#34;&#34;
+    if isinstance(time, xr.DataArray):
+        time = time.indexes[&#34;time&#34;]
+    elif isinstance(time, np.ndarray):
+        time = pd.DatetimeIndex(time)
+    if isinstance(time[0], cftime.datetime):
+        return time
+    if isinstance(time[0], pydt.datetime):
+        return np.array(
+            [cftime.DatetimeGregorian(*ele.timetuple()[:6]) for ele in time]
+        )
+    raise ValueError(&#34;Unable to cast array to cftime dtype&#34;)
+
+
+def ensure_dataset_cftime(dataset):
+    dataset[&#39;time&#39;] = ensure_cftime_array(dataset[&#39;time&#39;])
+    return dataset
+
+
+def select_between(dataset: xr.Dataset,
+                   timestart,
+                   timeend,
+                   varlist=None,
+                   drop=True,
+                   drop_dups=True) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Select part of a dataset between two times
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+    timestart
+        must be of appropriate type for comparison with dataset.time type
+        (e.g. cftime.DatetimeGregorian or numpy.datetime64)
+    timeend
+        must be of appropriate type for comparison with dataset.time type
+        (e.g. cftime.DatetimeGregorian or numpy.datetime64)
+    varlist
+    drop : bool, default True
+    drop_dups : bool, default True
+
+    Returns
+    -------
+    a subset of the original dataset with only times between timestart and timeend
+    &#34;&#34;&#34;
+    if varlist is None:
+        ds_sub = dataset.copy()
+    else:
+        ds_sub = dataset[varlist].copy()
+
+    # Drop duplicate times
+    if drop_dups:
+        _, index = np.unique(ds_sub[&#39;time&#39;], return_index=True)
+        ds_sub = ds_sub.isel(time=index)
+
+    # Select a time period
+    tempmask = ds_sub[&#39;time&#39;] &gt;= timestart
+    tempmask = tempmask &amp; (ds_sub[&#39;time&#39;] &lt;= timeend)
+
+    return ds_sub.where(tempmask, drop=drop)
+
+
+def monthlist(dates) -&gt; list:
+    &#34;&#34;&#34;Generate a list of months between two dates
+
+    Parameters
+    ----------
+    dates : list
+        Of length==2, with a start and end date, in the format of &#34;%Y-%m-%d&#34;
+
+    Returns
+    -------
+    A list containing months (as numpy.datetime64 objects for the first day of each month)
+
+    Example
+    _______
+
+    &gt;&gt;&gt; monthlist_fast([&#39;2017-01-01&#39;, &#39;2017-04-01&#39;])
+    [numpy.datetime64(&#39;2017-01-01&#39;),
+     numpy.datetime64(&#39;2017-02-01&#39;),
+     numpy.datetime64(&#39;2017-03-01&#39;),
+     numpy.datetime64(&#39;2017-04-01&#39;)]
+    &#34;&#34;&#34;
+    start, end = [pydt.datetime.strptime(_, &#34;%Y-%m-%d&#34;) for _ in dates]
+    def total_months(dt): return dt.month + 12 * dt.year
+    mlist = []
+    for tot_m in range(total_months(start)-1, total_months(end)):
+        y, m = divmod(tot_m, 12)
+        mlist.append(np.datetime64(pydt.datetime(y, m+1, 1).strftime(&#34;%Y-%m&#34;), &#39;D&#39;))
+
+    return mlist
+
+
+def dt2t(year, month, day, h=0, m=0, s=0) :
+    &#34;&#34;&#34;convert a DT.datetime to a float&#34;&#34;&#34;
+    year_seconds = (pydt.datetime(year,12,31,23,59,59,999999)-pydt.datetime(year,1,1,0,0,0)).total_seconds()
+    second_of_year = (pydt.datetime(year,month,day,h,m,s) - pydt.datetime(year,1,1,0,0,0)).total_seconds()
+    return year + second_of_year / year_seconds
+
+
+def t2dt(atime):
+    &#34;&#34;&#34;
+    Convert a time (a float) to DT.datetime
+    This is the inverse of dt2t.
+    assert dt2t(t2dt(atime)) == atime
+    &#34;&#34;&#34;
+    year = int(atime)
+    remainder = atime - year
+    boy = pydt.datetime(year, 1, 1)
+    eoy = pydt.datetime(year + 1, 1, 1)
+    seconds = remainder * (eoy - boy).total_seconds()
+    return boy + timedelta(seconds=seconds)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="gdess.operations.time.dt2t"><code class="name flex">
+<span>def <span class="ident">dt2t</span></span>(<span>year, month, day, h=0, m=0, s=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>convert a DT.datetime to a float</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dt2t(year, month, day, h=0, m=0, s=0) :
+    &#34;&#34;&#34;convert a DT.datetime to a float&#34;&#34;&#34;
+    year_seconds = (pydt.datetime(year,12,31,23,59,59,999999)-pydt.datetime(year,1,1,0,0,0)).total_seconds()
+    second_of_year = (pydt.datetime(year,month,day,h,m,s) - pydt.datetime(year,1,1,0,0,0)).total_seconds()
+    return year + second_of_year / year_seconds</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.ensure_cftime_array"><code class="name flex">
+<span>def <span class="ident">ensure_cftime_array</span></span>(<span>time: Sequence)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert an input 1D array to an array of cftime objects.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>time</code></strong> :&ensp;<code>Sequence</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Python's datetime are converted to cftime.DatetimeGregorian.</p>
+<h2 id="raises">Raises</h2>
+<p>ValueError when unable to cast the input.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_cftime_array(time: Sequence):
+    &#34;&#34;&#34;Convert an input 1D array to an array of cftime objects.
+
+    Parameters
+    ----------
+    time : Sequence
+
+    Returns
+    -------
+    Python&#39;s datetime are converted to cftime.DatetimeGregorian.
+
+    Raises
+    ------
+    ValueError when unable to cast the input.
+    &#34;&#34;&#34;
+    if isinstance(time, xr.DataArray):
+        time = time.indexes[&#34;time&#34;]
+    elif isinstance(time, np.ndarray):
+        time = pd.DatetimeIndex(time)
+    if isinstance(time[0], cftime.datetime):
+        return time
+    if isinstance(time[0], pydt.datetime):
+        return np.array(
+            [cftime.DatetimeGregorian(*ele.timetuple()[:6]) for ele in time]
+        )
+    raise ValueError(&#34;Unable to cast array to cftime dtype&#34;)</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.ensure_dataset_cftime"><code class="name flex">
+<span>def <span class="ident">ensure_dataset_cftime</span></span>(<span>dataset)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_dataset_cftime(dataset):
+    dataset[&#39;time&#39;] = ensure_cftime_array(dataset[&#39;time&#39;])
+    return dataset</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.ensure_dataset_datetime64"><code class="name flex">
+<span>def <span class="ident">ensure_dataset_datetime64</span></span>(<span>dataset: xarray.core.dataset.Dataset) -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Often it is more convenient to work with the <code>time</code> variable as type <code>datetime64</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_dataset_datetime64(dataset: xr.Dataset
+                              ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Often it is more convenient to work with the `time` variable as type `datetime64`.
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+
+    Returns
+    -------
+    xarray.Dataset
+    &#34;&#34;&#34;
+    dataset = xr.decode_cf(dataset)
+    dataset[&#39;time&#39;] = ensure_datetime64_array(dataset[&#39;time&#39;])
+
+    return dataset</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.ensure_datetime64_array"><code class="name flex">
+<span>def <span class="ident">ensure_datetime64_array</span></span>(<span>time: Sequence)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert an input 1D array to an array of numpy.datetime64 objects.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_datetime64_array(time: Sequence):
+    &#34;&#34;&#34;Convert an input 1D array to an array of numpy.datetime64 objects.
+    &#34;&#34;&#34;
+    if isinstance(time, xr.DataArray):
+        time = time.indexes[&#34;time&#34;]
+    elif isinstance(time, np.ndarray):
+        time = pd.DatetimeIndex(time)
+    if isinstance(time[0], np.datetime64):
+        return time
+    if isinstance(time[0], pydt.datetime) | isinstance(time[0], cftime.datetime):
+        return np.array(
+            [np.datetime64(ele) for ele in time]
+        )
+    raise ValueError(&#34;Unable to cast array to numpy.datetime64 dtype&#34;)</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.monthlist"><code class="name flex">
+<span>def <span class="ident">monthlist</span></span>(<span>dates) -> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate a list of months between two dates</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dates</code></strong> :&ensp;<code>list</code></dt>
+<dd>Of length==2, with a start and end date, in the format of "%Y-%m-%d"</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A list containing months (as numpy.datetime64 objects for the first day</code> of <code>each month)</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>Example</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>_______</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<pre><code class="language-python">&gt;&gt;&gt; monthlist_fast(['2017-01-01', '2017-04-01'])
+[numpy.datetime64('2017-01-01'),
+ numpy.datetime64('2017-02-01'),
+ numpy.datetime64('2017-03-01'),
+ numpy.datetime64('2017-04-01')]
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def monthlist(dates) -&gt; list:
+    &#34;&#34;&#34;Generate a list of months between two dates
+
+    Parameters
+    ----------
+    dates : list
+        Of length==2, with a start and end date, in the format of &#34;%Y-%m-%d&#34;
+
+    Returns
+    -------
+    A list containing months (as numpy.datetime64 objects for the first day of each month)
+
+    Example
+    _______
+
+    &gt;&gt;&gt; monthlist_fast([&#39;2017-01-01&#39;, &#39;2017-04-01&#39;])
+    [numpy.datetime64(&#39;2017-01-01&#39;),
+     numpy.datetime64(&#39;2017-02-01&#39;),
+     numpy.datetime64(&#39;2017-03-01&#39;),
+     numpy.datetime64(&#39;2017-04-01&#39;)]
+    &#34;&#34;&#34;
+    start, end = [pydt.datetime.strptime(_, &#34;%Y-%m-%d&#34;) for _ in dates]
+    def total_months(dt): return dt.month + 12 * dt.year
+    mlist = []
+    for tot_m in range(total_months(start)-1, total_months(end)):
+        y, m = divmod(tot_m, 12)
+        mlist.append(np.datetime64(pydt.datetime(y, m+1, 1).strftime(&#34;%Y-%m&#34;), &#39;D&#39;))
+
+    return mlist</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.select_between"><code class="name flex">
+<span>def <span class="ident">select_between</span></span>(<span>dataset: xarray.core.dataset.Dataset, timestart, timeend, varlist=None, drop=True, drop_dups=True) -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Select part of a dataset between two times</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>timestart</code></strong></dt>
+<dd>must be of appropriate type for comparison with dataset.time type
+(e.g. cftime.DatetimeGregorian or numpy.datetime64)</dd>
+<dt><strong><code>timeend</code></strong></dt>
+<dd>must be of appropriate type for comparison with dataset.time type
+(e.g. cftime.DatetimeGregorian or numpy.datetime64)</dd>
+<dt><strong><code>varlist</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>drop</code></strong> :&ensp;<code>bool</code>, default <code>True</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>drop_dups</code></strong> :&ensp;<code>bool</code>, default <code>True</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>a subset</code> of <code>the original dataset with only times between timestart and timeend</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select_between(dataset: xr.Dataset,
+                   timestart,
+                   timeend,
+                   varlist=None,
+                   drop=True,
+                   drop_dups=True) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Select part of a dataset between two times
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+    timestart
+        must be of appropriate type for comparison with dataset.time type
+        (e.g. cftime.DatetimeGregorian or numpy.datetime64)
+    timeend
+        must be of appropriate type for comparison with dataset.time type
+        (e.g. cftime.DatetimeGregorian or numpy.datetime64)
+    varlist
+    drop : bool, default True
+    drop_dups : bool, default True
+
+    Returns
+    -------
+    a subset of the original dataset with only times between timestart and timeend
+    &#34;&#34;&#34;
+    if varlist is None:
+        ds_sub = dataset.copy()
+    else:
+        ds_sub = dataset[varlist].copy()
+
+    # Drop duplicate times
+    if drop_dups:
+        _, index = np.unique(ds_sub[&#39;time&#39;], return_index=True)
+        ds_sub = ds_sub.isel(time=index)
+
+    # Select a time period
+    tempmask = ds_sub[&#39;time&#39;] &gt;= timestart
+    tempmask = tempmask &amp; (ds_sub[&#39;time&#39;] &lt;= timeend)
+
+    return ds_sub.where(tempmask, drop=drop)</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.t2dt"><code class="name flex">
+<span>def <span class="ident">t2dt</span></span>(<span>atime)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a time (a float) to DT.datetime
+This is the inverse of dt2t.
+assert dt2t(t2dt(atime)) == atime</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def t2dt(atime):
+    &#34;&#34;&#34;
+    Convert a time (a float) to DT.datetime
+    This is the inverse of dt2t.
+    assert dt2t(t2dt(atime)) == atime
+    &#34;&#34;&#34;
+    year = int(atime)
+    remainder = atime - year
+    boy = pydt.datetime(year, 1, 1)
+    eoy = pydt.datetime(year + 1, 1, 1)
+    seconds = remainder * (eoy - boy).total_seconds()
+    return boy + timedelta(seconds=seconds)</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.to_datetimeindex"><code class="name flex">
+<span>def <span class="ident">to_datetimeindex</span></span>(<span>dataset: xarray.core.dataset.Dataset) -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"><p>It is often more convenient to work with the <code>time</code> variable as type <code>datetime64</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_datetimeindex(dataset: xr.Dataset
+                     ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;It is often more convenient to work with the `time` variable as type `datetime64`.
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+
+    Returns
+    -------
+    xarray.Dataset
+    &#34;&#34;&#34;
+    # Check if it&#39;s already a datetimeindex
+    if isinstance(dataset.indexes[&#39;time&#39;], pd.core.indexes.datetimes.DatetimeIndex):
+        _logger.debug(&#39;already a datetimeindex, no conversion done.&#39;)
+    else:
+        dataset[&#39;time&#39;] = dataset.indexes[&#39;time&#39;].to_datetimeindex()
+        return dataset</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.time.year_to_datetime64"><code class="name flex">
+<span>def <span class="ident">year_to_datetime64</span></span>(<span>yr: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def year_to_datetime64(yr: str):
+    if yr is not None:
+        return np.datetime64(yr, &#39;D&#39;)
+    else:
+        return None</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="gdess.operations" href="index.html">gdess.operations</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="gdess.operations.time.dt2t" href="#gdess.operations.time.dt2t">dt2t</a></code></li>
+<li><code><a title="gdess.operations.time.ensure_cftime_array" href="#gdess.operations.time.ensure_cftime_array">ensure_cftime_array</a></code></li>
+<li><code><a title="gdess.operations.time.ensure_dataset_cftime" href="#gdess.operations.time.ensure_dataset_cftime">ensure_dataset_cftime</a></code></li>
+<li><code><a title="gdess.operations.time.ensure_dataset_datetime64" href="#gdess.operations.time.ensure_dataset_datetime64">ensure_dataset_datetime64</a></code></li>
+<li><code><a title="gdess.operations.time.ensure_datetime64_array" href="#gdess.operations.time.ensure_datetime64_array">ensure_datetime64_array</a></code></li>
+<li><code><a title="gdess.operations.time.monthlist" href="#gdess.operations.time.monthlist">monthlist</a></code></li>
+<li><code><a title="gdess.operations.time.select_between" href="#gdess.operations.time.select_between">select_between</a></code></li>
+<li><code><a title="gdess.operations.time.t2dt" href="#gdess.operations.time.t2dt">t2dt</a></code></li>
+<li><code><a title="gdess.operations.time.to_datetimeindex" href="#gdess.operations.time.to_datetimeindex">to_datetimeindex</a></code></li>
+<li><code><a title="gdess.operations.time.year_to_datetime64" href="#gdess.operations.time.year_to_datetime64">year_to_datetime64</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
