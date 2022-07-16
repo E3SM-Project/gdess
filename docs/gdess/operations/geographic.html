@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>gdess.operations.geographic API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>gdess.operations.geographic</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">__all__ = [&#39;distance&#39;, &#39;closest&#39;, &#39;get_closest_mdl_cell_dict&#39;]
+
+from math import cos, asin, sqrt
+
+import xarray as xr
+
+
+def distance(lat1: float,
+             lon1: float,
+             lat2: float,
+             lon2: float) -&gt; float:
+    p = 0.017453292519943295
+    a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
+    return 12742 * asin(sqrt(a))
+
+
+def closest(data: list,
+            v: dict) -&gt; dict:
+    &#34;&#34;&#34;Find closest point in `data` to the v point
+
+    Parameters
+    ----------
+    data
+    v
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    min_entry = min(data, key=lambda p: distance(v[&#39;lat&#39;], v[&#39;lon&#39;], p[&#39;lat&#39;], p[&#39;lon&#39;]))
+
+    return min_entry
+
+
+def get_closest_mdl_cell_dict(dataset: xr.Dataset,
+                              lat: float,
+                              lon: float,
+                              coords_as_dimensions: bool = True
+                              ) -&gt; dict:
+    &#34;&#34;&#34;Find the point in the model output that is closest to specified lat/lon pair
+
+    Examples
+    --------
+    To get the data subset at a location:
+    -- For CMIP outputs --
+        &gt;&gt;&gt; closest_point = get_closest_mdl_cell_dict(dataset, lat=24.3, lon=137.8, coords_as_dimensions=True)
+        &gt;&gt;&gt; dataset.stack(coord_pair=[&#39;lat&#39;, &#39;lon&#39;]).isel(coord_pair=closest_point[&#39;index&#39;])
+    -- For E3SM native grid --
+        &gt;&gt;&gt; closest_mdl_point = get_closest_mdl_cell_dict(dataset, lat=lat, lon=lon, coords_as_dimensions=False)
+        &gt;&gt;&gt; dataset.where(dataset[&#39;ncol&#39;] == closest_mdl_point[&#39;index&#39;], drop=True)
+
+    Parameters
+    ----------
+    dataset
+    lat
+    lon
+    coords_as_dimensions
+        True for dataset variables as independent dimensions, e.g.
+            lat = -90, -89,...,0, 1,... ,90
+            lon = -180, -179, -178,...,0, 1,... ,180
+        False for dataset variables where all pairs are enumerated, e.g.
+            lat = -90,  -90,...  ,-89,  -89,... 90, 90
+            lon = -180, -179,... ,-180, -179,... 179, 180
+
+    Returns
+    -------
+    dict
+        With lat, lon, and index in Dataset
+        For example, {&#39;lat&#39;: 19.5, &#39;lon&#39;: 204.375, &#39;index&#39;: 31555}
+    &#34;&#34;&#34;
+    obs_station_lat_lon = {&#39;lat&#39;: lat, &#39;lon&#39;: lon}
+
+    if coords_as_dimensions:
+        coords = dataset.stack(coord_pair=[&#39;lat&#39;, &#39;lon&#39;]).coord_pair.values
+    else:
+        coords = zip(dataset[&#39;lat&#39;].values, dataset[&#39;lon&#39;].values)
+
+    mdl_lat_lon_list = [{&#39;lat&#39;: a, &#39;lon&#39;: o, &#39;index&#39;: i}
+                        for i, (a, o)
+                        in enumerate(coords)]
+
+    # Find it.
+    closest_dict = closest(mdl_lat_lon_list, obs_station_lat_lon)
+
+    return closest_dict</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="gdess.operations.geographic.closest"><code class="name flex">
+<span>def <span class="ident">closest</span></span>(<span>data: list, v: dict) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find closest point in <code>data</code> to the v point</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>v</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def closest(data: list,
+            v: dict) -&gt; dict:
+    &#34;&#34;&#34;Find closest point in `data` to the v point
+
+    Parameters
+    ----------
+    data
+    v
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    min_entry = min(data, key=lambda p: distance(v[&#39;lat&#39;], v[&#39;lon&#39;], p[&#39;lat&#39;], p[&#39;lon&#39;]))
+
+    return min_entry</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.geographic.distance"><code class="name flex">
+<span>def <span class="ident">distance</span></span>(<span>lat1: float, lon1: float, lat2: float, lon2: float) -> float</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def distance(lat1: float,
+             lon1: float,
+             lat2: float,
+             lon2: float) -&gt; float:
+    p = 0.017453292519943295
+    a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
+    return 12742 * asin(sqrt(a))</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.geographic.get_closest_mdl_cell_dict"><code class="name flex">
+<span>def <span class="ident">get_closest_mdl_cell_dict</span></span>(<span>dataset: xarray.core.dataset.Dataset, lat: float, lon: float, coords_as_dimensions: bool = True) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find the point in the model output that is closest to specified lat/lon pair</p>
+<h2 id="examples">Examples</h2>
+<p>To get the data subset at a location:
+&ndash; For CMIP outputs &ndash;
+&gt;&gt;&gt; closest_point = get_closest_mdl_cell_dict(dataset, lat=24.3, lon=137.8, coords_as_dimensions=True)
+&gt;&gt;&gt; dataset.stack(coord_pair=['lat', 'lon']).isel(coord_pair=closest_point['index'])
+&ndash; For E3SM native grid &ndash;
+&gt;&gt;&gt; closest_mdl_point = get_closest_mdl_cell_dict(dataset, lat=lat, lon=lon, coords_as_dimensions=False)
+&gt;&gt;&gt; dataset.where(dataset['ncol'] == closest_mdl_point['index'], drop=True)</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>lat</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>lon</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>coords_as_dimensions</code></strong></dt>
+<dd>True for dataset variables as independent dimensions, e.g.
+lat = -90, -89,&hellip;,0, 1,&hellip; ,90
+lon = -180, -179, -178,&hellip;,0, 1,&hellip; ,180
+False for dataset variables where all pairs are enumerated, e.g.
+lat = -90,
+-90,&hellip;
+,-89,
+-89,&hellip; 90, 90
+lon = -180, -179,&hellip; ,-180, -179,&hellip; 179, 180</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>With lat, lon, and index in Dataset
+For example, {'lat': 19.5, 'lon': 204.375, 'index': 31555}</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_closest_mdl_cell_dict(dataset: xr.Dataset,
+                              lat: float,
+                              lon: float,
+                              coords_as_dimensions: bool = True
+                              ) -&gt; dict:
+    &#34;&#34;&#34;Find the point in the model output that is closest to specified lat/lon pair
+
+    Examples
+    --------
+    To get the data subset at a location:
+    -- For CMIP outputs --
+        &gt;&gt;&gt; closest_point = get_closest_mdl_cell_dict(dataset, lat=24.3, lon=137.8, coords_as_dimensions=True)
+        &gt;&gt;&gt; dataset.stack(coord_pair=[&#39;lat&#39;, &#39;lon&#39;]).isel(coord_pair=closest_point[&#39;index&#39;])
+    -- For E3SM native grid --
+        &gt;&gt;&gt; closest_mdl_point = get_closest_mdl_cell_dict(dataset, lat=lat, lon=lon, coords_as_dimensions=False)
+        &gt;&gt;&gt; dataset.where(dataset[&#39;ncol&#39;] == closest_mdl_point[&#39;index&#39;], drop=True)
+
+    Parameters
+    ----------
+    dataset
+    lat
+    lon
+    coords_as_dimensions
+        True for dataset variables as independent dimensions, e.g.
+            lat = -90, -89,...,0, 1,... ,90
+            lon = -180, -179, -178,...,0, 1,... ,180
+        False for dataset variables where all pairs are enumerated, e.g.
+            lat = -90,  -90,...  ,-89,  -89,... 90, 90
+            lon = -180, -179,... ,-180, -179,... 179, 180
+
+    Returns
+    -------
+    dict
+        With lat, lon, and index in Dataset
+        For example, {&#39;lat&#39;: 19.5, &#39;lon&#39;: 204.375, &#39;index&#39;: 31555}
+    &#34;&#34;&#34;
+    obs_station_lat_lon = {&#39;lat&#39;: lat, &#39;lon&#39;: lon}
+
+    if coords_as_dimensions:
+        coords = dataset.stack(coord_pair=[&#39;lat&#39;, &#39;lon&#39;]).coord_pair.values
+    else:
+        coords = zip(dataset[&#39;lat&#39;].values, dataset[&#39;lon&#39;].values)
+
+    mdl_lat_lon_list = [{&#39;lat&#39;: a, &#39;lon&#39;: o, &#39;index&#39;: i}
+                        for i, (a, o)
+                        in enumerate(coords)]
+
+    # Find it.
+    closest_dict = closest(mdl_lat_lon_list, obs_station_lat_lon)
+
+    return closest_dict</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="gdess.operations" href="index.html">gdess.operations</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="gdess.operations.geographic.closest" href="#gdess.operations.geographic.closest">closest</a></code></li>
+<li><code><a title="gdess.operations.geographic.distance" href="#gdess.operations.geographic.distance">distance</a></code></li>
+<li><code><a title="gdess.operations.geographic.get_closest_mdl_cell_dict" href="#gdess.operations.geographic.get_closest_mdl_cell_dict">get_closest_mdl_cell_dict</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

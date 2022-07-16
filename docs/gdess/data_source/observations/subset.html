@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>gdess.data_source.observations.subset API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>gdess.data_source.observations.subset</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from gdess import _change_log_level, validate_verbose
+from gdess.formatters.nums import numstr
+import numpy as np
+import xarray as xr
+from typing import Union
+import logging
+
+
+def bin_by_year_and_vertical(x_ds_: xr.Dataset,
+                             my_year: int,
+                             my_vertical_edges: np.array,
+                             n_latitude: int,
+                             n_longitude: int,
+                             my_verbose=True
+                             ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Bin data onto a 2D grid of year and altitude
+
+    Parameters
+    ----------
+    x_ds_
+    my_year
+    my_vertical_edges
+    n_latitude
+    n_longitude
+    my_verbose
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    # Data are subset by time.
+    temp_ds = by_decimalyear(x_ds_, verbose=my_verbose, start=my_year, end=my_year + 1)
+
+    # Data are binned (using numpy histogram2d function)
+    temp_ds = bin3d(temp_ds, verbose=my_verbose,
+                    vertical_bin_edges=my_vertical_edges,
+                    n_latitude=n_latitude, n_longitude=n_longitude)
+
+    return temp_ds
+
+
+def binTimeLat(dataset: xr.Dataset,
+               n_latitude: int = 10, n_time: int = 10,
+               var_name: str = &#39;co2&#39;
+               ) -&gt; tuple:
+    &#34;&#34;&#34;Bin data onto a 2D grid of time and latitude
+
+    Parameters
+    ----------
+    dataset
+    n_latitude
+    n_time
+    var_name
+
+    Returns
+    -------
+    A 3-tuple
+        zi (co2), y_edges (latitude), x_edges (time)
+    &#34;&#34;&#34;
+    time = dataset[&#39;time&#39;].astype(&#34;float&#34;)
+    lat = dataset[&#39;latitude&#39;]
+    dat = dataset[var_name]
+
+    # Data are binned onto the grid.
+    #   (x &amp; y must be reversed due to row-first indexing.)
+    zi, y_edges, x_edges = np.histogram2d(lat.values, time.values,
+                                          bins=(n_latitude, n_time), weights=dat.values, normed=False)
+    counts, _, _ = np.histogram2d(lat.values, time.values,
+                                  bins=(n_latitude, n_time))
+    zi = np.ma.masked_equal(zi, 0)
+
+    # Mean is calculated.
+    zi = zi / counts
+    zi = np.ma.masked_invalid(zi)
+
+    #     print(time)
+    #     x_edges = [np.datetime64(datetime.utcfromtimestamp(x)) for x in x_edges]  # convert float times back to np.datetime64
+
+    return zi, y_edges, x_edges
+
+
+def by_decimalyear(dataset: xr.Dataset,
+                   start: float = 2017, end: float = 2018,
+                   verbose: bool = False) -&gt; Union[xr.Dataset, None]:
+    func_log = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;by_decimalyear&#34;))
+    orig_log_level = func_log.level
+    if verbose:
+        _change_log_level(func_log, verbose)
+
+    # We start with the passed-in dataset.
+    orig_shape = dataset[&#39;time_decimal&#39;].shape
+    keep_mask = np.full(orig_shape, True)
+    func_log.debug(&#34;Original # data points: %s&#34;, numstr(orig_shape[0], 0))
+
+    # The data are subsetted by year.
+    keep_mask = keep_mask &amp; (dataset[&#39;time_decimal&#39;] &gt;= start)
+    keep_mask = keep_mask &amp; (dataset[&#39;time_decimal&#39;] &lt; end)
+    if not keep_mask.data.any():
+        func_log.debug(&#34; -- subset between &lt;start=%f and end=%f&gt; -- NO DATA POINTS&#34;,
+                       start,
+                       end,)
+        return None
+    ds_year = dataset.where(keep_mask, drop=True)
+    ds_year_shape = ds_year[&#39;time_decimal&#39;].shape
+    func_log.debug(&#34; -- subset between &lt;start=%f and end=%f&gt; -- # data points: %s&#34;,
+                   start,
+                   end,
+                   numstr(ds_year_shape[0], 0))
+
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
+
+    return ds_year
+
+
+def by_datetime(dataset: xr.Dataset,
+                start: np.datetime64 = np.datetime64(&#39;2017-01-01&#39;),
+                end: np.datetime64 = np.datetime64(&#39;2008-01-01&#39;),
+                verbose: Union[str, bool] = False) -&gt; Union[xr.Dataset, None]:
+    func_log = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;by_datetime&#34;))
+    orig_log_level = func_log.level
+    if verbose:
+        _change_log_level(func_log, validate_verbose(verbose))
+
+    # We start with the passed-in dataset.
+    orig_shape = dataset[&#39;time&#39;].shape
+    keep_mask = np.full(orig_shape, True)
+    func_log.debug(&#34;Original # data points: %s&#34;, numstr(orig_shape[0], 0))
+
+    # The data are subsetted by year.
+    keep_mask = keep_mask &amp; (dataset[&#39;time&#39;] &gt;= start)
+    keep_mask = keep_mask &amp; (dataset[&#39;time&#39;] &lt; end)
+    if not keep_mask.data.any():
+        func_log.debug(&#34; -- subset between &lt;start=%s and end=%s&gt; -- NO DATA POINTS&#34;,
+                       start,
+                       end,)
+        return None
+    ds_year = dataset.where(keep_mask, drop=True)
+    ds_year_shape = ds_year[&#39;time&#39;].shape
+    func_log.debug(&#34; -- subset between &lt;start=%s and end=%s&gt; -- # data points: %s&#34;,
+                   start,
+                   end,
+                   numstr(ds_year_shape[0], 0))
+
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
+
+    return ds_year
+
+
+def binLonLat(dataset: xr.Dataset,
+              n_latitude: int = 10, n_longitude: int = 10,
+              var_name: str = &#39;co2&#39;):
+    lon = dataset[&#39;longitude&#39;]
+    lat = dataset[&#39;latitude&#39;]
+    dat = dataset[var_name]
+
+    # Data are binned onto the grid.
+    #   (x &amp; y must be reversed due to row-first indexing.)
+    zi, y_edges, x_edges = np.histogram2d(lat.values, lon.values,
+                                          bins=(n_latitude, n_longitude), weights=dat.values, normed=False)
+    counts, _, _ = np.histogram2d(lat.values, lon.values,
+                                  bins=(n_latitude, n_longitude))
+    zi = np.ma.masked_equal(zi, 0)
+
+    # Mean is calculated.
+    zi = zi / counts
+    zi = np.ma.masked_invalid(zi)
+
+    return zi, y_edges, x_edges
+
+
+def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
+          n_latitude: int = 10, n_longitude: int = 10, units: str = &#39;ppm&#39;,
+          var_name: str = &#39;co2&#39;,
+          verbose: bool = True) -&gt; xr.Dataset:
+    func_log = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;bin3d&#34;))
+    if verbose:
+        orig_log_level = func_log.level
+        _change_log_level(func_log, logging.DEBUG)
+
+    # We start with the passed-in dataset.
+    orig_shape = dataset[&#39;time_decimal&#39;].shape
+    keep_mask_orig = np.full(orig_shape, True)
+
+    # The vertical bins are defined.
+    lvls = vertical_bin_edges
+    n_vertical = len(lvls)
+
+    # x_arr = []
+    # y_arr = []
+    value_arr = []
+    lvl_pairs = []
+    for i, (l0, l1) in enumerate(zip(lvls, lvls[1:])):
+        func_log.debug(&#34;-Vertical level %d/%d-&#34;, i+1, n_vertical-1)
+        lvl_pairs.append([l0, l1])
+
+        # The data are subsetted by altitude.
+        keep_mask = keep_mask_orig &amp; (dataset[&#39;altitude&#39;] &gt; l0)
+        keep_mask = keep_mask &amp; (dataset[&#39;altitude&#39;] &lt;= l1)
+        func_log.debug(f&#34;  subset # data points: %s&#34;, numstr(np.count_nonzero(keep_mask), 0))
+
+        # The data are binned along the x and y directions.
+        values, y_edges, x_edges = binLonLat(dataset.where(keep_mask, drop=True),
+                                             n_latitude=n_latitude, n_longitude=n_longitude)
+        value_arr.append(values)
+
+    # Horizontal centers of each bin are retrieved.
+    x_centers = 0.5 * (x_edges[1:] + x_edges[:-1])
+    y_centers = 0.5 * (y_edges[1:] + y_edges[:-1])
+    vertical_centers = 0.5 * (vertical_bin_edges[1:] + vertical_bin_edges[:-1])
+
+    # xg, yg = np.meshgrid(x_centers, y_centers)
+    # x_arr.append(xg)
+    # y_arr.append(yg)
+
+    # The python lists are converted to 3d numpy arrays.
+    z_arr = np.array(value_arr)
+    # x_arr = np.array(x_arr)
+    # y_arr = np.array(y_arr)
+
+    func_log.debug(&#34;subset data shape: %s&#34;, z_arr.shape)
+    func_log.debug(&#34;\nDone.&#34;)
+
+    ds_sub = xr.Dataset({
+        var_name: xr.DataArray(
+            data=value_arr,
+            dims=[&#39;vertical&#39;, &#39;lat&#39;, &#39;lon&#39;],
+            coords={&#39;vertical&#39;: vertical_centers,
+                    &#39;lat&#39;: y_centers,
+                    &#39;lon&#39;: x_centers,
+                    },
+            attrs={
+                &#39;_FillValue&#39;: -999.9,
+                &#39;units&#39;: &#39;units&#39;
+            }
+        ),
+        &#39;vertical_edges&#39;: xr.DataArray(data=[[l0, l1] for l0, l1 in zip(vertical_bin_edges, vertical_bin_edges[1:])],
+                                       dims=[&#39;vertical&#39;, &#39;nbnds&#39;],
+                                       coords={&#39;nbnds&#39;: [0, 1]}),
+        &#39;lat_edges&#39;: xr.DataArray(data=[[l0, l1] for l0, l1 in zip(y_edges, y_edges[1:])],
+                                  dims=[&#39;lat&#39;, &#39;nbnds&#39;],
+                                  coords={&#39;nbnds&#39;: [0, 1]}),
+        &#39;lon_edges&#39;: xr.DataArray(data=[[l0, l1] for l0, l1 in zip(x_edges, x_edges[1:])],
+                                  dims=[&#39;lon&#39;, &#39;nbnds&#39;],
+                                  coords={&#39;nbnds&#39;: [0, 1]}),
+    }
+    )
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
+    return ds_sub
+
+# def bin_multiyear(dd)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="gdess.data_source.observations.subset.bin3d"><code class="name flex">
+<span>def <span class="ident">bin3d</span></span>(<span>dataset: xarray.core.dataset.Dataset, vertical_bin_edges: numpy.ndarray, n_latitude: int = 10, n_longitude: int = 10, units: str = 'ppm', var_name: str = 'co2', verbose: bool = True) -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bin3d(dataset: xr.Dataset, vertical_bin_edges: np.ndarray,
+          n_latitude: int = 10, n_longitude: int = 10, units: str = &#39;ppm&#39;,
+          var_name: str = &#39;co2&#39;,
+          verbose: bool = True) -&gt; xr.Dataset:
+    func_log = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;bin3d&#34;))
+    if verbose:
+        orig_log_level = func_log.level
+        _change_log_level(func_log, logging.DEBUG)
+
+    # We start with the passed-in dataset.
+    orig_shape = dataset[&#39;time_decimal&#39;].shape
+    keep_mask_orig = np.full(orig_shape, True)
+
+    # The vertical bins are defined.
+    lvls = vertical_bin_edges
+    n_vertical = len(lvls)
+
+    # x_arr = []
+    # y_arr = []
+    value_arr = []
+    lvl_pairs = []
+    for i, (l0, l1) in enumerate(zip(lvls, lvls[1:])):
+        func_log.debug(&#34;-Vertical level %d/%d-&#34;, i+1, n_vertical-1)
+        lvl_pairs.append([l0, l1])
+
+        # The data are subsetted by altitude.
+        keep_mask = keep_mask_orig &amp; (dataset[&#39;altitude&#39;] &gt; l0)
+        keep_mask = keep_mask &amp; (dataset[&#39;altitude&#39;] &lt;= l1)
+        func_log.debug(f&#34;  subset # data points: %s&#34;, numstr(np.count_nonzero(keep_mask), 0))
+
+        # The data are binned along the x and y directions.
+        values, y_edges, x_edges = binLonLat(dataset.where(keep_mask, drop=True),
+                                             n_latitude=n_latitude, n_longitude=n_longitude)
+        value_arr.append(values)
+
+    # Horizontal centers of each bin are retrieved.
+    x_centers = 0.5 * (x_edges[1:] + x_edges[:-1])
+    y_centers = 0.5 * (y_edges[1:] + y_edges[:-1])
+    vertical_centers = 0.5 * (vertical_bin_edges[1:] + vertical_bin_edges[:-1])
+
+    # xg, yg = np.meshgrid(x_centers, y_centers)
+    # x_arr.append(xg)
+    # y_arr.append(yg)
+
+    # The python lists are converted to 3d numpy arrays.
+    z_arr = np.array(value_arr)
+    # x_arr = np.array(x_arr)
+    # y_arr = np.array(y_arr)
+
+    func_log.debug(&#34;subset data shape: %s&#34;, z_arr.shape)
+    func_log.debug(&#34;\nDone.&#34;)
+
+    ds_sub = xr.Dataset({
+        var_name: xr.DataArray(
+            data=value_arr,
+            dims=[&#39;vertical&#39;, &#39;lat&#39;, &#39;lon&#39;],
+            coords={&#39;vertical&#39;: vertical_centers,
+                    &#39;lat&#39;: y_centers,
+                    &#39;lon&#39;: x_centers,
+                    },
+            attrs={
+                &#39;_FillValue&#39;: -999.9,
+                &#39;units&#39;: &#39;units&#39;
+            }
+        ),
+        &#39;vertical_edges&#39;: xr.DataArray(data=[[l0, l1] for l0, l1 in zip(vertical_bin_edges, vertical_bin_edges[1:])],
+                                       dims=[&#39;vertical&#39;, &#39;nbnds&#39;],
+                                       coords={&#39;nbnds&#39;: [0, 1]}),
+        &#39;lat_edges&#39;: xr.DataArray(data=[[l0, l1] for l0, l1 in zip(y_edges, y_edges[1:])],
+                                  dims=[&#39;lat&#39;, &#39;nbnds&#39;],
+                                  coords={&#39;nbnds&#39;: [0, 1]}),
+        &#39;lon_edges&#39;: xr.DataArray(data=[[l0, l1] for l0, l1 in zip(x_edges, x_edges[1:])],
+                                  dims=[&#39;lon&#39;, &#39;nbnds&#39;],
+                                  coords={&#39;nbnds&#39;: [0, 1]}),
+    }
+    )
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
+    return ds_sub</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.observations.subset.binLonLat"><code class="name flex">
+<span>def <span class="ident">binLonLat</span></span>(<span>dataset: xarray.core.dataset.Dataset, n_latitude: int = 10, n_longitude: int = 10, var_name: str = 'co2')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def binLonLat(dataset: xr.Dataset,
+              n_latitude: int = 10, n_longitude: int = 10,
+              var_name: str = &#39;co2&#39;):
+    lon = dataset[&#39;longitude&#39;]
+    lat = dataset[&#39;latitude&#39;]
+    dat = dataset[var_name]
+
+    # Data are binned onto the grid.
+    #   (x &amp; y must be reversed due to row-first indexing.)
+    zi, y_edges, x_edges = np.histogram2d(lat.values, lon.values,
+                                          bins=(n_latitude, n_longitude), weights=dat.values, normed=False)
+    counts, _, _ = np.histogram2d(lat.values, lon.values,
+                                  bins=(n_latitude, n_longitude))
+    zi = np.ma.masked_equal(zi, 0)
+
+    # Mean is calculated.
+    zi = zi / counts
+    zi = np.ma.masked_invalid(zi)
+
+    return zi, y_edges, x_edges</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.observations.subset.binTimeLat"><code class="name flex">
+<span>def <span class="ident">binTimeLat</span></span>(<span>dataset: xarray.core.dataset.Dataset, n_latitude: int = 10, n_time: int = 10, var_name: str = 'co2') -> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Bin data onto a 2D grid of time and latitude</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>n_latitude</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>n_time</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>var_name</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A 3-tuple</code></dt>
+<dd>zi (co2), y_edges (latitude), x_edges (time)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def binTimeLat(dataset: xr.Dataset,
+               n_latitude: int = 10, n_time: int = 10,
+               var_name: str = &#39;co2&#39;
+               ) -&gt; tuple:
+    &#34;&#34;&#34;Bin data onto a 2D grid of time and latitude
+
+    Parameters
+    ----------
+    dataset
+    n_latitude
+    n_time
+    var_name
+
+    Returns
+    -------
+    A 3-tuple
+        zi (co2), y_edges (latitude), x_edges (time)
+    &#34;&#34;&#34;
+    time = dataset[&#39;time&#39;].astype(&#34;float&#34;)
+    lat = dataset[&#39;latitude&#39;]
+    dat = dataset[var_name]
+
+    # Data are binned onto the grid.
+    #   (x &amp; y must be reversed due to row-first indexing.)
+    zi, y_edges, x_edges = np.histogram2d(lat.values, time.values,
+                                          bins=(n_latitude, n_time), weights=dat.values, normed=False)
+    counts, _, _ = np.histogram2d(lat.values, time.values,
+                                  bins=(n_latitude, n_time))
+    zi = np.ma.masked_equal(zi, 0)
+
+    # Mean is calculated.
+    zi = zi / counts
+    zi = np.ma.masked_invalid(zi)
+
+    #     print(time)
+    #     x_edges = [np.datetime64(datetime.utcfromtimestamp(x)) for x in x_edges]  # convert float times back to np.datetime64
+
+    return zi, y_edges, x_edges</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.observations.subset.bin_by_year_and_vertical"><code class="name flex">
+<span>def <span class="ident">bin_by_year_and_vertical</span></span>(<span>x_ds_: xarray.core.dataset.Dataset, my_year: int, my_vertical_edges: <built-in function array>, n_latitude: int, n_longitude: int, my_verbose=True) -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Bin data onto a 2D grid of year and altitude</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x_ds_</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>my_year</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>my_vertical_edges</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>n_latitude</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>n_longitude</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>my_verbose</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bin_by_year_and_vertical(x_ds_: xr.Dataset,
+                             my_year: int,
+                             my_vertical_edges: np.array,
+                             n_latitude: int,
+                             n_longitude: int,
+                             my_verbose=True
+                             ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Bin data onto a 2D grid of year and altitude
+
+    Parameters
+    ----------
+    x_ds_
+    my_year
+    my_vertical_edges
+    n_latitude
+    n_longitude
+    my_verbose
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    # Data are subset by time.
+    temp_ds = by_decimalyear(x_ds_, verbose=my_verbose, start=my_year, end=my_year + 1)
+
+    # Data are binned (using numpy histogram2d function)
+    temp_ds = bin3d(temp_ds, verbose=my_verbose,
+                    vertical_bin_edges=my_vertical_edges,
+                    n_latitude=n_latitude, n_longitude=n_longitude)
+
+    return temp_ds</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.observations.subset.by_datetime"><code class="name flex">
+<span>def <span class="ident">by_datetime</span></span>(<span>dataset: xarray.core.dataset.Dataset, start: numpy.datetime64 = numpy.datetime64('2017-01-01'), end: numpy.datetime64 = numpy.datetime64('2008-01-01'), verbose: Union[str, bool] = False) -> Union[xarray.core.dataset.Dataset, NoneType]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def by_datetime(dataset: xr.Dataset,
+                start: np.datetime64 = np.datetime64(&#39;2017-01-01&#39;),
+                end: np.datetime64 = np.datetime64(&#39;2008-01-01&#39;),
+                verbose: Union[str, bool] = False) -&gt; Union[xr.Dataset, None]:
+    func_log = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;by_datetime&#34;))
+    orig_log_level = func_log.level
+    if verbose:
+        _change_log_level(func_log, validate_verbose(verbose))
+
+    # We start with the passed-in dataset.
+    orig_shape = dataset[&#39;time&#39;].shape
+    keep_mask = np.full(orig_shape, True)
+    func_log.debug(&#34;Original # data points: %s&#34;, numstr(orig_shape[0], 0))
+
+    # The data are subsetted by year.
+    keep_mask = keep_mask &amp; (dataset[&#39;time&#39;] &gt;= start)
+    keep_mask = keep_mask &amp; (dataset[&#39;time&#39;] &lt; end)
+    if not keep_mask.data.any():
+        func_log.debug(&#34; -- subset between &lt;start=%s and end=%s&gt; -- NO DATA POINTS&#34;,
+                       start,
+                       end,)
+        return None
+    ds_year = dataset.where(keep_mask, drop=True)
+    ds_year_shape = ds_year[&#39;time&#39;].shape
+    func_log.debug(&#34; -- subset between &lt;start=%s and end=%s&gt; -- # data points: %s&#34;,
+                   start,
+                   end,
+                   numstr(ds_year_shape[0], 0))
+
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
+
+    return ds_year</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.observations.subset.by_decimalyear"><code class="name flex">
+<span>def <span class="ident">by_decimalyear</span></span>(<span>dataset: xarray.core.dataset.Dataset, start: float = 2017, end: float = 2018, verbose: bool = False) -> Union[xarray.core.dataset.Dataset, NoneType]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def by_decimalyear(dataset: xr.Dataset,
+                   start: float = 2017, end: float = 2018,
+                   verbose: bool = False) -&gt; Union[xr.Dataset, None]:
+    func_log = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;by_decimalyear&#34;))
+    orig_log_level = func_log.level
+    if verbose:
+        _change_log_level(func_log, verbose)
+
+    # We start with the passed-in dataset.
+    orig_shape = dataset[&#39;time_decimal&#39;].shape
+    keep_mask = np.full(orig_shape, True)
+    func_log.debug(&#34;Original # data points: %s&#34;, numstr(orig_shape[0], 0))
+
+    # The data are subsetted by year.
+    keep_mask = keep_mask &amp; (dataset[&#39;time_decimal&#39;] &gt;= start)
+    keep_mask = keep_mask &amp; (dataset[&#39;time_decimal&#39;] &lt; end)
+    if not keep_mask.data.any():
+        func_log.debug(&#34; -- subset between &lt;start=%f and end=%f&gt; -- NO DATA POINTS&#34;,
+                       start,
+                       end,)
+        return None
+    ds_year = dataset.where(keep_mask, drop=True)
+    ds_year_shape = ds_year[&#39;time_decimal&#39;].shape
+    func_log.debug(&#34; -- subset between &lt;start=%f and end=%f&gt; -- # data points: %s&#34;,
+                   start,
+                   end,
+                   numstr(ds_year_shape[0], 0))
+
+    if verbose:
+        _change_log_level(func_log, orig_log_level)
+
+    return ds_year</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="gdess.data_source.observations" href="index.html">gdess.data_source.observations</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="gdess.data_source.observations.subset.bin3d" href="#gdess.data_source.observations.subset.bin3d">bin3d</a></code></li>
+<li><code><a title="gdess.data_source.observations.subset.binLonLat" href="#gdess.data_source.observations.subset.binLonLat">binLonLat</a></code></li>
+<li><code><a title="gdess.data_source.observations.subset.binTimeLat" href="#gdess.data_source.observations.subset.binTimeLat">binTimeLat</a></code></li>
+<li><code><a title="gdess.data_source.observations.subset.bin_by_year_and_vertical" href="#gdess.data_source.observations.subset.bin_by_year_and_vertical">bin_by_year_and_vertical</a></code></li>
+<li><code><a title="gdess.data_source.observations.subset.by_datetime" href="#gdess.data_source.observations.subset.by_datetime">by_datetime</a></code></li>
+<li><code><a title="gdess.data_source.observations.subset.by_decimalyear" href="#gdess.data_source.observations.subset.by_decimalyear">by_decimalyear</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

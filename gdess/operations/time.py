@@ -1,7 +1,8 @@
+import cftime
+import logging
 import datetime as pydt
 from datetime import timedelta
-from typing import Sequence, Union
-import cftime, logging
+from typing import Sequence, Union, List
 
 import numpy as np
 import pandas as pd
@@ -88,7 +89,8 @@ def ensure_cftime_array(time: Sequence) -> Sequence:
 
     Returns
     -------
-    Python's datetime are converted to cftime.DatetimeGregorian.
+    Sequence
+        Python's datetime are converted to cftime.DatetimeGregorian.
 
     Raises
     ------
@@ -113,29 +115,31 @@ def ensure_dataset_cftime(dataset):
 
 
 def select_between(dataset: xr.Dataset,
-                   timestart,
-                   timeend,
-                   varlist=None,
-                   drop=True,
-                   drop_dups=True) -> xr.Dataset:
+                   timestart: Union[cftime.DatetimeGregorian, np.datetime64],
+                   timeend: Union[cftime.DatetimeGregorian, np.datetime64],
+                   varlist: List[str] = None,
+                   drop: bool = True,
+                   drop_dups: bool = True
+                   ) -> xr.Dataset:
     """Select part of a dataset between two times
 
     Parameters
     ----------
     dataset : xarray.Dataset
-    timestart
+    timestart : Union[cftime.DatetimeGregorian, numpy.datetime64]
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
-    timeend
+    timeend : Union[cftime.DatetimeGregorian, numpy.datetime64]
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
     varlist
-    drop : bool, default True
-    drop_dups : bool, default True
+    drop : `bool`, default True
+    drop_dups : `bool`, default True
 
     Returns
     -------
-    a subset of the original dataset with only times between timestart and timeend
+    xr.Dataset
+        a subset of the original dataset with only times between timestart and timeend
     """
     if varlist is None:
         ds_sub = dataset.copy()
@@ -159,12 +163,13 @@ def monthlist(dates: list) -> list:
 
     Parameters
     ----------
-    dates : list
+    dates : `list`
         Of length==2, with a start and end date, in the format of "%Y-%m-%d"
 
     Returns
     -------
-    A list containing months (as numpy.datetime64 objects for the first day of each month)
+    list
+        Contains months (as numpy.datetime64 objects for the first day of each month)
 
     Example
     _______
@@ -187,7 +192,21 @@ def monthlist(dates: list) -> list:
 
 def dt2t(year: int, month: int, day: int,
          h: int = 0, m: int = 0, s: int = 0) -> float:
-    """Convert a DT.datetime to a float"""
+    """Convert parts of a DT.datetime to a float
+
+    Parameters
+    ----------
+    year : `int`
+    month : `int`
+    day : `int`
+    h : `int`
+    m : `int`
+    s : `int`
+
+    Returns
+    -------
+    `float`
+    """
     year_seconds = (pydt.datetime(year, 12, 31, 23, 59, 59, 999999) -
                     pydt.datetime(year, 1, 1, 0, 0, 0)).total_seconds()
     second_of_year = (pydt.datetime(year, month, day, h, m, s) -
@@ -200,6 +219,14 @@ def t2dt(atime: float) -> pydt.datetime:
 
     This is the inverse of dt2t.
     assert dt2t(t2dt(atime)) == atime
+
+    Parameters
+    ----------
+    atime : `float`
+
+    Returns
+    -------
+    datetime.datetime
     """
     year = int(atime)
     remainder = atime - year

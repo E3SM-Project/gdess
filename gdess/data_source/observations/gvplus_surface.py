@@ -1,3 +1,11 @@
+from typing import Union
+import os, re, glob, argparse, logging
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
+
 from gdess import set_verbose, load_stations_dict, load_config_file, benchmark_recipe
 from gdess.data_source.observations.load import load_data_with_regex, dataset_from_filelist
 from gdess.data_source.multiset import Multiset
@@ -8,12 +16,6 @@ from gdess.graphics.single_source_plots import plot_annual_series
 from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from gdess.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
 from gdess.formatters import append_before_extension
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter
-from typing import Union
-import os, re, glob, argparse, logging
 
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
@@ -22,12 +24,12 @@ station_dict = load_stations_dict()
 
 
 class Collection(Multiset):
-    def __init__(self, verbose: Union[bool, str]=False):
+    def __init__(self, verbose: Union[bool, str] = False):
         """Instantiate an Obspack Surface Station Collection object.
 
         Parameters
         ----------
-        verbose: Union[bool, str]
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         set_verbose(_logger, verbose)
@@ -48,10 +50,10 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        verbose: Union[bool, str]
-            can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        options
-            A dictionary with zero or more of these parameter keys:
+        verbose : Union[bool, str]
+            Can be either True, False, or a string for level such as "INFO, DEBUG, etc."
+        options : dict
+            Contains zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 station_code (str): 'mlo' is default
                 start_yr (str): '1960' is default
@@ -59,7 +61,8 @@ class Collection(Multiset):
 
         Returns
         -------
-        Collection object for Obspack that was used to generate the diagnostic
+        Collection
+            object for Obspack that was used to generate the diagnostic
         """
         set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
@@ -95,17 +98,18 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        verbose
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        options
-            A dictionary with zero or more of these parameter keys:
+        options : dict
+            Contains zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 start_yr (str): '1960' s default
                 end_yr (str): None is default
 
         Returns
         -------
-        Collection object for Obspack that was used to generate the diagnostic
+        Collection
+            object for Obspack that was used to generate the diagnostic
         """
         set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
@@ -150,8 +154,8 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datadir
-        station_name
+        datadir : `str`
+        station_name : Union[str, list]
         """
         _logger.debug("Preprocessing...")
         if not station_name:
@@ -180,13 +184,14 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        dataset_obs
+        dataset_obs : xr.Dataset
         timestart
         timeend
 
         Returns
         -------
-        A pandas.DataFrame with columnds of time, original data, and resampled data
+        pd.DataFrame
+            Contains columns of time, original data, and resampled data
         """
         _logger.debug('Resampling obspack observations..')
         # --- OBSERVATIONS ---

@@ -1,0 +1,1493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>gdess.data_source.models.cmip.cmip_collection API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>gdess.data_source.models.cmip.cmip_collection</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from typing import Union, Sequence
+import os, argparse, logging, warnings
+
+import intake
+import numpy as np
+import pandas as pd
+import xarray as xr
+import matplotlib.pyplot as plt
+
+from gdess import set_verbose, load_config_file, benchmark_recipe
+from gdess.data_source.models.cmip.cmip_name_utils import model_name_dict_from_valid_form, \
+    matched_model_and_experiment, cmip_model_choices
+from gdess.data_source.multiset import Multiset
+from gdess.operations.datasetdict import DatasetDict
+from gdess.operations.time import ensure_dataset_datetime64
+from gdess.operations.convert import co2_molfrac_to_ppm
+from gdess.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
+from gdess.formatters.args import nullable_str
+from gdess.formatters import append_before_extension
+from gdess.graphics.single_source_plots import plot_annual_series, plot_zonal_mean
+from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig
+
+_logger = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;loader&#34;))
+
+default_cmip6_datastore_url = &#34;https://raw.githubusercontent.com/NCAR/intake-esm-datastore/master/catalogs/pangeo-cmip6.json&#34;
+
+
+class Collection(Multiset):
+    def __init__(self, datastore=&#39;cmip6&#39;, verbose: Union[bool, str] = False):
+        &#34;&#34;&#34;Instantiate a CMIP Collection object.
+
+        Parameters
+        ----------
+        datastore : str
+            a shortened name of an ESM catalog that we will query for model outputs.
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        &#34;&#34;&#34;
+        # Set up the level of verbosity, i.e. how many log messages are displayed.
+        set_verbose(_logger, verbose)
+        self._progressbar = True
+        if _logger.level &gt; 10:  # 10 is debug, 20 is info, etc.
+            self._progressbar = False
+
+        self.latest_searched_model_catalog = None
+        self.catalog_dataframe = None
+        # TODO: add capability to handle additional datastores besides cmip6, such as CMIP5, etc.
+        if datastore == &#39;cmip6&#39;:
+            self.datastore_url = default_cmip6_datastore_url
+        else:
+            raise ValueError(&#39;Unexpected/unhandled datastore &lt;%s&gt;&#39;, datastore)
+
+        super().__init__(verbose=verbose)
+
+    @classmethod
+    def _recipe_base(cls,
+                     datastore=&#39;cmip6&#39;,
+                     verbose: Union[bool, str] = False,
+                     load_method: str = &#39;pangeo&#39;,
+                     pickle_file: str = None,
+                     skip_selections: bool = False,
+                     selection: dict = None,
+                     mean_dims: tuple = None,
+                     model_name: Union[str, list] = None
+                     ) -&gt; (&#39;Collection&#39;, bool):
+        &#34;&#34;&#34;Create an instance, and either preprocess or load already processed data.
+
+        Parameters
+        ----------
+        datastore : str, default &#39;cmip6&#39;
+        verbose : Union[bool, str], default False
+        load_method : str, default &#39;pangeo&#39;
+            either &#39;pangeo&#39;, &#39;local&#39;, or &#39;pickle&#39;
+        pickle_file : str
+            (Optional) path to a saved pickle file is used if argument load_method==&#39;pickle
+        selection : dict
+        mean_dims : tuple
+
+        Returns
+        -------
+        tuple : (Collection, bool)
+            Collection
+            bool
+                Whether datasets were loaded from a pickle file or not. (If not, there is probably more processing needed.)
+        &#34;&#34;&#34;
+        # An empty instance is created.
+        new_self = cls(datastore=datastore, verbose=verbose)
+        _logger.debug(&#39; skip_selections: %s&#39;, skip_selections)
+
+        loaded_from_pickle_bool = False
+        if load_method == &#39;pickle&#39;:
+            # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
+            # otherwise, this is False.
+            loaded_from_pickle_bool = new_self.datasets_from_pickle(filename=pickle_file, replace=True)
+            _logger.debug(&#39; loaded from pickle? --&gt; %s&#39;, loaded_from_pickle_bool)
+        else:
+            # Data are formatted into the basic data structure common to various diagnostics.
+            new_self._load_data(method=load_method, url=new_self.datastore_url, model_name=model_name)
+            new_self.preprocess()
+
+            if not skip_selections:
+                _logger.debug(&#39; applying selected bounds: %s&#39;, selection)
+                new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
+                                                                                                       inplace=False)
+                # Spatial mean is calculated, leaving us with a time series.
+                new_self.stepC_prepped_datasets.queue_mean(dim=mean_dims, inplace=True)
+                # The lazily loaded selections and computations are here actually processed.
+                new_self.stepC_prepped_datasets.execute_all(inplace=True)
+
+        return new_self, loaded_from_pickle_bool
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_timeseries(cls,
+                                  datastore=&#39;cmip6&#39;,
+                                  verbose: Union[bool, str] = False,
+                                  pickle_file: str = None,
+                                  options: dict = None
+                                  ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore : str, default &#39;cmip6&#39;
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        pickle_file : str
+            path to pickled datastore
+        options
+            A dictionary with zero or more of these parameter keys:
+                start_yr : str, default &#39;1960&#39;
+                end_yr : str, default None
+                plev : int, default 100000
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
+
+        # Apply diagnostic options and prep data for plotting
+        selection = {&#39;time&#39;: slice(opts.start_datetime, opts.end_datetime),
+                     &#39;plev&#39;: opts.plev}
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                       selection=selection, mean_dims=(&#39;lon&#39;, &#39;lat&#39;),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_timeseries()
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_timeseries&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_vertical_profile(cls,
+                                        datastore=&#39;cmip6&#39;,
+                                        verbose: Union[bool, str] = False,
+                                        pickle_file: str = None,
+                                        options: dict = None
+                                        ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore : str
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        pickle_file : str
+            path to pickled datastore
+        options
+            A dictionary with zero or more of these parameter keys:
+                start_yr : str, default &#39;1960&#39;
+                end_yr : str, default None
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
+
+        # Apply diagnostic options and prep data for plotting
+        selection = {&#39;time&#39;: slice(opts.start_datetime, opts.end_datetime)}
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                       selection=selection, mean_dims=(&#39;lon&#39;, &#39;lat&#39;, &#39;time&#39;),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_vertical_profiles()
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_vertical_plot&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_zonal_mean(cls,
+                                  datastore=&#39;cmip6&#39;,
+                                  verbose: Union[bool, str] = False,
+                                  pickle_file: str = None,
+                                  options: dict = None
+                                  ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore : str
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        pickle_file : str
+            path to pickled datastore
+        options
+            A dictionary with zero or more of these parameter keys:
+                start_yr : str, default &#39;1960&#39;
+                end_yr : str, default None
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
+
+        # Apply diagnostic options and prep data for plotting
+        selection = {&#39;time&#39;: slice(opts.start_datetime, opts.end_datetime)}
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                       selection=selection, mean_dims=(&#39;lon&#39;, &#39;time&#39;),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+
+        if not opts.member_key:
+            _logger.debug(&#34;No &#39;member_key&#39; supplied. Averaging over the available members: %s&#34;,
+                          new_self.stepC_prepped_datasets[opts.model_name][&#39;member_id&#39;].values.tolist())
+            opts.member_key = new_self.stepC_prepped_datasets[opts.model_name][&#39;member_id&#39;].values.tolist()
+
+        # --- Plotting ---
+        #
+        darray = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)[&#39;co2&#39;]
+        fig, ax, bbox_artists = plot_zonal_mean(darray, titlestr=f&#34;{opts.model_name} ({opts.member_key})&#34;)
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_zonal_mean_plot&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_annual_series(cls,
+                                     datastore=&#39;cmip6&#39;,
+                                     verbose: Union[bool, str] = False,
+                                     pickle_file: str = None,
+                                     options: dict = None
+                                     ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore : str
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        pickle_file : str
+            path to pickled datastore
+        options
+            A dictionary with zero or more of these parameter keys:
+                start_yr : str, default &#39;1960&#39;
+                end_yr : str, default None
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
+
+        # Apply diagnostic options and prep data for plotting
+        selection = {&#39;time&#39;: slice(opts.start_datetime, opts.end_datetime),
+                     &#39;plev&#39;: opts.plev}
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                       selection=selection, mean_dims=(&#39;lon&#39;, &#39;lat&#39;),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+        ds = new_self.stepC_prepped_datasets[opts.model_name]
+
+        if not (&#39;member_id&#39; in ds.dims.keys()):
+            df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname=&#39;co2&#39;)
+        else:
+            if not opts.member_key:
+                _logger.debug(&#34;No &#39;member_key&#39; supplied. Using the available member(s): %s&#34;,
+                              ds[&#39;member_id&#39;].values.tolist())
+                opts.member_key = ds[&#39;member_id&#39;].values.tolist()
+
+            if isinstance(opts.member_key, str) or (len(opts.member_key) == 1):
+                ds = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)
+                df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname=&#39;co2&#39;)
+            elif isinstance(opts.member_key, list) and (len(opts.member_key) &gt; 1):
+                # The mean is calculated across ensemble members if there are multiple.
+                df_list_of_means = []
+                df_list_of_yearly_cycles = []
+                for mi, m in enumerate(opts.member_key):
+                    _logger.debug(&#39; selecting model=%s, member=%s&#39;, opts.model_name, m)
+
+                    df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds.sel(member_id=m),
+                                                                                               varname=&#39;co2&#39;)
+                    df_anomaly_yearly[&#39;member_id&#39;] = m
+                    df_anomaly_mean_cycle[&#39;member_id&#39;] = m
+                    df_list_of_means.append(df_anomaly_mean_cycle)
+                    df_list_of_yearly_cycles.append(df_anomaly_yearly)
+
+                df_anomaly_mean_cycle = pd.concat(df_list_of_means).groupby([&#39;moy&#39;, &#39;plev&#39;]).mean().reset_index()
+                df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby(&#39;moy&#39;).mean()
+            else:
+                raise ValueError(&#39;Unexpected case for member_key == &lt;%s&gt;&#39; % opts.member_key)
+
+        if df_anomaly_yearly.empty:
+            # TODO: remove this bandaid if-statement.
+            warnings.warn(&#34;yearly anomaly is empty. plotting is skipped.&#34;, RuntimeWarning)
+            return new_self
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
+                                                   titlestr=f&#34;{opts.model_name} ({opts.member_key})&#34;)
+        ax.text(0.02, 0.06, f&#34;Global, surface level mean&#34;,
+                horizontalalignment=&#39;left&#39;, verticalalignment=&#39;center&#39;, transform=ax.transAxes)
+
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_annual_series&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    def _load_data(self,
+                   method: str = &#39;&#39;,
+                   url: str = default_cmip6_datastore_url,
+                   model_name: Sequence[str] = None
+                   ) -&gt; None:
+        &#34;&#34;&#34;
+
+        Parameters
+        ----------
+        method : str
+            either &#39;pangeo&#39; or &#39;local&#39;
+        url : str
+            (Optional) only used if argument method==&#39;pangeo&#39;
+        model_name : str
+        &#34;&#34;&#34;
+        if model_name:
+            if isinstance(model_name, str):
+                model_name = [model_name]
+
+        if method == &#39;pangeo&#39;:
+            # --- Search for datasets in ESM data catalog ---
+            _logger.debug(&#39; Opening the ESM datastore catalog, using URL == %s&#39;, url)
+            self.catalog_dataframe = intake.open_esm_datastore(url)
+            &#34;&#34;&#34;
+            We use the intake package&#39;s search to load a catalog into the attribute &#34;latest_searched_model_catalog&#34;
+            Acceptable search arguments include: 
+                experiment_id
+                table_id
+                variable_id
+                institution_id
+                member_id
+                grid_label
+            &#34;&#34;&#34;
+            search_parameters = {&#39;experiment_id&#39;: &#39;esm-hist&#39;,
+                                 &#39;table_id&#39;: [&#39;Amon&#39;],
+                                 &#39;variable_id&#39;: [&#39;co2&#39;]}
+            _logger.debug(&#39; Searching for model output subset, with parameters = %s&#39;, search_parameters)
+            self.latest_searched_model_catalog = self.catalog_dataframe.search(**search_parameters,
+                                                                               require_all_on=[&#34;source_id&#34;])
+            _logger.debug(f&#34;  {self.latest_searched_model_catalog.df.shape[0]} model members identified&#34;)
+
+            # --- Load datasets into memory ---
+            _logger.debug(&#39; Loading into memory the following models: %s&#39;, model_name)
+            self.stepA_original_datasets = DatasetDict(
+                self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
+            # Extract all (or only the specified) datasets, and create a copy of each.
+            if not model_name:
+                model_name = self.stepA_original_datasets.keys()
+            self.stepA_original_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
+
+        if method == &#39;local&#39;:
+            # A configuration object (for holding paths and settings) is read in to get the path to the data.
+            config = load_config_file()
+            cmip_data_path = config.get(&#39;CMIP&#39;, &#39;source&#39;, vars=os.environ)
+            _logger.debug(f&#34;Loading local CMIP output files from path &lt;{cmip_data_path}&gt;..&#34;)
+
+            # NetCDF files are loaded. Each model has its own DatasetDict key.
+            dd = DatasetDict()
+            # model_shortnames = [&#39;MPI-ESM.esm-hist&#39;, &#39;BCC.esm-hist&#39;]
+            for mdl_name in model_name:
+                _logger.debug(f&#34;mdl_name = {mdl_name}&#34;)
+                mdl_name_dict = model_name_dict_from_valid_form(mdl_name)
+                constructed_model_name = os.path.normpath(f&#34;{cmip_data_path}/*{mdl_name_dict[&#39;sourceid&#39;]}*{mdl_name_dict[&#39;experimentid&#39;]}*.nc&#34;)
+                _logger.debug(f&#34;  loading -- {constructed_model_name} --&#34;)
+                ds = xr.open_mfdataset(constructed_model_name, decode_times=True)
+                key = matched_model_and_experiment(ds.attrs[&#39;parent_source_id&#39;] + &#39;.&#39; + ds.attrs[&#39;experiment_id&#39;])
+                dd[key] = ds
+
+            self.stepA_original_datasets = dd
+
+    def preprocess(self) -&gt; None:
+        &#34;&#34;&#34;Set up the datasets that are common to every diagnostic
+        &#34;&#34;&#34;
+        msg = &#34;Preprocessing...&#34;
+        msg += &#34;\nConverting units to ppm..&#34;
+        _logger.debug(msg)
+
+        self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
+        self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm, co2_var_name=&#39;co2&#39;, inplace=True)
+        self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
+
+        _logger.debug(&#34;  the first DataSet has a time range of &lt;%s&gt; to &lt;%s&gt;.&#34;,
+                      np.datetime_as_string(list(self.stepB_preprocessed_datasets.items())[0][1][&#39;time&#39;].values[0], unit=&#39;D&#39;),
+                      np.datetime_as_string(list(self.stepB_preprocessed_datasets.items())[0][1][&#39;time&#39;].values[-1], unit=&#39;D&#39;))
+
+        msg = &#34;all converted.&#34;
+        msg += &#34;\nKeys for models that have been preprocessed:&#34;
+        msg += &#39;\n &#39; + &#39;\n &#39;.join(self.stepB_preprocessed_datasets.keys())
+        msg += &#34;\nPreprocessing is done.&#34;
+        _logger.debug(msg)
+
+    def plot_timeseries(self) -&gt; (plt.Figure, plt.Axes, tuple):
+        &#34;&#34;&#34;Make timeseries plot of co2 concentrations from or more CMIP models
+
+        Requires self.stepC_prepped_datasets attribute with a time dimension.
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        &#34;&#34;&#34;
+        nmodels, member_counts = self._count_members()
+        my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap=&#34;tab10&#34;)
+
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 4))
+
+        for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
+            for mi, m in enumerate(self.stepC_prepped_datasets[k][&#39;member_id&#39;].values.tolist()):
+                color_count = ki * max(member_counts) + mi
+
+                data = self.stepC_prepped_datasets[k].sel(member_id=m)
+                data = ensure_dataset_datetime64(data)
+
+                y = data[&#39;co2&#39;].squeeze()
+                ax.plot(y[&#39;time&#39;], y, label=f&#34;{k} ({m})&#34;,
+                        color=my_cmap.colors[color_count], alpha=0.6)
+
+        ax.set_ylabel(&#39;ppm&#39;)
+        aesthetic_grid_no_spines(ax)
+        #
+        leg = plt.legend(title=&#39;Models&#39;, frameon=False,
+                         bbox_to_anchor=(1.05, 1), loc=&#39;upper left&#39;,
+                         fontsize=12)
+        bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def plot_vertical_profiles(self) -&gt; (plt.Figure, plt.Axes, tuple):
+        &#34;&#34;&#34;Make vertical profile plot of co2 concentrations.
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        &#34;&#34;&#34;
+        nmodels, member_counts = self._count_members()
+        my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap=&#34;tab10&#34;)
+
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
+
+        for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
+            for mi, m in enumerate(self.stepC_prepped_datasets[k][&#39;member_id&#39;].values.tolist()):
+                color_count = ki * max(member_counts) + mi
+
+                darray = self.stepC_prepped_datasets[k].sel(member_id=m)
+                ax.plot(darray[&#39;co2&#39;].squeeze(), darray[&#39;plev&#39;].squeeze(), label=f&#34;{k} ({m})&#34;,
+                        marker=&#39;o&#39;, linestyle=&#39;-&#39;,
+                        color=my_cmap.colors[color_count], alpha=0.6)
+
+        ax.invert_yaxis()
+        ax.set_xlabel(&#39;ppm&#39;)
+        ax.set_ylabel(&#39;pressure [Pa]&#39;)
+        aesthetic_grid_no_spines(ax)
+
+        leg = plt.legend(title=&#39;Models&#39;, frameon=False,
+                         bbox_to_anchor=(1.05, 1), loc=&#39;upper left&#39;,
+                         fontsize=12)
+        bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def __repr__(self) -&gt; str:
+        &#34;&#34;&#34;String representation is built.&#34;&#34;&#34;
+        nmodels, member_counts = self._count_members(suppress_log_message=True)
+        strrep = f&#34;-- CMIP Collection -- \n&#34; \
+                 f&#34;Datasets:&#34; \
+                 f&#34;\n\t&#34; + \
+                 self._original_datasets_list_str() + \
+                 f&#34;\n&#34; + \
+                 f&#34;There are &lt;{member_counts}&gt; members for each of the {nmodels} models.&#34; \
+                 f&#34;\n&#34; \
+                 f&#34;All attributes:&#34; \
+                 f&#34;\n\t&#34; + \
+                 &#39;\n\t&#39;.join(self._obj_attributes_list_str())
+
+        return strrep
+
+    def _count_members(self, suppress_log_message: bool = False):
+        &#34;&#34;&#34;Get the number of member_id values present for each model&#39;s dataset
+
+        Parameters
+        ----------
+        suppress_log_message : bool, default False
+
+        Returns
+        -------
+        Tuple
+            The number of models (int) and the number of members for each model (list of int)
+        &#34;&#34;&#34;
+        if self.stepA_original_datasets:
+            ds_to_check = self.stepA_original_datasets
+        elif self.stepB_preprocessed_datasets:
+            ds_to_check = self.stepB_preprocessed_datasets
+        elif self.stepC_prepped_datasets:
+            ds_to_check = self.stepC_prepped_datasets
+        else:
+            return 0, 0
+
+        member_counts = []
+        for k in ds_to_check.keys():
+            member_counts.append(len(ds_to_check[k][&#39;member_id&#39;].values))
+        nmodels = len(member_counts)
+        if not suppress_log_message:
+            _logger.info(f&#34;There are &lt;%s&gt; members for each of the %d models.&#34;, member_counts, nmodels)
+
+        return nmodels, member_counts
+
+
+def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -&gt; None:
+    &#34;&#34;&#34;Add recipe arguments to a parser object
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+    &#34;&#34;&#34;
+    add_shared_arguments_for_recipes(parser)
+    parser.add_argument(&#39;--plev&#39;, default=100000, type=int)
+    parser.add_argument(&#39;--model_name&#39;, default=None, type=matched_model_and_experiment, choices=cmip_model_choices)
+    parser.add_argument(&#39;--member_key&#39;, default=None, type=nullable_str)
+    parser.add_argument(&#39;--cmip_load_method&#39;, default=&#39;pangeo&#39;,
+                        type=str, choices=[&#39;pangeo&#39;, &#39;local&#39;])
+
+
+def cmip_recipe_basics(func):
+    &#34;&#34;&#34;A decorator for starting a cmip recipe
+    &#34;&#34;&#34;
+    def parse_and_run(*args, **kwargs):
+        set_verbose(_logger, kwargs.get(&#39;verbose&#39;))
+        opts = parse_recipe_options(kwargs.get(&#39;options&#39;), add_cmip_collection_args_to_parser)
+        # Recipe is run.
+        returnval = func(*args, **kwargs)
+
+        return returnval
+    return parse_and_run</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="gdess.data_source.models.cmip.cmip_collection.add_cmip_collection_args_to_parser"><code class="name flex">
+<span>def <span class="ident">add_cmip_collection_args_to_parser</span></span>(<span>parser: argparse.ArgumentParser) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add recipe arguments to a parser object</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>parser</code></strong> :&ensp;<code>argparse.ArgumentParser</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_cmip_collection_args_to_parser(parser: argparse.ArgumentParser) -&gt; None:
+    &#34;&#34;&#34;Add recipe arguments to a parser object
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+    &#34;&#34;&#34;
+    add_shared_arguments_for_recipes(parser)
+    parser.add_argument(&#39;--plev&#39;, default=100000, type=int)
+    parser.add_argument(&#39;--model_name&#39;, default=None, type=matched_model_and_experiment, choices=cmip_model_choices)
+    parser.add_argument(&#39;--member_key&#39;, default=None, type=nullable_str)
+    parser.add_argument(&#39;--cmip_load_method&#39;, default=&#39;pangeo&#39;,
+                        type=str, choices=[&#39;pangeo&#39;, &#39;local&#39;])</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.cmip.cmip_collection.cmip_recipe_basics"><code class="name flex">
+<span>def <span class="ident">cmip_recipe_basics</span></span>(<span>func)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A decorator for starting a cmip recipe</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cmip_recipe_basics(func):
+    &#34;&#34;&#34;A decorator for starting a cmip recipe
+    &#34;&#34;&#34;
+    def parse_and_run(*args, **kwargs):
+        set_verbose(_logger, kwargs.get(&#39;verbose&#39;))
+        opts = parse_recipe_options(kwargs.get(&#39;options&#39;), add_cmip_collection_args_to_parser)
+        # Recipe is run.
+        returnval = func(*args, **kwargs)
+
+        return returnval
+    return parse_and_run</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="gdess.data_source.models.cmip.cmip_collection.Collection"><code class="flex name class">
+<span>class <span class="ident">Collection</span></span>
+<span>(</span><span>datastore='cmip6', verbose: Union[bool, str] = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Work simultaneous with multiple, consistent xarray Datasets.</p>
+<p>Instantiate a CMIP Collection object.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>datastore</code></strong> :&ensp;<code>str</code></dt>
+<dd>a shortened name of an ESM catalog that we will query for model outputs.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>Union[bool, str]</code></dt>
+<dd>can be either True, False, or a string for level such as "INFO, DEBUG, etc."</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Collection(Multiset):
+    def __init__(self, datastore=&#39;cmip6&#39;, verbose: Union[bool, str] = False):
+        &#34;&#34;&#34;Instantiate a CMIP Collection object.
+
+        Parameters
+        ----------
+        datastore : str
+            a shortened name of an ESM catalog that we will query for model outputs.
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        &#34;&#34;&#34;
+        # Set up the level of verbosity, i.e. how many log messages are displayed.
+        set_verbose(_logger, verbose)
+        self._progressbar = True
+        if _logger.level &gt; 10:  # 10 is debug, 20 is info, etc.
+            self._progressbar = False
+
+        self.latest_searched_model_catalog = None
+        self.catalog_dataframe = None
+        # TODO: add capability to handle additional datastores besides cmip6, such as CMIP5, etc.
+        if datastore == &#39;cmip6&#39;:
+            self.datastore_url = default_cmip6_datastore_url
+        else:
+            raise ValueError(&#39;Unexpected/unhandled datastore &lt;%s&gt;&#39;, datastore)
+
+        super().__init__(verbose=verbose)
+
+    @classmethod
+    def _recipe_base(cls,
+                     datastore=&#39;cmip6&#39;,
+                     verbose: Union[bool, str] = False,
+                     load_method: str = &#39;pangeo&#39;,
+                     pickle_file: str = None,
+                     skip_selections: bool = False,
+                     selection: dict = None,
+                     mean_dims: tuple = None,
+                     model_name: Union[str, list] = None
+                     ) -&gt; (&#39;Collection&#39;, bool):
+        &#34;&#34;&#34;Create an instance, and either preprocess or load already processed data.
+
+        Parameters
+        ----------
+        datastore : str, default &#39;cmip6&#39;
+        verbose : Union[bool, str], default False
+        load_method : str, default &#39;pangeo&#39;
+            either &#39;pangeo&#39;, &#39;local&#39;, or &#39;pickle&#39;
+        pickle_file : str
+            (Optional) path to a saved pickle file is used if argument load_method==&#39;pickle
+        selection : dict
+        mean_dims : tuple
+
+        Returns
+        -------
+        tuple : (Collection, bool)
+            Collection
+            bool
+                Whether datasets were loaded from a pickle file or not. (If not, there is probably more processing needed.)
+        &#34;&#34;&#34;
+        # An empty instance is created.
+        new_self = cls(datastore=datastore, verbose=verbose)
+        _logger.debug(&#39; skip_selections: %s&#39;, skip_selections)
+
+        loaded_from_pickle_bool = False
+        if load_method == &#39;pickle&#39;:
+            # If a valid filename is provided, datasets are loaded into stepC attribute and this is True,
+            # otherwise, this is False.
+            loaded_from_pickle_bool = new_self.datasets_from_pickle(filename=pickle_file, replace=True)
+            _logger.debug(&#39; loaded from pickle? --&gt; %s&#39;, loaded_from_pickle_bool)
+        else:
+            # Data are formatted into the basic data structure common to various diagnostics.
+            new_self._load_data(method=load_method, url=new_self.datastore_url, model_name=model_name)
+            new_self.preprocess()
+
+            if not skip_selections:
+                _logger.debug(&#39; applying selected bounds: %s&#39;, selection)
+                new_self.stepC_prepped_datasets = new_self.stepB_preprocessed_datasets.queue_selection(**selection,
+                                                                                                       inplace=False)
+                # Spatial mean is calculated, leaving us with a time series.
+                new_self.stepC_prepped_datasets.queue_mean(dim=mean_dims, inplace=True)
+                # The lazily loaded selections and computations are here actually processed.
+                new_self.stepC_prepped_datasets.execute_all(inplace=True)
+
+        return new_self, loaded_from_pickle_bool
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_timeseries(cls,
+                                  datastore=&#39;cmip6&#39;,
+                                  verbose: Union[bool, str] = False,
+                                  pickle_file: str = None,
+                                  options: dict = None
+                                  ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore : str, default &#39;cmip6&#39;
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        pickle_file : str
+            path to pickled datastore
+        options
+            A dictionary with zero or more of these parameter keys:
+                start_yr : str, default &#39;1960&#39;
+                end_yr : str, default None
+                plev : int, default 100000
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
+
+        # Apply diagnostic options and prep data for plotting
+        selection = {&#39;time&#39;: slice(opts.start_datetime, opts.end_datetime),
+                     &#39;plev&#39;: opts.plev}
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                       selection=selection, mean_dims=(&#39;lon&#39;, &#39;lat&#39;),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_timeseries()
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_timeseries&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_vertical_profile(cls,
+                                        datastore=&#39;cmip6&#39;,
+                                        verbose: Union[bool, str] = False,
+                                        pickle_file: str = None,
+                                        options: dict = None
+                                        ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore : str
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        pickle_file : str
+            path to pickled datastore
+        options
+            A dictionary with zero or more of these parameter keys:
+                start_yr : str, default &#39;1960&#39;
+                end_yr : str, default None
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
+
+        # Apply diagnostic options and prep data for plotting
+        selection = {&#39;time&#39;: slice(opts.start_datetime, opts.end_datetime)}
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                       selection=selection, mean_dims=(&#39;lon&#39;, &#39;lat&#39;, &#39;time&#39;),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_vertical_profiles()
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_vertical_plot&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_zonal_mean(cls,
+                                  datastore=&#39;cmip6&#39;,
+                                  verbose: Union[bool, str] = False,
+                                  pickle_file: str = None,
+                                  options: dict = None
+                                  ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore : str
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        pickle_file : str
+            path to pickled datastore
+        options
+            A dictionary with zero or more of these parameter keys:
+                start_yr : str, default &#39;1960&#39;
+                end_yr : str, default None
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
+
+        # Apply diagnostic options and prep data for plotting
+        selection = {&#39;time&#39;: slice(opts.start_datetime, opts.end_datetime)}
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                       selection=selection, mean_dims=(&#39;lon&#39;, &#39;time&#39;),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+
+        if not opts.member_key:
+            _logger.debug(&#34;No &#39;member_key&#39; supplied. Averaging over the available members: %s&#34;,
+                          new_self.stepC_prepped_datasets[opts.model_name][&#39;member_id&#39;].values.tolist())
+            opts.member_key = new_self.stepC_prepped_datasets[opts.model_name][&#39;member_id&#39;].values.tolist()
+
+        # --- Plotting ---
+        #
+        darray = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)[&#39;co2&#39;]
+        fig, ax, bbox_artists = plot_zonal_mean(darray, titlestr=f&#34;{opts.model_name} ({opts.member_key})&#34;)
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_zonal_mean_plot&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_annual_series(cls,
+                                     datastore=&#39;cmip6&#39;,
+                                     verbose: Union[bool, str] = False,
+                                     pickle_file: str = None,
+                                     options: dict = None
+                                     ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        datastore : str
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        pickle_file : str
+            path to pickled datastore
+        options
+            A dictionary with zero or more of these parameter keys:
+                start_yr : str, default &#39;1960&#39;
+                end_yr : str, default None
+
+        Returns
+        -------
+        Collection object for CMIP6 that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_cmip_collection_args_to_parser)
+
+        # Apply diagnostic options and prep data for plotting
+        selection = {&#39;time&#39;: slice(opts.start_datetime, opts.end_datetime),
+                     &#39;plev&#39;: opts.plev}
+        new_self, _ = cls._recipe_base(datastore=datastore, verbose=verbose, pickle_file=pickle_file,
+                                       selection=selection, mean_dims=(&#39;lon&#39;, &#39;lat&#39;),
+                                       model_name=opts.model_name, load_method=opts.cmip_load_method)
+        ds = new_self.stepC_prepped_datasets[opts.model_name]
+
+        if not (&#39;member_id&#39; in ds.dims.keys()):
+            df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname=&#39;co2&#39;)
+        else:
+            if not opts.member_key:
+                _logger.debug(&#34;No &#39;member_key&#39; supplied. Using the available member(s): %s&#34;,
+                              ds[&#39;member_id&#39;].values.tolist())
+                opts.member_key = ds[&#39;member_id&#39;].values.tolist()
+
+            if isinstance(opts.member_key, str) or (len(opts.member_key) == 1):
+                ds = new_self.stepC_prepped_datasets[opts.model_name].sel(member_id=opts.member_key)
+                df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds, varname=&#39;co2&#39;)
+            elif isinstance(opts.member_key, list) and (len(opts.member_key) &gt; 1):
+                # The mean is calculated across ensemble members if there are multiple.
+                df_list_of_means = []
+                df_list_of_yearly_cycles = []
+                for mi, m in enumerate(opts.member_key):
+                    _logger.debug(&#39; selecting model=%s, member=%s&#39;, opts.model_name, m)
+
+                    df_anomaly_mean_cycle, df_anomaly_yearly = Multiset.get_anomaly_dataframes(ds.sel(member_id=m),
+                                                                                               varname=&#39;co2&#39;)
+                    df_anomaly_yearly[&#39;member_id&#39;] = m
+                    df_anomaly_mean_cycle[&#39;member_id&#39;] = m
+                    df_list_of_means.append(df_anomaly_mean_cycle)
+                    df_list_of_yearly_cycles.append(df_anomaly_yearly)
+
+                df_anomaly_mean_cycle = pd.concat(df_list_of_means).groupby([&#39;moy&#39;, &#39;plev&#39;]).mean().reset_index()
+                df_anomaly_yearly = pd.concat(df_list_of_yearly_cycles).groupby(&#39;moy&#39;).mean()
+            else:
+                raise ValueError(&#39;Unexpected case for member_key == &lt;%s&gt;&#39; % opts.member_key)
+
+        if df_anomaly_yearly.empty:
+            # TODO: remove this bandaid if-statement.
+            warnings.warn(&#34;yearly anomaly is empty. plotting is skipped.&#34;, RuntimeWarning)
+            return new_self
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
+                                                   titlestr=f&#34;{opts.model_name} ({opts.member_key})&#34;)
+        ax.text(0.02, 0.06, f&#34;Global, surface level mean&#34;,
+                horizontalalignment=&#39;left&#39;, verticalalignment=&#39;center&#39;, transform=ax.transAxes)
+
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_annual_series&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    def _load_data(self,
+                   method: str = &#39;&#39;,
+                   url: str = default_cmip6_datastore_url,
+                   model_name: Sequence[str] = None
+                   ) -&gt; None:
+        &#34;&#34;&#34;
+
+        Parameters
+        ----------
+        method : str
+            either &#39;pangeo&#39; or &#39;local&#39;
+        url : str
+            (Optional) only used if argument method==&#39;pangeo&#39;
+        model_name : str
+        &#34;&#34;&#34;
+        if model_name:
+            if isinstance(model_name, str):
+                model_name = [model_name]
+
+        if method == &#39;pangeo&#39;:
+            # --- Search for datasets in ESM data catalog ---
+            _logger.debug(&#39; Opening the ESM datastore catalog, using URL == %s&#39;, url)
+            self.catalog_dataframe = intake.open_esm_datastore(url)
+            &#34;&#34;&#34;
+            We use the intake package&#39;s search to load a catalog into the attribute &#34;latest_searched_model_catalog&#34;
+            Acceptable search arguments include: 
+                experiment_id
+                table_id
+                variable_id
+                institution_id
+                member_id
+                grid_label
+            &#34;&#34;&#34;
+            search_parameters = {&#39;experiment_id&#39;: &#39;esm-hist&#39;,
+                                 &#39;table_id&#39;: [&#39;Amon&#39;],
+                                 &#39;variable_id&#39;: [&#39;co2&#39;]}
+            _logger.debug(&#39; Searching for model output subset, with parameters = %s&#39;, search_parameters)
+            self.latest_searched_model_catalog = self.catalog_dataframe.search(**search_parameters,
+                                                                               require_all_on=[&#34;source_id&#34;])
+            _logger.debug(f&#34;  {self.latest_searched_model_catalog.df.shape[0]} model members identified&#34;)
+
+            # --- Load datasets into memory ---
+            _logger.debug(&#39; Loading into memory the following models: %s&#39;, model_name)
+            self.stepA_original_datasets = DatasetDict(
+                self.latest_searched_model_catalog.to_dataset_dict(progressbar=self._progressbar))
+            # Extract all (or only the specified) datasets, and create a copy of each.
+            if not model_name:
+                model_name = self.stepA_original_datasets.keys()
+            self.stepA_original_datasets = DatasetDict({k: self.stepA_original_datasets[k] for k in model_name})
+
+        if method == &#39;local&#39;:
+            # A configuration object (for holding paths and settings) is read in to get the path to the data.
+            config = load_config_file()
+            cmip_data_path = config.get(&#39;CMIP&#39;, &#39;source&#39;, vars=os.environ)
+            _logger.debug(f&#34;Loading local CMIP output files from path &lt;{cmip_data_path}&gt;..&#34;)
+
+            # NetCDF files are loaded. Each model has its own DatasetDict key.
+            dd = DatasetDict()
+            # model_shortnames = [&#39;MPI-ESM.esm-hist&#39;, &#39;BCC.esm-hist&#39;]
+            for mdl_name in model_name:
+                _logger.debug(f&#34;mdl_name = {mdl_name}&#34;)
+                mdl_name_dict = model_name_dict_from_valid_form(mdl_name)
+                constructed_model_name = os.path.normpath(f&#34;{cmip_data_path}/*{mdl_name_dict[&#39;sourceid&#39;]}*{mdl_name_dict[&#39;experimentid&#39;]}*.nc&#34;)
+                _logger.debug(f&#34;  loading -- {constructed_model_name} --&#34;)
+                ds = xr.open_mfdataset(constructed_model_name, decode_times=True)
+                key = matched_model_and_experiment(ds.attrs[&#39;parent_source_id&#39;] + &#39;.&#39; + ds.attrs[&#39;experiment_id&#39;])
+                dd[key] = ds
+
+            self.stepA_original_datasets = dd
+
+    def preprocess(self) -&gt; None:
+        &#34;&#34;&#34;Set up the datasets that are common to every diagnostic
+        &#34;&#34;&#34;
+        msg = &#34;Preprocessing...&#34;
+        msg += &#34;\nConverting units to ppm..&#34;
+        _logger.debug(msg)
+
+        self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
+        self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm, co2_var_name=&#39;co2&#39;, inplace=True)
+        self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
+
+        _logger.debug(&#34;  the first DataSet has a time range of &lt;%s&gt; to &lt;%s&gt;.&#34;,
+                      np.datetime_as_string(list(self.stepB_preprocessed_datasets.items())[0][1][&#39;time&#39;].values[0], unit=&#39;D&#39;),
+                      np.datetime_as_string(list(self.stepB_preprocessed_datasets.items())[0][1][&#39;time&#39;].values[-1], unit=&#39;D&#39;))
+
+        msg = &#34;all converted.&#34;
+        msg += &#34;\nKeys for models that have been preprocessed:&#34;
+        msg += &#39;\n &#39; + &#39;\n &#39;.join(self.stepB_preprocessed_datasets.keys())
+        msg += &#34;\nPreprocessing is done.&#34;
+        _logger.debug(msg)
+
+    def plot_timeseries(self) -&gt; (plt.Figure, plt.Axes, tuple):
+        &#34;&#34;&#34;Make timeseries plot of co2 concentrations from or more CMIP models
+
+        Requires self.stepC_prepped_datasets attribute with a time dimension.
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        &#34;&#34;&#34;
+        nmodels, member_counts = self._count_members()
+        my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap=&#34;tab10&#34;)
+
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 4))
+
+        for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
+            for mi, m in enumerate(self.stepC_prepped_datasets[k][&#39;member_id&#39;].values.tolist()):
+                color_count = ki * max(member_counts) + mi
+
+                data = self.stepC_prepped_datasets[k].sel(member_id=m)
+                data = ensure_dataset_datetime64(data)
+
+                y = data[&#39;co2&#39;].squeeze()
+                ax.plot(y[&#39;time&#39;], y, label=f&#34;{k} ({m})&#34;,
+                        color=my_cmap.colors[color_count], alpha=0.6)
+
+        ax.set_ylabel(&#39;ppm&#39;)
+        aesthetic_grid_no_spines(ax)
+        #
+        leg = plt.legend(title=&#39;Models&#39;, frameon=False,
+                         bbox_to_anchor=(1.05, 1), loc=&#39;upper left&#39;,
+                         fontsize=12)
+        bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def plot_vertical_profiles(self) -&gt; (plt.Figure, plt.Axes, tuple):
+        &#34;&#34;&#34;Make vertical profile plot of co2 concentrations.
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        &#34;&#34;&#34;
+        nmodels, member_counts = self._count_members()
+        my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap=&#34;tab10&#34;)
+
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
+
+        for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
+            for mi, m in enumerate(self.stepC_prepped_datasets[k][&#39;member_id&#39;].values.tolist()):
+                color_count = ki * max(member_counts) + mi
+
+                darray = self.stepC_prepped_datasets[k].sel(member_id=m)
+                ax.plot(darray[&#39;co2&#39;].squeeze(), darray[&#39;plev&#39;].squeeze(), label=f&#34;{k} ({m})&#34;,
+                        marker=&#39;o&#39;, linestyle=&#39;-&#39;,
+                        color=my_cmap.colors[color_count], alpha=0.6)
+
+        ax.invert_yaxis()
+        ax.set_xlabel(&#39;ppm&#39;)
+        ax.set_ylabel(&#39;pressure [Pa]&#39;)
+        aesthetic_grid_no_spines(ax)
+
+        leg = plt.legend(title=&#39;Models&#39;, frameon=False,
+                         bbox_to_anchor=(1.05, 1), loc=&#39;upper left&#39;,
+                         fontsize=12)
+        bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def __repr__(self) -&gt; str:
+        &#34;&#34;&#34;String representation is built.&#34;&#34;&#34;
+        nmodels, member_counts = self._count_members(suppress_log_message=True)
+        strrep = f&#34;-- CMIP Collection -- \n&#34; \
+                 f&#34;Datasets:&#34; \
+                 f&#34;\n\t&#34; + \
+                 self._original_datasets_list_str() + \
+                 f&#34;\n&#34; + \
+                 f&#34;There are &lt;{member_counts}&gt; members for each of the {nmodels} models.&#34; \
+                 f&#34;\n&#34; \
+                 f&#34;All attributes:&#34; \
+                 f&#34;\n\t&#34; + \
+                 &#39;\n\t&#39;.join(self._obj_attributes_list_str())
+
+        return strrep
+
+    def _count_members(self, suppress_log_message: bool = False):
+        &#34;&#34;&#34;Get the number of member_id values present for each model&#39;s dataset
+
+        Parameters
+        ----------
+        suppress_log_message : bool, default False
+
+        Returns
+        -------
+        Tuple
+            The number of models (int) and the number of members for each model (list of int)
+        &#34;&#34;&#34;
+        if self.stepA_original_datasets:
+            ds_to_check = self.stepA_original_datasets
+        elif self.stepB_preprocessed_datasets:
+            ds_to_check = self.stepB_preprocessed_datasets
+        elif self.stepC_prepped_datasets:
+            ds_to_check = self.stepC_prepped_datasets
+        else:
+            return 0, 0
+
+        member_counts = []
+        for k in ds_to_check.keys():
+            member_counts.append(len(ds_to_check[k][&#39;member_id&#39;].values))
+        nmodels = len(member_counts)
+        if not suppress_log_message:
+            _logger.info(f&#34;There are &lt;%s&gt; members for each of the %d models.&#34;, member_counts, nmodels)
+
+        return nmodels, member_counts</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="gdess.data_source.multiset.Multiset" href="../../multiset.html#gdess.data_source.multiset.Multiset">Multiset</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_annual_series"><code class="name flex">
+<span>def <span class="ident">run_recipe_for_annual_series</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_time_and_call(*args, **kwargs):
+    # Clock is started.
+    start_time = time.time()
+    # Recipe is run.
+    returnval = func(*args, **kwargs)
+    # Report the time this recipe took to execute.
+    execution_time = (time.time() - start_time)
+    _logger.info(&#39;recipe execution time (seconds): &#39; + str(execution_time))
+
+    return returnval</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_timeseries"><code class="name flex">
+<span>def <span class="ident">run_recipe_for_timeseries</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_time_and_call(*args, **kwargs):
+    # Clock is started.
+    start_time = time.time()
+    # Recipe is run.
+    returnval = func(*args, **kwargs)
+    # Report the time this recipe took to execute.
+    execution_time = (time.time() - start_time)
+    _logger.info(&#39;recipe execution time (seconds): &#39; + str(execution_time))
+
+    return returnval</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_vertical_profile"><code class="name flex">
+<span>def <span class="ident">run_recipe_for_vertical_profile</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_time_and_call(*args, **kwargs):
+    # Clock is started.
+    start_time = time.time()
+    # Recipe is run.
+    returnval = func(*args, **kwargs)
+    # Report the time this recipe took to execute.
+    execution_time = (time.time() - start_time)
+    _logger.info(&#39;recipe execution time (seconds): &#39; + str(execution_time))
+
+    return returnval</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_zonal_mean"><code class="name flex">
+<span>def <span class="ident">run_recipe_for_zonal_mean</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_time_and_call(*args, **kwargs):
+    # Clock is started.
+    start_time = time.time()
+    # Recipe is run.
+    returnval = func(*args, **kwargs)
+    # Report the time this recipe took to execute.
+    execution_time = (time.time() - start_time)
+    _logger.info(&#39;recipe execution time (seconds): &#39; + str(execution_time))
+
+    return returnval</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="gdess.data_source.models.cmip.cmip_collection.Collection.plot_timeseries"><code class="name flex">
+<span>def <span class="ident">plot_timeseries</span></span>(<span>self) -> (<class 'matplotlib.figure.Figure'>, <class 'matplotlib.axes._axes.Axes'>, <class 'tuple'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make timeseries plot of co2 concentrations from or more CMIP models</p>
+<p>Requires self.stepC_prepped_datasets attribute with a time dimension.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>matplotlib figure</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>matplotlib axis</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>tuple</code></dt>
+<dd>Extra matplotlib artists used for the bounding box (bbox) when saving a figure</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_timeseries(self) -&gt; (plt.Figure, plt.Axes, tuple):
+    &#34;&#34;&#34;Make timeseries plot of co2 concentrations from or more CMIP models
+
+    Requires self.stepC_prepped_datasets attribute with a time dimension.
+
+    Returns
+    -------
+    matplotlib figure
+    matplotlib axis
+    tuple
+        Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+    &#34;&#34;&#34;
+    nmodels, member_counts = self._count_members()
+    my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap=&#34;tab10&#34;)
+
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 4))
+
+    for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
+        for mi, m in enumerate(self.stepC_prepped_datasets[k][&#39;member_id&#39;].values.tolist()):
+            color_count = ki * max(member_counts) + mi
+
+            data = self.stepC_prepped_datasets[k].sel(member_id=m)
+            data = ensure_dataset_datetime64(data)
+
+            y = data[&#39;co2&#39;].squeeze()
+            ax.plot(y[&#39;time&#39;], y, label=f&#34;{k} ({m})&#34;,
+                    color=my_cmap.colors[color_count], alpha=0.6)
+
+    ax.set_ylabel(&#39;ppm&#39;)
+    aesthetic_grid_no_spines(ax)
+    #
+    leg = plt.legend(title=&#39;Models&#39;, frameon=False,
+                     bbox_to_anchor=(1.05, 1), loc=&#39;upper left&#39;,
+                     fontsize=12)
+    bbox_artists = (leg,)
+
+    return fig, ax, bbox_artists</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.cmip.cmip_collection.Collection.plot_vertical_profiles"><code class="name flex">
+<span>def <span class="ident">plot_vertical_profiles</span></span>(<span>self) -> (<class 'matplotlib.figure.Figure'>, <class 'matplotlib.axes._axes.Axes'>, <class 'tuple'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make vertical profile plot of co2 concentrations.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>matplotlib figure</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>matplotlib axis</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>tuple</code></dt>
+<dd>Extra matplotlib artists used for the bounding box (bbox) when saving a figure</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_vertical_profiles(self) -&gt; (plt.Figure, plt.Axes, tuple):
+    &#34;&#34;&#34;Make vertical profile plot of co2 concentrations.
+
+    Returns
+    -------
+    matplotlib figure
+    matplotlib axis
+    tuple
+        Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+    &#34;&#34;&#34;
+    nmodels, member_counts = self._count_members()
+    my_cmap = self.categorical_cmap(nc=len(member_counts), nsc=max(member_counts), cmap=&#34;tab10&#34;)
+
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
+
+    for ki, k in enumerate(self.stepC_prepped_datasets.keys()):
+        for mi, m in enumerate(self.stepC_prepped_datasets[k][&#39;member_id&#39;].values.tolist()):
+            color_count = ki * max(member_counts) + mi
+
+            darray = self.stepC_prepped_datasets[k].sel(member_id=m)
+            ax.plot(darray[&#39;co2&#39;].squeeze(), darray[&#39;plev&#39;].squeeze(), label=f&#34;{k} ({m})&#34;,
+                    marker=&#39;o&#39;, linestyle=&#39;-&#39;,
+                    color=my_cmap.colors[color_count], alpha=0.6)
+
+    ax.invert_yaxis()
+    ax.set_xlabel(&#39;ppm&#39;)
+    ax.set_ylabel(&#39;pressure [Pa]&#39;)
+    aesthetic_grid_no_spines(ax)
+
+    leg = plt.legend(title=&#39;Models&#39;, frameon=False,
+                     bbox_to_anchor=(1.05, 1), loc=&#39;upper left&#39;,
+                     fontsize=12)
+    bbox_artists = (leg,)
+
+    return fig, ax, bbox_artists</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.cmip.cmip_collection.Collection.preprocess"><code class="name flex">
+<span>def <span class="ident">preprocess</span></span>(<span>self) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set up the datasets that are common to every diagnostic</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def preprocess(self) -&gt; None:
+    &#34;&#34;&#34;Set up the datasets that are common to every diagnostic
+    &#34;&#34;&#34;
+    msg = &#34;Preprocessing...&#34;
+    msg += &#34;\nConverting units to ppm..&#34;
+    _logger.debug(msg)
+
+    self.stepB_preprocessed_datasets = self.stepA_original_datasets.copy()
+    self.stepB_preprocessed_datasets.apply_function_to_all(co2_molfrac_to_ppm, co2_var_name=&#39;co2&#39;, inplace=True)
+    self.stepB_preprocessed_datasets.apply_function_to_all(ensure_dataset_datetime64, inplace=True)
+
+    _logger.debug(&#34;  the first DataSet has a time range of &lt;%s&gt; to &lt;%s&gt;.&#34;,
+                  np.datetime_as_string(list(self.stepB_preprocessed_datasets.items())[0][1][&#39;time&#39;].values[0], unit=&#39;D&#39;),
+                  np.datetime_as_string(list(self.stepB_preprocessed_datasets.items())[0][1][&#39;time&#39;].values[-1], unit=&#39;D&#39;))
+
+    msg = &#34;all converted.&#34;
+    msg += &#34;\nKeys for models that have been preprocessed:&#34;
+    msg += &#39;\n &#39; + &#39;\n &#39;.join(self.stepB_preprocessed_datasets.keys())
+    msg += &#34;\nPreprocessing is done.&#34;
+    _logger.debug(msg)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="gdess.data_source.multiset.Multiset" href="../../multiset.html#gdess.data_source.multiset.Multiset">Multiset</a></b></code>:
+<ul class="hlist">
+<li><code><a title="gdess.data_source.multiset.Multiset.categorical_cmap" href="../../multiset.html#gdess.data_source.multiset.Multiset.categorical_cmap">categorical_cmap</a></code></li>
+<li><code><a title="gdess.data_source.multiset.Multiset.datasets_from_pickle" href="../../multiset.html#gdess.data_source.multiset.Multiset.datasets_from_pickle">datasets_from_pickle</a></code></li>
+<li><code><a title="gdess.data_source.multiset.Multiset.get_anomaly_dataframes" href="../../multiset.html#gdess.data_source.multiset.Multiset.get_anomaly_dataframes">get_anomaly_dataframes</a></code></li>
+<li><code><a title="gdess.data_source.multiset.Multiset.validate_time_options" href="../../multiset.html#gdess.data_source.multiset.Multiset.validate_time_options">validate_time_options</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="gdess.data_source.models.cmip" href="index.html">gdess.data_source.models.cmip</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.add_cmip_collection_args_to_parser" href="#gdess.data_source.models.cmip.cmip_collection.add_cmip_collection_args_to_parser">add_cmip_collection_args_to_parser</a></code></li>
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.cmip_recipe_basics" href="#gdess.data_source.models.cmip.cmip_collection.cmip_recipe_basics">cmip_recipe_basics</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="gdess.data_source.models.cmip.cmip_collection.Collection" href="#gdess.data_source.models.cmip.cmip_collection.Collection">Collection</a></code></h4>
+<ul class="">
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.Collection.plot_timeseries" href="#gdess.data_source.models.cmip.cmip_collection.Collection.plot_timeseries">plot_timeseries</a></code></li>
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.Collection.plot_vertical_profiles" href="#gdess.data_source.models.cmip.cmip_collection.Collection.plot_vertical_profiles">plot_vertical_profiles</a></code></li>
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.Collection.preprocess" href="#gdess.data_source.models.cmip.cmip_collection.Collection.preprocess">preprocess</a></code></li>
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_annual_series" href="#gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_annual_series">run_recipe_for_annual_series</a></code></li>
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_timeseries" href="#gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_timeseries">run_recipe_for_timeseries</a></code></li>
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_vertical_profile" href="#gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_vertical_profile">run_recipe_for_vertical_profile</a></code></li>
+<li><code><a title="gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_zonal_mean" href="#gdess.data_source.models.cmip.cmip_collection.Collection.run_recipe_for_zonal_mean">run_recipe_for_zonal_mean</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
