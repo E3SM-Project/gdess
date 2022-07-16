@@ -1,15 +1,12 @@
+__all__ = ['calc_change_in_mass', 'calc_global_weighted_means',
+           'calc_time_integrated_fluxes', 'calc_var_deltas', 'calc_time_deltas',
+           'add_global_mean_vars']
+
 import numpy as np
 import xarray as xr
 import logging
 
 _logger = logging.getLogger(__name__)
-
-# Define functions to be imported by *, e.g. from the local __init__ file
-#   (also to avoid adding above imports to other namespaces)
-__all__ = ['calc_change_in_mass',
-           'calc_global_weighted_means', 'add_global_mean_vars',
-           'calc_time_integrated_fluxes',
-           'calc_var_deltas', 'calc_time_deltas']
 
 
 def calc_change_in_mass(dataset: xr.Dataset,

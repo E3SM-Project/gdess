@@ -1,10 +1,8 @@
+__all__ = ['distance', 'closest', 'get_closest_mdl_cell_dict']
+
 from math import cos, asin, sqrt
 
 import xarray as xr
-
-# Define functions to be imported by *, e.g. from the local __init__ file
-#   (also to avoid adding above imports to other namespaces)
-__all__ = ['distance', 'closest', 'get_closest_mdl_cell_dict']
 
 
 def distance(lat1: float,

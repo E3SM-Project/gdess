@@ -1,3 +1,5 @@
+__all__ = ['make_my_base_map']
+
 from collections.abc import Sequence
 
 import numpy as np
@@ -5,10 +7,6 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from adjustText import adjust_text
-
-# Define functions to be imported by *, e.g. from the local __init__ file
-#   (also to avoid adding above imports to other namespaces)
-__all__ = ['make_my_base_map']
 
 # Position and sizes of subplot axes in page coordinates (0 to 1)
 # panel = [(0.1691, 0.6810, 0.6465, 0.2258

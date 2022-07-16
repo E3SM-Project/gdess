@@ -5,6 +5,8 @@ Most of the routines are designed to work with xarray.DataArray types
 Created September 2020
 @author: Daniel E. Kaufman
 """
+__all__ = ['print_var_summary', 'get_var_stats']
+
 import os
 import logging
 from typing import Union, Sequence
@@ -13,10 +15,6 @@ import pandas as pd
 import xarray as xr
 
 _logger = logging.getLogger(__name__)
-
-# Define functions to be imported by *, e.g. from the local __init__ file
-#   (also to avoid adding above imports to other namespaces)
-__all__ = ['print_var_summary', 'get_var_stats']
 
 
 def where_am_i() -> str:

@@ -27,6 +27,14 @@ Although there are existing diagnostic tools for Earth System Models
 (e.g. ESMValTool, ILAMB, BGC-val), they do not provide functionality specific
 for atmospheric CO<sub>2</sub> concentrations.
 
+[Documentation]
+
+[Documentation]: https://pdoc3.github.io/pdoc/doc/pdoc/
+https://e3sm-project.github.io/gdess/doc/
+
+See `./gdess/bin/gdess_cli.py --help` for more command-line switches and the [documentation]
+for more usage examples.
+
 ## Contents
 
 * [Data requirements and availability](#data-requirements-and-availability)
