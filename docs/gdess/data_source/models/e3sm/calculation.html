@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>gdess.data_source.models.e3sm.calculation API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>gdess.data_source.models.e3sm.calculation</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+import xarray as xr
+import logging
+
+_logger = logging.getLogger(__name__)
+
+# Define functions to be imported by *, e.g. from the local __init__ file
+#   (also to avoid adding above imports to other namespaces)
+__all__ = [&#39;calc_change_in_mass&#39;,
+           &#39;calc_global_weighted_means&#39;, &#39;add_global_mean_vars&#39;,
+           &#39;calc_time_integrated_fluxes&#39;,
+           &#39;calc_var_deltas&#39;, &#39;calc_time_deltas&#39;]
+
+
+def calc_change_in_mass(dataset: xr.Dataset,
+                        varname=&#39;glmean_TMCO2_FFF&#39;, prefix=&#39;deltas_&#39;
+                        ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Change in mass of $CO_2$ from timestep to timestep
+    $\Delta{mass_{CO_2}}$ - using backwards difference
+
+    \begin{align*}
+        &amp;&amp; \Delta \texttt{glmean_TMCO2}_{t} = \texttt{glmean_TMCO2}_{t} - \texttt{glmean_TMCO2}_{t-1} &amp;&amp; \forall t
+    \end{align*}
+
+    &#34;&#34;&#34;
+    dataset[prefix + varname] = xr.DataArray(calc_var_deltas(dataset[varname]),
+                                             coords={&#39;time&#39;: dataset[&#39;time&#39;]},
+                                             dims=[&#39;time&#39;])
+    return dataset
+
+
+def calc_global_weighted_means(dataset: xr.Dataset,
+                               variable_list=None,
+                               prefix=&#39;glmean_&#39;, weighting_var=&#39;area_p&#39;, averaging_dims=(&#39;ncol&#39;)
+                               ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Global means with weighting by area
+
+    xarray has recently introduced a weighting method (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
+    The area of each grid cell for the ne4pg2/ne30pg2 grids is called “area_p”.
+    For the ne4/ne30 grids it is just called “area”.  Not sure why they changed it.
+
+    \begin{align*}
+        &amp;&amp; \texttt{glmean_CO2var}_{t}= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{CO2var}_{i,j,t} * \texttt{area}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{area}_{i,j}}     &amp;&amp;\forall t, \\
+        with\,units: &amp;&amp; \{kg/m^2\}_t= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{kg/{m^2}\}_{i,j,t} * \{m^2/m^2\}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{m^2/m^2\}_{i,j}}     &amp;&amp;\forall t. \\
+    \end{align*}
+
+    *notes:*
+    - we would need to multiply by the radius of Earth ($R^2_{E}$ in units of $\{m^2\}$) to get to $kg$ because `area` is in steradians rather than $m^2$.
+    - the above multiplication by `area` ($m^2/m^2$) is taken care of in the xarray.DataArray.weighted() method.
+
+    &#34;&#34;&#34;
+    dataset = add_global_mean_vars(dataset, variable_list=variable_list, prefix=prefix,
+                                   weighting_var=weighting_var, averaging_dims=averaging_dims)
+    return dataset
+
+
+def calc_time_integrated_fluxes(dataset: xr.Dataset,
+                                prefix=&#39;timeint_&#39;
+                                ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Time-integrated flux of $CO_2$ from surface emissions and aircraft
+    $\int{flux_{CO_2}}$
+
+    \begin{align*}
+        &amp;&amp; \int_{t-1}^{t} \texttt{SFCO2} \approx &amp; \texttt{glmean_SFCO2}_{t} &amp; * &amp; \quad (time_t - time_{t-1})    &amp;&amp;\forall t, \\
+        with\,units: &amp;&amp; \{kg/m^2\}_t= &amp; \{kg/m^2/s\}_t&amp; * &amp; \quad \{s\}_{t}    &amp;&amp;\forall t. \\
+    \end{align*}
+    &#34;&#34;&#34;
+    dtime = calc_time_deltas(dataset)
+    #
+    dataset[prefix + &#39;SFCO2&#39;] = xr.DataArray(dataset[&#39;glmean_SFCO2&#39;] * dtime,
+                                             coords={&#39;time&#39;: dataset[&#39;time&#39;]}, dims=[&#39;time&#39;])
+    #
+    dataset[prefix + &#39;TAFCO2&#39;] = xr.DataArray(dataset[&#39;glmean_TAFCO2&#39;] * dtime,
+                                             coords={&#39;time&#39;: dataset[&#39;time&#39;]}, dims=[&#39;time&#39;])
+    #
+    dataset[prefix + &#39;TOTALFLUX&#39;] = xr.DataArray(dataset[prefix + &#39;SFCO2&#39;] + dataset[prefix + &#39;TAFCO2&#39;],
+                                                 coords={&#39;time&#39;: dataset[&#39;time&#39;]}, dims=[&#39;time&#39;])
+
+    return dataset
+
+
+def calc_var_deltas(xr_da_: xr.DataArray
+                    ) -&gt; np.ndarray:
+    &#34;&#34;&#34;Backward difference calculation
+    &#34;&#34;&#34;
+    return np.insert(np.diff(xr_da_), 0, 0)
+
+
+def calc_time_deltas(xr_ds_: xr.Dataset
+                     ) -&gt; xr.DataArray:
+    &#34;&#34;&#34;Time deltas in seconds
+    &#34;&#34;&#34;
+    seconds_per_day = 24 * 60 * 60
+    return (xr_ds_[&#39;time_bnds&#39;].diff(&#39;nbnd&#39;) * seconds_per_day).astype(&#39;float&#39;).isel(nbnd=0).round()
+
+
+def add_global_mean_vars(xr_ds_: xr.Dataset,
+                         variable_list,
+                         prefix=&#39;glmean_&#39;, weighting_var=&#39;area_p&#39;, averaging_dims=(&#39;ncol&#39;)
+                         ) -&gt; xr.Dataset:
+    &#34;&#34;&#34; For each variable in the input list, we add an accompanying variable that represents a global mean
+    &#34;&#34;&#34;
+    for var in variable_list:
+        xr_ds_[prefix + var] = xr_ds_[var].weighted(xr_ds_[weighting_var]).mean(averaging_dims)
+        xr_ds_[prefix + var].attrs[&#34;units&#34;] = xr_ds_[var].units
+        xr_ds_[prefix + var].attrs[&#39;long_name&#39;] = xr_ds_[var].long_name + &#39; (globally averaged)&#39;
+
+    return xr_ds_
+
+
+def getPMID(hyam, hybm, P0, PS):
+    PMID = P0 * hyam + PS * hybm
+    PMID.attrs.update({&#39;units&#39;: &#39;Pa&#39;,
+                       &#39;long_name&#39;: &#39;Pressure&#39;})
+    return PMID
+
+
+def getPINT(hyai, hybi, P0, PS):
+    PMID = P0 * hyai + PS * hybi
+    PMID.attrs.update({&#39;units&#39;: &#39;Pa&#39;,
+                       &#39;long_name&#39;: &#39;Pressure at interface levels&#39;})
+    return PMID</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="gdess.data_source.models.e3sm.calculation.add_global_mean_vars"><code class="name flex">
+<span>def <span class="ident">add_global_mean_vars</span></span>(<span>xr_ds_: xarray.core.dataset.Dataset, variable_list, prefix='glmean_', weighting_var='area_p', averaging_dims='ncol') -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"><p>For each variable in the input list, we add an accompanying variable that represents a global mean</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_global_mean_vars(xr_ds_: xr.Dataset,
+                         variable_list,
+                         prefix=&#39;glmean_&#39;, weighting_var=&#39;area_p&#39;, averaging_dims=(&#39;ncol&#39;)
+                         ) -&gt; xr.Dataset:
+    &#34;&#34;&#34; For each variable in the input list, we add an accompanying variable that represents a global mean
+    &#34;&#34;&#34;
+    for var in variable_list:
+        xr_ds_[prefix + var] = xr_ds_[var].weighted(xr_ds_[weighting_var]).mean(averaging_dims)
+        xr_ds_[prefix + var].attrs[&#34;units&#34;] = xr_ds_[var].units
+        xr_ds_[prefix + var].attrs[&#39;long_name&#39;] = xr_ds_[var].long_name + &#39; (globally averaged)&#39;
+
+    return xr_ds_</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.e3sm.calculation.calc_change_in_mass"><code class="name flex">
+<span>def <span class="ident">calc_change_in_mass</span></span>(<span>dataset: xarray.core.dataset.Dataset, varname='glmean_TMCO2_FFF', prefix='deltas_') -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Change in mass of $CO_2$ from timestep to timestep
+$\Delta{mass_{CO_2}}$ - using backwards difference</p>
+<p>egin{align<em>}
+&amp;&amp; \Delta
+exttt{glmean_TMCO2}<em t>{t} =
+exttt{glmean_TMCO2}</em> -
+exttt{glmean_TMCO2}_{t-1} &amp;&amp;
+orall t
+\end{align</em>}</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calc_change_in_mass(dataset: xr.Dataset,
+                        varname=&#39;glmean_TMCO2_FFF&#39;, prefix=&#39;deltas_&#39;
+                        ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Change in mass of $CO_2$ from timestep to timestep
+    $\Delta{mass_{CO_2}}$ - using backwards difference
+
+    \begin{align*}
+        &amp;&amp; \Delta \texttt{glmean_TMCO2}_{t} = \texttt{glmean_TMCO2}_{t} - \texttt{glmean_TMCO2}_{t-1} &amp;&amp; \forall t
+    \end{align*}
+
+    &#34;&#34;&#34;
+    dataset[prefix + varname] = xr.DataArray(calc_var_deltas(dataset[varname]),
+                                             coords={&#39;time&#39;: dataset[&#39;time&#39;]},
+                                             dims=[&#39;time&#39;])
+    return dataset</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.e3sm.calculation.calc_global_weighted_means"><code class="name flex">
+<span>def <span class="ident">calc_global_weighted_means</span></span>(<span>dataset: xarray.core.dataset.Dataset, variable_list=None, prefix='glmean_', weighting_var='area_p', averaging_dims='ncol') -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Global means with weighting by area</p>
+<p>xarray has recently introduced a weighting method (<a href="http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html">http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html</a>).
+The area of each grid cell for the ne4pg2/ne30pg2 grids is called “area_p”.
+For the ne4/ne30 grids it is just called “area”.
+Not sure why they changed it.</p>
+<p>egin{align<em>}
+&amp;&amp;
+exttt{glmean_CO2var}<em i="1">{t}= &amp;
+rac{\sum</em>^{nlat}\sum_{j=1}^{nlon}
+exttt{CO2var}<em i_j="i,j">{i,j,t} *
+exttt{area}</em>}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon}
+exttt{area}<em i="1">{i,j}}
+&amp;&amp;orall t, \
+with\,units: &amp;&amp; {kg/m^2}_t= &amp;
+rac{\sum</em>^{nlat}\sum_{j=1}^{nlon} {kg/{m^2}}<em i_j="i,j">{i,j,t} * {m^2/m^2}</em>}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} {m^2/m^2}_{i,j}}
+&amp;&amp;orall t. \
+\end{align</em>}</p>
+<p><em>notes:</em>
+- we would need to multiply by the radius of Earth ($R^2_{E}$ in units of ${m^2}$) to get to $kg$ because <code>area</code> is in steradians rather than $m^2$.
+- the above multiplication by <code>area</code> ($m^2/m^2$) is taken care of in the xarray.DataArray.weighted() method.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calc_global_weighted_means(dataset: xr.Dataset,
+                               variable_list=None,
+                               prefix=&#39;glmean_&#39;, weighting_var=&#39;area_p&#39;, averaging_dims=(&#39;ncol&#39;)
+                               ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Global means with weighting by area
+
+    xarray has recently introduced a weighting method (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
+    The area of each grid cell for the ne4pg2/ne30pg2 grids is called “area_p”.
+    For the ne4/ne30 grids it is just called “area”.  Not sure why they changed it.
+
+    \begin{align*}
+        &amp;&amp; \texttt{glmean_CO2var}_{t}= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{CO2var}_{i,j,t} * \texttt{area}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{area}_{i,j}}     &amp;&amp;\forall t, \\
+        with\,units: &amp;&amp; \{kg/m^2\}_t= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{kg/{m^2}\}_{i,j,t} * \{m^2/m^2\}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{m^2/m^2\}_{i,j}}     &amp;&amp;\forall t. \\
+    \end{align*}
+
+    *notes:*
+    - we would need to multiply by the radius of Earth ($R^2_{E}$ in units of $\{m^2\}$) to get to $kg$ because `area` is in steradians rather than $m^2$.
+    - the above multiplication by `area` ($m^2/m^2$) is taken care of in the xarray.DataArray.weighted() method.
+
+    &#34;&#34;&#34;
+    dataset = add_global_mean_vars(dataset, variable_list=variable_list, prefix=prefix,
+                                   weighting_var=weighting_var, averaging_dims=averaging_dims)
+    return dataset</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.e3sm.calculation.calc_time_deltas"><code class="name flex">
+<span>def <span class="ident">calc_time_deltas</span></span>(<span>xr_ds_: xarray.core.dataset.Dataset) -> xarray.core.dataarray.DataArray</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Time deltas in seconds</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calc_time_deltas(xr_ds_: xr.Dataset
+                     ) -&gt; xr.DataArray:
+    &#34;&#34;&#34;Time deltas in seconds
+    &#34;&#34;&#34;
+    seconds_per_day = 24 * 60 * 60
+    return (xr_ds_[&#39;time_bnds&#39;].diff(&#39;nbnd&#39;) * seconds_per_day).astype(&#39;float&#39;).isel(nbnd=0).round()</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.e3sm.calculation.calc_time_integrated_fluxes"><code class="name flex">
+<span>def <span class="ident">calc_time_integrated_fluxes</span></span>(<span>dataset: xarray.core.dataset.Dataset, prefix='timeint_') -> xarray.core.dataset.Dataset</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Time-integrated flux of $CO_2$ from surface emissions and aircraft
+$\int{flux_{CO_2}}$</p>
+<p>egin{align<em>}
+&amp;&amp; \int_{t-1}^{t}
+exttt{SFCO2} pprox &amp;
+exttt{glmean_SFCO2}<em t-1>{t} &amp; * &amp; \quad (time_t - time</em>)
+&amp;&amp;orall t, \
+with\,units: &amp;&amp; {kg/m^2}<em t>t= &amp; {kg/m^2/s}_t&amp; * &amp; \quad {s}</em>
+&amp;&amp;orall t. \
+\end{align</em>}</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calc_time_integrated_fluxes(dataset: xr.Dataset,
+                                prefix=&#39;timeint_&#39;
+                                ) -&gt; xr.Dataset:
+    &#34;&#34;&#34;Time-integrated flux of $CO_2$ from surface emissions and aircraft
+    $\int{flux_{CO_2}}$
+
+    \begin{align*}
+        &amp;&amp; \int_{t-1}^{t} \texttt{SFCO2} \approx &amp; \texttt{glmean_SFCO2}_{t} &amp; * &amp; \quad (time_t - time_{t-1})    &amp;&amp;\forall t, \\
+        with\,units: &amp;&amp; \{kg/m^2\}_t= &amp; \{kg/m^2/s\}_t&amp; * &amp; \quad \{s\}_{t}    &amp;&amp;\forall t. \\
+    \end{align*}
+    &#34;&#34;&#34;
+    dtime = calc_time_deltas(dataset)
+    #
+    dataset[prefix + &#39;SFCO2&#39;] = xr.DataArray(dataset[&#39;glmean_SFCO2&#39;] * dtime,
+                                             coords={&#39;time&#39;: dataset[&#39;time&#39;]}, dims=[&#39;time&#39;])
+    #
+    dataset[prefix + &#39;TAFCO2&#39;] = xr.DataArray(dataset[&#39;glmean_TAFCO2&#39;] * dtime,
+                                             coords={&#39;time&#39;: dataset[&#39;time&#39;]}, dims=[&#39;time&#39;])
+    #
+    dataset[prefix + &#39;TOTALFLUX&#39;] = xr.DataArray(dataset[prefix + &#39;SFCO2&#39;] + dataset[prefix + &#39;TAFCO2&#39;],
+                                                 coords={&#39;time&#39;: dataset[&#39;time&#39;]}, dims=[&#39;time&#39;])
+
+    return dataset</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.models.e3sm.calculation.calc_var_deltas"><code class="name flex">
+<span>def <span class="ident">calc_var_deltas</span></span>(<span>xr_da_: xarray.core.dataarray.DataArray) -> numpy.ndarray</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Backward difference calculation</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calc_var_deltas(xr_da_: xr.DataArray
+                    ) -&gt; np.ndarray:
+    &#34;&#34;&#34;Backward difference calculation
+    &#34;&#34;&#34;
+    return np.insert(np.diff(xr_da_), 0, 0)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="gdess.data_source.models.e3sm" href="index.html">gdess.data_source.models.e3sm</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="gdess.data_source.models.e3sm.calculation.add_global_mean_vars" href="#gdess.data_source.models.e3sm.calculation.add_global_mean_vars">add_global_mean_vars</a></code></li>
+<li><code><a title="gdess.data_source.models.e3sm.calculation.calc_change_in_mass" href="#gdess.data_source.models.e3sm.calculation.calc_change_in_mass">calc_change_in_mass</a></code></li>
+<li><code><a title="gdess.data_source.models.e3sm.calculation.calc_global_weighted_means" href="#gdess.data_source.models.e3sm.calculation.calc_global_weighted_means">calc_global_weighted_means</a></code></li>
+<li><code><a title="gdess.data_source.models.e3sm.calculation.calc_time_deltas" href="#gdess.data_source.models.e3sm.calculation.calc_time_deltas">calc_time_deltas</a></code></li>
+<li><code><a title="gdess.data_source.models.e3sm.calculation.calc_time_integrated_fluxes" href="#gdess.data_source.models.e3sm.calculation.calc_time_integrated_fluxes">calc_time_integrated_fluxes</a></code></li>
+<li><code><a title="gdess.data_source.models.e3sm.calculation.calc_var_deltas" href="#gdess.data_source.models.e3sm.calculation.calc_var_deltas">calc_var_deltas</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

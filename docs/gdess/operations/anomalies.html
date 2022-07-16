@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>gdess.operations.anomalies API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>gdess.operations.anomalies</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+import pandas as pd
+import xarray as xr
+import logging
+
+_logger = logging.getLogger(__name__)
+
+
+def daily_anomalies(dataset: xr.Dataset,
+                    varname: str = &#39;co2&#39;
+                    ) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default &#39;co2&#39;
+
+    Returns
+    -------
+    A pandas Dataframe
+    &#34;&#34;&#34;
+    varlist = [&#39;time&#39;, varname]
+    tempds = dataset[varlist]
+
+    # Get daily values, and add additional temporal label coordinates
+    tempds = tempds.resample(time=&#34;D&#34;).mean()
+    tempds = tempds.assign_coords(doy=tempds.time.dt.strftime(&#34;%j&#34;).str.lstrip(&#34;0&#34;).astype(int))
+    tempds = tempds.assign_coords(year=tempds.time.dt.strftime(&#34;%Y&#34;))
+    ds_daily = tempds.assign_coords(year_month=tempds.time.dt.strftime(&#34;%Y-%m&#34;))
+
+    # Convert to pandas dataframe
+    df_daily = ds_daily.to_dataframe()
+
+    # --- Calculate Anomalies ---
+    #
+    &#34;&#34;&#34;
+    Daily anomaly of this data from the local monthly mean of the time-series. 
+    That is, I want to take away the average of (eg) January 1979 from all the days in January 1979. 
+    And I&#39;d like to do this for every month of every year in my array.&#34;&#34;&#34;
+    df_daily[&#39;daily_anomaly_from_month&#39;] = \
+        (ds_daily.groupby(&#34;year_month&#34;) - ds_daily.groupby(&#34;year_month&#34;).mean(&#34;time&#34;))[varname]
+    # Get each datum&#39;s departure from it&#39;s year&#39;s mean
+    df_daily[&#39;daily_anomaly_from_year&#39;] = (ds_daily.groupby(&#34;year&#34;) - ds_daily.groupby(&#34;year&#34;).mean(&#34;time&#34;))[varname]
+    # Get each datum&#39;s departure from the entire dataset&#39;s mean
+    df_daily[&#39;daily_anomaly_from_allmean&#39;] = (ds_daily - ds_daily.mean(&#34;time&#34;))[varname]
+    # Get each datum&#39;s departure from it&#39;s year&#39;s mean
+    df_daily[&#39;daily_anomaly_from_year&#39;] = (ds_daily.groupby(&#34;year&#34;) - ds_daily.groupby(&#34;year&#34;).mean(&#34;time&#34;))[varname]
+
+    df_daily = df_daily.reset_index()
+
+    return df_daily
+
+
+def monthly_anomalies(dataset: xr.Dataset,
+                      varname: str = &#39;co2&#39;
+                      ) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default &#39;co2&#39;
+
+    Returns
+    -------
+    A pandas Dataframe
+    &#34;&#34;&#34;
+    varlist = [&#39;time&#39;, varname]
+    tempds = dataset[varlist]
+
+    # Get monthly values, and add additional temporal label coordinates
+    tempds = tempds.resample(time=&#34;M&#34;).mean()
+    tempds = tempds.assign_coords(moy=tempds.time.dt.strftime(&#34;%m&#34;))
+    tempds = tempds.assign_coords(year=tempds.time.dt.strftime(&#34;%Y&#34;))
+    ds_monthly = tempds.assign_coords(year_month=tempds.time.dt.strftime(&#34;%Y-%m&#34;))
+
+    # Convert to pandas dataframe
+    df_monthly = ds_monthly.to_dataframe()
+
+    # --- Calculate Anomalies ---
+    #
+    # Get each datum&#39;s departure from it&#39;s year&#39;s mean&#34;&#34;&#34;
+    df_monthly[&#39;monthly_anomaly_from_year&#39;] = \
+        (ds_monthly.groupby(&#34;year&#34;) - ds_monthly.groupby(&#34;year&#34;).mean(&#34;time&#34;))[varname]
+    # Get each datum&#39;s departure from the entire dataset&#39;s mean&#34;&#34;&#34;
+    df_monthly[&#39;monthly_anomaly_from_allmean&#39;] = (ds_monthly - ds_monthly.mean(&#34;time&#34;))[varname]
+
+    df_monthly = df_monthly.reset_index()
+
+    return df_monthly
+
+
+def seasonal_anomalies(dataset: xr.Dataset,
+                       varname: str = &#39;co2&#39;
+                       ) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default &#39;co2&#39;
+
+    Returns
+    -------
+    A pandas Dataframe
+    &#34;&#34;&#34;
+    varlist = [&#39;time&#39;, varname]
+    tempds = dataset[varlist]
+
+    # Get seasonal (quarterly, starting on December) values, and add additional temporal label coordinates
+    tempds = tempds.resample(time=&#34;QS-DEC&#34;).mean()
+    tempds = tempds.assign_coords(year=tempds.time.dt.strftime(&#34;%Y&#34;))
+    # add seasonal labels
+    tempds = tempds.assign_coords(moy=tempds.time.dt.strftime(&#34;%m&#34;).astype(int))
+    month_to_season_lu = np.array([
+        None,
+        &#39;DJF&#39;, &#39;DJF&#39;,
+        &#39;MAM&#39;, &#39;MAM&#39;, &#39;MAM&#39;,
+        &#39;JJA&#39;, &#39;JJA&#39;, &#39;JJA&#39;,
+        &#39;SON&#39;, &#39;SON&#39;, &#39;SON&#39;,
+        &#39;DJF&#39;
+    ])
+    tempds = tempds.assign_coords(season=(&#39;time&#39;, month_to_season_lu[tempds.moy]))
+    ds_seasonal = tempds.assign_coords(year_month=tempds.time.dt.strftime(&#34;%Y-%m&#34;))
+
+    # Convert to pandas dataframe
+    df_seasonal = ds_seasonal.to_dataframe()
+
+    # --- Calculate Anomalies ---
+    #
+    # Get each datum&#39;s departure from the entire dataset&#39;s mean
+    df_seasonal[&#39;seasonal_anomaly_from_allmean&#39;] = (ds_seasonal - ds_seasonal.mean(&#34;time&#34;))[varname]
+
+    df_seasonal = df_seasonal.reset_index()
+
+    return df_seasonal</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="gdess.operations.anomalies.daily_anomalies"><code class="name flex">
+<span>def <span class="ident">daily_anomalies</span></span>(<span>dataset: xarray.core.dataset.Dataset, varname: str = 'co2') -> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>varname</code></strong> :&ensp;<code>str</code>, default <code>'co2'</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A pandas Dataframe</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def daily_anomalies(dataset: xr.Dataset,
+                    varname: str = &#39;co2&#39;
+                    ) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default &#39;co2&#39;
+
+    Returns
+    -------
+    A pandas Dataframe
+    &#34;&#34;&#34;
+    varlist = [&#39;time&#39;, varname]
+    tempds = dataset[varlist]
+
+    # Get daily values, and add additional temporal label coordinates
+    tempds = tempds.resample(time=&#34;D&#34;).mean()
+    tempds = tempds.assign_coords(doy=tempds.time.dt.strftime(&#34;%j&#34;).str.lstrip(&#34;0&#34;).astype(int))
+    tempds = tempds.assign_coords(year=tempds.time.dt.strftime(&#34;%Y&#34;))
+    ds_daily = tempds.assign_coords(year_month=tempds.time.dt.strftime(&#34;%Y-%m&#34;))
+
+    # Convert to pandas dataframe
+    df_daily = ds_daily.to_dataframe()
+
+    # --- Calculate Anomalies ---
+    #
+    &#34;&#34;&#34;
+    Daily anomaly of this data from the local monthly mean of the time-series. 
+    That is, I want to take away the average of (eg) January 1979 from all the days in January 1979. 
+    And I&#39;d like to do this for every month of every year in my array.&#34;&#34;&#34;
+    df_daily[&#39;daily_anomaly_from_month&#39;] = \
+        (ds_daily.groupby(&#34;year_month&#34;) - ds_daily.groupby(&#34;year_month&#34;).mean(&#34;time&#34;))[varname]
+    # Get each datum&#39;s departure from it&#39;s year&#39;s mean
+    df_daily[&#39;daily_anomaly_from_year&#39;] = (ds_daily.groupby(&#34;year&#34;) - ds_daily.groupby(&#34;year&#34;).mean(&#34;time&#34;))[varname]
+    # Get each datum&#39;s departure from the entire dataset&#39;s mean
+    df_daily[&#39;daily_anomaly_from_allmean&#39;] = (ds_daily - ds_daily.mean(&#34;time&#34;))[varname]
+    # Get each datum&#39;s departure from it&#39;s year&#39;s mean
+    df_daily[&#39;daily_anomaly_from_year&#39;] = (ds_daily.groupby(&#34;year&#34;) - ds_daily.groupby(&#34;year&#34;).mean(&#34;time&#34;))[varname]
+
+    df_daily = df_daily.reset_index()
+
+    return df_daily</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.anomalies.monthly_anomalies"><code class="name flex">
+<span>def <span class="ident">monthly_anomalies</span></span>(<span>dataset: xarray.core.dataset.Dataset, varname: str = 'co2') -> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>varname</code></strong> :&ensp;<code>str</code>, default <code>'co2'</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A pandas Dataframe</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def monthly_anomalies(dataset: xr.Dataset,
+                      varname: str = &#39;co2&#39;
+                      ) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default &#39;co2&#39;
+
+    Returns
+    -------
+    A pandas Dataframe
+    &#34;&#34;&#34;
+    varlist = [&#39;time&#39;, varname]
+    tempds = dataset[varlist]
+
+    # Get monthly values, and add additional temporal label coordinates
+    tempds = tempds.resample(time=&#34;M&#34;).mean()
+    tempds = tempds.assign_coords(moy=tempds.time.dt.strftime(&#34;%m&#34;))
+    tempds = tempds.assign_coords(year=tempds.time.dt.strftime(&#34;%Y&#34;))
+    ds_monthly = tempds.assign_coords(year_month=tempds.time.dt.strftime(&#34;%Y-%m&#34;))
+
+    # Convert to pandas dataframe
+    df_monthly = ds_monthly.to_dataframe()
+
+    # --- Calculate Anomalies ---
+    #
+    # Get each datum&#39;s departure from it&#39;s year&#39;s mean&#34;&#34;&#34;
+    df_monthly[&#39;monthly_anomaly_from_year&#39;] = \
+        (ds_monthly.groupby(&#34;year&#34;) - ds_monthly.groupby(&#34;year&#34;).mean(&#34;time&#34;))[varname]
+    # Get each datum&#39;s departure from the entire dataset&#39;s mean&#34;&#34;&#34;
+    df_monthly[&#39;monthly_anomaly_from_allmean&#39;] = (ds_monthly - ds_monthly.mean(&#34;time&#34;))[varname]
+
+    df_monthly = df_monthly.reset_index()
+
+    return df_monthly</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.anomalies.seasonal_anomalies"><code class="name flex">
+<span>def <span class="ident">seasonal_anomalies</span></span>(<span>dataset: xarray.core.dataset.Dataset, varname: str = 'co2') -> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>varname</code></strong> :&ensp;<code>str</code>, default <code>'co2'</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A pandas Dataframe</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def seasonal_anomalies(dataset: xr.Dataset,
+                       varname: str = &#39;co2&#39;
+                       ) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;
+
+    Parameters
+    ----------
+    dataset : xarray Dataset
+    varname : str, default &#39;co2&#39;
+
+    Returns
+    -------
+    A pandas Dataframe
+    &#34;&#34;&#34;
+    varlist = [&#39;time&#39;, varname]
+    tempds = dataset[varlist]
+
+    # Get seasonal (quarterly, starting on December) values, and add additional temporal label coordinates
+    tempds = tempds.resample(time=&#34;QS-DEC&#34;).mean()
+    tempds = tempds.assign_coords(year=tempds.time.dt.strftime(&#34;%Y&#34;))
+    # add seasonal labels
+    tempds = tempds.assign_coords(moy=tempds.time.dt.strftime(&#34;%m&#34;).astype(int))
+    month_to_season_lu = np.array([
+        None,
+        &#39;DJF&#39;, &#39;DJF&#39;,
+        &#39;MAM&#39;, &#39;MAM&#39;, &#39;MAM&#39;,
+        &#39;JJA&#39;, &#39;JJA&#39;, &#39;JJA&#39;,
+        &#39;SON&#39;, &#39;SON&#39;, &#39;SON&#39;,
+        &#39;DJF&#39;
+    ])
+    tempds = tempds.assign_coords(season=(&#39;time&#39;, month_to_season_lu[tempds.moy]))
+    ds_seasonal = tempds.assign_coords(year_month=tempds.time.dt.strftime(&#34;%Y-%m&#34;))
+
+    # Convert to pandas dataframe
+    df_seasonal = ds_seasonal.to_dataframe()
+
+    # --- Calculate Anomalies ---
+    #
+    # Get each datum&#39;s departure from the entire dataset&#39;s mean
+    df_seasonal[&#39;seasonal_anomaly_from_allmean&#39;] = (ds_seasonal - ds_seasonal.mean(&#34;time&#34;))[varname]
+
+    df_seasonal = df_seasonal.reset_index()
+
+    return df_seasonal</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="gdess.operations" href="index.html">gdess.operations</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="gdess.operations.anomalies.daily_anomalies" href="#gdess.operations.anomalies.daily_anomalies">daily_anomalies</a></code></li>
+<li><code><a title="gdess.operations.anomalies.monthly_anomalies" href="#gdess.operations.anomalies.monthly_anomalies">monthly_anomalies</a></code></li>
+<li><code><a title="gdess.operations.anomalies.seasonal_anomalies" href="#gdess.operations.anomalies.seasonal_anomalies">seasonal_anomalies</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
