@@ -1,5 +1,15 @@
+import argparse
+import csv, sys, logging
+from typing import Union, Iterable
+from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import xarray as xr
+from dask.diagnostics import ProgressBar
+from sklearn.metrics import mean_squared_error
+
 import gdess.graphics
-from ccgcrv.ccg_filter import ccgFilter
 from gdess import set_verbose
 from gdess.data_source.models.cmip.cmip_collection import Collection as cmipCollection
 from gdess.graphics.single_source_plots import plot_filter_components
@@ -8,15 +18,8 @@ from gdess.operations.geographic import get_closest_mdl_cell_dict
 from gdess.operations.utils import assert_expected_dimensions
 from gdess.formatters import append_before_extension
 from gdess.data_source.observations import gvplus_surface as obspack_surface_collection_module
+from ccgcrv.ccg_filter import ccgFilter
 from ccgcrv.ccg_dates import decimalDateFromDatetime
-from sklearn.metrics import mean_squared_error
-from datetime import datetime
-import numpy as np
-import pandas as pd
-import xarray as xr
-from dask.diagnostics import ProgressBar
-from typing import Union
-import csv, sys, logging
 
 _logger = logging.getLogger(__name__)
 
@@ -24,8 +27,8 @@ _logger = logging.getLogger(__name__)
 class Confrontation:
     def __init__(self,
                  compare_against_model: bool,
-                 ds_mdl,
-                 opts,
+                 ds_mdl: xr.Dataset,
+                 opts: argparse.Namespace,
                  stations_to_analyze: list,
                  verbose: Union[bool, str] = False):
         """Instantiate a Confrontation object.
@@ -46,8 +49,8 @@ class Confrontation:
 
         set_verbose(_logger, verbose)
 
-    def looper(self, how):
-        """
+    def looper(self, how: str) -> tuple:
+        """Process and format observation data for multiple station locations
 
         Parameters
         ----------
@@ -61,7 +64,9 @@ class Confrontation:
         Returns
         -------
         tuple
-            A bunch of things
+            data_dict, concatenated_dfs, df_station_metadata, \
+               xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+               rmse_y_true, rmse_y_pred
         """
         valid = {'seasonal', 'trend'}
         if how not in valid:
@@ -249,7 +254,10 @@ class Confrontation:
                xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
                rmse_y_true, rmse_y_pred
 
-    def concatenate_stations_and_months(self, data_dict, processed_station_metadata) -> (dict, pd.DataFrame):
+    def concatenate_stations_and_months(self,
+                                        data_dict: dict,
+                                        processed_station_metadata: dict
+                                        ) -> (dict, pd.DataFrame):
         """
 
         Parameters
@@ -287,7 +295,10 @@ class Confrontation:
         return df_concatenated, df_station_metadata
 
 
-def make_comparable(ref: xr.Dataset, com: xr.Dataset, **keywords) -> (xr.Dataset, xr.DataArray):
+def make_comparable(ref: xr.Dataset,
+                    com: xr.Dataset,
+                    **keywords
+                    ) -> (xr.Dataset, xr.DataArray):
     """Make two datasets comparable.
 
     Ensures time formats are compatible.
@@ -321,7 +332,6 @@ def make_comparable(ref: xr.Dataset, com: xr.Dataset, **keywords) -> (xr.Dataset
         the modified reference variable object
     com : xarray.Dataarray
         the modified comparison variable object
-
     """
 
     # Process keywords
@@ -388,8 +398,12 @@ def make_comparable(ref: xr.Dataset, com: xr.Dataset, **keywords) -> (xr.Dataset
     return ds_ref, da_com
 
 
-def mutual_time_bounds(com: xr.Dataset, ref: xr.Dataset, time_limits) -> (xr.Dataset, xr.Dataset):
-    """
+def mutual_time_bounds(com: xr.Dataset,
+                       ref: xr.Dataset,
+                       time_limits
+                       ) -> (xr.Dataset, xr.Dataset):
+    """Apply time bounds to the reference,
+    and then clip the comparison Dataset to the reference bounds.
 
     Parameters
     ----------
@@ -404,17 +418,18 @@ def mutual_time_bounds(com: xr.Dataset, ref: xr.Dataset, time_limits) -> (xr.Dat
         ds_com : xr.Dataset
         ds_ref : xr.Dataset
     """
-    # Apply time bounds to the reference, and then clip the comparison Dataset to the reference bounds.
-    ds_ref, initial_ref_time, final_ref_time, revised_initial_time, revised_final_time = apply_time_bounds(ref,
-                                                                                                           time_limits)
+    ds_ref, initial_ref_time, final_ref_time, revised_initial_time, revised_final_time = \
+        apply_time_bounds(ref, time_limits)
+
     new_limits = [time_limits[0], time_limits[1]]
     if revised_initial_time > time_limits[0]:
         new_limits[0] = revised_initial_time
     if revised_final_time < time_limits[1]:
         new_limits[1] = revised_final_time
     _logger.debug('  revised time limits are %s' % new_limits)
-    ds_com, initial_com_time, final_com_time, revised_initial_time, revised_final_time = apply_time_bounds(com,
-                                                                                                           new_limits)
+    ds_com, initial_com_time, final_com_time, revised_initial_time, revised_final_time = \
+        apply_time_bounds(com, new_limits)
+
     # decimal years are added as a coordinate if not already there.
     if not ('time_decimal' in ds_com.coords):
         ds_com = ds_com.assign_coords(time_decimal=('time',
@@ -426,8 +441,9 @@ def mutual_time_bounds(com: xr.Dataset, ref: xr.Dataset, time_limits) -> (xr.Dat
 
 def extract_site_data_from_dataset(dataset: xr.Dataset,
                                    lat: float, lon: float,
-                                   drop: bool) -> Union[xr.Dataset, xr.DataArray]:
-    """A specific lat/lon is selected
+                                   drop: bool
+                                   ) -> Union[xr.Dataset, xr.DataArray]:
+    """Select a specific lat/lon
 
     Parameters
     ----------
@@ -458,7 +474,9 @@ def extract_site_data_from_dataset(dataset: xr.Dataset,
 def lowest_nonnull_altitude(data: xr.DataArray) -> xr.DataArray:
     """Get the lowest (i.e., first) non-null value, that is nearest to the surface
 
-    Note: this assumes that data are ordered from the surface to top-of-atmosphere.
+    Note
+    ----
+    This assumes that data are ordered from the surface to top-of-atmosphere.
     """
     def first_nonnull_1d(data):
         # print(np.where(np.isfinite(data))[0][0])
@@ -480,7 +498,7 @@ def interpolate_to_altitude(data: xr.DataArray,
                             altitude: float,
                             height_data: xr.DataArray
                             ) -> xr.DataArray:
-    """ Interpolate timeseries data to a given altitude
+    """Interpolate timeseries data to a given altitude
 
     Parameters
     ----------
@@ -490,6 +508,9 @@ def interpolate_to_altitude(data: xr.DataArray,
     height_data : xarray.DataArray
         The geopotential height ('zg') variable.
 
+    Returns
+    -------
+    xr.DataArray
     """
     if not all(x in data.data_vars for x in ['co2', 'zg']):
         raise ValueError("Variables 'co2' and 'zg' must be present to use interpolate_to_altitude()."
@@ -530,7 +551,7 @@ def interpolate_to_altitude(data: xr.DataArray,
 def apply_time_bounds(ds: xr.Dataset,
                       time_limits: Union[tuple, list]
                       ) -> (xr.Dataset, np.datetime64, np.datetime64, np.datetime64, np.datetime64):
-    """
+    """Crop dataset to time limits
 
     Parameters
     ----------
@@ -576,7 +597,10 @@ def apply_time_bounds(ds: xr.Dataset,
     return ds, original_initial_time, original_final_time, revised_initial_time, revised_final_time
 
 
-def update_for_skipped_station(msg, station_name, station_count, counter_dict):
+def update_for_skipped_station(msg: Union[str, Exception],
+                               station_name: str,
+                               station_count: list,
+                               counter_dict: dict) -> None:
     """Print a message and reduce the total station count by one."""
     _logger.info('  skipping station <%s>: %s', station_name, msg)
     counter_dict['skipped'] += 1
@@ -619,7 +643,7 @@ def bin_by_latitude(compare_against_model: bool,
                     df_metadata: pd.DataFrame,
                     latitude_bin_size: int
                     ) -> tuple:
-    """
+    """Aggregate station data into latitude bins
 
     Parameters
     ----------
@@ -634,8 +658,8 @@ def bin_by_latitude(compare_against_model: bool,
     dict
     pandas.Dataframe
     """
-    # We determine bins to which each station is assigned.
     def to_bin(x):
+        # determine bins to which each station is assigned.
         return np.floor(x / latitude_bin_size) * latitude_bin_size
 
     df_metadata["latbin"] = df_metadata['lat'].map(to_bin)
@@ -649,9 +673,11 @@ def bin_by_latitude(compare_against_model: bool,
 
 
 def get_seasonal_by_curve_fitting(compare_against_model: bool,
-                                  da_mdl, ds_obs,
-                                  opts, station):
-    """
+                                  da_mdl: xr.Dataset,
+                                  ds_obs: xr.Dataset,
+                                  opts: argparse.Namespace,
+                                  station: str) -> tuple:
+    """Get seasonal trend
 
     Parameters
     ----------
@@ -754,7 +780,9 @@ def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame,
     return binned_df
 
 
-def make_cycle(x0, smooth_cycle) -> (pd.Series, pd.Series):
+def make_cycle(x0: Iterable,
+               smooth_cycle
+               ) -> (pd.Series, pd.Series):
     """Calculate the average seasonal cycle from the filtered time series.
 
     Parameters
@@ -764,7 +792,8 @@ def make_cycle(x0, smooth_cycle) -> (pd.Series, pd.Series):
 
     Returns
     -------
-    a tuple containing two pandas.Series of 12 elemenets: one of datetimes for each month, and one of co2 values
+    tuple
+        two pandas.Series of 12 elemenets: one of datetimes for each month, and one of co2 values
     """
     # Convert dates to datetime objects, and make a dataframe with a month column for grouping purposes.
     df_seasonalcycle = pd.DataFrame.from_dict({'datetime': [t2dt(i) for i in x0],

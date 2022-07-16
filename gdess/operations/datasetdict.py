@@ -1,6 +1,9 @@
+import pickle
+import logging
+from typing import Callable
+
 import xarray as xr
 from dask.diagnostics import ProgressBar
-import pickle, logging
 
 _datasetdict_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
@@ -72,9 +75,14 @@ class DatasetDict(dict):
 
         return returndict
 
-    def apply_function_to_all(self, fnc, *args, **kwargs):
+    def apply_function_to_all(self,
+                              fnc: Callable,
+                              *args,
+                              **kwargs):
         """Helper for applying functions to multiple datasets.
 
+        Notes
+        -----
         The specified function is queued lazily (unless executing=True) for execution on datasets
         of an origin dictionary, which will be copied to a destination dictionary.
 
@@ -85,7 +93,7 @@ class DatasetDict(dict):
         fnc
         args
         kwargs
-            keyword arguments, e.g.
+            Additional keyword arguments, e.g.
                 inplace : bool
                     whether the functions should be applied to this DatasetDict or
                     whether a copy should be returned with the operations applied.

@@ -1,10 +1,12 @@
 #!/usr/bin/env python
-###############################################
-# Download CMIP6 data containing co2
-# Author: D.E.Kaufman (daniel.kaufman@pnnl.gov)
-# Created: 2021-06-18
-###############################################
-import os, tempfile, subprocess
+"""Download CMIP6 data containing co2
+
+Author: D.E.Kaufman (daniel.kaufman@pnnl.gov)
+Created: 2021-06-18
+"""
+import os
+import tempfile
+import subprocess
 
 from pyesgf.search import SearchConnection
 

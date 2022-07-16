@@ -1,24 +1,25 @@
-from gdess import set_verbose
-from gdess.operations.anomalies import monthly_anomalies
-from gdess.operations.datasetdict import DatasetDict
-from gdess.operations.time import ensure_datetime64_array, ensure_dataset_datetime64
+from typing import Union
+import pickle, logging
+
 import numpy as np
 import pandas as pd
 import xarray as xr
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from typing import Union
-import pickle, logging
+
+from gdess import set_verbose
+from gdess.operations.anomalies import monthly_anomalies
+from gdess.operations.datasetdict import DatasetDict
+from gdess.operations.time import ensure_datetime64_array, ensure_dataset_datetime64
 
 _multiset_logger = logging.getLogger("{0}.{1}".format(__name__, "multiset"))
 
 
 class Multiset:
-    """Useful class for working simultaneously with multiple, consistent xarray Datasets."""
+    """Work simultaneous with multiple, consistent xarray Datasets."""
 
     def __init__(self, verbose: Union[bool, str] = False):
-        """
-        This class is a template against which we can run recipes, with an order of operations:
+        """A template against which we can run recipes, with an order of operations:
             - Step A: datasets loaded, in their original form
             - Step B: datasets that have been preprocessed
             - Step C: datasets that have operations lazily queued or fully processed
@@ -142,7 +143,8 @@ class Multiset:
     def categorical_cmap(nc: int,
                          nsc: int,
                          cmap: str = "tab10",
-                         continuous: bool = False):
+                         continuous: bool = False
+                         ) -> mpl.colors.ListedColormap:
         """
         Parameters
         ----------
@@ -159,6 +161,7 @@ class Multiset:
 
         Notes
         -----
+        matplotlib.colors.ListedColormap
             from https://stackoverflow.com/questions/47222585/matplotlib-generic-colormap-from-tab10
         """
         if nc > plt.get_cmap(cmap).N:
@@ -178,9 +181,8 @@ class Multiset:
         cmap = mpl.colors.ListedColormap(cols)
         return cmap
 
-    def __repr__(self):
-        """ String representation is built.
-        """
+    def __repr__(self) -> str:
+        """Build a string representation of the Multiset object"""
         strrep = f"Multiset: \n" + \
                  self._original_datasets_list_str() + \
                  f"\n" \
@@ -189,7 +191,11 @@ class Multiset:
         return strrep
 
     def _obj_attributes_list_str(self) -> list:
-        """ Get a list of each dataset attribute (with "empty" markers)
+        """Get a list of each dataset attribute (with "empty" markers)
+
+        Returns
+        -------
+        list
         """
         list_builder = []
         for k in self.__dict__.keys():
@@ -208,7 +214,11 @@ class Multiset:
         return sorted(list_builder)
 
     def _original_datasets_list_str(self) -> str:
-        """ Get a list of the identifying keys for each dataset
+        """Get a comma-separated string that lists the identifying keys for each dataset
+
+        Returns
+        -------
+        str
         """
         if self.stepA_original_datasets:
             return '\n\t'.join(self.stepA_original_datasets.keys())

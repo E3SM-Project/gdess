@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-"""
-Created September 2020
-
-@author: Daniel E. Kaufman
-
-This code is meant to serve as a collection of tools for use with the CO2 diagnostics development
+"""A collection of tools for use with the CO2 diagnostics development
 Most of the routines are designed to work with xarray.DataArray types
+
+Created September 2020
+@author: Daniel E. Kaufman
 """
-import xarray as xr
+import os
+import logging
 from typing import Union, Sequence
-import os, logging
+
+import pandas as pd
+import xarray as xr
 
 _logger = logging.getLogger(__name__)
 
@@ -18,16 +19,19 @@ _logger = logging.getLogger(__name__)
 __all__ = ['print_var_summary', 'get_var_stats']
 
 
-def where_am_i():
+def where_am_i() -> str:
     return os.path.dirname(os.path.abspath(__file__))
 
 
-def pipe_df_head(dataf, n_rows=5):
+def pipe_df_head(dataf: pd.DataFrame, n_rows: int = 5):
     print(f"print_dataf: {dataf.head(n_rows)}")
     return dataf
 
 
-def print_var_summary(dataset: xr.Dataset, varname='CO2', return_dataset=False):
+def print_var_summary(dataset: xr.Dataset,
+                      varname: str = 'CO2',
+                      return_dataset: bool = False
+                      ) -> Union[None, xr.Dataset]:
     """Brief stats for a dataset variable are printed
 
     Parameters
@@ -72,8 +76,10 @@ def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
                                optional_dims: Sequence[str] = None,
                                expected_shape: Union[dict, list] = None
                                ) -> bool:
-    """Raises an AssertionError if data dimensions don't match the given names or shape.
+    """Raise an AssertionError if data dimensions don't match the given names or shape
 
+    Note
+    ----
     If an expected_shape argument isn't provided, we ignore the shapes (dim lengths).
 
     Parameters
@@ -95,7 +101,8 @@ def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
 
     Returns
     -------
-    True, if the given names (and shapes, if given) match the data.
+    bool
+        True, if the given names (and shapes, if given) match the data.
     """
     dims_dict = dict(data.dims)
 
@@ -139,7 +146,7 @@ def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
 
 
 def get_var_stats(dataarray: xr.DataArray) -> dict:
-    """ Provides a dictionary with summary statistics
+    """Retrieve a dictionary with summary statistics
 
     Parameters
     ----------

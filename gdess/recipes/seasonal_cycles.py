@@ -1,9 +1,15 @@
-""" This produces plots of seasonal cycles of atmospheric CO2
+"""Produce plots of seasonal cycles of atmospheric CO2
+
+Note
+----
 This function parses:
  - observational data from Globalview+ surface stations
  - model output from CMIP6
-================================================================================
 """
+import logging
+import argparse
+from typing import Union
+
 from gdess import set_verbose, benchmark_recipe
 from gdess.recipe_parsers import parse_recipe_options, add_seasonal_cycle_args_to_parser
 from gdess.recipes.recipe_utils import populate_station_list
@@ -11,8 +17,6 @@ from gdess.graphics.comparison_plots import plot_comparison_against_model, plot_
 from gdess.operations.Confrontation import Confrontation, load_cmip_model_output
 from gdess.formatters import numstr, append_before_extension
 from dask.diagnostics import ProgressBar
-from typing import Union
-import argparse, logging
 
 _logger = logging.getLogger(__name__)
 

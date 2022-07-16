@@ -1,20 +1,34 @@
 #!/usr/bin/env python
-""" This is the command line interface for running co2 diagnostics
+"""Command line interface for running co2 diagnostics
 
-Example usage:
-    >> ./bin/gdess_cli.py --help
-    >> ./bin/gdess_cli.py trend --help
-    >> ./bin/gdess_cli.py trend raw_data/noaa-obspack/nc/ --figure_savepath ./
-    >> ./bin/gdess_cli.py seasonal --help
-    >> ./bin/gdess_cli.py meridional --help
+Examples
+--------
+    $ ./bin/gdess_cli.py --help
+    $ ./bin/gdess_cli.py trend --help
+    $ ./bin/gdess_cli.py trend raw_data/noaa-obspack/nc/ --figure_savepath ./
+    $ ./bin/gdess_cli.py seasonal --help
+    $ ./bin/gdess_cli.py meridional --help
 """
+import sys
+import argparse
+
 from gdess.recipe_parsers import add_surface_trends_args_to_parser, add_seasonal_cycle_args_to_parser, \
     add_meridional_args_to_parser
-from argparse import ArgumentParser
-import sys
 
 
-def main(args):
+def main(args: argparse.Namespace) -> int:
+    """Run a selected recipe with parsed options
+
+    Parameters
+    ----------
+    args
+        Parsed arguments
+
+    Returns
+    -------
+    int
+        Exit code
+    """
     # Get the argument values. Then clear them from the namespace so the subcommands do not encounter them.
     verbosity = args.verbose
     recipe_name = args.subparser_name
@@ -36,11 +50,10 @@ def main(args):
     return 0  # a clean, no-issue, exit
 
 
-def parse_cli():
-    """Input arguments are parsed.
-    """
-    parser = ArgumentParser(description="Run a CO2 diagnostic recipe to generate figures and metrics",
-                            fromfile_prefix_chars='@')
+def parse_cli() -> argparse.Namespace:
+    """Parse input arguments from the command line"""
+    parser = argparse.ArgumentParser(description="Run a CO2 diagnostic recipe to generate figures and metrics",
+                                     fromfile_prefix_chars='@')
     parser.add_argument("--verbose", action='store_true')
 
     # Redefine parser function to allow multiple arguments (i.e., nargs='*') on a single line when read from a file

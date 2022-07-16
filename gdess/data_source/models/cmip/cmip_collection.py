@@ -1,3 +1,12 @@
+from typing import Union, Sequence
+import os, argparse, logging, warnings
+
+import intake
+import numpy as np
+import pandas as pd
+import xarray as xr
+import matplotlib.pyplot as plt
+
 from gdess import set_verbose, load_config_file, benchmark_recipe
 from gdess.data_source.models.cmip.cmip_name_utils import model_name_dict_from_valid_form, \
     matched_model_and_experiment, cmip_model_choices
@@ -10,13 +19,6 @@ from gdess.formatters.args import nullable_str
 from gdess.formatters import append_before_extension
 from gdess.graphics.single_source_plots import plot_annual_series, plot_zonal_mean
 from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig
-import intake
-import numpy as np
-import pandas as pd
-import xarray as xr
-import matplotlib.pyplot as plt
-from typing import Union, Sequence
-import os, argparse, logging, warnings
 
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 

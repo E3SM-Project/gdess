@@ -1,5 +1,6 @@
-import xarray as xr
 import logging
+
+import xarray as xr
 
 _logger = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
 
     Returns
     -------
+    xr.DataSet
         The dataset with CO2 converted to units of <ppm>
 
     Notes
@@ -62,6 +64,7 @@ def co2_kgfrac_to_ppm(xr_ds_: xr.Dataset,
 
     Returns
     -------
+    xr.Dataset
         The dataset with CO2 converted to units of <ppm>
 
     Notes

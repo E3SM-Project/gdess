@@ -1,10 +1,11 @@
+import datetime as pydt
+from datetime import timedelta
+from typing import Sequence, Union
+import cftime, logging
+
 import numpy as np
 import pandas as pd
 import xarray as xr
-import datetime as pydt
-from datetime import timedelta
-from typing import Sequence
-import cftime, logging
 
 _logger = logging.getLogger(__name__)
 
@@ -27,15 +28,14 @@ def ensure_dataset_datetime64(dataset: xr.Dataset
     return dataset
 
 
-def year_to_datetime64(yr: str):
+def year_to_datetime64(yr: str) -> Union[None, np.datetime64]:
     if yr is not None:
         return np.datetime64(yr, 'D')
     else:
         return None
 
 
-def to_datetimeindex(dataset: xr.Dataset
-                     ) -> xr.Dataset:
+def to_datetimeindex(dataset: xr.Dataset) -> xr.Dataset:
     """It is often more convenient to work with the `time` variable as type `datetime64`.
 
     Parameters
@@ -54,8 +54,17 @@ def to_datetimeindex(dataset: xr.Dataset
         return dataset
 
 
-def ensure_datetime64_array(time: Sequence):
-    """Convert an input 1D array to an array of numpy.datetime64 objects.
+def ensure_datetime64_array(time: Sequence) -> Sequence:
+    """Convert an input 1D array to an array of numpy.datetime64 objects
+
+    Parameters
+    ----------
+    time
+
+    Raises
+    ------
+    ValueError
+        if unable to cast array to numpy.datetime64
     """
     if isinstance(time, xr.DataArray):
         time = time.indexes["time"]
@@ -70,7 +79,7 @@ def ensure_datetime64_array(time: Sequence):
     raise ValueError("Unable to cast array to numpy.datetime64 dtype")
 
 
-def ensure_cftime_array(time: Sequence):
+def ensure_cftime_array(time: Sequence) -> Sequence:
     """Convert an input 1D array to an array of cftime objects.
 
     Parameters
@@ -145,7 +154,7 @@ def select_between(dataset: xr.Dataset,
     return ds_sub.where(tempmask, drop=drop)
 
 
-def monthlist(dates) -> list:
+def monthlist(dates: list) -> list:
     """Generate a list of months between two dates
 
     Parameters
@@ -176,16 +185,19 @@ def monthlist(dates) -> list:
     return mlist
 
 
-def dt2t(year, month, day, h=0, m=0, s=0) :
-    """convert a DT.datetime to a float"""
-    year_seconds = (pydt.datetime(year,12,31,23,59,59,999999)-pydt.datetime(year,1,1,0,0,0)).total_seconds()
-    second_of_year = (pydt.datetime(year,month,day,h,m,s) - pydt.datetime(year,1,1,0,0,0)).total_seconds()
+def dt2t(year: int, month: int, day: int,
+         h: int = 0, m: int = 0, s: int = 0) -> float:
+    """Convert a DT.datetime to a float"""
+    year_seconds = (pydt.datetime(year, 12, 31, 23, 59, 59, 999999) -
+                    pydt.datetime(year, 1, 1, 0, 0, 0)).total_seconds()
+    second_of_year = (pydt.datetime(year, month, day, h, m, s) -
+                      pydt.datetime(year, 1, 1, 0, 0, 0)).total_seconds()
     return year + second_of_year / year_seconds
 
 
-def t2dt(atime):
-    """
-    Convert a time (a float) to DT.datetime
+def t2dt(atime: float) -> pydt.datetime:
+    """Convert a time (a float) to DT.datetime
+
     This is the inverse of dt2t.
     assert dt2t(t2dt(atime)) == atime
     """

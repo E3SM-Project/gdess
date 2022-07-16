@@ -1,19 +1,34 @@
 from math import cos, asin, sqrt
 
+import xarray as xr
+
 # Define functions to be imported by *, e.g. from the local __init__ file
 #   (also to avoid adding above imports to other namespaces)
 __all__ = ['distance', 'closest', 'get_closest_mdl_cell_dict']
 
-import xarray as xr
 
-
-def distance(lat1, lon1, lat2, lon2):
+def distance(lat1: float,
+             lon1: float,
+             lat2: float,
+             lon2: float) -> float:
     p = 0.017453292519943295
     a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
     return 12742 * asin(sqrt(a))
 
 
-def closest(data, v):
+def closest(data: list,
+            v: dict) -> dict:
+    """Find closest point in `data` to the v point
+
+    Parameters
+    ----------
+    data
+    v
+
+    Returns
+    -------
+    dict
+    """
     min_entry = min(data, key=lambda p: distance(v['lat'], v['lon'], p['lat'], p['lon']))
 
     return min_entry
@@ -51,7 +66,8 @@ def get_closest_mdl_cell_dict(dataset: xr.Dataset,
 
     Returns
     -------
-    A dict with lat, lon, and index in Dataset
+    dict
+        With lat, lon, and index in Dataset
         For example, {'lat': 19.5, 'lon': 204.375, 'index': 31555}
     """
     obs_station_lat_lon = {'lat': lat, 'lon': lon}
