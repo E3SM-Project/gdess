@@ -1,10 +1,11 @@
+import argparse, os, logging
+from typing import Union, Callable
+
 from gdess import load_stations_dict, load_config_file
 from gdess.data_source.models.cmip.cmip_name_utils import matched_model_and_experiment, cmip_model_choices
 from gdess.data_source.observations.gvplus_name_utils import valid_surface_stations
 from gdess.formatters.args import valid_existing_path, valid_year_string, options_to_args, valid_writable_path
 from gdess.operations.time import year_to_datetime64
-import argparse, os, logging
-from typing import Union, Callable
 
 _logger = logging.getLogger(__name__)
 

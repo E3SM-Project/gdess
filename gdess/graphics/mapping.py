@@ -1,14 +1,12 @@
+__all__ = ['make_my_base_map']
+
 from collections.abc import Sequence
+
 import numpy as np
 import matplotlib.pyplot as plt
-
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from adjustText import adjust_text
-
-# Define functions to be imported by *, e.g. from the local __init__ file
-#   (also to avoid adding above imports to other namespaces)
-__all__ = ['make_my_base_map']
 
 # Position and sizes of subplot axes in page coordinates (0 to 1)
 # panel = [(0.1691, 0.6810, 0.6465, 0.2258
@@ -86,7 +84,7 @@ def make_my_base_map(projection=ccrs.PlateCarree(),
     return figure, ax
 
 
-def determine_tick_step(degrees_covered):
+def determine_tick_step(degrees_covered: float) -> int:
     if degrees_covered > 180:
         return 60
     if degrees_covered > 60:
@@ -99,14 +97,13 @@ def determine_tick_step(degrees_covered):
         return 1
 
 
-def add_site_labels(ax: plt.Axes, labels: Sequence, lats: Sequence, lons: Sequence,
+def add_site_labels(ax: plt.Axes,
+                    labels: Sequence,
+                    lats: Sequence,
+                    lons: Sequence,
                     **kwargs) -> None:
     """Add data point labels
     And adjust them so that they are not overlapping each other or the data points.
-
-    Note: For densely packed aircraft sites, these arguments worked well:
-        force_text=(0.1, 1), force_points=(3.2, 3), expand_points=(1.25, 1.25)
-        arrowprops=dict(arrowstyle="->", color='b', lw=0.4)
 
     Parameters
     ----------
@@ -114,8 +111,14 @@ def add_site_labels(ax: plt.Axes, labels: Sequence, lats: Sequence, lons: Sequen
     labels : Sequence
     lats : Sequence
     lons : Sequence
-    kwargs
-        keyword arguments to pass to the adjust_text function
+    **kwargs
+        Additional keyword arguments passed to the `adjust_text` function
+
+    Note
+    ----
+    For densely packed aircraft sites, these arguments worked well:
+        force_text=(0.1, 1), force_points=(3.2, 3), expand_points=(1.25, 1.25)
+        arrowprops=dict(arrowstyle="->", color='b', lw=0.4)
     """
     texts = []
     for label, lat, lon in zip(labels, lats, lons):

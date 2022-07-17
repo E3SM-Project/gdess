@@ -1,20 +1,24 @@
-import os, re
+import os
+import re
 
 
-def tex_escape(text):
+def tex_escape(text: str) -> str:
     """Return text with problematic escape sequences parsed for Latex use.
-
-    Note: This function was copied from the following StackOverflow answer,
-        <https://stackoverflow.com/a/25875504/10134974>
 
     Parameters
     ----------
     text : str
         a plain text message
 
+    Note
+    ----
+    This function was copied from the following StackOverflow answer,
+        <https://stackoverflow.com/a/25875504/10134974>
+
     Returns
     -------
-    the message escaped to appear correctly in LaTeX
+    str
+        the message escaped to appear correctly in LaTeX
     """
     conv = {
         '&': r'\&',
@@ -37,9 +41,8 @@ def tex_escape(text):
 
 
 def append_before_extension(filename: str, text_to_append: str) -> str:
-    """Take a filename and add a string to the end before the extension.
-
-    Note that an underscore is inserted in between.
+    """Take a filename and add a string to the end before the extension,
+    with an underscore inserted in between.
 
     Parameters
     ----------

@@ -1,14 +1,26 @@
-from typing import Union
-import os, pkg_resources, configparser, json, time, logging
+"""
+Python package `gdess` facilitates comparison of simulated atmospheric CO2 against observational data.
+Specifically, it selects, loads, and parses the observational datasets and model simulations to be in a consistent structure
+and generates data visualizations for several diagnostic use cases.
+Three diagnostic recipes currently implemented examine multidecadal trends, seasonal cycles, and meridional gradients.
+
+"""
+import os
+import json
+import time
+import logging
+import configparser
+import pkg_resources
+from typing import Union, Callable
 
 _logger = logging.getLogger(__name__)
 
 def load_config_file() -> configparser.ConfigParser:
-    """
+    """Read the package configuration file
 
     Returns
     -------
-
+    configparser.ConfigParser
     """
     config = configparser.ConfigParser(os.environ,
                                        interpolation=configparser.ExtendedInterpolation(),
@@ -22,11 +34,11 @@ def load_config_file() -> configparser.ConfigParser:
 
 
 def load_stations_dict() -> dict:
-    """
+    """Get the dictionary of stations
 
     Returns
     -------
-
+    `dict`
     """
     path = 'config/stations_dict.json'  # always use slash
     filepath = pkg_resources.resource_filename(__package__, path)
@@ -36,10 +48,11 @@ def load_stations_dict() -> dict:
     return result
 
 
-def set_verbose(logger,
+def set_verbose(logger: logging.Logger,
                 verbose: Union[bool, str] = False
                 ) -> None:
-    """
+    """Set the level of the passed logger
+
     Parameters
     ----------
     logger: logging.Logger
@@ -59,6 +72,7 @@ def validate_verbose(verbose: Union[bool, str] = False) -> Union[int, str]:
 
     Returns
     -------
+    `int` or `str`
         A logging verbosity level or string that corresponds to a verbosity level
 
     """
@@ -89,13 +103,14 @@ def _config_logger():
     logging.config.dictConfig(config_dict)
 
 
-def _change_log_level(a_logger, level):
+def _change_log_level(a_logger: logging.Logger,
+                      level: int):
     a_logger.setLevel(level)
     for handler in a_logger.handlers:
         handler.setLevel(level)
 
 
-def benchmark_recipe(func):
+def benchmark_recipe(func: Callable):
     """A decorator for diagnostic recipe methods that provides timing info.
     """
     def display_time_and_call(*args, **kwargs):

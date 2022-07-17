@@ -1,6 +1,9 @@
+import pickle
+import logging
+from typing import Callable, Union
+
 import xarray as xr
 from dask.diagnostics import ProgressBar
-import pickle, logging
 
 _datasetdict_logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
@@ -72,9 +75,14 @@ class DatasetDict(dict):
 
         return returndict
 
-    def apply_function_to_all(self, fnc, *args, **kwargs):
+    def apply_function_to_all(self,
+                              fnc: Callable,
+                              *args,
+                              **kwargs) -> Union['DatasetDict', None]:
         """Helper for applying functions to multiple datasets.
 
+        Notes
+        -----
         The specified function is queued lazily (unless executing=True) for execution on datasets
         of an origin dictionary, which will be copied to a destination dictionary.
 
@@ -82,11 +90,11 @@ class DatasetDict(dict):
 
         Parameters
         ----------
-        fnc
-        args
-        kwargs
-            keyword arguments, e.g.
-                inplace : bool
+        fnc : `Callable`
+        *args : tuple
+        **kwargs : `dict`, optional
+            Additional keyword arguments, e.g.
+                inplace : `bool`
                     whether the functions should be applied to this DatasetDict or
                     whether a copy should be returned with the operations applied.
 
@@ -121,13 +129,13 @@ class DatasetDict(dict):
 
     def execute_all(self,
                     progressbar: bool = True,
-                    inplace: bool = True):
+                    inplace: bool = True) -> Union['DatasetDict', None]:
         """Process any lazily loaded selections and computations
 
         Parameters
         ----------
-        progressbar : bool, default True
-        inplace : bool, default True
+        progressbar : `bool`, default True
+        inplace : `bool`, default True
 
         Returns
         -------
@@ -144,6 +152,7 @@ class DatasetDict(dict):
 
     def copy(self) -> 'DatasetDict':
         """Generate a new Datasetdict with each dataset copied
+
         Useful for preventing further operations from modifying the original.
         """
         new_datasetdict = DatasetDict()
@@ -152,11 +161,11 @@ class DatasetDict(dict):
         return new_datasetdict
 
     def to_pickle(self, filename: str = 'datasetdict.pickle') -> None:
-        """Pickle this DatasetDict using the highest protocol available.
+        """Pickle this DatasetDict using the highest protocol available
 
         Parameters
         ----------
-        filename : str, default 'datasetdict.pickle'
+        filename : `str`, default 'datasetdict.pickle'
         """
         with open(filename, 'wb') as f:
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
@@ -168,12 +177,12 @@ class DatasetDict(dict):
 
         Parameters
         ----------
-        filename : str, default 'cmip_collection.latest_executed_datasets.pickle'
-        replace : bool, default False
+        filename : `str`, default 'cmip_collection.latest_executed_datasets.pickle'
+        replace : `bool`, default `False`
 
         Returns
         -------
-        DatasetDict
+        'DatasetDict'
         """
         with open(filename, 'rb') as f:
             # The protocol version used is detected automatically, so we do not have to specify it.

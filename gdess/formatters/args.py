@@ -25,7 +25,8 @@ def options_to_args(options: dict) -> list:
 
 
 def is_some_none(val) -> bool:
-    """Check if value is either a Python None object or the case-insensitive string 'None' """
+    """Check if value is either a Python None object or the case-insensitive string 'None'
+    """
     if val is None:
         return True
     elif isinstance(val, str) and (val.lower() == 'none'):
@@ -34,8 +35,23 @@ def is_some_none(val) -> bool:
         return False
 
 
-def nullable_int(val) -> Union[None, int]:
-    """Validate whether a value's type is either an integer or none"""
+def nullable_int(val: Union[None, int]) -> Union[None, int]:
+    """Validate whether a value's type is either an integer or none
+
+    Parameters
+    ----------
+    val
+        value to validate
+
+    Raises
+    ------
+    argparse.ArgumentTypeError
+        if the value is not either an integer or None
+
+    Returns
+    -------
+    int or None
+    """
     if is_some_none(val):
         return None
     if not isinstance(val, int):
@@ -43,8 +59,23 @@ def nullable_int(val) -> Union[None, int]:
     return val
 
 
-def nullable_str(val) -> Union[None, str]:
-    """Validate whether a value's type is either a string or none"""
+def nullable_str(val: Union[None, str]) -> Union[None, str]:
+    """Validate whether a value's type is either a string or none
+
+    Parameters
+    ----------
+    val
+        value to validate
+
+    Raises
+    ------
+    argparse.ArgumentTypeError
+        if the value is not either a string or None
+
+    Returns
+    -------
+    str or None
+    """
     if is_some_none(val):
         return None
     if not isinstance(val, str):
@@ -52,8 +83,23 @@ def nullable_str(val) -> Union[None, str]:
     return val
 
 
-def valid_year_string(y) -> Union[None, str]:
-    """Validate 'year' argument passed in as a recipe option"""
+def valid_year_string(y: Union[str, int]) -> Union[None, str]:
+    """Validate 'year' argument passed in as a recipe option
+
+    Parameters
+    ----------
+    y
+        year to validate
+
+    Raises
+    ------
+    argparse.ArgumentTypeError
+        if the year is not a valid string or positive integer less than 10,000
+
+    Returns
+    -------
+    str or None
+    """
     if is_some_none(y):
         return None
     elif isinstance(y, str) | isinstance(y, int):
@@ -62,8 +108,24 @@ def valid_year_string(y) -> Union[None, str]:
     raise argparse.ArgumentTypeError('Year must be a string or integer whose value is between 0 and 10,000.')
 
 
-def valid_existing_path(p):
-    """Validate a filepath argument passed in as a recipe option"""
+def valid_existing_path(p: Union[str, os.PathLike]
+                        ) -> Union[str, os.PathLike]:
+    """Validate a filepath argument passed in as a recipe option
+
+    Parameters
+    ----------
+    p
+        path to validate
+
+    Raises
+    ------
+    argparse.ArgumentTypeError
+        if the input path does not exist and/or is not writable
+
+    Returns
+    -------
+    str or os.PathLike
+    """
     try:
         if os.path.exists(p):
             if os.access(p, os.R_OK):
@@ -73,8 +135,24 @@ def valid_existing_path(p):
     raise argparse.ArgumentTypeError('Path must exist and be readable. <%s> is not.' % p)
 
 
-def valid_writable_path(p):
-    """Validate a filepath argument passed in as a recipe option"""
+def valid_writable_path(p: Union[str, os.PathLike]
+                        ) -> Union[bool, str, os.PathLike]:
+    """Validate a filepath argument passed in as a recipe option
+
+    Parameters
+    ----------
+    p
+        path to validate
+
+    Raises
+    ------
+    argparse.ArgumentTypeError
+        if the input path is not valid and writable
+
+    Returns
+    -------
+    bool, str, or os.PathLike
+    """
     def canmakeit():
         try:
             os.makedirs(os.path.dirname(p), exist_ok=True)

@@ -26,8 +26,8 @@ def datesOk(year, month, day, hour=0, minute=0, second=0) -> bool:
 
 
 ###########################################################
-def decimalDate (year, month, day, hour=0, minute=0, second=0) -> Union[int, float]:
-	""" Convert a date and time to a fractional year. """
+def decimalDate(year, month, day, hour=0, minute=0, second=0) -> Union[int, float]:
+	"""Convert a date and time to a fractional year"""
 
 	if not datesOk(year, month, day, hour, minute, second):
 		return 0

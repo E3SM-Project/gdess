@@ -1,27 +1,34 @@
+__all__ = ['calc_change_in_mass', 'calc_global_weighted_means',
+           'calc_time_integrated_fluxes', 'calc_var_deltas', 'calc_time_deltas',
+           'add_global_mean_vars']
+
 import numpy as np
 import xarray as xr
 import logging
 
 _logger = logging.getLogger(__name__)
 
-# Define functions to be imported by *, e.g. from the local __init__ file
-#   (also to avoid adding above imports to other namespaces)
-__all__ = ['calc_change_in_mass',
-           'calc_global_weighted_means', 'add_global_mean_vars',
-           'calc_time_integrated_fluxes',
-           'calc_var_deltas', 'calc_time_deltas']
-
 
 def calc_change_in_mass(dataset: xr.Dataset,
                         varname='glmean_TMCO2_FFF', prefix='deltas_'
                         ) -> xr.Dataset:
-    """Change in mass of $CO_2$ from timestep to timestep
-    $\Delta{mass_{CO_2}}$ - using backwards difference
+    """Change in mass of \\(CO_2\\) from timestep to timestep
+    using backwards difference - \\(\\Delta{mass_{CO_2}}\\)
 
-    \begin{align*}
-        && \Delta \texttt{glmean_TMCO2}_{t} = \texttt{glmean_TMCO2}_{t} - \texttt{glmean_TMCO2}_{t-1} && \forall t
-    \end{align*}
+    Parameters
+    ----------
+    dataset : ``xarray.Dataset``
+    varname : `str`
+    prefix : `str`
 
+    Notes
+    -----
+    .. math::
+        \\Delta \\texttt{glmean_TMCO2}_{t} = \\texttt{glmean_TMCO2}_{t} - \\texttt{glmean_TMCO2}_{t-1} \\forall t
+
+    Returns
+    -------
+    ``xarray.Dataset``
     """
     dataset[prefix + varname] = xr.DataArray(calc_var_deltas(dataset[varname]),
                                              coords={'time': dataset['time']},
@@ -31,23 +38,40 @@ def calc_change_in_mass(dataset: xr.Dataset,
 
 def calc_global_weighted_means(dataset: xr.Dataset,
                                variable_list=None,
-                               prefix='glmean_', weighting_var='area_p', averaging_dims=('ncol')
+                               prefix='glmean_',
+                               weighting_var='area_p',
+                               averaging_dims='ncol'
                                ) -> xr.Dataset:
     """Global means with weighting by area
 
-    xarray has recently introduced a weighting method (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
+    Parameters
+    ----------
+    dataset
+    variable_list
+    prefix
+    weighting_var
+    averaging_dims
+
+    Notes
+    -----
+    xarray has recently introduced a weighting method
+        (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
     The area of each grid cell for the ne4pg2/ne30pg2 grids is called “area_p”.
     For the ne4/ne30 grids it is just called “area”.  Not sure why they changed it.
 
-    \begin{align*}
-        && \texttt{glmean_CO2var}_{t}= & \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{CO2var}_{i,j,t} * \texttt{area}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{area}_{i,j}}     &&\forall t, \\
-        with\,units: && \{kg/m^2\}_t= & \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{kg/{m^2}\}_{i,j,t} * \{m^2/m^2\}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{m^2/m^2\}_{i,j}}     &&\forall t. \\
-    \end{align*}
+    .. math::
+        \\texttt{glmean_CO2var}_{t}= \\frac{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\texttt{CO2var}_{i,j,t} * \\texttt{area}_{i,j}}{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\texttt{area}_{i,j}}
+            \\forall t,
+        with\\,units: \\{kg/m^2\\}_t= & \\frac{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\{kg/{m^2}\\}_{i,j,t} * \\{m^2/m^2\\}_{i,j}}{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\{m^2/m^2\\}_{i,j}}
+            \\forall t.
 
-    *notes:*
-    - we would need to multiply by the radius of Earth ($R^2_{E}$ in units of $\{m^2\}$) to get to $kg$ because `area` is in steradians rather than $m^2$.
-    - the above multiplication by `area` ($m^2/m^2$) is taken care of in the xarray.DataArray.weighted() method.
+    We would need to multiply by the radius of Earth (\\(R^2_{E}\\) in units of \\(\\{m^2\\}\\))
+        to get to \\(kg\\) because `area` is in steradians rather than \\(m^2\\).
+    The above multiplication by `area` (\\(m^2/m^2\\)) is taken care of in the xarray.DataArray.weighted() method.
 
+    Returns
+    -------
+    ``xarray.Dataset``
     """
     dataset = add_global_mean_vars(dataset, variable_list=variable_list, prefix=prefix,
                                    weighting_var=weighting_var, averaging_dims=averaging_dims)
@@ -55,15 +79,25 @@ def calc_global_weighted_means(dataset: xr.Dataset,
 
 
 def calc_time_integrated_fluxes(dataset: xr.Dataset,
-                                prefix='timeint_'
+                                prefix: str = 'timeint_'
                                 ) -> xr.Dataset:
-    """Time-integrated flux of $CO_2$ from surface emissions and aircraft
-    $\int{flux_{CO_2}}$
+    """Time-integrated flux of \\(CO_2\\) from surface emissions and aircraft
+    \\(\\int{flux_{CO_2}}\\)
 
-    \begin{align*}
-        && \int_{t-1}^{t} \texttt{SFCO2} \approx & \texttt{glmean_SFCO2}_{t} & * & \quad (time_t - time_{t-1})    &&\forall t, \\
-        with\,units: && \{kg/m^2\}_t= & \{kg/m^2/s\}_t& * & \quad \{s\}_{t}    &&\forall t. \\
-    \end{align*}
+    .. math::
+        \\int_{t-1}^{t} \\texttt{SFCO2} \\approx \\texttt{glmean_SFCO2}_{t} * \\quad (time_t - time_{t-1})
+            \\forall t,
+        with\\,units: \\{kg/m^2\\}_t= \\{kg/m^2/s\\}_t * \\quad \\{s\\}_{t}
+            \\forall t.
+
+    Parameters
+    ----------
+    dataset : ``xarray.Dataset``
+    prefix : str
+
+    Returns
+    -------
+    ``xarray.Dataset``
     """
     dtime = calc_time_deltas(dataset)
     #

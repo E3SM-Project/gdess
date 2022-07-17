@@ -1,0 +1,2297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>gdess.operations.Confrontation API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML'></script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>gdess.operations.Confrontation</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import argparse
+import csv, sys, logging
+from typing import Union, Iterable
+from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import xarray as xr
+from dask.diagnostics import ProgressBar
+from sklearn.metrics import mean_squared_error
+
+import gdess.graphics
+from gdess import set_verbose
+from gdess.data_source.models.cmip.cmip_collection import Collection as cmipCollection
+from gdess.graphics.single_source_plots import plot_filter_components
+from gdess.operations.time import ensure_dataset_datetime64, t2dt
+from gdess.operations.geographic import get_closest_mdl_cell_dict
+from gdess.operations.utils import assert_expected_dimensions
+from gdess.formatters import append_before_extension
+from gdess.data_source.observations import gvplus_surface as obspack_surface_collection_module
+from ccgcrv.ccg_filter import ccgFilter
+from ccgcrv.ccg_dates import decimalDateFromDatetime
+
+_logger = logging.getLogger(__name__)
+
+
+class Confrontation:
+    def __init__(self,
+                 compare_against_model: bool,
+                 ds_mdl: xr.Dataset,
+                 opts: argparse.Namespace,
+                 stations_to_analyze: list,
+                 verbose: Union[bool, str] = False):
+        &#34;&#34;&#34;Instantiate a Confrontation object.
+
+        Parameters
+        ----------
+        compare_against_model : bool
+        ds_mdl : xarray Dataset
+        opts : argparse.Namespace
+        stations_to_analyze : list
+        verbose : Union[bool, str], default False
+        &#34;&#34;&#34;
+        self.compare_against_model = compare_against_model
+        self.ds_mdl = ds_mdl
+        self.opts = opts
+        self.stations_to_analyze = stations_to_analyze
+        self.verbose = verbose
+
+        set_verbose(_logger, verbose)
+
+    def looper(self, how: str) -&gt; tuple:
+        &#34;&#34;&#34;Process and format observation data for multiple station locations
+
+        Parameters
+        ----------
+        how : str
+            either &#39;seasonal&#39; or &#39;trend&#39;
+
+        Raises
+        ------
+        ValueError
+
+        Returns
+        -------
+        tuple
+            data_dict, concatenated_dfs, df_station_metadata, \
+               xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+               rmse_y_true, rmse_y_pred
+        &#34;&#34;&#34;
+        valid = {&#39;seasonal&#39;, &#39;trend&#39;}
+        if how not in valid:
+            raise ValueError(&#34;&#39;how&#39; must be one of %r.&#34; % valid)
+
+        # --- Observation data are processed for each station location. ---
+        _logger.info(&#39;*Processing Observations*&#39;)
+        counter = {&#39;current&#39;: 1, &#39;skipped&#39;: 0}
+        processed_station_metadata = dict(lat=[], lon=[], code=[], fullname=[])
+        data_dict = dict(ref=[], mdl=[])  # each key will contain a list of Dataframes.
+        num_stations = [len(self.stations_to_analyze)]
+        for station in self.stations_to_analyze:
+            _logger.info(&#34;Station %s of %s: %s&#34;, counter[&#39;current&#39;], num_stations[0], station)
+            obs_collection = obspack_surface_collection_module.Collection(verbose=self.verbose)
+            obs_collection.preprocess(datadir=self.opts.ref_data, station_name=station)
+            ds_obs = obs_collection.stepA_original_datasets[station]
+            _logger.info(&#39;  %s&#39;, obs_collection.station_dict.get(station))
+
+            # Apply time bounds, and get the relevant model output.
+            try:
+                if self.compare_against_model:
+                    ds_obs, da_mdl = make_comparable(ds_obs, self.ds_mdl,
+                                                     time_limits=(
+                                                     np.datetime64(self.opts.start_yr), np.datetime64(self.opts.end_yr)),
+                                                     latlon=(
+                                                     ds_obs[&#39;latitude&#39;].values[0], ds_obs[&#39;longitude&#39;].values[0]),
+                                                     altitude=ds_obs[&#39;altitude&#39;].values[0], altitude_method=&#39;lowest&#39;,
+                                                     global_mean=self.opts.globalmean, verbose=self.verbose)
+                else:
+                    ds_obs, _, _, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(self.opts.start_yr),
+                                                                          np.datetime64(self.opts.end_yr)))
+                    da_mdl = None
+            except (RuntimeError, AssertionError) as re:
+                update_for_skipped_station(re, station, num_stations, counter)
+                continue
+            #
+            if how == &#39;seasonal&#39;:
+                try:
+                    ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model,
+                                                                                       da_mdl, ds_obs,
+                                                                                       self.opts, station)
+                except RuntimeError as re:
+                    update_for_skipped_station(re, station, num_stations, counter)
+                    continue
+                #
+                data_dict[&#39;ref&#39;].append(pd.DataFrame.from_dict({&#34;month&#34;: ref_dt, f&#34;{station}&#34;: ref_vals}))
+                if self.compare_against_model:
+                    data_dict[&#39;mdl&#39;].append(pd.DataFrame.from_dict({&#34;month&#34;: mdl_dt, f&#34;{station}&#34;: mdl_vals}))
+            elif how == &#39;trend&#39;:
+                data_dict[&#39;ref&#39;].append(pd.DataFrame.from_dict({&#34;time&#34;: ds_obs[&#39;time&#39;], f&#34;{station}&#34;: ds_obs[&#39;co2&#39;].values}))
+                if self.compare_against_model:
+                    data_dict[&#39;mdl&#39;].append(pd.DataFrame.from_dict({&#34;time&#34;: da_mdl[&#39;time&#39;], f&#34;{station}&#34;: da_mdl.values}))
+            else:
+                raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+            # Gather together station&#39;s metadata at the loop end, when we&#39;re sure that this station has been processed.
+            processed_station_metadata[&#39;lon&#39;].append(obs_collection.station_dict[station][&#39;lon&#39;])
+            processed_station_metadata[&#39;lat&#39;].append(obs_collection.station_dict[station][&#39;lat&#39;])
+            processed_station_metadata[&#39;fullname&#39;].append(obs_collection.station_dict[station][&#39;name&#39;])
+            processed_station_metadata[&#39;code&#39;].append(station)
+            counter[&#39;current&#39;] += 1
+            # END of station loop
+
+        if len(data_dict[&#39;ref&#39;]) &lt; 1:
+            _logger.info(&#34;No station data to process (%s stations skipped). Exiting.&#34;, counter[&#39;skipped&#39;])
+            sys.exit()
+        else:
+            _logger.info(&#34;Done -- %s stations fully processed. %s stations skipped.&#34;,
+                         len(data_dict[&#39;ref&#39;]), counter[&#39;skipped&#39;])
+
+        concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+                                                                                     processed_station_metadata)
+        if how == &#39;seasonal&#39;:
+            # concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+            #                                                                             processed_station_metadata)
+
+            # --- Optional binning by latitude ---
+            if self.opts.latitude_bin_size:
+                concatenated_dfs, df_station_metadata = bin_by_latitude(self.compare_against_model, concatenated_dfs,
+                                                                       df_station_metadata, self.opts.latitude_bin_size)
+
+        # --- FORMAT DATA FOR OUTPUT ---
+
+        # Write output data to csv
+        filename = append_before_extension(self.opts.figure_savepath + &#39;.csv&#39;,
+                                           &#39;seasonal_cycle_output_stats_&#39; + datetime.now().strftime(&#39;%Y%m%d_%H%M%S&#39;))
+        fileptr = open(filename, &#39;w&#39;, newline=&#39;&#39;)
+        writer = csv.DictWriter(
+            fileptr, fieldnames=[&#39;station&#39;,
+                                 &#39;source&#39;,
+                                 &#39;max&#39;,
+                                 &#39;min&#39;,
+                                 &#39;mean&#39;,
+                                 &#39;median&#39;,
+                                 &#39;std&#39;,
+                                 &#39;rmse&#39;
+                                 ]
+        )
+        writer.writeheader()
+
+        if how == &#39;seasonal&#39;:
+            timecolumn = &#39;month&#39;
+        elif how == &#39;trend&#39;:
+            timecolumn = &#39;time&#39;
+        else:
+            raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+        xdata_gv = concatenated_dfs[&#39;ref&#39;][timecolumn]
+        ydata_gv = concatenated_dfs[&#39;ref&#39;].loc[:, (concatenated_dfs[&#39;ref&#39;].columns != timecolumn)]
+
+        # Write output data for this instance
+        for column in ydata_gv:
+            row_dict = {
+                &#39;station&#39;: column,
+                &#39;source&#39;: &#39;globalviewplus&#39;,
+                &#39;max&#39;: ydata_gv[column].max(),
+                &#39;min&#39;: ydata_gv[column].min(),
+                &#39;mean&#39;: ydata_gv[column].mean(),
+                &#39;median&#39;: ydata_gv[column].median(),
+                &#39;std&#39;: ydata_gv[column].std(),
+                &#39;rmse&#39;: np.nan
+            }
+            writer.writerow(row_dict)
+
+        xdata_mdl = None
+        ydata_mdl = None
+        rmse_y_true = None
+        rmse_y_pred = None
+        if self.compare_against_model:
+            xdata_mdl = concatenated_dfs[&#39;mdl&#39;][timecolumn]
+            ydata_mdl = concatenated_dfs[&#39;mdl&#39;].loc[:, (concatenated_dfs[&#39;mdl&#39;].columns != timecolumn)]
+
+            rmse = np.nan
+            if how == &#39;seasonal&#39;:
+                if not xdata_gv.equals(xdata_mdl):
+                    raise ValueError(
+                        &#39;Unexpected discrepancy, xdata for reference observations does not equal xdata for models&#39;)
+                rmse_y_true = ydata_gv
+                rmse_y_pred = ydata_mdl
+
+            elif how == &#39;trend&#39;:
+                begin_time_for_stats = max(xdata_gv.min(), xdata_mdl.min())
+                end_time_for_stats = min(xdata_gv.max(), xdata_mdl.max())
+                if begin_time_for_stats &gt; end_time_for_stats:
+                    _logger.info(&#39;beginning time &lt;%s&gt; is after end time &lt;%s&gt;&#39; %
+                                 (begin_time_for_stats, end_time_for_stats))
+                else:
+                    def month_calc(df):
+                        return (df
+                                .where((df[&#39;time&#39;] &lt; end_time_for_stats) &amp; (df[&#39;time&#39;] &gt; begin_time_for_stats))
+                                .dropna(subset=[&#39;time&#39;], how=&#39;any&#39;, inplace=False)
+                                .resample(&#34;1MS&#34;, on=&#39;time&#39;)
+                                .mean()
+                                .reset_index())
+                    rmse_y_true = month_calc(concatenated_dfs[&#39;ref&#39;])
+                    rmse_y_pred = month_calc(concatenated_dfs[&#39;mdl&#39;])
+                    common_time = set(rmse_y_true[&#39;time&#39;]).intersection(set(rmse_y_pred[&#39;time&#39;]))
+                    rmse_y_true = rmse_y_true.loc[rmse_y_true[&#39;time&#39;].isin(common_time), :]
+                    rmse_y_pred = rmse_y_pred.loc[rmse_y_pred[&#39;time&#39;].isin(common_time), :]
+            else:
+                raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+            if rmse_y_true is not None:
+                yt = rmse_y_true[column]
+                yp = rmse_y_pred[column]
+                okayvals = yt.notnull() &amp; yp.notnull()
+                rmse = mean_squared_error(yt[okayvals], yp[okayvals], squared=False)
+
+            # Write output data for this instance
+            for column in ydata_mdl:
+                row_dict = {
+                    &#39;station&#39;: column,
+                    &#39;source&#39;: &#39;cmip&#39;,
+                    &#39;max&#39;: ydata_mdl[column].max(),
+                    &#39;min&#39;: ydata_mdl[column].min(),
+                    &#39;mean&#39;: ydata_mdl[column].mean(),
+                    &#39;median&#39;: ydata_mdl[column].median(),
+                    &#39;std&#39;: ydata_mdl[column].std(),
+                    &#39;rmse&#39;: rmse
+                }
+                writer.writerow(row_dict)
+        fileptr.flush()
+
+        return data_dict, concatenated_dfs, df_station_metadata, \
+               xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+               rmse_y_true, rmse_y_pred
+
+    def concatenate_stations_and_months(self,
+                                        data_dict: dict,
+                                        processed_station_metadata: dict
+                                        ) -&gt; (dict, pd.DataFrame):
+        &#34;&#34;&#34;
+
+        Parameters
+        ----------
+        data_dict : dict
+            each key contains a list of Dataframes
+        processed_station_metadata
+
+        Returns
+        -------
+        dict
+            A dictionary with two dataframes, in which each column is a different station.
+        pd.Dataframe
+            metadata for all stations.
+        &#34;&#34;&#34;
+        # Dataframes for each location are combined so we have one &#39;month&#39; column, and a single column for each station.
+        # First, dataframes are sorted by latitude, then combined, then the duplicate &#39;month&#39; columns are removed.
+        df_station_metadata = pd.DataFrame.from_dict(processed_station_metadata)
+        df_concatenated = dict(ref=None, mdl=None)
+
+        #   (i) Globalview+ data
+        data_dict[&#39;ref&#39;] = [x for _, x in sorted(zip(list(df_station_metadata[&#39;lat&#39;]), data_dict[&#39;ref&#39;]))]
+        df_concatenated[&#39;ref&#39;] = pd.concat(data_dict[&#39;ref&#39;], axis=1, sort=False)
+        df_concatenated[&#39;ref&#39;] = df_concatenated[&#39;ref&#39;].loc[:, ~df_concatenated[&#39;ref&#39;].columns.duplicated()]
+
+        #   (ii) CMIP data
+        if self.compare_against_model:
+            data_dict[&#39;mdl&#39;] = [x for _, x in sorted(zip(list(df_station_metadata[&#39;lat&#39;]), data_dict[&#39;mdl&#39;]))]
+            df_concatenated[&#39;mdl&#39;] = pd.concat(data_dict[&#39;mdl&#39;], axis=1, sort=False)
+            df_concatenated[&#39;mdl&#39;] = df_concatenated[&#39;mdl&#39;].loc[:, ~df_concatenated[&#39;mdl&#39;].columns.duplicated()]
+        #
+        # Sort the metadata after using it for sorting the cycle list(s)
+        df_station_metadata.sort_values(by=&#39;lat&#39;, ascending=True, inplace=True)
+
+        return df_concatenated, df_station_metadata
+
+
+def make_comparable(ref: xr.Dataset,
+                    com: xr.Dataset,
+                    **keywords
+                    ) -&gt; (xr.Dataset, xr.DataArray):
+    &#34;&#34;&#34;Make two datasets comparable.
+
+    Ensures time formats are compatible.
+    Clips the data to appropriate time bounds.
+    Gets data at the specified lat/lon.
+
+    Parameters
+    ----------
+    ref : xarray.Dataset
+        the reference variable object
+    com : xarray.Dataset
+        the comparison variable object
+    time_limits : tuple
+        the start and end times
+    latlon : tuple
+        the latitude and longitude
+    altitude_method : str
+        either &#34;interp&#34; (provided with an altitude value) or &#34;lowest&#34; (default)
+    altitude : float
+        If altitude_method==&#39;interp&#39;, altitude must be provided
+    height_data : xarray.DataArray
+        If altitude_method==&#39;interp&#39;, height_data must be provided
+    global_mean : bool
+        whether to calculate the global mean instead of grabbing the nearest model location to the station
+    verbose : Union[bool, str]
+        e.g. &#34;INFO&#34;, &#34;DEBUG&#34;, or True
+
+    Returns
+    -------
+    ref : xarray.Dataset
+        the modified reference variable object
+    com : xarray.Dataarray
+        the modified comparison variable object
+    &#34;&#34;&#34;
+
+    # Process keywords
+    time_limits = keywords.get(&#34;time_limits&#34;, (None, None))
+    latlon = keywords.get(&#34;latlon&#34;, (None, None))
+    altitude_method = keywords.get(&#34;altitude_method&#34;, &#34;lowest&#34;)
+    altitude = keywords.get(&#34;altitude&#34;, None)
+    height_data = keywords.get(&#34;height_data&#34;, None)
+    global_mean = keywords.get(&#34;global_mean&#34;, False)
+    verbose = keywords.get(&#34;verbose&#34;, &#34;INFO&#34;)
+
+    if verbose:
+        ProgressBar().register()
+
+    # Check the temporal domain of both
+    # if ref.time != com.time:
+    #     msg = &#34;%s Datasets are not uniformly temporal: &#34; % logstring
+    #     msg += &#34;reference = %s, comparison = %s&#34; % (ref.temporal, com.temporal)
+    #     logger.debug(msg)
+    #     raise VarsNotComparable()
+
+    _logger.info(&#39;Selected bounds for both:&#39;)
+    ds_com, ds_ref = mutual_time_bounds(com, ref, time_limits)
+
+    _logger.info(&#39;Selected bounds for Comparison dataset:&#39;)
+    # _logger.info(&#39;  -- model=%s&#39;, opts.model_name)
+    # Only the first ensemble member is selected, if there are more than one
+    # (TODO: enable the selection of a specific ensemble member)
+    if &#39;member_id&#39; in ds_com[&#39;co2&#39;].coords:
+        ds_com = ds_com.isel(member_id=0)
+        _logger.info(&#39;  -- member_id=0&#39;)
+    if &#39;bnds&#39; in ds_com[&#39;co2&#39;].coords:
+        ds_com = ds_com.isel(bnds=0, drop=True)
+
+    assert_expected_dimensions(ds_com, expected_dims=[&#39;time&#39;, &#39;plev&#39;, &#39;lon&#39;, &#39;lat&#39;], optional_dims=[&#39;bnds&#39;])
+
+    # A specific lat/lon is selected, or a global mean is calculated.
+    # TODO: Add option for hemispheric averages as well.
+    #  And average not only the CMIP model outputs the stations, but also the surface stations within that hemisphere.
+    if global_mean:
+        ds_com = ds_com.mean(dim=(&#39;lat&#39;, &#39;lon&#39;))
+        _logger.info(&#39;  -- mean over lat and lon dimensions&#39;)
+    else:
+        ds_com = extract_site_data_from_dataset(ds_com, lat=latlon[0], lon=latlon[1], drop=True)
+
+    assert_expected_dimensions(ds_com, expected_dims=[&#39;time&#39;, &#39;plev&#39;], optional_dims=[&#39;bnds&#39;])
+
+    # Lazy computations are executed.
+    _logger.info(&#39;Applying selected bounds...&#39;)
+    ds_com = ds_com.compute()
+
+    if altitude_method == &#39;interp&#39;:
+        da_com = interpolate_to_altitude(data=ds_com[&#39;co2&#39;], altitude=altitude, height_data=ds_com[&#39;zg&#39;])
+    elif altitude_method == &#39;lowest&#39;:
+        da_com = lowest_nonnull_altitude(data=ds_com[&#39;co2&#39;])
+    else:
+        raise ValueError(&#39;Unexpected altitude matching method, %s, for getting site data.&#39;
+                         % altitude_method)
+
+    # Lazy computations are executed.
+    da_com = da_com.squeeze()
+    _logger.info(&#39;done.&#39;)
+
+    return ds_ref, da_com
+
+
+def mutual_time_bounds(com: xr.Dataset,
+                       ref: xr.Dataset,
+                       time_limits
+                       ) -&gt; (xr.Dataset, xr.Dataset):
+    &#34;&#34;&#34;Apply time bounds to the reference,
+    and then clip the comparison Dataset to the reference bounds.
+
+    Parameters
+    ----------
+    com : xr.Dataset
+    ref : xr.Dataset
+    time_limits : tuple of datetime
+        (start time, end time)
+
+    Returns
+    -------
+    tuple
+        ds_com : xr.Dataset
+        ds_ref : xr.Dataset
+    &#34;&#34;&#34;
+    ds_ref, initial_ref_time, final_ref_time, revised_initial_time, revised_final_time = \
+        apply_time_bounds(ref, time_limits)
+
+    new_limits = [time_limits[0], time_limits[1]]
+    if revised_initial_time &gt; time_limits[0]:
+        new_limits[0] = revised_initial_time
+    if revised_final_time &lt; time_limits[1]:
+        new_limits[1] = revised_final_time
+    _logger.debug(&#39;  revised time limits are %s&#39; % new_limits)
+    ds_com, initial_com_time, final_com_time, revised_initial_time, revised_final_time = \
+        apply_time_bounds(com, new_limits)
+
+    # decimal years are added as a coordinate if not already there.
+    if not (&#39;time_decimal&#39; in ds_com.coords):
+        ds_com = ds_com.assign_coords(time_decimal=(&#39;time&#39;,
+                                                    [decimalDateFromDatetime(x) for x in
+                                                     pd.DatetimeIndex(ds_com[&#39;time&#39;].values)]))
+    _logger.info(&#39;  -- time&gt;=%s  &amp;  time&lt;=%s&#39;, time_limits[0], time_limits[1])
+    return ds_com, ds_ref
+
+
+def extract_site_data_from_dataset(dataset: xr.Dataset,
+                                   lat: float, lon: float,
+                                   drop: bool
+                                   ) -&gt; Union[xr.Dataset, xr.DataArray]:
+    &#34;&#34;&#34;Select a specific lat/lon
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+    lat : float
+    lon : float
+    drop : bool
+
+    Raises
+    ------
+    ValueError, if an unexpected value for the method argument is given.
+
+    Returns
+    -------
+    An xarray Dataset or DataArray
+    &#34;&#34;&#34;
+    mdl_cell = get_closest_mdl_cell_dict(dataset, lat=lat, lon=lon, coords_as_dimensions=True)
+    data_subset = dataset.sel({&#39;lat&#39;: mdl_cell[&#39;lat&#39;],
+                               &#39;lon&#39;: mdl_cell[&#39;lon&#39;]},
+                              drop=drop)
+
+    _logger.info(&#39;  -- lat=%s&#39;, mdl_cell[&#39;lat&#39;])
+    _logger.info(&#39;  -- lon=%s&#39;, mdl_cell[&#39;lon&#39;])
+
+    return data_subset
+
+
+def lowest_nonnull_altitude(data: xr.DataArray) -&gt; xr.DataArray:
+    &#34;&#34;&#34;Get the lowest (i.e., first) non-null value, that is nearest to the surface
+
+    Note
+    ----
+    This assumes that data are ordered from the surface to top-of-atmosphere.
+    &#34;&#34;&#34;
+    def first_nonnull_1d(data):
+        # print(np.where(np.isfinite(data))[0][0])
+        # print(np.isfinite(data))
+        # print(data.plev[np.isfinite(data)])
+        return data[np.isfinite(data)][0]
+
+    da_final = xr.apply_ufunc(
+        first_nonnull_1d,  # first the function
+        data,
+        input_core_dims=[[&#34;plev&#34;]],  # list with one entry per arg
+        exclude_dims=set((&#34;plev&#34;,)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    return da_final
+
+
+def interpolate_to_altitude(data: xr.DataArray,
+                            altitude: float,
+                            height_data: xr.DataArray
+                            ) -&gt; xr.DataArray:
+    &#34;&#34;&#34;Interpolate timeseries data to a given altitude
+
+    Parameters
+    ----------
+    data : xarray.DataArray
+        The carbon dioxide (&#39;co2&#39;) variable
+    altitude : float
+    height_data : xarray.DataArray
+        The geopotential height (&#39;zg&#39;) variable.
+
+    Returns
+    -------
+    xr.DataArray
+    &#34;&#34;&#34;
+    if not all(x in data.data_vars for x in [&#39;co2&#39;, &#39;zg&#39;]):
+        raise ValueError(&#34;Variables &#39;co2&#39; and &#39;zg&#39; must be present to use interpolate_to_altitude().&#34;
+                         &#34;Dataset only contains &lt;%s&gt;.&#34; % list(data.data_vars))
+
+    def interp1d_np(data, x, xi):
+        &#34;&#34;&#34;
+        data: y-coordinates of the data points (fp), e.g., array of plev
+        x: x-coordinates of the data points (xp), e.g., array of zg
+        xi: x-coordinate (e.g., zg) at which to evaluate an interpolated data point (e.g., plev)
+        &#34;&#34;&#34;
+        return np.interp(xi, x, data)
+
+    # For the given altitude (zg), a pressure level (plev) is interpolated at each time along the time dimension.
+    da_plev_points = xr.apply_ufunc(
+        interp1d_np,  # first the function
+        data[&#39;plev&#39;],
+        height_data,
+        altitude,
+        input_core_dims=[[&#34;plev&#34;], [&#34;plev&#34;], []],  # list with one entry per arg
+        exclude_dims=set((&#34;plev&#34;,)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    # For the given pressure level (plev) at each time,
+    #   a concentration (co2) is interpolated at each time along the time dimension.
+    da_final = xr.apply_ufunc(
+        interp1d_np,  # first the function
+        data[&#39;co2&#39;],
+        data[&#39;plev&#39;],
+        da_plev_points,
+        input_core_dims=[[&#34;plev&#34;], [&#34;plev&#34;], []],  # list with one entry per arg
+        exclude_dims=set((&#34;plev&#34;,)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    return da_final
+
+
+def apply_time_bounds(ds: xr.Dataset,
+                      time_limits: Union[tuple, list]
+                      ) -&gt; (xr.Dataset, np.datetime64, np.datetime64, np.datetime64, np.datetime64):
+    &#34;&#34;&#34;Crop dataset to time limits
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+    time_limits : tuple of datetime or list with length 2
+        (start time, end time)
+
+    Returns
+    -------
+    tuple
+        ds : xr.Dataset
+        original_initial_time : np.datetime64
+            the earliest datetime in the dataset
+        original_final_time : np.datetime64
+            the latest datetime in the dataset
+        revised_initial_time : np.datetime64
+            the earliest datetime in the dataset
+        revised_final_time : np.datetime64
+            the latest datetime in the dataset
+    &#34;&#34;&#34;
+    ds = ensure_dataset_datetime64(ds)
+
+    original_initial_time = ds[&#39;time&#39;].min().values
+    original_final_time = ds[&#39;time&#39;].max().values
+
+    t1 = np.datetime64(time_limits[0])
+    t2 = np.datetime64(time_limits[1])
+
+    if t1 is not None:
+        if original_final_time &lt; t1:
+            raise RuntimeError(&#34;Final time of dataset &lt;%s&gt; is before the given time frame&#39;s start &lt;%s&gt;.&#34; %
+                               (np.datetime_as_string(original_final_time, unit=&#39;s&#39;), time_limits[0]))
+        ds = ds.where(ds.time &gt;= t1, drop=True)
+    if t2 is not None:
+        if original_initial_time &gt; t2:
+            raise RuntimeError(&#34;Initial time of dataset &lt;%s&gt; is after the given time frame&#39;s end &lt;%s&gt;.&#34; %
+                               (np.datetime_as_string(original_initial_time, unit=&#39;s&#39;), time_limits[1]))
+        ds = ds.where(ds.time &lt;= t2, drop=True)
+
+    revised_initial_time = ds[&#39;time&#39;].min().values
+    revised_final_time = ds[&#39;time&#39;].max().values
+
+    return ds, original_initial_time, original_final_time, revised_initial_time, revised_final_time
+
+
+def update_for_skipped_station(msg: Union[str, Exception],
+                               station_name: str,
+                               station_count: list,
+                               counter_dict: dict) -&gt; None:
+    &#34;&#34;&#34;Print a message and reduce the total station count by one.&#34;&#34;&#34;
+    _logger.info(&#39;  skipping station &lt;%s&gt;: %s&#39;, station_name, msg)
+    counter_dict[&#39;skipped&#39;] += 1
+    station_count[0] -= 1
+
+
+def load_cmip_model_output(model_name: str,
+                           cmip_load_method: str,
+                           verbose=True) -&gt; (bool, xr.Dataset):
+    &#34;&#34;&#34;Load CMIP model output
+
+    We will only compare against CMIP model outputs if a model_name is supplied, otherwise return dataset as None.
+
+    Parameters
+    ----------
+    model_name : str
+    cmip_load_method : str
+    verbose : bool, default True
+
+    Returns
+    -------
+    bool
+    xarray.Dataset
+    &#34;&#34;&#34;
+    if compare_against_model := bool(model_name):
+        _logger.info(&#39;*Processing CMIP model output*&#39;)
+        new_self, _ = cmipCollection._recipe_base(datastore=&#39;cmip6&#39;, verbose=verbose, model_name=model_name,
+                                                  load_method=cmip_load_method, skip_selections=True,
+                                                  pickle_file=None)
+        ds_mdl = new_self.stepB_preprocessed_datasets[model_name]
+        ds_mdl = ds_mdl.assign_coords(time_decimal=(&#39;time&#39;, [decimalDateFromDatetime(x)
+                                                             for x in pd.DatetimeIndex(ds_mdl[&#39;time&#39;].values)]))
+    else:
+        ds_mdl = None
+    return compare_against_model, ds_mdl
+
+
+def bin_by_latitude(compare_against_model: bool,
+                    data_dict: dict,
+                    df_metadata: pd.DataFrame,
+                    latitude_bin_size: int
+                    ) -&gt; tuple:
+    &#34;&#34;&#34;Aggregate station data into latitude bins
+
+    Parameters
+    ----------
+    compare_against_model : bool
+    data_dict : dict
+        each key contains a list of Dataframes
+    df_metadata : pandas.Dataframe
+    latitude_bin_size : int
+
+    Returns
+    -------
+    dict
+    pandas.Dataframe
+    &#34;&#34;&#34;
+    def to_bin(x):
+        # determine bins to which each station is assigned.
+        return np.floor(x / latitude_bin_size) * latitude_bin_size
+
+    df_metadata[&#34;latbin&#34;] = df_metadata[&#39;lat&#39;].map(to_bin)
+    df_metadata[&#34;lonbin&#34;] = df_metadata[&#39;lon&#39;].map(to_bin)
+    #
+    data_dict[&#39;ref&#39;] = calc_binned_means(data_dict[&#39;ref&#39;], df_metadata)
+    if compare_against_model:
+        data_dict[&#39;mdl&#39;] = calc_binned_means(data_dict[&#39;mdl&#39;], df_metadata)
+
+    return data_dict, df_metadata
+
+
+def get_seasonal_by_curve_fitting(compare_against_model: bool,
+                                  da_mdl: xr.Dataset,
+                                  ds_obs: xr.Dataset,
+                                  opts: argparse.Namespace,
+                                  station: str) -&gt; tuple:
+    &#34;&#34;&#34;Get seasonal trend
+
+    Parameters
+    ----------
+    compare_against_model : bool
+    da_mdl : xarray.Dataarray
+    da_obs : xarray.Dataarray
+    ds_obs : xarray.Dataset
+    opts : argparse.Namespace
+    station : str
+
+    Raises
+    ------
+    RuntimeError
+
+    Returns
+    -------
+    tuple
+    &#34;&#34;&#34;
+    # Check that there is at least one year&#39;s worth of data for this station.
+    if (ds_obs.time.values.max().astype(&#39;datetime64[M]&#39;) - ds_obs.time.values.min().astype(&#39;datetime64[M]&#39;)) &lt; 12:
+        raise RuntimeError(&#39;  insufficient number of months of data for station &lt;%s&gt;&#39; % station)
+
+    # --- Curve fitting ---
+    #   (i) Globalview+ data
+    filt_ref = ccgFilter(xp=ds_obs[&#39;time_decimal&#39;].values, yp=ds_obs[&#39;co2&#39;].values,
+                         numpolyterms=3, numharmonics=4, timezero=int(ds_obs[&#39;time_decimal&#39;].values[0]))
+    #   (ii) CMIP data
+    if compare_against_model:
+        try:
+            filt_mdl = ccgFilter(xp=da_mdl[&#39;time_decimal&#39;].values, yp=da_mdl.values,
+                                 numpolyterms=3, numharmonics=4, timezero=int(da_mdl[&#39;time_decimal&#39;].values[0]))
+        except TypeError as te:
+            raise RuntimeError(&#39;  --- Curve filtering error --- (%s)&#39; % te)
+
+    # Optional plotting of components of the filtering process
+    if opts.plot_filter_components:
+        plot_filter_components(filt_ref,
+                               original_x=ds_obs[&#39;time_decimal&#39;].values,
+                               # df_surface_station[&#39;time_decimal&#39;].values,
+                               original_y=ds_obs[&#39;co2&#39;].values,  # df_surface_station[&#39;co2&#39;].values,
+                               figure_title=f&#39;obs, station {station}&#39;,
+                               savepath=append_before_extension(opts.figure_savepath, &#39;supplement1ref_&#39; + station))
+        if compare_against_model:
+            plot_filter_components(filt_mdl,
+                                   original_x=da_mdl[&#39;time_decimal&#39;].values,
+                                   original_y=da_mdl.values,
+                                   figure_title=f&#39;model [{opts.model_name}]&#39;,
+                                   savepath=append_before_extension(opts.figure_savepath, &#39;supplement1_mdl&#39;))
+
+    # --- Compute the annual climatological cycle ---
+    #   (i) Globalview+ data
+    ref_dt, ref_vals = make_cycle(x0=filt_ref.xinterp,
+                                  smooth_cycle=filt_ref.getHarmonicValue(
+                                      filt_ref.xinterp) + filt_ref.smooth - filt_ref.trend)
+    #   (ii) CMIP data
+    mdl_dt, mdl_vals = None, None
+    if compare_against_model:
+        mdl_dt, mdl_vals = make_cycle(x0=filt_mdl.xinterp,
+                                      smooth_cycle=filt_mdl.getHarmonicValue(
+                                          filt_mdl.xinterp) + filt_mdl.smooth - filt_mdl.trend)
+
+    return ref_dt, ref_vals, mdl_dt, mdl_vals
+
+
+def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame,
+                      df_station_metadata: pd.DataFrame
+                      ) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Calculate means for each bin
+
+    Note, this function expects a DataFrame column titled &#34;latbin&#34; designating bin assignments.
+
+    Parameters
+    ----------
+    df_cycles_for_all_stations_ref : pandas.Dataframe
+    df_station_metadata : pandas.Dataframe
+
+    Returns
+    -------
+    pandas.Dataframe
+    &#34;&#34;&#34;
+    # Add the coordinates and binning information to the dataframe with seasonal cycle values
+    new_df = df_cycles_for_all_stations_ref.transpose()
+    new_df.columns = new_df.loc[&#39;month&#39;]  # .map(lambda x: x.strftime(&#39;%m&#39;))
+    new_df = (new_df
+              .drop(labels=&#39;month&#39;, axis=0, inplace=False)
+              .apply(pd.to_numeric, axis=0)
+              .reset_index()
+              .rename(columns={&#39;index&#39;: &#39;code&#39;})
+              .merge(df_station_metadata.loc[:, [&#39;code&#39;, &#39;fullname&#39;, &#39;lat&#39;, &#39;latbin&#39;]], on=&#39;code&#39;))
+
+    # Take the means of each latitude bin and transpose dataframe
+    groups = new_df.groupby([&#34;latbin&#34;], as_index=False)
+    binned_df = (groups.mean()
+                 .drop(&#39;lat&#39;, axis=1)
+                 .sort_values(by=&#39;latbin&#39;, ascending=True)
+                 .set_index(&#39;latbin&#39;)
+                 .transpose()
+                 .reset_index()
+                 .rename(columns={&#39;index&#39;: &#39;month&#39;}))
+    return binned_df
+
+
+def make_cycle(x0: Iterable,
+               smooth_cycle
+               ) -&gt; (pd.Series, pd.Series):
+    &#34;&#34;&#34;Calculate the average seasonal cycle from the filtered time series.
+
+    Parameters
+    ----------
+    x0
+    smooth_cycle
+
+    Returns
+    -------
+    tuple
+        two pandas.Series of 12 elemenets: one of datetimes for each month, and one of co2 values
+    &#34;&#34;&#34;
+    # Convert dates to datetime objects, and make a dataframe with a month column for grouping purposes.
+    df_seasonalcycle = pd.DataFrame.from_dict({&#39;datetime&#39;: [t2dt(i) for i in x0],
+                                               &#39;co2&#39;: smooth_cycle})
+    df_seasonalcycle[&#39;month&#39;] = df_seasonalcycle[&#39;datetime&#39;].dt.month
+
+    # Bin by month, and add a column that represents months in datetime format for plotting purposes.
+    df_monthly = df_seasonalcycle.groupby(&#39;month&#39;).mean().reset_index()
+    df_monthly[&#39;month_datetime&#39;] = pd.to_datetime(df_monthly[&#39;month&#39;], format=&#39;%m&#39;)
+
+    return df_monthly[&#39;month_datetime&#39;], df_monthly[&#39;co2&#39;]</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="gdess.operations.Confrontation.apply_time_bounds"><code class="name flex">
+<span>def <span class="ident">apply_time_bounds</span></span>(<span>ds: xarray.core.dataset.Dataset, time_limits: Union[tuple, list]) -> (<class 'xarray.core.dataset.Dataset'>, <class 'numpy.datetime64'>, <class 'numpy.datetime64'>, <class 'numpy.datetime64'>, <class 'numpy.datetime64'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Crop dataset to time limits</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ds</code></strong> :&ensp;<code>xr.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>time_limits</code></strong> :&ensp;<code>tuple</code> of <code>datetime</code> or <code>list with length 2</code></dt>
+<dd>(start time, end time)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>ds : xr.Dataset
+original_initial_time : np.datetime64
+the earliest datetime in the dataset
+original_final_time : np.datetime64
+the latest datetime in the dataset
+revised_initial_time : np.datetime64
+the earliest datetime in the dataset
+revised_final_time : np.datetime64
+the latest datetime in the dataset</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_time_bounds(ds: xr.Dataset,
+                      time_limits: Union[tuple, list]
+                      ) -&gt; (xr.Dataset, np.datetime64, np.datetime64, np.datetime64, np.datetime64):
+    &#34;&#34;&#34;Crop dataset to time limits
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+    time_limits : tuple of datetime or list with length 2
+        (start time, end time)
+
+    Returns
+    -------
+    tuple
+        ds : xr.Dataset
+        original_initial_time : np.datetime64
+            the earliest datetime in the dataset
+        original_final_time : np.datetime64
+            the latest datetime in the dataset
+        revised_initial_time : np.datetime64
+            the earliest datetime in the dataset
+        revised_final_time : np.datetime64
+            the latest datetime in the dataset
+    &#34;&#34;&#34;
+    ds = ensure_dataset_datetime64(ds)
+
+    original_initial_time = ds[&#39;time&#39;].min().values
+    original_final_time = ds[&#39;time&#39;].max().values
+
+    t1 = np.datetime64(time_limits[0])
+    t2 = np.datetime64(time_limits[1])
+
+    if t1 is not None:
+        if original_final_time &lt; t1:
+            raise RuntimeError(&#34;Final time of dataset &lt;%s&gt; is before the given time frame&#39;s start &lt;%s&gt;.&#34; %
+                               (np.datetime_as_string(original_final_time, unit=&#39;s&#39;), time_limits[0]))
+        ds = ds.where(ds.time &gt;= t1, drop=True)
+    if t2 is not None:
+        if original_initial_time &gt; t2:
+            raise RuntimeError(&#34;Initial time of dataset &lt;%s&gt; is after the given time frame&#39;s end &lt;%s&gt;.&#34; %
+                               (np.datetime_as_string(original_initial_time, unit=&#39;s&#39;), time_limits[1]))
+        ds = ds.where(ds.time &lt;= t2, drop=True)
+
+    revised_initial_time = ds[&#39;time&#39;].min().values
+    revised_final_time = ds[&#39;time&#39;].max().values
+
+    return ds, original_initial_time, original_final_time, revised_initial_time, revised_final_time</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.bin_by_latitude"><code class="name flex">
+<span>def <span class="ident">bin_by_latitude</span></span>(<span>compare_against_model: bool, data_dict: dict, df_metadata: pandas.core.frame.DataFrame, latitude_bin_size: int) -> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Aggregate station data into latitude bins</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>compare_against_model</code></strong> :&ensp;<code>bool</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>data_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>each key contains a list of Dataframes</dd>
+<dt><strong><code>df_metadata</code></strong> :&ensp;<code>pandas.Dataframe</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>latitude_bin_size</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>pandas.Dataframe</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bin_by_latitude(compare_against_model: bool,
+                    data_dict: dict,
+                    df_metadata: pd.DataFrame,
+                    latitude_bin_size: int
+                    ) -&gt; tuple:
+    &#34;&#34;&#34;Aggregate station data into latitude bins
+
+    Parameters
+    ----------
+    compare_against_model : bool
+    data_dict : dict
+        each key contains a list of Dataframes
+    df_metadata : pandas.Dataframe
+    latitude_bin_size : int
+
+    Returns
+    -------
+    dict
+    pandas.Dataframe
+    &#34;&#34;&#34;
+    def to_bin(x):
+        # determine bins to which each station is assigned.
+        return np.floor(x / latitude_bin_size) * latitude_bin_size
+
+    df_metadata[&#34;latbin&#34;] = df_metadata[&#39;lat&#39;].map(to_bin)
+    df_metadata[&#34;lonbin&#34;] = df_metadata[&#39;lon&#39;].map(to_bin)
+    #
+    data_dict[&#39;ref&#39;] = calc_binned_means(data_dict[&#39;ref&#39;], df_metadata)
+    if compare_against_model:
+        data_dict[&#39;mdl&#39;] = calc_binned_means(data_dict[&#39;mdl&#39;], df_metadata)
+
+    return data_dict, df_metadata</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.calc_binned_means"><code class="name flex">
+<span>def <span class="ident">calc_binned_means</span></span>(<span>df_cycles_for_all_stations_ref: pandas.core.frame.DataFrame, df_station_metadata: pandas.core.frame.DataFrame) -> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculate means for each bin</p>
+<p>Note, this function expects a DataFrame column titled "latbin" designating bin assignments.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>df_cycles_for_all_stations_ref</code></strong> :&ensp;<code>pandas.Dataframe</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>df_station_metadata</code></strong> :&ensp;<code>pandas.Dataframe</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>pandas.Dataframe</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calc_binned_means(df_cycles_for_all_stations_ref: pd.DataFrame,
+                      df_station_metadata: pd.DataFrame
+                      ) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Calculate means for each bin
+
+    Note, this function expects a DataFrame column titled &#34;latbin&#34; designating bin assignments.
+
+    Parameters
+    ----------
+    df_cycles_for_all_stations_ref : pandas.Dataframe
+    df_station_metadata : pandas.Dataframe
+
+    Returns
+    -------
+    pandas.Dataframe
+    &#34;&#34;&#34;
+    # Add the coordinates and binning information to the dataframe with seasonal cycle values
+    new_df = df_cycles_for_all_stations_ref.transpose()
+    new_df.columns = new_df.loc[&#39;month&#39;]  # .map(lambda x: x.strftime(&#39;%m&#39;))
+    new_df = (new_df
+              .drop(labels=&#39;month&#39;, axis=0, inplace=False)
+              .apply(pd.to_numeric, axis=0)
+              .reset_index()
+              .rename(columns={&#39;index&#39;: &#39;code&#39;})
+              .merge(df_station_metadata.loc[:, [&#39;code&#39;, &#39;fullname&#39;, &#39;lat&#39;, &#39;latbin&#39;]], on=&#39;code&#39;))
+
+    # Take the means of each latitude bin and transpose dataframe
+    groups = new_df.groupby([&#34;latbin&#34;], as_index=False)
+    binned_df = (groups.mean()
+                 .drop(&#39;lat&#39;, axis=1)
+                 .sort_values(by=&#39;latbin&#39;, ascending=True)
+                 .set_index(&#39;latbin&#39;)
+                 .transpose()
+                 .reset_index()
+                 .rename(columns={&#39;index&#39;: &#39;month&#39;}))
+    return binned_df</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.extract_site_data_from_dataset"><code class="name flex">
+<span>def <span class="ident">extract_site_data_from_dataset</span></span>(<span>dataset: xarray.core.dataset.Dataset, lat: float, lon: float, drop: bool) -> Union[xarray.core.dataset.Dataset, xarray.core.dataarray.DataArray]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Select a specific lat/lon</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>lat</code></strong> :&ensp;<code>float</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>lon</code></strong> :&ensp;<code>float</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>drop</code></strong> :&ensp;<code>bool</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>ValueError, if an unexpected value for the method argument is given.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>An xarray Dataset</code> or <code>DataArray</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_site_data_from_dataset(dataset: xr.Dataset,
+                                   lat: float, lon: float,
+                                   drop: bool
+                                   ) -&gt; Union[xr.Dataset, xr.DataArray]:
+    &#34;&#34;&#34;Select a specific lat/lon
+
+    Parameters
+    ----------
+    dataset : xarray.Dataset
+    lat : float
+    lon : float
+    drop : bool
+
+    Raises
+    ------
+    ValueError, if an unexpected value for the method argument is given.
+
+    Returns
+    -------
+    An xarray Dataset or DataArray
+    &#34;&#34;&#34;
+    mdl_cell = get_closest_mdl_cell_dict(dataset, lat=lat, lon=lon, coords_as_dimensions=True)
+    data_subset = dataset.sel({&#39;lat&#39;: mdl_cell[&#39;lat&#39;],
+                               &#39;lon&#39;: mdl_cell[&#39;lon&#39;]},
+                              drop=drop)
+
+    _logger.info(&#39;  -- lat=%s&#39;, mdl_cell[&#39;lat&#39;])
+    _logger.info(&#39;  -- lon=%s&#39;, mdl_cell[&#39;lon&#39;])
+
+    return data_subset</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.get_seasonal_by_curve_fitting"><code class="name flex">
+<span>def <span class="ident">get_seasonal_by_curve_fitting</span></span>(<span>compare_against_model: bool, da_mdl: xarray.core.dataset.Dataset, ds_obs: xarray.core.dataset.Dataset, opts: argparse.Namespace, station: str) -> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get seasonal trend</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>compare_against_model</code></strong> :&ensp;<code>bool</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>da_mdl</code></strong> :&ensp;<code>xarray.Dataarray</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>da_obs</code></strong> :&ensp;<code>xarray.Dataarray</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>ds_obs</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>opts</code></strong> :&ensp;<code>argparse.Namespace</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>station</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>RuntimeError</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_seasonal_by_curve_fitting(compare_against_model: bool,
+                                  da_mdl: xr.Dataset,
+                                  ds_obs: xr.Dataset,
+                                  opts: argparse.Namespace,
+                                  station: str) -&gt; tuple:
+    &#34;&#34;&#34;Get seasonal trend
+
+    Parameters
+    ----------
+    compare_against_model : bool
+    da_mdl : xarray.Dataarray
+    da_obs : xarray.Dataarray
+    ds_obs : xarray.Dataset
+    opts : argparse.Namespace
+    station : str
+
+    Raises
+    ------
+    RuntimeError
+
+    Returns
+    -------
+    tuple
+    &#34;&#34;&#34;
+    # Check that there is at least one year&#39;s worth of data for this station.
+    if (ds_obs.time.values.max().astype(&#39;datetime64[M]&#39;) - ds_obs.time.values.min().astype(&#39;datetime64[M]&#39;)) &lt; 12:
+        raise RuntimeError(&#39;  insufficient number of months of data for station &lt;%s&gt;&#39; % station)
+
+    # --- Curve fitting ---
+    #   (i) Globalview+ data
+    filt_ref = ccgFilter(xp=ds_obs[&#39;time_decimal&#39;].values, yp=ds_obs[&#39;co2&#39;].values,
+                         numpolyterms=3, numharmonics=4, timezero=int(ds_obs[&#39;time_decimal&#39;].values[0]))
+    #   (ii) CMIP data
+    if compare_against_model:
+        try:
+            filt_mdl = ccgFilter(xp=da_mdl[&#39;time_decimal&#39;].values, yp=da_mdl.values,
+                                 numpolyterms=3, numharmonics=4, timezero=int(da_mdl[&#39;time_decimal&#39;].values[0]))
+        except TypeError as te:
+            raise RuntimeError(&#39;  --- Curve filtering error --- (%s)&#39; % te)
+
+    # Optional plotting of components of the filtering process
+    if opts.plot_filter_components:
+        plot_filter_components(filt_ref,
+                               original_x=ds_obs[&#39;time_decimal&#39;].values,
+                               # df_surface_station[&#39;time_decimal&#39;].values,
+                               original_y=ds_obs[&#39;co2&#39;].values,  # df_surface_station[&#39;co2&#39;].values,
+                               figure_title=f&#39;obs, station {station}&#39;,
+                               savepath=append_before_extension(opts.figure_savepath, &#39;supplement1ref_&#39; + station))
+        if compare_against_model:
+            plot_filter_components(filt_mdl,
+                                   original_x=da_mdl[&#39;time_decimal&#39;].values,
+                                   original_y=da_mdl.values,
+                                   figure_title=f&#39;model [{opts.model_name}]&#39;,
+                                   savepath=append_before_extension(opts.figure_savepath, &#39;supplement1_mdl&#39;))
+
+    # --- Compute the annual climatological cycle ---
+    #   (i) Globalview+ data
+    ref_dt, ref_vals = make_cycle(x0=filt_ref.xinterp,
+                                  smooth_cycle=filt_ref.getHarmonicValue(
+                                      filt_ref.xinterp) + filt_ref.smooth - filt_ref.trend)
+    #   (ii) CMIP data
+    mdl_dt, mdl_vals = None, None
+    if compare_against_model:
+        mdl_dt, mdl_vals = make_cycle(x0=filt_mdl.xinterp,
+                                      smooth_cycle=filt_mdl.getHarmonicValue(
+                                          filt_mdl.xinterp) + filt_mdl.smooth - filt_mdl.trend)
+
+    return ref_dt, ref_vals, mdl_dt, mdl_vals</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.interpolate_to_altitude"><code class="name flex">
+<span>def <span class="ident">interpolate_to_altitude</span></span>(<span>data: xarray.core.dataarray.DataArray, altitude: float, height_data: xarray.core.dataarray.DataArray) -> xarray.core.dataarray.DataArray</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Interpolate timeseries data to a given altitude</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>xarray.DataArray</code></dt>
+<dd>The carbon dioxide ('co2') variable</dd>
+<dt><strong><code>altitude</code></strong> :&ensp;<code>float</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>height_data</code></strong> :&ensp;<code>xarray.DataArray</code></dt>
+<dd>The geopotential height ('zg') variable.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>xr.DataArray</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def interpolate_to_altitude(data: xr.DataArray,
+                            altitude: float,
+                            height_data: xr.DataArray
+                            ) -&gt; xr.DataArray:
+    &#34;&#34;&#34;Interpolate timeseries data to a given altitude
+
+    Parameters
+    ----------
+    data : xarray.DataArray
+        The carbon dioxide (&#39;co2&#39;) variable
+    altitude : float
+    height_data : xarray.DataArray
+        The geopotential height (&#39;zg&#39;) variable.
+
+    Returns
+    -------
+    xr.DataArray
+    &#34;&#34;&#34;
+    if not all(x in data.data_vars for x in [&#39;co2&#39;, &#39;zg&#39;]):
+        raise ValueError(&#34;Variables &#39;co2&#39; and &#39;zg&#39; must be present to use interpolate_to_altitude().&#34;
+                         &#34;Dataset only contains &lt;%s&gt;.&#34; % list(data.data_vars))
+
+    def interp1d_np(data, x, xi):
+        &#34;&#34;&#34;
+        data: y-coordinates of the data points (fp), e.g., array of plev
+        x: x-coordinates of the data points (xp), e.g., array of zg
+        xi: x-coordinate (e.g., zg) at which to evaluate an interpolated data point (e.g., plev)
+        &#34;&#34;&#34;
+        return np.interp(xi, x, data)
+
+    # For the given altitude (zg), a pressure level (plev) is interpolated at each time along the time dimension.
+    da_plev_points = xr.apply_ufunc(
+        interp1d_np,  # first the function
+        data[&#39;plev&#39;],
+        height_data,
+        altitude,
+        input_core_dims=[[&#34;plev&#34;], [&#34;plev&#34;], []],  # list with one entry per arg
+        exclude_dims=set((&#34;plev&#34;,)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    # For the given pressure level (plev) at each time,
+    #   a concentration (co2) is interpolated at each time along the time dimension.
+    da_final = xr.apply_ufunc(
+        interp1d_np,  # first the function
+        data[&#39;co2&#39;],
+        data[&#39;plev&#39;],
+        da_plev_points,
+        input_core_dims=[[&#34;plev&#34;], [&#34;plev&#34;], []],  # list with one entry per arg
+        exclude_dims=set((&#34;plev&#34;,)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    return da_final</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.load_cmip_model_output"><code class="name flex">
+<span>def <span class="ident">load_cmip_model_output</span></span>(<span>model_name: str, cmip_load_method: str, verbose=True) -> (<class 'bool'>, <class 'xarray.core.dataset.Dataset'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load CMIP model output</p>
+<p>We will only compare against CMIP model outputs if a model_name is supplied, otherwise return dataset as None.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>model_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>cmip_load_method</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code>, default <code>True</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_cmip_model_output(model_name: str,
+                           cmip_load_method: str,
+                           verbose=True) -&gt; (bool, xr.Dataset):
+    &#34;&#34;&#34;Load CMIP model output
+
+    We will only compare against CMIP model outputs if a model_name is supplied, otherwise return dataset as None.
+
+    Parameters
+    ----------
+    model_name : str
+    cmip_load_method : str
+    verbose : bool, default True
+
+    Returns
+    -------
+    bool
+    xarray.Dataset
+    &#34;&#34;&#34;
+    if compare_against_model := bool(model_name):
+        _logger.info(&#39;*Processing CMIP model output*&#39;)
+        new_self, _ = cmipCollection._recipe_base(datastore=&#39;cmip6&#39;, verbose=verbose, model_name=model_name,
+                                                  load_method=cmip_load_method, skip_selections=True,
+                                                  pickle_file=None)
+        ds_mdl = new_self.stepB_preprocessed_datasets[model_name]
+        ds_mdl = ds_mdl.assign_coords(time_decimal=(&#39;time&#39;, [decimalDateFromDatetime(x)
+                                                             for x in pd.DatetimeIndex(ds_mdl[&#39;time&#39;].values)]))
+    else:
+        ds_mdl = None
+    return compare_against_model, ds_mdl</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.lowest_nonnull_altitude"><code class="name flex">
+<span>def <span class="ident">lowest_nonnull_altitude</span></span>(<span>data: xarray.core.dataarray.DataArray) -> xarray.core.dataarray.DataArray</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the lowest (i.e., first) non-null value, that is nearest to the surface</p>
+<h2 id="note">Note</h2>
+<p>This assumes that data are ordered from the surface to top-of-atmosphere.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lowest_nonnull_altitude(data: xr.DataArray) -&gt; xr.DataArray:
+    &#34;&#34;&#34;Get the lowest (i.e., first) non-null value, that is nearest to the surface
+
+    Note
+    ----
+    This assumes that data are ordered from the surface to top-of-atmosphere.
+    &#34;&#34;&#34;
+    def first_nonnull_1d(data):
+        # print(np.where(np.isfinite(data))[0][0])
+        # print(np.isfinite(data))
+        # print(data.plev[np.isfinite(data)])
+        return data[np.isfinite(data)][0]
+
+    da_final = xr.apply_ufunc(
+        first_nonnull_1d,  # first the function
+        data,
+        input_core_dims=[[&#34;plev&#34;]],  # list with one entry per arg
+        exclude_dims=set((&#34;plev&#34;,)),  # dimensions allowed to change size. Must be set!
+        vectorize=True)
+
+    return da_final</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.make_comparable"><code class="name flex">
+<span>def <span class="ident">make_comparable</span></span>(<span>ref: xarray.core.dataset.Dataset, com: xarray.core.dataset.Dataset, **keywords) -> (<class 'xarray.core.dataset.Dataset'>, <class 'xarray.core.dataarray.DataArray'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make two datasets comparable.</p>
+<p>Ensures time formats are compatible.
+Clips the data to appropriate time bounds.
+Gets data at the specified lat/lon.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ref</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>the reference variable object</dd>
+<dt><strong><code>com</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>the comparison variable object</dd>
+<dt><strong><code>time_limits</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>the start and end times</dd>
+<dt><strong><code>latlon</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>the latitude and longitude</dd>
+<dt><strong><code>altitude_method</code></strong> :&ensp;<code>str</code></dt>
+<dd>either "interp" (provided with an altitude value) or "lowest" (default)</dd>
+<dt><strong><code>altitude</code></strong> :&ensp;<code>float</code></dt>
+<dd>If altitude_method=='interp', altitude must be provided</dd>
+<dt><strong><code>height_data</code></strong> :&ensp;<code>xarray.DataArray</code></dt>
+<dd>If altitude_method=='interp', height_data must be provided</dd>
+<dt><strong><code>global_mean</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether to calculate the global mean instead of grabbing the nearest model location to the station</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>Union[bool, str]</code></dt>
+<dd>e.g. "INFO", "DEBUG", or True</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>ref</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>the modified reference variable object</dd>
+<dt><strong><code>com</code></strong> :&ensp;<code>xarray.Dataarray</code></dt>
+<dd>the modified comparison variable object</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_comparable(ref: xr.Dataset,
+                    com: xr.Dataset,
+                    **keywords
+                    ) -&gt; (xr.Dataset, xr.DataArray):
+    &#34;&#34;&#34;Make two datasets comparable.
+
+    Ensures time formats are compatible.
+    Clips the data to appropriate time bounds.
+    Gets data at the specified lat/lon.
+
+    Parameters
+    ----------
+    ref : xarray.Dataset
+        the reference variable object
+    com : xarray.Dataset
+        the comparison variable object
+    time_limits : tuple
+        the start and end times
+    latlon : tuple
+        the latitude and longitude
+    altitude_method : str
+        either &#34;interp&#34; (provided with an altitude value) or &#34;lowest&#34; (default)
+    altitude : float
+        If altitude_method==&#39;interp&#39;, altitude must be provided
+    height_data : xarray.DataArray
+        If altitude_method==&#39;interp&#39;, height_data must be provided
+    global_mean : bool
+        whether to calculate the global mean instead of grabbing the nearest model location to the station
+    verbose : Union[bool, str]
+        e.g. &#34;INFO&#34;, &#34;DEBUG&#34;, or True
+
+    Returns
+    -------
+    ref : xarray.Dataset
+        the modified reference variable object
+    com : xarray.Dataarray
+        the modified comparison variable object
+    &#34;&#34;&#34;
+
+    # Process keywords
+    time_limits = keywords.get(&#34;time_limits&#34;, (None, None))
+    latlon = keywords.get(&#34;latlon&#34;, (None, None))
+    altitude_method = keywords.get(&#34;altitude_method&#34;, &#34;lowest&#34;)
+    altitude = keywords.get(&#34;altitude&#34;, None)
+    height_data = keywords.get(&#34;height_data&#34;, None)
+    global_mean = keywords.get(&#34;global_mean&#34;, False)
+    verbose = keywords.get(&#34;verbose&#34;, &#34;INFO&#34;)
+
+    if verbose:
+        ProgressBar().register()
+
+    # Check the temporal domain of both
+    # if ref.time != com.time:
+    #     msg = &#34;%s Datasets are not uniformly temporal: &#34; % logstring
+    #     msg += &#34;reference = %s, comparison = %s&#34; % (ref.temporal, com.temporal)
+    #     logger.debug(msg)
+    #     raise VarsNotComparable()
+
+    _logger.info(&#39;Selected bounds for both:&#39;)
+    ds_com, ds_ref = mutual_time_bounds(com, ref, time_limits)
+
+    _logger.info(&#39;Selected bounds for Comparison dataset:&#39;)
+    # _logger.info(&#39;  -- model=%s&#39;, opts.model_name)
+    # Only the first ensemble member is selected, if there are more than one
+    # (TODO: enable the selection of a specific ensemble member)
+    if &#39;member_id&#39; in ds_com[&#39;co2&#39;].coords:
+        ds_com = ds_com.isel(member_id=0)
+        _logger.info(&#39;  -- member_id=0&#39;)
+    if &#39;bnds&#39; in ds_com[&#39;co2&#39;].coords:
+        ds_com = ds_com.isel(bnds=0, drop=True)
+
+    assert_expected_dimensions(ds_com, expected_dims=[&#39;time&#39;, &#39;plev&#39;, &#39;lon&#39;, &#39;lat&#39;], optional_dims=[&#39;bnds&#39;])
+
+    # A specific lat/lon is selected, or a global mean is calculated.
+    # TODO: Add option for hemispheric averages as well.
+    #  And average not only the CMIP model outputs the stations, but also the surface stations within that hemisphere.
+    if global_mean:
+        ds_com = ds_com.mean(dim=(&#39;lat&#39;, &#39;lon&#39;))
+        _logger.info(&#39;  -- mean over lat and lon dimensions&#39;)
+    else:
+        ds_com = extract_site_data_from_dataset(ds_com, lat=latlon[0], lon=latlon[1], drop=True)
+
+    assert_expected_dimensions(ds_com, expected_dims=[&#39;time&#39;, &#39;plev&#39;], optional_dims=[&#39;bnds&#39;])
+
+    # Lazy computations are executed.
+    _logger.info(&#39;Applying selected bounds...&#39;)
+    ds_com = ds_com.compute()
+
+    if altitude_method == &#39;interp&#39;:
+        da_com = interpolate_to_altitude(data=ds_com[&#39;co2&#39;], altitude=altitude, height_data=ds_com[&#39;zg&#39;])
+    elif altitude_method == &#39;lowest&#39;:
+        da_com = lowest_nonnull_altitude(data=ds_com[&#39;co2&#39;])
+    else:
+        raise ValueError(&#39;Unexpected altitude matching method, %s, for getting site data.&#39;
+                         % altitude_method)
+
+    # Lazy computations are executed.
+    da_com = da_com.squeeze()
+    _logger.info(&#39;done.&#39;)
+
+    return ds_ref, da_com</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.make_cycle"><code class="name flex">
+<span>def <span class="ident">make_cycle</span></span>(<span>x0: Iterable, smooth_cycle) -> (<class 'pandas.core.series.Series'>, <class 'pandas.core.series.Series'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculate the average seasonal cycle from the filtered time series.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x0</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>smooth_cycle</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>two pandas.Series of 12 elemenets: one of datetimes for each month, and one of co2 values</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_cycle(x0: Iterable,
+               smooth_cycle
+               ) -&gt; (pd.Series, pd.Series):
+    &#34;&#34;&#34;Calculate the average seasonal cycle from the filtered time series.
+
+    Parameters
+    ----------
+    x0
+    smooth_cycle
+
+    Returns
+    -------
+    tuple
+        two pandas.Series of 12 elemenets: one of datetimes for each month, and one of co2 values
+    &#34;&#34;&#34;
+    # Convert dates to datetime objects, and make a dataframe with a month column for grouping purposes.
+    df_seasonalcycle = pd.DataFrame.from_dict({&#39;datetime&#39;: [t2dt(i) for i in x0],
+                                               &#39;co2&#39;: smooth_cycle})
+    df_seasonalcycle[&#39;month&#39;] = df_seasonalcycle[&#39;datetime&#39;].dt.month
+
+    # Bin by month, and add a column that represents months in datetime format for plotting purposes.
+    df_monthly = df_seasonalcycle.groupby(&#39;month&#39;).mean().reset_index()
+    df_monthly[&#39;month_datetime&#39;] = pd.to_datetime(df_monthly[&#39;month&#39;], format=&#39;%m&#39;)
+
+    return df_monthly[&#39;month_datetime&#39;], df_monthly[&#39;co2&#39;]</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.mutual_time_bounds"><code class="name flex">
+<span>def <span class="ident">mutual_time_bounds</span></span>(<span>com: xarray.core.dataset.Dataset, ref: xarray.core.dataset.Dataset, time_limits) -> (<class 'xarray.core.dataset.Dataset'>, <class 'xarray.core.dataset.Dataset'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Apply time bounds to the reference,
+and then clip the comparison Dataset to the reference bounds.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>com</code></strong> :&ensp;<code>xr.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>ref</code></strong> :&ensp;<code>xr.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>time_limits</code></strong> :&ensp;<code>tuple</code> of <code>datetime</code></dt>
+<dd>(start time, end time)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>ds_com : xr.Dataset
+ds_ref : xr.Dataset</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mutual_time_bounds(com: xr.Dataset,
+                       ref: xr.Dataset,
+                       time_limits
+                       ) -&gt; (xr.Dataset, xr.Dataset):
+    &#34;&#34;&#34;Apply time bounds to the reference,
+    and then clip the comparison Dataset to the reference bounds.
+
+    Parameters
+    ----------
+    com : xr.Dataset
+    ref : xr.Dataset
+    time_limits : tuple of datetime
+        (start time, end time)
+
+    Returns
+    -------
+    tuple
+        ds_com : xr.Dataset
+        ds_ref : xr.Dataset
+    &#34;&#34;&#34;
+    ds_ref, initial_ref_time, final_ref_time, revised_initial_time, revised_final_time = \
+        apply_time_bounds(ref, time_limits)
+
+    new_limits = [time_limits[0], time_limits[1]]
+    if revised_initial_time &gt; time_limits[0]:
+        new_limits[0] = revised_initial_time
+    if revised_final_time &lt; time_limits[1]:
+        new_limits[1] = revised_final_time
+    _logger.debug(&#39;  revised time limits are %s&#39; % new_limits)
+    ds_com, initial_com_time, final_com_time, revised_initial_time, revised_final_time = \
+        apply_time_bounds(com, new_limits)
+
+    # decimal years are added as a coordinate if not already there.
+    if not (&#39;time_decimal&#39; in ds_com.coords):
+        ds_com = ds_com.assign_coords(time_decimal=(&#39;time&#39;,
+                                                    [decimalDateFromDatetime(x) for x in
+                                                     pd.DatetimeIndex(ds_com[&#39;time&#39;].values)]))
+    _logger.info(&#39;  -- time&gt;=%s  &amp;  time&lt;=%s&#39;, time_limits[0], time_limits[1])
+    return ds_com, ds_ref</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.update_for_skipped_station"><code class="name flex">
+<span>def <span class="ident">update_for_skipped_station</span></span>(<span>msg: Union[str, Exception], station_name: str, station_count: list, counter_dict: dict) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print a message and reduce the total station count by one.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_for_skipped_station(msg: Union[str, Exception],
+                               station_name: str,
+                               station_count: list,
+                               counter_dict: dict) -&gt; None:
+    &#34;&#34;&#34;Print a message and reduce the total station count by one.&#34;&#34;&#34;
+    _logger.info(&#39;  skipping station &lt;%s&gt;: %s&#39;, station_name, msg)
+    counter_dict[&#39;skipped&#39;] += 1
+    station_count[0] -= 1</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="gdess.operations.Confrontation.Confrontation"><code class="flex name class">
+<span>class <span class="ident">Confrontation</span></span>
+<span>(</span><span>compare_against_model: bool, ds_mdl: xarray.core.dataset.Dataset, opts: argparse.Namespace, stations_to_analyze: list, verbose: Union[bool, str] = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Instantiate a Confrontation object.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>compare_against_model</code></strong> :&ensp;<code>bool</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>ds_mdl</code></strong> :&ensp;<code>xarray Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>opts</code></strong> :&ensp;<code>argparse.Namespace</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>stations_to_analyze</code></strong> :&ensp;<code>list</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>Union[bool, str]</code>, default <code>False</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Confrontation:
+    def __init__(self,
+                 compare_against_model: bool,
+                 ds_mdl: xr.Dataset,
+                 opts: argparse.Namespace,
+                 stations_to_analyze: list,
+                 verbose: Union[bool, str] = False):
+        &#34;&#34;&#34;Instantiate a Confrontation object.
+
+        Parameters
+        ----------
+        compare_against_model : bool
+        ds_mdl : xarray Dataset
+        opts : argparse.Namespace
+        stations_to_analyze : list
+        verbose : Union[bool, str], default False
+        &#34;&#34;&#34;
+        self.compare_against_model = compare_against_model
+        self.ds_mdl = ds_mdl
+        self.opts = opts
+        self.stations_to_analyze = stations_to_analyze
+        self.verbose = verbose
+
+        set_verbose(_logger, verbose)
+
+    def looper(self, how: str) -&gt; tuple:
+        &#34;&#34;&#34;Process and format observation data for multiple station locations
+
+        Parameters
+        ----------
+        how : str
+            either &#39;seasonal&#39; or &#39;trend&#39;
+
+        Raises
+        ------
+        ValueError
+
+        Returns
+        -------
+        tuple
+            data_dict, concatenated_dfs, df_station_metadata, \
+               xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+               rmse_y_true, rmse_y_pred
+        &#34;&#34;&#34;
+        valid = {&#39;seasonal&#39;, &#39;trend&#39;}
+        if how not in valid:
+            raise ValueError(&#34;&#39;how&#39; must be one of %r.&#34; % valid)
+
+        # --- Observation data are processed for each station location. ---
+        _logger.info(&#39;*Processing Observations*&#39;)
+        counter = {&#39;current&#39;: 1, &#39;skipped&#39;: 0}
+        processed_station_metadata = dict(lat=[], lon=[], code=[], fullname=[])
+        data_dict = dict(ref=[], mdl=[])  # each key will contain a list of Dataframes.
+        num_stations = [len(self.stations_to_analyze)]
+        for station in self.stations_to_analyze:
+            _logger.info(&#34;Station %s of %s: %s&#34;, counter[&#39;current&#39;], num_stations[0], station)
+            obs_collection = obspack_surface_collection_module.Collection(verbose=self.verbose)
+            obs_collection.preprocess(datadir=self.opts.ref_data, station_name=station)
+            ds_obs = obs_collection.stepA_original_datasets[station]
+            _logger.info(&#39;  %s&#39;, obs_collection.station_dict.get(station))
+
+            # Apply time bounds, and get the relevant model output.
+            try:
+                if self.compare_against_model:
+                    ds_obs, da_mdl = make_comparable(ds_obs, self.ds_mdl,
+                                                     time_limits=(
+                                                     np.datetime64(self.opts.start_yr), np.datetime64(self.opts.end_yr)),
+                                                     latlon=(
+                                                     ds_obs[&#39;latitude&#39;].values[0], ds_obs[&#39;longitude&#39;].values[0]),
+                                                     altitude=ds_obs[&#39;altitude&#39;].values[0], altitude_method=&#39;lowest&#39;,
+                                                     global_mean=self.opts.globalmean, verbose=self.verbose)
+                else:
+                    ds_obs, _, _, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(self.opts.start_yr),
+                                                                          np.datetime64(self.opts.end_yr)))
+                    da_mdl = None
+            except (RuntimeError, AssertionError) as re:
+                update_for_skipped_station(re, station, num_stations, counter)
+                continue
+            #
+            if how == &#39;seasonal&#39;:
+                try:
+                    ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model,
+                                                                                       da_mdl, ds_obs,
+                                                                                       self.opts, station)
+                except RuntimeError as re:
+                    update_for_skipped_station(re, station, num_stations, counter)
+                    continue
+                #
+                data_dict[&#39;ref&#39;].append(pd.DataFrame.from_dict({&#34;month&#34;: ref_dt, f&#34;{station}&#34;: ref_vals}))
+                if self.compare_against_model:
+                    data_dict[&#39;mdl&#39;].append(pd.DataFrame.from_dict({&#34;month&#34;: mdl_dt, f&#34;{station}&#34;: mdl_vals}))
+            elif how == &#39;trend&#39;:
+                data_dict[&#39;ref&#39;].append(pd.DataFrame.from_dict({&#34;time&#34;: ds_obs[&#39;time&#39;], f&#34;{station}&#34;: ds_obs[&#39;co2&#39;].values}))
+                if self.compare_against_model:
+                    data_dict[&#39;mdl&#39;].append(pd.DataFrame.from_dict({&#34;time&#34;: da_mdl[&#39;time&#39;], f&#34;{station}&#34;: da_mdl.values}))
+            else:
+                raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+            # Gather together station&#39;s metadata at the loop end, when we&#39;re sure that this station has been processed.
+            processed_station_metadata[&#39;lon&#39;].append(obs_collection.station_dict[station][&#39;lon&#39;])
+            processed_station_metadata[&#39;lat&#39;].append(obs_collection.station_dict[station][&#39;lat&#39;])
+            processed_station_metadata[&#39;fullname&#39;].append(obs_collection.station_dict[station][&#39;name&#39;])
+            processed_station_metadata[&#39;code&#39;].append(station)
+            counter[&#39;current&#39;] += 1
+            # END of station loop
+
+        if len(data_dict[&#39;ref&#39;]) &lt; 1:
+            _logger.info(&#34;No station data to process (%s stations skipped). Exiting.&#34;, counter[&#39;skipped&#39;])
+            sys.exit()
+        else:
+            _logger.info(&#34;Done -- %s stations fully processed. %s stations skipped.&#34;,
+                         len(data_dict[&#39;ref&#39;]), counter[&#39;skipped&#39;])
+
+        concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+                                                                                     processed_station_metadata)
+        if how == &#39;seasonal&#39;:
+            # concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+            #                                                                             processed_station_metadata)
+
+            # --- Optional binning by latitude ---
+            if self.opts.latitude_bin_size:
+                concatenated_dfs, df_station_metadata = bin_by_latitude(self.compare_against_model, concatenated_dfs,
+                                                                       df_station_metadata, self.opts.latitude_bin_size)
+
+        # --- FORMAT DATA FOR OUTPUT ---
+
+        # Write output data to csv
+        filename = append_before_extension(self.opts.figure_savepath + &#39;.csv&#39;,
+                                           &#39;seasonal_cycle_output_stats_&#39; + datetime.now().strftime(&#39;%Y%m%d_%H%M%S&#39;))
+        fileptr = open(filename, &#39;w&#39;, newline=&#39;&#39;)
+        writer = csv.DictWriter(
+            fileptr, fieldnames=[&#39;station&#39;,
+                                 &#39;source&#39;,
+                                 &#39;max&#39;,
+                                 &#39;min&#39;,
+                                 &#39;mean&#39;,
+                                 &#39;median&#39;,
+                                 &#39;std&#39;,
+                                 &#39;rmse&#39;
+                                 ]
+        )
+        writer.writeheader()
+
+        if how == &#39;seasonal&#39;:
+            timecolumn = &#39;month&#39;
+        elif how == &#39;trend&#39;:
+            timecolumn = &#39;time&#39;
+        else:
+            raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+        xdata_gv = concatenated_dfs[&#39;ref&#39;][timecolumn]
+        ydata_gv = concatenated_dfs[&#39;ref&#39;].loc[:, (concatenated_dfs[&#39;ref&#39;].columns != timecolumn)]
+
+        # Write output data for this instance
+        for column in ydata_gv:
+            row_dict = {
+                &#39;station&#39;: column,
+                &#39;source&#39;: &#39;globalviewplus&#39;,
+                &#39;max&#39;: ydata_gv[column].max(),
+                &#39;min&#39;: ydata_gv[column].min(),
+                &#39;mean&#39;: ydata_gv[column].mean(),
+                &#39;median&#39;: ydata_gv[column].median(),
+                &#39;std&#39;: ydata_gv[column].std(),
+                &#39;rmse&#39;: np.nan
+            }
+            writer.writerow(row_dict)
+
+        xdata_mdl = None
+        ydata_mdl = None
+        rmse_y_true = None
+        rmse_y_pred = None
+        if self.compare_against_model:
+            xdata_mdl = concatenated_dfs[&#39;mdl&#39;][timecolumn]
+            ydata_mdl = concatenated_dfs[&#39;mdl&#39;].loc[:, (concatenated_dfs[&#39;mdl&#39;].columns != timecolumn)]
+
+            rmse = np.nan
+            if how == &#39;seasonal&#39;:
+                if not xdata_gv.equals(xdata_mdl):
+                    raise ValueError(
+                        &#39;Unexpected discrepancy, xdata for reference observations does not equal xdata for models&#39;)
+                rmse_y_true = ydata_gv
+                rmse_y_pred = ydata_mdl
+
+            elif how == &#39;trend&#39;:
+                begin_time_for_stats = max(xdata_gv.min(), xdata_mdl.min())
+                end_time_for_stats = min(xdata_gv.max(), xdata_mdl.max())
+                if begin_time_for_stats &gt; end_time_for_stats:
+                    _logger.info(&#39;beginning time &lt;%s&gt; is after end time &lt;%s&gt;&#39; %
+                                 (begin_time_for_stats, end_time_for_stats))
+                else:
+                    def month_calc(df):
+                        return (df
+                                .where((df[&#39;time&#39;] &lt; end_time_for_stats) &amp; (df[&#39;time&#39;] &gt; begin_time_for_stats))
+                                .dropna(subset=[&#39;time&#39;], how=&#39;any&#39;, inplace=False)
+                                .resample(&#34;1MS&#34;, on=&#39;time&#39;)
+                                .mean()
+                                .reset_index())
+                    rmse_y_true = month_calc(concatenated_dfs[&#39;ref&#39;])
+                    rmse_y_pred = month_calc(concatenated_dfs[&#39;mdl&#39;])
+                    common_time = set(rmse_y_true[&#39;time&#39;]).intersection(set(rmse_y_pred[&#39;time&#39;]))
+                    rmse_y_true = rmse_y_true.loc[rmse_y_true[&#39;time&#39;].isin(common_time), :]
+                    rmse_y_pred = rmse_y_pred.loc[rmse_y_pred[&#39;time&#39;].isin(common_time), :]
+            else:
+                raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+            if rmse_y_true is not None:
+                yt = rmse_y_true[column]
+                yp = rmse_y_pred[column]
+                okayvals = yt.notnull() &amp; yp.notnull()
+                rmse = mean_squared_error(yt[okayvals], yp[okayvals], squared=False)
+
+            # Write output data for this instance
+            for column in ydata_mdl:
+                row_dict = {
+                    &#39;station&#39;: column,
+                    &#39;source&#39;: &#39;cmip&#39;,
+                    &#39;max&#39;: ydata_mdl[column].max(),
+                    &#39;min&#39;: ydata_mdl[column].min(),
+                    &#39;mean&#39;: ydata_mdl[column].mean(),
+                    &#39;median&#39;: ydata_mdl[column].median(),
+                    &#39;std&#39;: ydata_mdl[column].std(),
+                    &#39;rmse&#39;: rmse
+                }
+                writer.writerow(row_dict)
+        fileptr.flush()
+
+        return data_dict, concatenated_dfs, df_station_metadata, \
+               xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+               rmse_y_true, rmse_y_pred
+
+    def concatenate_stations_and_months(self,
+                                        data_dict: dict,
+                                        processed_station_metadata: dict
+                                        ) -&gt; (dict, pd.DataFrame):
+        &#34;&#34;&#34;
+
+        Parameters
+        ----------
+        data_dict : dict
+            each key contains a list of Dataframes
+        processed_station_metadata
+
+        Returns
+        -------
+        dict
+            A dictionary with two dataframes, in which each column is a different station.
+        pd.Dataframe
+            metadata for all stations.
+        &#34;&#34;&#34;
+        # Dataframes for each location are combined so we have one &#39;month&#39; column, and a single column for each station.
+        # First, dataframes are sorted by latitude, then combined, then the duplicate &#39;month&#39; columns are removed.
+        df_station_metadata = pd.DataFrame.from_dict(processed_station_metadata)
+        df_concatenated = dict(ref=None, mdl=None)
+
+        #   (i) Globalview+ data
+        data_dict[&#39;ref&#39;] = [x for _, x in sorted(zip(list(df_station_metadata[&#39;lat&#39;]), data_dict[&#39;ref&#39;]))]
+        df_concatenated[&#39;ref&#39;] = pd.concat(data_dict[&#39;ref&#39;], axis=1, sort=False)
+        df_concatenated[&#39;ref&#39;] = df_concatenated[&#39;ref&#39;].loc[:, ~df_concatenated[&#39;ref&#39;].columns.duplicated()]
+
+        #   (ii) CMIP data
+        if self.compare_against_model:
+            data_dict[&#39;mdl&#39;] = [x for _, x in sorted(zip(list(df_station_metadata[&#39;lat&#39;]), data_dict[&#39;mdl&#39;]))]
+            df_concatenated[&#39;mdl&#39;] = pd.concat(data_dict[&#39;mdl&#39;], axis=1, sort=False)
+            df_concatenated[&#39;mdl&#39;] = df_concatenated[&#39;mdl&#39;].loc[:, ~df_concatenated[&#39;mdl&#39;].columns.duplicated()]
+        #
+        # Sort the metadata after using it for sorting the cycle list(s)
+        df_station_metadata.sort_values(by=&#39;lat&#39;, ascending=True, inplace=True)
+
+        return df_concatenated, df_station_metadata</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="gdess.operations.Confrontation.Confrontation.concatenate_stations_and_months"><code class="name flex">
+<span>def <span class="ident">concatenate_stations_and_months</span></span>(<span>self, data_dict: dict, processed_station_metadata: dict) -> (<class 'dict'>, <class 'pandas.core.frame.DataFrame'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>data_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>each key contains a list of Dataframes</dd>
+<dt><strong><code>processed_station_metadata</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>A dictionary with two dataframes, in which each column is a different station.</dd>
+<dt><code>pd.Dataframe</code></dt>
+<dd>metadata for all stations.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def concatenate_stations_and_months(self,
+                                    data_dict: dict,
+                                    processed_station_metadata: dict
+                                    ) -&gt; (dict, pd.DataFrame):
+    &#34;&#34;&#34;
+
+    Parameters
+    ----------
+    data_dict : dict
+        each key contains a list of Dataframes
+    processed_station_metadata
+
+    Returns
+    -------
+    dict
+        A dictionary with two dataframes, in which each column is a different station.
+    pd.Dataframe
+        metadata for all stations.
+    &#34;&#34;&#34;
+    # Dataframes for each location are combined so we have one &#39;month&#39; column, and a single column for each station.
+    # First, dataframes are sorted by latitude, then combined, then the duplicate &#39;month&#39; columns are removed.
+    df_station_metadata = pd.DataFrame.from_dict(processed_station_metadata)
+    df_concatenated = dict(ref=None, mdl=None)
+
+    #   (i) Globalview+ data
+    data_dict[&#39;ref&#39;] = [x for _, x in sorted(zip(list(df_station_metadata[&#39;lat&#39;]), data_dict[&#39;ref&#39;]))]
+    df_concatenated[&#39;ref&#39;] = pd.concat(data_dict[&#39;ref&#39;], axis=1, sort=False)
+    df_concatenated[&#39;ref&#39;] = df_concatenated[&#39;ref&#39;].loc[:, ~df_concatenated[&#39;ref&#39;].columns.duplicated()]
+
+    #   (ii) CMIP data
+    if self.compare_against_model:
+        data_dict[&#39;mdl&#39;] = [x for _, x in sorted(zip(list(df_station_metadata[&#39;lat&#39;]), data_dict[&#39;mdl&#39;]))]
+        df_concatenated[&#39;mdl&#39;] = pd.concat(data_dict[&#39;mdl&#39;], axis=1, sort=False)
+        df_concatenated[&#39;mdl&#39;] = df_concatenated[&#39;mdl&#39;].loc[:, ~df_concatenated[&#39;mdl&#39;].columns.duplicated()]
+    #
+    # Sort the metadata after using it for sorting the cycle list(s)
+    df_station_metadata.sort_values(by=&#39;lat&#39;, ascending=True, inplace=True)
+
+    return df_concatenated, df_station_metadata</code></pre>
+</details>
+</dd>
+<dt id="gdess.operations.Confrontation.Confrontation.looper"><code class="name flex">
+<span>def <span class="ident">looper</span></span>(<span>self, how: str) -> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Process and format observation data for multiple station locations</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>how</code></strong> :&ensp;<code>str</code></dt>
+<dd>either 'seasonal' or 'trend'</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>data_dict, concatenated_dfs, df_station_metadata,
+xdata_gv, xdata_mdl, ydata_gv, ydata_mdl,
+rmse_y_true, rmse_y_pred</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def looper(self, how: str) -&gt; tuple:
+    &#34;&#34;&#34;Process and format observation data for multiple station locations
+
+    Parameters
+    ----------
+    how : str
+        either &#39;seasonal&#39; or &#39;trend&#39;
+
+    Raises
+    ------
+    ValueError
+
+    Returns
+    -------
+    tuple
+        data_dict, concatenated_dfs, df_station_metadata, \
+           xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+           rmse_y_true, rmse_y_pred
+    &#34;&#34;&#34;
+    valid = {&#39;seasonal&#39;, &#39;trend&#39;}
+    if how not in valid:
+        raise ValueError(&#34;&#39;how&#39; must be one of %r.&#34; % valid)
+
+    # --- Observation data are processed for each station location. ---
+    _logger.info(&#39;*Processing Observations*&#39;)
+    counter = {&#39;current&#39;: 1, &#39;skipped&#39;: 0}
+    processed_station_metadata = dict(lat=[], lon=[], code=[], fullname=[])
+    data_dict = dict(ref=[], mdl=[])  # each key will contain a list of Dataframes.
+    num_stations = [len(self.stations_to_analyze)]
+    for station in self.stations_to_analyze:
+        _logger.info(&#34;Station %s of %s: %s&#34;, counter[&#39;current&#39;], num_stations[0], station)
+        obs_collection = obspack_surface_collection_module.Collection(verbose=self.verbose)
+        obs_collection.preprocess(datadir=self.opts.ref_data, station_name=station)
+        ds_obs = obs_collection.stepA_original_datasets[station]
+        _logger.info(&#39;  %s&#39;, obs_collection.station_dict.get(station))
+
+        # Apply time bounds, and get the relevant model output.
+        try:
+            if self.compare_against_model:
+                ds_obs, da_mdl = make_comparable(ds_obs, self.ds_mdl,
+                                                 time_limits=(
+                                                 np.datetime64(self.opts.start_yr), np.datetime64(self.opts.end_yr)),
+                                                 latlon=(
+                                                 ds_obs[&#39;latitude&#39;].values[0], ds_obs[&#39;longitude&#39;].values[0]),
+                                                 altitude=ds_obs[&#39;altitude&#39;].values[0], altitude_method=&#39;lowest&#39;,
+                                                 global_mean=self.opts.globalmean, verbose=self.verbose)
+            else:
+                ds_obs, _, _, _, _ = apply_time_bounds(ds_obs, time_limits=(np.datetime64(self.opts.start_yr),
+                                                                      np.datetime64(self.opts.end_yr)))
+                da_mdl = None
+        except (RuntimeError, AssertionError) as re:
+            update_for_skipped_station(re, station, num_stations, counter)
+            continue
+        #
+        if how == &#39;seasonal&#39;:
+            try:
+                ref_dt, ref_vals, mdl_dt, mdl_vals = get_seasonal_by_curve_fitting(self.compare_against_model,
+                                                                                   da_mdl, ds_obs,
+                                                                                   self.opts, station)
+            except RuntimeError as re:
+                update_for_skipped_station(re, station, num_stations, counter)
+                continue
+            #
+            data_dict[&#39;ref&#39;].append(pd.DataFrame.from_dict({&#34;month&#34;: ref_dt, f&#34;{station}&#34;: ref_vals}))
+            if self.compare_against_model:
+                data_dict[&#39;mdl&#39;].append(pd.DataFrame.from_dict({&#34;month&#34;: mdl_dt, f&#34;{station}&#34;: mdl_vals}))
+        elif how == &#39;trend&#39;:
+            data_dict[&#39;ref&#39;].append(pd.DataFrame.from_dict({&#34;time&#34;: ds_obs[&#39;time&#39;], f&#34;{station}&#34;: ds_obs[&#39;co2&#39;].values}))
+            if self.compare_against_model:
+                data_dict[&#39;mdl&#39;].append(pd.DataFrame.from_dict({&#34;time&#34;: da_mdl[&#39;time&#39;], f&#34;{station}&#34;: da_mdl.values}))
+        else:
+            raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+        # Gather together station&#39;s metadata at the loop end, when we&#39;re sure that this station has been processed.
+        processed_station_metadata[&#39;lon&#39;].append(obs_collection.station_dict[station][&#39;lon&#39;])
+        processed_station_metadata[&#39;lat&#39;].append(obs_collection.station_dict[station][&#39;lat&#39;])
+        processed_station_metadata[&#39;fullname&#39;].append(obs_collection.station_dict[station][&#39;name&#39;])
+        processed_station_metadata[&#39;code&#39;].append(station)
+        counter[&#39;current&#39;] += 1
+        # END of station loop
+
+    if len(data_dict[&#39;ref&#39;]) &lt; 1:
+        _logger.info(&#34;No station data to process (%s stations skipped). Exiting.&#34;, counter[&#39;skipped&#39;])
+        sys.exit()
+    else:
+        _logger.info(&#34;Done -- %s stations fully processed. %s stations skipped.&#34;,
+                     len(data_dict[&#39;ref&#39;]), counter[&#39;skipped&#39;])
+
+    concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+                                                                                 processed_station_metadata)
+    if how == &#39;seasonal&#39;:
+        # concatenated_dfs, df_station_metadata = self.concatenate_stations_and_months(data_dict,
+        #                                                                             processed_station_metadata)
+
+        # --- Optional binning by latitude ---
+        if self.opts.latitude_bin_size:
+            concatenated_dfs, df_station_metadata = bin_by_latitude(self.compare_against_model, concatenated_dfs,
+                                                                   df_station_metadata, self.opts.latitude_bin_size)
+
+    # --- FORMAT DATA FOR OUTPUT ---
+
+    # Write output data to csv
+    filename = append_before_extension(self.opts.figure_savepath + &#39;.csv&#39;,
+                                       &#39;seasonal_cycle_output_stats_&#39; + datetime.now().strftime(&#39;%Y%m%d_%H%M%S&#39;))
+    fileptr = open(filename, &#39;w&#39;, newline=&#39;&#39;)
+    writer = csv.DictWriter(
+        fileptr, fieldnames=[&#39;station&#39;,
+                             &#39;source&#39;,
+                             &#39;max&#39;,
+                             &#39;min&#39;,
+                             &#39;mean&#39;,
+                             &#39;median&#39;,
+                             &#39;std&#39;,
+                             &#39;rmse&#39;
+                             ]
+    )
+    writer.writeheader()
+
+    if how == &#39;seasonal&#39;:
+        timecolumn = &#39;month&#39;
+    elif how == &#39;trend&#39;:
+        timecolumn = &#39;time&#39;
+    else:
+        raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+    xdata_gv = concatenated_dfs[&#39;ref&#39;][timecolumn]
+    ydata_gv = concatenated_dfs[&#39;ref&#39;].loc[:, (concatenated_dfs[&#39;ref&#39;].columns != timecolumn)]
+
+    # Write output data for this instance
+    for column in ydata_gv:
+        row_dict = {
+            &#39;station&#39;: column,
+            &#39;source&#39;: &#39;globalviewplus&#39;,
+            &#39;max&#39;: ydata_gv[column].max(),
+            &#39;min&#39;: ydata_gv[column].min(),
+            &#39;mean&#39;: ydata_gv[column].mean(),
+            &#39;median&#39;: ydata_gv[column].median(),
+            &#39;std&#39;: ydata_gv[column].std(),
+            &#39;rmse&#39;: np.nan
+        }
+        writer.writerow(row_dict)
+
+    xdata_mdl = None
+    ydata_mdl = None
+    rmse_y_true = None
+    rmse_y_pred = None
+    if self.compare_against_model:
+        xdata_mdl = concatenated_dfs[&#39;mdl&#39;][timecolumn]
+        ydata_mdl = concatenated_dfs[&#39;mdl&#39;].loc[:, (concatenated_dfs[&#39;mdl&#39;].columns != timecolumn)]
+
+        rmse = np.nan
+        if how == &#39;seasonal&#39;:
+            if not xdata_gv.equals(xdata_mdl):
+                raise ValueError(
+                    &#39;Unexpected discrepancy, xdata for reference observations does not equal xdata for models&#39;)
+            rmse_y_true = ydata_gv
+            rmse_y_pred = ydata_mdl
+
+        elif how == &#39;trend&#39;:
+            begin_time_for_stats = max(xdata_gv.min(), xdata_mdl.min())
+            end_time_for_stats = min(xdata_gv.max(), xdata_mdl.max())
+            if begin_time_for_stats &gt; end_time_for_stats:
+                _logger.info(&#39;beginning time &lt;%s&gt; is after end time &lt;%s&gt;&#39; %
+                             (begin_time_for_stats, end_time_for_stats))
+            else:
+                def month_calc(df):
+                    return (df
+                            .where((df[&#39;time&#39;] &lt; end_time_for_stats) &amp; (df[&#39;time&#39;] &gt; begin_time_for_stats))
+                            .dropna(subset=[&#39;time&#39;], how=&#39;any&#39;, inplace=False)
+                            .resample(&#34;1MS&#34;, on=&#39;time&#39;)
+                            .mean()
+                            .reset_index())
+                rmse_y_true = month_calc(concatenated_dfs[&#39;ref&#39;])
+                rmse_y_pred = month_calc(concatenated_dfs[&#39;mdl&#39;])
+                common_time = set(rmse_y_true[&#39;time&#39;]).intersection(set(rmse_y_pred[&#39;time&#39;]))
+                rmse_y_true = rmse_y_true.loc[rmse_y_true[&#39;time&#39;].isin(common_time), :]
+                rmse_y_pred = rmse_y_pred.loc[rmse_y_pred[&#39;time&#39;].isin(common_time), :]
+        else:
+            raise ValueError(&#34;Unexpected value for &#39;how&#39; to do the Confrontation. Got %s.&#34; % how)
+
+        if rmse_y_true is not None:
+            yt = rmse_y_true[column]
+            yp = rmse_y_pred[column]
+            okayvals = yt.notnull() &amp; yp.notnull()
+            rmse = mean_squared_error(yt[okayvals], yp[okayvals], squared=False)
+
+        # Write output data for this instance
+        for column in ydata_mdl:
+            row_dict = {
+                &#39;station&#39;: column,
+                &#39;source&#39;: &#39;cmip&#39;,
+                &#39;max&#39;: ydata_mdl[column].max(),
+                &#39;min&#39;: ydata_mdl[column].min(),
+                &#39;mean&#39;: ydata_mdl[column].mean(),
+                &#39;median&#39;: ydata_mdl[column].median(),
+                &#39;std&#39;: ydata_mdl[column].std(),
+                &#39;rmse&#39;: rmse
+            }
+            writer.writerow(row_dict)
+    fileptr.flush()
+
+    return data_dict, concatenated_dfs, df_station_metadata, \
+           xdata_gv, xdata_mdl, ydata_gv, ydata_mdl, \
+           rmse_y_true, rmse_y_pred</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="gdess.operations" href="index.html">gdess.operations</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="gdess.operations.Confrontation.apply_time_bounds" href="#gdess.operations.Confrontation.apply_time_bounds">apply_time_bounds</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.bin_by_latitude" href="#gdess.operations.Confrontation.bin_by_latitude">bin_by_latitude</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.calc_binned_means" href="#gdess.operations.Confrontation.calc_binned_means">calc_binned_means</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.extract_site_data_from_dataset" href="#gdess.operations.Confrontation.extract_site_data_from_dataset">extract_site_data_from_dataset</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.get_seasonal_by_curve_fitting" href="#gdess.operations.Confrontation.get_seasonal_by_curve_fitting">get_seasonal_by_curve_fitting</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.interpolate_to_altitude" href="#gdess.operations.Confrontation.interpolate_to_altitude">interpolate_to_altitude</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.load_cmip_model_output" href="#gdess.operations.Confrontation.load_cmip_model_output">load_cmip_model_output</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.lowest_nonnull_altitude" href="#gdess.operations.Confrontation.lowest_nonnull_altitude">lowest_nonnull_altitude</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.make_comparable" href="#gdess.operations.Confrontation.make_comparable">make_comparable</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.make_cycle" href="#gdess.operations.Confrontation.make_cycle">make_cycle</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.mutual_time_bounds" href="#gdess.operations.Confrontation.mutual_time_bounds">mutual_time_bounds</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.update_for_skipped_station" href="#gdess.operations.Confrontation.update_for_skipped_station">update_for_skipped_station</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="gdess.operations.Confrontation.Confrontation" href="#gdess.operations.Confrontation.Confrontation">Confrontation</a></code></h4>
+<ul class="">
+<li><code><a title="gdess.operations.Confrontation.Confrontation.concatenate_stations_and_months" href="#gdess.operations.Confrontation.Confrontation.concatenate_stations_and_months">concatenate_stations_and_months</a></code></li>
+<li><code><a title="gdess.operations.Confrontation.Confrontation.looper" href="#gdess.operations.Confrontation.Confrontation.looper">looper</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

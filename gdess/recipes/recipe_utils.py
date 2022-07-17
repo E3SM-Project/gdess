@@ -1,13 +1,14 @@
-from gdess import load_stations_dict
-from typing import Union
 import logging
+from typing import Union
+
+from gdess import load_stations_dict
 
 _logger = logging.getLogger(__name__)
 
 
 def populate_station_list(run_all_stations: bool,
                           station_list: Union[list, str]) -> list:
-    """The list of stations to analyze is populated.
+    """Populate the list of stations to analyze
 
     Parameters
     ----------

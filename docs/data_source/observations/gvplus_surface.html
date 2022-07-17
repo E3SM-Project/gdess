@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>gdess.data_source.observations.gvplus_surface API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML'></script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>gdess.data_source.observations.gvplus_surface</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from typing import Union
+import os, re, glob, argparse, logging
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
+
+from gdess import set_verbose, load_stations_dict, load_config_file, benchmark_recipe
+from gdess.data_source.observations.load import load_data_with_regex, dataset_from_filelist
+from gdess.data_source.multiset import Multiset
+from gdess.operations.datasetdict import DatasetDict
+from gdess.operations.time import select_between, ensure_dataset_datetime64, ensure_datetime64_array
+from gdess.operations.convert import co2_molfrac_to_ppm
+from gdess.graphics.single_source_plots import plot_annual_series
+from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig
+from gdess.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
+from gdess.formatters import append_before_extension
+
+_logger = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;loader&#34;))
+
+# Define the stations that will be included in the dataset and available for diagnostic plots
+station_dict = load_stations_dict()
+
+
+class Collection(Multiset):
+    def __init__(self, verbose: Union[bool, str] = False):
+        &#34;&#34;&#34;Instantiate an Obspack Surface Station Collection object.
+
+        Parameters
+        ----------
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+
+        self.df_combined_and_resampled = None
+        # Define the stations that will be included in the dataset and available for diagnostic plots
+        self.station_dict = station_dict.copy()
+
+        super().__init__(verbose=verbose)
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_timeseries(cls,
+                                  verbose: Union[bool, str] = False,
+                                  options: dict = None
+                                  ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        verbose : `bool` or `str`, default `False`
+            Can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        options : `dict`
+            Contains zero or more of these parameter keys:
+                ref_data (str): directory containing the NOAA Obspack NetCDF files
+                station_code (str): &#39;mlo&#39; is default
+                start_yr (str): &#39;1960&#39; is default
+                end_yr (str): &#39;2015&#39; is default
+
+        Returns
+        -------
+        Collection
+            object for Obspack that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
+
+        # An empty instance is created.
+        new_self = cls(verbose=verbose)
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
+        # Data are formatted into the basic data structure common to various diagnostics.
+        new_self.preprocess(datadir=opts.ref_data, station_name=opts.station_code)
+        # Data are resampled
+        new_self.df_combined_and_resampled = (new_self
+                                              .get_resampled_dataframe(new_self.stepA_original_datasets[opts.station_code],
+                                                                       timestart=opts.start_datetime,
+                                                                       timeend=opts.end_datetime
+                                                                       ).reset_index())
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_station_time_series(stationshortname=opts.station_code)
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_timeseries&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_annual_series(cls,
+                                     verbose: Union[bool, str] = False,
+                                     options: dict = None
+                                     ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        verbose : `bool` or `str`, default `False`
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        options : `dict`
+            Contains zero or more of these parameter keys:
+                ref_data (str): directory containing the NOAA Obspack NetCDF files
+                start_yr (str): &#39;1960&#39; s default
+                end_yr (str): None is default
+
+        Returns
+        -------
+        Collection
+            object for Obspack that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
+
+        # An empty instance is created.
+        new_self = cls(verbose=verbose)
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
+        # Data are formatted into the basic data structure common to various diagnostics.
+        new_self.preprocess(datadir=opts.ref_data)
+
+        _logger.info(&#39;Applying selected bounds..&#39;)
+        # Data are resampled
+        new_self.df_combined_and_resampled = (new_self
+                                              .get_resampled_dataframe(new_self.stepA_original_datasets[opts.station_code],
+                                                                       timestart=opts.start_datetime,
+                                                                       timeend=opts.end_datetime
+                                                                       ).reset_index())
+
+        df_anomaly_mean_cycle, df_anomaly_yearly = (Multiset
+                                                    .get_anomaly_dataframes(new_self.stepA_original_datasets[opts.station_code],
+                                                                            varname=&#39;co2&#39;))
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
+                                                   titlestr=&#34;&#34;)
+        ax.text(0.02, 0.92, f&#34;{opts.station_code.upper()}, &#34;
+                            f&#34;{station_dict[opts.station_code][&#39;lat&#39;]:.1f}, {station_dict[opts.station_code][&#39;lon&#39;]:.1f}&#34;,
+                horizontalalignment=&#39;left&#39;, verticalalignment=&#39;center&#39;, transform=ax.transAxes)
+        #
+
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;obspack_annual_series&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    def preprocess(self, datadir: str,
+                   station_name: Union[str, list] = None
+                   ) -&gt; None:
+        &#34;&#34;&#34;Set up the dataset that is common to every diagnostic
+
+        Parameters
+        ----------
+        datadir : `str`
+        station_name : `str` or `list`
+        &#34;&#34;&#34;
+        _logger.debug(&#34;Preprocessing...&#34;)
+        if not station_name:
+            # Use predefined dictionary of stations at the top of this module
+            stations = self.station_dict
+        else:
+            # Create a subset of the station dictionary containing only the station name(s) passed in
+            if isinstance(station_name, str):
+                station_name = [station_name]
+            stations = dict((k, self.station_dict[k]) for k in station_name)
+
+        if not datadir:
+            # A configuration object (for holding paths and settings) is read in to get the path to the data.
+            config = load_config_file()
+            datadir = config.get(&#39;NOAA_Globalview&#39;, &#39;source&#39;, vars=os.environ)
+            _logger.debug(f&#34;Loading local Globalview data files from path &lt;{datadir}&gt;..&#34;)
+
+        self.stepA_original_datasets = DatasetDict(self._load_stations_by_namedict(stations, datadir))
+        _logger.debug(&#34;Preprocessing is done.&#34;)
+
+    @staticmethod
+    def get_resampled_dataframe(dataset_obs,
+                                timestart,
+                                timeend) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Get data resampled at monthly intervals
+
+        Parameters
+        ----------
+        dataset_obs : xr.Dataset
+        timestart
+        timeend
+
+        Returns
+        -------
+        pd.DataFrame
+            Contains columns of time, original data, and resampled data
+        &#34;&#34;&#34;
+        _logger.debug(&#39;Resampling obspack observations..&#39;)
+        # --- OBSERVATIONS ---
+        # Time period is selected.
+        ds_sub_obs = select_between(dataset=dataset_obs,
+                                    timestart=timestart, timeend=timeend,
+                                    varlist=[&#39;time&#39;, &#39;co2&#39;],
+                                    drop_dups=True)
+        # Dataset converted to DataFrame.
+        df_prepd_obs_orig = ds_sub_obs.to_dataframe().reset_index()
+        df_prepd_obs_orig.rename(columns={&#39;co2&#39;: &#39;obs_original_resolution&#39;}, inplace=True)
+
+        # --- Resampled observations ---
+        #     ds_resampled = ds_sub_obs.resample(time=&#34;1D&#34;).interpolate(&#34;linear&#34;)  # weekly average
+        ds_resampled = ds_sub_obs.resample(time=&#34;1MS&#34;).mean()  # monthly average
+        # ds_resampled = ds_sub_obs.resample(time=&#34;1AS&#34;).mean()  # yearly average
+        # ds_resampled = ds_sub_obs.resample(time=&#34;Q&#34;).mean()  # quarterly average (consecutive three-month periods)
+        # ds_resampled = ds_sub_obs.resample(time=&#34;QS-DEC&#34;).mean()  # quarterly average (consecutive three-month periods), anchored at December 1st.
+        #
+        # Dataset converted to DataFrame.
+        df_prepd_obs_resamp = (ds_resampled
+                               .dropna(dim=(&#39;time&#39;))
+                               .to_dataframe().reset_index()
+                               .rename(columns={&#39;co2&#39;: &#39;obs_resampled_resolution&#39;})
+                               )
+
+        # --- COMBINED ---
+        df_prepd = (df_prepd_obs_resamp
+                    .merge(df_prepd_obs_orig, on=&#39;time&#39;, how=&#39;outer&#39;)
+                    .reset_index()
+                    .loc[:, [&#39;time&#39;, &#39;obs_original_resolution&#39;, &#39;obs_resampled_resolution&#39;]]
+                    )
+
+        _logger.debug(&#39;  First resampled row: %s&#39;, df_prepd.iloc[0, :])
+        _logger.debug(&#39;Done.&#39;)
+
+        return df_prepd
+
+    @staticmethod
+    def _load_surface_data(datadir: str,
+                           ) -&gt; DatasetDict:
+        &#34;&#34;&#34;Load into memory the data for surface measurements from Globalview+.
+
+        Parameters
+        ----------
+        datadir : `str`
+            directory containing the Globalview+ NetCDF files.
+
+        Returns
+        -------
+        `dict`
+            Names, latitudes, longitudes, and altitudes of each station
+        &#34;&#34;&#34;
+        # --- Go through files and extract all &#39;surface&#39; sampled files ---
+        p = re.compile(r&#39;co2_([a-zA-Z0-9]*)_surface.*\.nc$&#39;)
+        return_value = load_data_with_regex(datadir=datadir, compiled_regex_pattern=p)
+        return return_value
+
+    @staticmethod
+    def _load_stations_by_namedict(station_dict: dict,
+                                   datadir: str
+                                   ) -&gt; dict:
+        &#34;&#34;&#34;Load into memory the data for surface observing stations from Globalview+.
+
+        Parameters
+        ----------
+        station_dict : `dict`
+        datadir : `str`
+            directory containing the Globalview+ NetCDF files.
+
+        Returns
+        -------
+        `dict`
+            Names, latitudes, longitudes, and altitudes of each station
+        &#34;&#34;&#34;
+        ds_obs_dict = {}
+        for stationcode, _ in station_dict.items():
+            _logger.debug(stationcode)
+            _logger.debug(&#39;data directory: %s&#39;, datadir)
+
+            file_list = glob.glob(os.path.join(datadir, f&#34;co2_{stationcode}*.nc&#34;))
+            # print(&#34;files: &#34;)
+            # print(*[os.path.basename(x) for x in file_list], sep = &#34;\n&#34;)
+
+            _logger.debug(&#39;Station files: %s&#39;, &#39;, &#39;.join([os.path.basename(x) for x in file_list]))
+            ds_obs_dict[stationcode] = dataset_from_filelist(file_list)
+
+            # Simple unit check - for the Altitude variable
+            check_altitude_unit = ds_obs_dict[stationcode][&#39;altitude&#39;].attrs[&#39;units&#39;] == &#39;m&#39;
+            if not check_altitude_unit:
+                raise ValueError(&#39;unexpected altitude units &lt;%s&gt;&#39;, ds_obs_dict[stationcode][&#39;altitude&#39;].attrs[&#39;units&#39;])
+
+            lats = ds_obs_dict[stationcode][&#39;latitude&#39;].values
+            lons = ds_obs_dict[stationcode][&#39;longitude&#39;].values
+            alts = ds_obs_dict[stationcode][&#39;altitude&#39;].values
+
+            # Get the latitude and longitude of each station
+            #     different_station_lats = np.unique(lats)
+            #     different_station_lons = np.unique(lons)
+            # print(f&#34;there are {len(different_station_lons)} different latitudes for the station: {different_station_lons}&#34;)
+
+            # Get the average lat,lon
+            meanlon = lons.mean()
+            if meanlon &lt; 0:
+                meanlon = meanlon + 360
+            station_latlonalt = {&#39;lat&#39;: lats.mean(), &#39;lon&#39;: meanlon, &#39;alts&#39;: alts.mean()}
+            _logger.debug(&#34;  %s&#34; % station_latlonalt)
+
+            station_dict[stationcode].update(station_latlonalt)
+
+        # Wrangle -- Do the things to the Obs dataset.
+        _logger.debug(&#34;Converting datetime format and units...&#34;)
+        for i, (k, v) in enumerate(ds_obs_dict.items()):
+            _logger.debug(&#39;  %s&#39;, k)
+            ds_obs_dict[k] = (v
+                              .set_coords([&#39;time&#39;, &#39;time_decimal&#39;, &#39;latitude&#39;, &#39;longitude&#39;, &#39;altitude&#39;])
+                              .sortby([&#39;time&#39;])
+                              .swap_dims({&#34;obs&#34;: &#34;time&#34;})
+                              .pipe(ensure_dataset_datetime64)
+                              .rename({&#39;value&#39;: &#39;co2&#39;})
+                              .pipe(co2_molfrac_to_ppm, co2_var_name=&#39;co2&#39;)
+                              )
+            if i == 0:
+                _logger.debug(&#34;  the first DataSet has a time range of &lt;%s&gt; to &lt;%s&gt;.&#34;,
+                              np.datetime_as_string(ds_obs_dict[k][&#39;time&#39;].values[0], unit=&#39;D&#39;),
+                              np.datetime_as_string(ds_obs_dict[k][&#39;time&#39;].values[-1], unit=&#39;D&#39;))
+        _logger.debug(&#34;Converting is done.&#34;)
+
+        return ds_obs_dict
+
+    def plot_station_time_series(self, stationshortname: str) -&gt; (plt.Figure, plt.Axes, tuple):
+        &#34;&#34;&#34;Make timeseries plot of co2 concentration for each surface observing station.
+
+        Parameters
+        ----------
+        stationshortname : `str`
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        &#34;&#34;&#34;
+        fig, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True, figsize=(7, 5))
+        ax.plot(ensure_datetime64_array(self.df_combined_and_resampled[&#39;time&#39;]),
+                self.df_combined_and_resampled[&#39;obs_original_resolution&#39;],
+                label=&#39;NOAA Obs&#39;,
+                marker=&#39;+&#39;, linestyle=&#39;None&#39;, color=&#39;#C0C0C0&#39;, alpha=0.6)
+        ax.plot(ensure_datetime64_array(self.df_combined_and_resampled[&#39;time&#39;]),
+                self.df_combined_and_resampled[&#39;obs_resampled_resolution&#39;],
+                label=&#39;NOAA Obs monthly mean&#39;,
+                linestyle=&#39;-&#39;, color=(0 / 255, 133 / 255, 202 / 255), linewidth=2)
+        #
+        ax.set_ylim((288.5231369018555, 429.76668853759764))
+        #
+        # ax[i].set_ylabel(&#39;$ppm$&#39;)
+        #     ax.legend(bbox_to_anchor=(1.05, 1))
+        ax.set_ylabel(&#39;$CO_2$ (ppm)&#39;)
+        ax.text(0.02, 0.88, f&#34;{stationshortname.upper()}\n{self.station_dict[stationshortname][&#39;lat&#39;]:.1f}, &#34;
+                            f&#34;{self.station_dict[stationshortname][&#39;lon&#39;]:.1f}&#34;,
+                horizontalalignment=&#39;left&#39;,
+                verticalalignment=&#39;center&#39;,
+                transform=ax.transAxes,
+                fontsize=16)
+        #
+        aesthetic_grid_no_spines(ax)
+
+        # Define the date format
+        #             ax.xaxis.set_major_locator(mdates.YearLocator())
+        #             date_form = DateFormatter(&#34;%b\n%Y&#34;)
+        date_form = DateFormatter(&#34;%Y&#34;)
+        ax.xaxis.set_major_formatter(date_form)
+        #         ax.xaxis.set_minor_locator(mdates.MonthLocator())
+        #         ax.tick_params(which=&#34;both&#34;, bottom=True)
+
+        # leg = ax.legend(loc=&#39;lower right&#39;, fontsize=14)
+        leg = plt.legend(title=&#39;&#39;, frameon=False,
+                         bbox_to_anchor=(0, -0.1), loc=&#39;upper left&#39;,
+                         fontsize=12)
+        for lh in leg.legendHandles:
+            lh.set_alpha(1)
+
+        bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def __repr__(self) -&gt; str:
+        &#34;&#34;&#34;Build a string representation of this object&#34;&#34;&#34;
+        strrep = f&#34;-- Obspack Surface Station Collection -- \n&#34; \
+                 f&#34;Datasets:&#34; \
+                 f&#34;\n\t&#34; + \
+                 self._original_datasets_list_str() + \
+                 f&#34;\n&#34; \
+                 f&#34;All attributes:&#34; \
+                 f&#34;\n\t&#34; + \
+                 &#39;\n\t&#39;.join(self._obj_attributes_list_str())
+
+        return strrep
+
+
+def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParser) -&gt; None:
+    &#34;&#34;&#34;Add recipe arguments to a parser object
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+    &#34;&#34;&#34;
+    add_shared_arguments_for_recipes(parser)
+    parser.add_argument(&#39;--station_code&#39;, default=&#39;mlo&#39;,
+                        type=str, choices=station_dict.keys())</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="gdess.data_source.observations.gvplus_surface.add_surface_station_collection_args_to_parser"><code class="name flex">
+<span>def <span class="ident">add_surface_station_collection_args_to_parser</span></span>(<span>parser: argparse.ArgumentParser) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add recipe arguments to a parser object</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>parser</code></strong> :&ensp;<code>argparse.ArgumentParser</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParser) -&gt; None:
+    &#34;&#34;&#34;Add recipe arguments to a parser object
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+    &#34;&#34;&#34;
+    add_shared_arguments_for_recipes(parser)
+    parser.add_argument(&#39;--station_code&#39;, default=&#39;mlo&#39;,
+                        type=str, choices=station_dict.keys())</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="gdess.data_source.observations.gvplus_surface.Collection"><code class="flex name class">
+<span>class <span class="ident">Collection</span></span>
+<span>(</span><span>verbose: Union[bool, str] = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Work simultaneous with multiple, consistent xarray Datasets.</p>
+<p>Instantiate an Obspack Surface Station Collection object.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>Union[bool, str]</code></dt>
+<dd>can be either True, False, or a string for level such as "INFO, DEBUG, etc."</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Collection(Multiset):
+    def __init__(self, verbose: Union[bool, str] = False):
+        &#34;&#34;&#34;Instantiate an Obspack Surface Station Collection object.
+
+        Parameters
+        ----------
+        verbose : Union[bool, str]
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+
+        self.df_combined_and_resampled = None
+        # Define the stations that will be included in the dataset and available for diagnostic plots
+        self.station_dict = station_dict.copy()
+
+        super().__init__(verbose=verbose)
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_timeseries(cls,
+                                  verbose: Union[bool, str] = False,
+                                  options: dict = None
+                                  ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        verbose : `bool` or `str`, default `False`
+            Can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        options : `dict`
+            Contains zero or more of these parameter keys:
+                ref_data (str): directory containing the NOAA Obspack NetCDF files
+                station_code (str): &#39;mlo&#39; is default
+                start_yr (str): &#39;1960&#39; is default
+                end_yr (str): &#39;2015&#39; is default
+
+        Returns
+        -------
+        Collection
+            object for Obspack that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
+
+        # An empty instance is created.
+        new_self = cls(verbose=verbose)
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
+        # Data are formatted into the basic data structure common to various diagnostics.
+        new_self.preprocess(datadir=opts.ref_data, station_name=opts.station_code)
+        # Data are resampled
+        new_self.df_combined_and_resampled = (new_self
+                                              .get_resampled_dataframe(new_self.stepA_original_datasets[opts.station_code],
+                                                                       timestart=opts.start_datetime,
+                                                                       timeend=opts.end_datetime
+                                                                       ).reset_index())
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = new_self.plot_station_time_series(stationshortname=opts.station_code)
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;cmip_timeseries&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    @classmethod
+    @benchmark_recipe
+    def run_recipe_for_annual_series(cls,
+                                     verbose: Union[bool, str] = False,
+                                     options: dict = None
+                                     ) -&gt; &#39;Collection&#39;:
+        &#34;&#34;&#34;Execute a series of preprocessing steps and generate a diagnostic result.
+
+        Parameters
+        ----------
+        verbose : `bool` or `str`, default `False`
+            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        options : `dict`
+            Contains zero or more of these parameter keys:
+                ref_data (str): directory containing the NOAA Obspack NetCDF files
+                start_yr (str): &#39;1960&#39; s default
+                end_yr (str): None is default
+
+        Returns
+        -------
+        Collection
+            object for Obspack that was used to generate the diagnostic
+        &#34;&#34;&#34;
+        set_verbose(_logger, verbose)
+        opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
+
+        # An empty instance is created.
+        new_self = cls(verbose=verbose)
+
+        # --- Apply diagnostic parameters and prep data for plotting ---
+        # Data are formatted into the basic data structure common to various diagnostics.
+        new_self.preprocess(datadir=opts.ref_data)
+
+        _logger.info(&#39;Applying selected bounds..&#39;)
+        # Data are resampled
+        new_self.df_combined_and_resampled = (new_self
+                                              .get_resampled_dataframe(new_self.stepA_original_datasets[opts.station_code],
+                                                                       timestart=opts.start_datetime,
+                                                                       timeend=opts.end_datetime
+                                                                       ).reset_index())
+
+        df_anomaly_mean_cycle, df_anomaly_yearly = (Multiset
+                                                    .get_anomaly_dataframes(new_self.stepA_original_datasets[opts.station_code],
+                                                                            varname=&#39;co2&#39;))
+
+        # --- Plotting ---
+        fig, ax, bbox_artists = plot_annual_series(df_anomaly_yearly, df_anomaly_mean_cycle,
+                                                   titlestr=&#34;&#34;)
+        ax.text(0.02, 0.92, f&#34;{opts.station_code.upper()}, &#34;
+                            f&#34;{station_dict[opts.station_code][&#39;lat&#39;]:.1f}, {station_dict[opts.station_code][&#39;lon&#39;]:.1f}&#34;,
+                horizontalalignment=&#39;left&#39;, verticalalignment=&#39;center&#39;, transform=ax.transAxes)
+        #
+
+        if opts.figure_savepath:
+            mysavefig(fig=fig, plot_save_name=append_before_extension(opts.figure_savepath, &#39;obspack_annual_series&#39;),
+                      bbox_extra_artists=bbox_artists)
+
+        return new_self
+
+    def preprocess(self, datadir: str,
+                   station_name: Union[str, list] = None
+                   ) -&gt; None:
+        &#34;&#34;&#34;Set up the dataset that is common to every diagnostic
+
+        Parameters
+        ----------
+        datadir : `str`
+        station_name : `str` or `list`
+        &#34;&#34;&#34;
+        _logger.debug(&#34;Preprocessing...&#34;)
+        if not station_name:
+            # Use predefined dictionary of stations at the top of this module
+            stations = self.station_dict
+        else:
+            # Create a subset of the station dictionary containing only the station name(s) passed in
+            if isinstance(station_name, str):
+                station_name = [station_name]
+            stations = dict((k, self.station_dict[k]) for k in station_name)
+
+        if not datadir:
+            # A configuration object (for holding paths and settings) is read in to get the path to the data.
+            config = load_config_file()
+            datadir = config.get(&#39;NOAA_Globalview&#39;, &#39;source&#39;, vars=os.environ)
+            _logger.debug(f&#34;Loading local Globalview data files from path &lt;{datadir}&gt;..&#34;)
+
+        self.stepA_original_datasets = DatasetDict(self._load_stations_by_namedict(stations, datadir))
+        _logger.debug(&#34;Preprocessing is done.&#34;)
+
+    @staticmethod
+    def get_resampled_dataframe(dataset_obs,
+                                timestart,
+                                timeend) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Get data resampled at monthly intervals
+
+        Parameters
+        ----------
+        dataset_obs : xr.Dataset
+        timestart
+        timeend
+
+        Returns
+        -------
+        pd.DataFrame
+            Contains columns of time, original data, and resampled data
+        &#34;&#34;&#34;
+        _logger.debug(&#39;Resampling obspack observations..&#39;)
+        # --- OBSERVATIONS ---
+        # Time period is selected.
+        ds_sub_obs = select_between(dataset=dataset_obs,
+                                    timestart=timestart, timeend=timeend,
+                                    varlist=[&#39;time&#39;, &#39;co2&#39;],
+                                    drop_dups=True)
+        # Dataset converted to DataFrame.
+        df_prepd_obs_orig = ds_sub_obs.to_dataframe().reset_index()
+        df_prepd_obs_orig.rename(columns={&#39;co2&#39;: &#39;obs_original_resolution&#39;}, inplace=True)
+
+        # --- Resampled observations ---
+        #     ds_resampled = ds_sub_obs.resample(time=&#34;1D&#34;).interpolate(&#34;linear&#34;)  # weekly average
+        ds_resampled = ds_sub_obs.resample(time=&#34;1MS&#34;).mean()  # monthly average
+        # ds_resampled = ds_sub_obs.resample(time=&#34;1AS&#34;).mean()  # yearly average
+        # ds_resampled = ds_sub_obs.resample(time=&#34;Q&#34;).mean()  # quarterly average (consecutive three-month periods)
+        # ds_resampled = ds_sub_obs.resample(time=&#34;QS-DEC&#34;).mean()  # quarterly average (consecutive three-month periods), anchored at December 1st.
+        #
+        # Dataset converted to DataFrame.
+        df_prepd_obs_resamp = (ds_resampled
+                               .dropna(dim=(&#39;time&#39;))
+                               .to_dataframe().reset_index()
+                               .rename(columns={&#39;co2&#39;: &#39;obs_resampled_resolution&#39;})
+                               )
+
+        # --- COMBINED ---
+        df_prepd = (df_prepd_obs_resamp
+                    .merge(df_prepd_obs_orig, on=&#39;time&#39;, how=&#39;outer&#39;)
+                    .reset_index()
+                    .loc[:, [&#39;time&#39;, &#39;obs_original_resolution&#39;, &#39;obs_resampled_resolution&#39;]]
+                    )
+
+        _logger.debug(&#39;  First resampled row: %s&#39;, df_prepd.iloc[0, :])
+        _logger.debug(&#39;Done.&#39;)
+
+        return df_prepd
+
+    @staticmethod
+    def _load_surface_data(datadir: str,
+                           ) -&gt; DatasetDict:
+        &#34;&#34;&#34;Load into memory the data for surface measurements from Globalview+.
+
+        Parameters
+        ----------
+        datadir : `str`
+            directory containing the Globalview+ NetCDF files.
+
+        Returns
+        -------
+        `dict`
+            Names, latitudes, longitudes, and altitudes of each station
+        &#34;&#34;&#34;
+        # --- Go through files and extract all &#39;surface&#39; sampled files ---
+        p = re.compile(r&#39;co2_([a-zA-Z0-9]*)_surface.*\.nc$&#39;)
+        return_value = load_data_with_regex(datadir=datadir, compiled_regex_pattern=p)
+        return return_value
+
+    @staticmethod
+    def _load_stations_by_namedict(station_dict: dict,
+                                   datadir: str
+                                   ) -&gt; dict:
+        &#34;&#34;&#34;Load into memory the data for surface observing stations from Globalview+.
+
+        Parameters
+        ----------
+        station_dict : `dict`
+        datadir : `str`
+            directory containing the Globalview+ NetCDF files.
+
+        Returns
+        -------
+        `dict`
+            Names, latitudes, longitudes, and altitudes of each station
+        &#34;&#34;&#34;
+        ds_obs_dict = {}
+        for stationcode, _ in station_dict.items():
+            _logger.debug(stationcode)
+            _logger.debug(&#39;data directory: %s&#39;, datadir)
+
+            file_list = glob.glob(os.path.join(datadir, f&#34;co2_{stationcode}*.nc&#34;))
+            # print(&#34;files: &#34;)
+            # print(*[os.path.basename(x) for x in file_list], sep = &#34;\n&#34;)
+
+            _logger.debug(&#39;Station files: %s&#39;, &#39;, &#39;.join([os.path.basename(x) for x in file_list]))
+            ds_obs_dict[stationcode] = dataset_from_filelist(file_list)
+
+            # Simple unit check - for the Altitude variable
+            check_altitude_unit = ds_obs_dict[stationcode][&#39;altitude&#39;].attrs[&#39;units&#39;] == &#39;m&#39;
+            if not check_altitude_unit:
+                raise ValueError(&#39;unexpected altitude units &lt;%s&gt;&#39;, ds_obs_dict[stationcode][&#39;altitude&#39;].attrs[&#39;units&#39;])
+
+            lats = ds_obs_dict[stationcode][&#39;latitude&#39;].values
+            lons = ds_obs_dict[stationcode][&#39;longitude&#39;].values
+            alts = ds_obs_dict[stationcode][&#39;altitude&#39;].values
+
+            # Get the latitude and longitude of each station
+            #     different_station_lats = np.unique(lats)
+            #     different_station_lons = np.unique(lons)
+            # print(f&#34;there are {len(different_station_lons)} different latitudes for the station: {different_station_lons}&#34;)
+
+            # Get the average lat,lon
+            meanlon = lons.mean()
+            if meanlon &lt; 0:
+                meanlon = meanlon + 360
+            station_latlonalt = {&#39;lat&#39;: lats.mean(), &#39;lon&#39;: meanlon, &#39;alts&#39;: alts.mean()}
+            _logger.debug(&#34;  %s&#34; % station_latlonalt)
+
+            station_dict[stationcode].update(station_latlonalt)
+
+        # Wrangle -- Do the things to the Obs dataset.
+        _logger.debug(&#34;Converting datetime format and units...&#34;)
+        for i, (k, v) in enumerate(ds_obs_dict.items()):
+            _logger.debug(&#39;  %s&#39;, k)
+            ds_obs_dict[k] = (v
+                              .set_coords([&#39;time&#39;, &#39;time_decimal&#39;, &#39;latitude&#39;, &#39;longitude&#39;, &#39;altitude&#39;])
+                              .sortby([&#39;time&#39;])
+                              .swap_dims({&#34;obs&#34;: &#34;time&#34;})
+                              .pipe(ensure_dataset_datetime64)
+                              .rename({&#39;value&#39;: &#39;co2&#39;})
+                              .pipe(co2_molfrac_to_ppm, co2_var_name=&#39;co2&#39;)
+                              )
+            if i == 0:
+                _logger.debug(&#34;  the first DataSet has a time range of &lt;%s&gt; to &lt;%s&gt;.&#34;,
+                              np.datetime_as_string(ds_obs_dict[k][&#39;time&#39;].values[0], unit=&#39;D&#39;),
+                              np.datetime_as_string(ds_obs_dict[k][&#39;time&#39;].values[-1], unit=&#39;D&#39;))
+        _logger.debug(&#34;Converting is done.&#34;)
+
+        return ds_obs_dict
+
+    def plot_station_time_series(self, stationshortname: str) -&gt; (plt.Figure, plt.Axes, tuple):
+        &#34;&#34;&#34;Make timeseries plot of co2 concentration for each surface observing station.
+
+        Parameters
+        ----------
+        stationshortname : `str`
+
+        Returns
+        -------
+        matplotlib figure
+        matplotlib axis
+        tuple
+            Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+        &#34;&#34;&#34;
+        fig, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True, figsize=(7, 5))
+        ax.plot(ensure_datetime64_array(self.df_combined_and_resampled[&#39;time&#39;]),
+                self.df_combined_and_resampled[&#39;obs_original_resolution&#39;],
+                label=&#39;NOAA Obs&#39;,
+                marker=&#39;+&#39;, linestyle=&#39;None&#39;, color=&#39;#C0C0C0&#39;, alpha=0.6)
+        ax.plot(ensure_datetime64_array(self.df_combined_and_resampled[&#39;time&#39;]),
+                self.df_combined_and_resampled[&#39;obs_resampled_resolution&#39;],
+                label=&#39;NOAA Obs monthly mean&#39;,
+                linestyle=&#39;-&#39;, color=(0 / 255, 133 / 255, 202 / 255), linewidth=2)
+        #
+        ax.set_ylim((288.5231369018555, 429.76668853759764))
+        #
+        # ax[i].set_ylabel(&#39;$ppm$&#39;)
+        #     ax.legend(bbox_to_anchor=(1.05, 1))
+        ax.set_ylabel(&#39;$CO_2$ (ppm)&#39;)
+        ax.text(0.02, 0.88, f&#34;{stationshortname.upper()}\n{self.station_dict[stationshortname][&#39;lat&#39;]:.1f}, &#34;
+                            f&#34;{self.station_dict[stationshortname][&#39;lon&#39;]:.1f}&#34;,
+                horizontalalignment=&#39;left&#39;,
+                verticalalignment=&#39;center&#39;,
+                transform=ax.transAxes,
+                fontsize=16)
+        #
+        aesthetic_grid_no_spines(ax)
+
+        # Define the date format
+        #             ax.xaxis.set_major_locator(mdates.YearLocator())
+        #             date_form = DateFormatter(&#34;%b\n%Y&#34;)
+        date_form = DateFormatter(&#34;%Y&#34;)
+        ax.xaxis.set_major_formatter(date_form)
+        #         ax.xaxis.set_minor_locator(mdates.MonthLocator())
+        #         ax.tick_params(which=&#34;both&#34;, bottom=True)
+
+        # leg = ax.legend(loc=&#39;lower right&#39;, fontsize=14)
+        leg = plt.legend(title=&#39;&#39;, frameon=False,
+                         bbox_to_anchor=(0, -0.1), loc=&#39;upper left&#39;,
+                         fontsize=12)
+        for lh in leg.legendHandles:
+            lh.set_alpha(1)
+
+        bbox_artists = (leg,)
+
+        return fig, ax, bbox_artists
+
+    def __repr__(self) -&gt; str:
+        &#34;&#34;&#34;Build a string representation of this object&#34;&#34;&#34;
+        strrep = f&#34;-- Obspack Surface Station Collection -- \n&#34; \
+                 f&#34;Datasets:&#34; \
+                 f&#34;\n\t&#34; + \
+                 self._original_datasets_list_str() + \
+                 f&#34;\n&#34; \
+                 f&#34;All attributes:&#34; \
+                 f&#34;\n\t&#34; + \
+                 &#39;\n\t&#39;.join(self._obj_attributes_list_str())
+
+        return strrep</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="gdess.data_source.multiset.Multiset" href="../multiset.html#gdess.data_source.multiset.Multiset">Multiset</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="gdess.data_source.observations.gvplus_surface.Collection.get_resampled_dataframe"><code class="name flex">
+<span>def <span class="ident">get_resampled_dataframe</span></span>(<span>dataset_obs, timestart, timeend) -> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get data resampled at monthly intervals</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset_obs</code></strong> :&ensp;<code>xr.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>timestart</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>timeend</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>pd.DataFrame</code></dt>
+<dd>Contains columns of time, original data, and resampled data</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def get_resampled_dataframe(dataset_obs,
+                            timestart,
+                            timeend) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Get data resampled at monthly intervals
+
+    Parameters
+    ----------
+    dataset_obs : xr.Dataset
+    timestart
+    timeend
+
+    Returns
+    -------
+    pd.DataFrame
+        Contains columns of time, original data, and resampled data
+    &#34;&#34;&#34;
+    _logger.debug(&#39;Resampling obspack observations..&#39;)
+    # --- OBSERVATIONS ---
+    # Time period is selected.
+    ds_sub_obs = select_between(dataset=dataset_obs,
+                                timestart=timestart, timeend=timeend,
+                                varlist=[&#39;time&#39;, &#39;co2&#39;],
+                                drop_dups=True)
+    # Dataset converted to DataFrame.
+    df_prepd_obs_orig = ds_sub_obs.to_dataframe().reset_index()
+    df_prepd_obs_orig.rename(columns={&#39;co2&#39;: &#39;obs_original_resolution&#39;}, inplace=True)
+
+    # --- Resampled observations ---
+    #     ds_resampled = ds_sub_obs.resample(time=&#34;1D&#34;).interpolate(&#34;linear&#34;)  # weekly average
+    ds_resampled = ds_sub_obs.resample(time=&#34;1MS&#34;).mean()  # monthly average
+    # ds_resampled = ds_sub_obs.resample(time=&#34;1AS&#34;).mean()  # yearly average
+    # ds_resampled = ds_sub_obs.resample(time=&#34;Q&#34;).mean()  # quarterly average (consecutive three-month periods)
+    # ds_resampled = ds_sub_obs.resample(time=&#34;QS-DEC&#34;).mean()  # quarterly average (consecutive three-month periods), anchored at December 1st.
+    #
+    # Dataset converted to DataFrame.
+    df_prepd_obs_resamp = (ds_resampled
+                           .dropna(dim=(&#39;time&#39;))
+                           .to_dataframe().reset_index()
+                           .rename(columns={&#39;co2&#39;: &#39;obs_resampled_resolution&#39;})
+                           )
+
+    # --- COMBINED ---
+    df_prepd = (df_prepd_obs_resamp
+                .merge(df_prepd_obs_orig, on=&#39;time&#39;, how=&#39;outer&#39;)
+                .reset_index()
+                .loc[:, [&#39;time&#39;, &#39;obs_original_resolution&#39;, &#39;obs_resampled_resolution&#39;]]
+                )
+
+    _logger.debug(&#39;  First resampled row: %s&#39;, df_prepd.iloc[0, :])
+    _logger.debug(&#39;Done.&#39;)
+
+    return df_prepd</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.observations.gvplus_surface.Collection.run_recipe_for_annual_series"><code class="name flex">
+<span>def <span class="ident">run_recipe_for_annual_series</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_time_and_call(*args, **kwargs):
+    # Clock is started.
+    start_time = time.time()
+    # Recipe is run.
+    returnval = func(*args, **kwargs)
+    # Report the time this recipe took to execute.
+    execution_time = (time.time() - start_time)
+    _logger.info(&#39;recipe execution time (seconds): &#39; + str(execution_time))
+
+    return returnval</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.observations.gvplus_surface.Collection.run_recipe_for_timeseries"><code class="name flex">
+<span>def <span class="ident">run_recipe_for_timeseries</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def display_time_and_call(*args, **kwargs):
+    # Clock is started.
+    start_time = time.time()
+    # Recipe is run.
+    returnval = func(*args, **kwargs)
+    # Report the time this recipe took to execute.
+    execution_time = (time.time() - start_time)
+    _logger.info(&#39;recipe execution time (seconds): &#39; + str(execution_time))
+
+    return returnval</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="gdess.data_source.observations.gvplus_surface.Collection.plot_station_time_series"><code class="name flex">
+<span>def <span class="ident">plot_station_time_series</span></span>(<span>self, stationshortname: str) -> (<class 'matplotlib.figure.Figure'>, <class 'matplotlib.axes._axes.Axes'>, <class 'tuple'>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make timeseries plot of co2 concentration for each surface observing station.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>stationshortname</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>matplotlib figure</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>matplotlib axis</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>tuple</code></dt>
+<dd>Extra matplotlib artists used for the bounding box (bbox) when saving a figure</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_station_time_series(self, stationshortname: str) -&gt; (plt.Figure, plt.Axes, tuple):
+    &#34;&#34;&#34;Make timeseries plot of co2 concentration for each surface observing station.
+
+    Parameters
+    ----------
+    stationshortname : `str`
+
+    Returns
+    -------
+    matplotlib figure
+    matplotlib axis
+    tuple
+        Extra matplotlib artists used for the bounding box (bbox) when saving a figure
+    &#34;&#34;&#34;
+    fig, ax = plt.subplots(nrows=1, ncols=1, sharex=True, sharey=True, figsize=(7, 5))
+    ax.plot(ensure_datetime64_array(self.df_combined_and_resampled[&#39;time&#39;]),
+            self.df_combined_and_resampled[&#39;obs_original_resolution&#39;],
+            label=&#39;NOAA Obs&#39;,
+            marker=&#39;+&#39;, linestyle=&#39;None&#39;, color=&#39;#C0C0C0&#39;, alpha=0.6)
+    ax.plot(ensure_datetime64_array(self.df_combined_and_resampled[&#39;time&#39;]),
+            self.df_combined_and_resampled[&#39;obs_resampled_resolution&#39;],
+            label=&#39;NOAA Obs monthly mean&#39;,
+            linestyle=&#39;-&#39;, color=(0 / 255, 133 / 255, 202 / 255), linewidth=2)
+    #
+    ax.set_ylim((288.5231369018555, 429.76668853759764))
+    #
+    # ax[i].set_ylabel(&#39;$ppm$&#39;)
+    #     ax.legend(bbox_to_anchor=(1.05, 1))
+    ax.set_ylabel(&#39;$CO_2$ (ppm)&#39;)
+    ax.text(0.02, 0.88, f&#34;{stationshortname.upper()}\n{self.station_dict[stationshortname][&#39;lat&#39;]:.1f}, &#34;
+                        f&#34;{self.station_dict[stationshortname][&#39;lon&#39;]:.1f}&#34;,
+            horizontalalignment=&#39;left&#39;,
+            verticalalignment=&#39;center&#39;,
+            transform=ax.transAxes,
+            fontsize=16)
+    #
+    aesthetic_grid_no_spines(ax)
+
+    # Define the date format
+    #             ax.xaxis.set_major_locator(mdates.YearLocator())
+    #             date_form = DateFormatter(&#34;%b\n%Y&#34;)
+    date_form = DateFormatter(&#34;%Y&#34;)
+    ax.xaxis.set_major_formatter(date_form)
+    #         ax.xaxis.set_minor_locator(mdates.MonthLocator())
+    #         ax.tick_params(which=&#34;both&#34;, bottom=True)
+
+    # leg = ax.legend(loc=&#39;lower right&#39;, fontsize=14)
+    leg = plt.legend(title=&#39;&#39;, frameon=False,
+                     bbox_to_anchor=(0, -0.1), loc=&#39;upper left&#39;,
+                     fontsize=12)
+    for lh in leg.legendHandles:
+        lh.set_alpha(1)
+
+    bbox_artists = (leg,)
+
+    return fig, ax, bbox_artists</code></pre>
+</details>
+</dd>
+<dt id="gdess.data_source.observations.gvplus_surface.Collection.preprocess"><code class="name flex">
+<span>def <span class="ident">preprocess</span></span>(<span>self, datadir: str, station_name: Union[str, list] = None) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set up the dataset that is common to every diagnostic</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>datadir</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>station_name</code></strong> :&ensp;<code>str</code> or <code>list</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def preprocess(self, datadir: str,
+               station_name: Union[str, list] = None
+               ) -&gt; None:
+    &#34;&#34;&#34;Set up the dataset that is common to every diagnostic
+
+    Parameters
+    ----------
+    datadir : `str`
+    station_name : `str` or `list`
+    &#34;&#34;&#34;
+    _logger.debug(&#34;Preprocessing...&#34;)
+    if not station_name:
+        # Use predefined dictionary of stations at the top of this module
+        stations = self.station_dict
+    else:
+        # Create a subset of the station dictionary containing only the station name(s) passed in
+        if isinstance(station_name, str):
+            station_name = [station_name]
+        stations = dict((k, self.station_dict[k]) for k in station_name)
+
+    if not datadir:
+        # A configuration object (for holding paths and settings) is read in to get the path to the data.
+        config = load_config_file()
+        datadir = config.get(&#39;NOAA_Globalview&#39;, &#39;source&#39;, vars=os.environ)
+        _logger.debug(f&#34;Loading local Globalview data files from path &lt;{datadir}&gt;..&#34;)
+
+    self.stepA_original_datasets = DatasetDict(self._load_stations_by_namedict(stations, datadir))
+    _logger.debug(&#34;Preprocessing is done.&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="gdess.data_source.multiset.Multiset" href="../multiset.html#gdess.data_source.multiset.Multiset">Multiset</a></b></code>:
+<ul class="hlist">
+<li><code><a title="gdess.data_source.multiset.Multiset.categorical_cmap" href="../multiset.html#gdess.data_source.multiset.Multiset.categorical_cmap">categorical_cmap</a></code></li>
+<li><code><a title="gdess.data_source.multiset.Multiset.datasets_from_pickle" href="../multiset.html#gdess.data_source.multiset.Multiset.datasets_from_pickle">datasets_from_pickle</a></code></li>
+<li><code><a title="gdess.data_source.multiset.Multiset.get_anomaly_dataframes" href="../multiset.html#gdess.data_source.multiset.Multiset.get_anomaly_dataframes">get_anomaly_dataframes</a></code></li>
+<li><code><a title="gdess.data_source.multiset.Multiset.validate_time_options" href="../multiset.html#gdess.data_source.multiset.Multiset.validate_time_options">validate_time_options</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="gdess.data_source.observations" href="index.html">gdess.data_source.observations</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="gdess.data_source.observations.gvplus_surface.add_surface_station_collection_args_to_parser" href="#gdess.data_source.observations.gvplus_surface.add_surface_station_collection_args_to_parser">add_surface_station_collection_args_to_parser</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="gdess.data_source.observations.gvplus_surface.Collection" href="#gdess.data_source.observations.gvplus_surface.Collection">Collection</a></code></h4>
+<ul class="">
+<li><code><a title="gdess.data_source.observations.gvplus_surface.Collection.get_resampled_dataframe" href="#gdess.data_source.observations.gvplus_surface.Collection.get_resampled_dataframe">get_resampled_dataframe</a></code></li>
+<li><code><a title="gdess.data_source.observations.gvplus_surface.Collection.plot_station_time_series" href="#gdess.data_source.observations.gvplus_surface.Collection.plot_station_time_series">plot_station_time_series</a></code></li>
+<li><code><a title="gdess.data_source.observations.gvplus_surface.Collection.preprocess" href="#gdess.data_source.observations.gvplus_surface.Collection.preprocess">preprocess</a></code></li>
+<li><code><a title="gdess.data_source.observations.gvplus_surface.Collection.run_recipe_for_annual_series" href="#gdess.data_source.observations.gvplus_surface.Collection.run_recipe_for_annual_series">run_recipe_for_annual_series</a></code></li>
+<li><code><a title="gdess.data_source.observations.gvplus_surface.Collection.run_recipe_for_timeseries" href="#gdess.data_source.observations.gvplus_surface.Collection.run_recipe_for_timeseries">run_recipe_for_timeseries</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
