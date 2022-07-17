@@ -1,5 +1,5 @@
 <%!
-    from pdoc.html_helpers import minify_css
+    from gdess.html_helpers import minify_css
 %>
 <%def name="homelink()" filter="minify_css">
     .homelink {
