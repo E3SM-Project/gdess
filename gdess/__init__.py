@@ -1,3 +1,10 @@
+"""
+Python package `gdess` facilitates comparison of simulated atmospheric CO2 against observational data.
+Specifically, it selects, loads, and parses the observational datasets and model simulations to be in a consistent structure
+and generates data visualizations for several diagnostic use cases.
+Three diagnostic recipes currently implemented examine multidecadal trends, seasonal cycles, and meridional gradients.
+
+"""
 import os
 import json
 import time
@@ -31,7 +38,7 @@ def load_stations_dict() -> dict:
 
     Returns
     -------
-    dict
+    `dict`
     """
     path = 'config/stations_dict.json'  # always use slash
     filepath = pkg_resources.resource_filename(__package__, path)
@@ -65,7 +72,7 @@ def validate_verbose(verbose: Union[bool, str] = False) -> Union[int, str]:
 
     Returns
     -------
-    int or str
+    `int` or `str`
         A logging verbosity level or string that corresponds to a verbosity level
 
     """
