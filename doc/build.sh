@@ -6,8 +6,10 @@ echo
 mkdir -p "./docs"
 pushd "./docs/.." >/dev/null
 pdoc3 --html \
-     --output-dir "./docs" \
-     gdess
+      --force \
+      --config latex_math=True \
+      --output-dir "./docs" \
+      gdess
 popd >/dev/null
 
 ## D.E.K. - add this line to the top of the index.html...
