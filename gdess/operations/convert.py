@@ -8,31 +8,27 @@ _logger = logging.getLogger(__name__)
 def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
                        co2_var_name: str = 'co2',
                        ) -> xr.Dataset:
-    """Convert CO2 from units of mol/mol to ppm
+    """Convert \\(CO_2\\) from units of mol/mol to ppm
 
     Parameters
     ----------
-    xr_ds_ : xarray.Dataset
+    xr_ds_ : ``xarray.Dataset``
         A dataset containing a CO2 variable
-    co2_var_name : str, default 'co2'
+    co2_var_name : `str`, default 'co2'
         Variable name for CO2 in the dataset
+
+    Notes
+    -----
+    The \\(CO_2\\) variable of the input dataset is converted from units of mol/mol to ppm by:
+
+    $$ppmfac = \\times \\frac{1e6\\,mol_{air}}{1\\,mol_{CO_2}}$$
+
+    $$CO_2\\,dry\\,air\\,mole\\,fraction\\,(i.e. \\frac{mol_{CO_2}}{mol_{air}}) \\times ppmfac = ppm$$
 
     Returns
     -------
-    xr.DataSet
-        The dataset with CO2 converted to units of <ppm>
-
-    Notes
-    _______
-    The $CO_2$ variable of the input dataset is converted from units of $mol/mol$ to $ppm$ by:
-
-    \begin{array}{lllll}
-        ppmfac = & \times \frac{1e6\,mol_{air}}{1\,mol_{CO_2}}
-    \end{array}
-
-    \begin{align}
-        CO_2\,dry\,air\,mole\,fraction\,(i.e. \frac{mol_{CO_2}}{mol_{air}}) \times ppmfac & = ppm \\
-    \end{align}
+    ``xarray.DataSet``
+        The dataset with \\(CO_2\\) converted to units of ppm
     """
     ppmfac = 1e6
 
@@ -53,28 +49,30 @@ def co2_molfrac_to_ppm(xr_ds_: xr.Dataset,
 def co2_kgfrac_to_ppm(xr_ds_: xr.Dataset,
                       co2_var_name: str = 'co2',
                       ) -> xr.Dataset:
-    """Convert CO2 from units of kg/kg to ppm
+    """Convert \\(CO_2\\) from units of kg/kg to ppm
 
     Parameters
     ----------
-    xr_ds_ : xarray.Dataset
+    xr_ds_ : ``xarray.Dataset``
         A dataset containing a CO2 variable
-    co2_var_name : str, default 'co2'
+    co2_var_name : `str`, default 'co2'
         Variable name for CO2 in the dataset
+
+    Notes
+    -----
+    The \\(CO_2\\) variable of the input dataset is converted from units of kg/kg to ppm by:
+
+    .. math::
+        CO_2\\,dry-air\\,mass\\,fraction \\times CO_2\\,molar\\,mass \\times dry-air\\,molar\\,mass \\times ppm
+
+    .. math::
+        \\frac{kg_{CO_2}}{kg_{air}} \\times \\frac{1\\,kmol_{CO_2}}{44.01\\,kg_{CO_2}} \\times
+            \\frac{28.9647\\,kg_{air}}{1\\,kmol_{air}} \\times \\frac{1e6\\,parts_{air}}{1\\,part_{CO_2}}
 
     Returns
     -------
-    xr.Dataset
-        The dataset with CO2 converted to units of <ppm>
-
-    Notes
-    ______
-    The $CO_2$ variable of the input dataset is converted from units of $kg/kg$ to $ppm$ by:
-
-    \begin{array}{lllll}
-        CO_2\,dry-air\,mass\,fraction  & \times CO_2\,molar\,mass & \times dry-air\,molar\,mass & \times ppm \\
-        \frac{kg_{CO_2}}{kg_{air}} & \times \frac{1\,kmol_{CO_2}}{44.01\,kg_{CO_2}} & \times \frac{28.9647\,kg_{air}}{1\,kmol_{air}} & \times \frac{1e6\,parts_{air}}{1\,part_{CO_2}}
-    \end{array}
+    ``xarray.Dataset``
+        The dataset with CO2 converted to units of ppm
     """
     mwco2 = 44.01
     mwdry = 28.9647

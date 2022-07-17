@@ -1,5 +1,7 @@
+"""Work simultaneous with multiple, consistent xarray Datasets."""
+import pickle
+import logging
 from typing import Union
-import pickle, logging
 
 import numpy as np
 import pandas as pd
@@ -20,13 +22,14 @@ class Multiset:
 
     def __init__(self, verbose: Union[bool, str] = False):
         """A template against which we can run recipes, with an order of operations:
-            - Step A: datasets loaded, in their original form
-            - Step B: datasets that have been preprocessed
-            - Step C: datasets that have operations lazily queued or fully processed
+
+        - Step A: datasets loaded, in their original form
+        - Step B: datasets that have been preprocessed
+        - Step C: datasets that have operations lazily queued or fully processed
 
         Parameters
         ----------
-        verbose : Union[bool, str], default False
+        verbose : {`bool`, `str`}, default False
             either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.stepA_original_datasets: Union[DatasetDict, None] = None
@@ -53,8 +56,8 @@ class Multiset:
 
         Parameters
         ----------
-        filename : str, default 'cmip_collection.latest_executed_datasets.pickle'
-        replace : bool, default False
+        filename : `str`, default 'cmip_collection.latest_executed_datasets.pickle'
+        replace : `bool`, default False
 
         Returns
         -------

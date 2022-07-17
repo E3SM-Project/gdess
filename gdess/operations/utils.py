@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""A collection of tools for use with the CO2 diagnostics development
-Most of the routines are designed to work with xarray.DataArray types
+"""A collection of tools for use with the CO2 diagnostics development.
+Most of the routines are designed to work with xarray.DataArray types.
 
 Created September 2020
 @author: Daniel E. Kaufman
@@ -30,17 +30,17 @@ def print_var_summary(dataset: xr.Dataset,
                       varname: str = 'CO2',
                       return_dataset: bool = False
                       ) -> Union[None, xr.Dataset]:
-    """Brief stats for a dataset variable are printed
+    """Print brief stats for a dataset variable
 
     Parameters
     ----------
     dataset : xarray.Dataset
-    varname : str, default 'CO2'
-    return_dataset : bool, default False
+    varname : `str`, default 'CO2'
+    return_dataset : `bool`, default False
 
     Returns
     -------
-    Either None or an xarray.Dataset
+    None or an xarray.Dataset
     """
     # We check if there are units specified for this variable
     vu = None
@@ -76,8 +76,6 @@ def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
                                ) -> bool:
     """Raise an AssertionError if data dimensions don't match the given names or shape
 
-    Note
-    ----
     If an expected_shape argument isn't provided, we ignore the shapes (dim lengths).
 
     Parameters
@@ -93,13 +91,16 @@ def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
 
     Raises
     ------
-    AssertionError, if the data dimensions or shape don't match those given.
-    TypeError, if the arguments types are incorrect.
-    ValueError, if the given shape and dimension arguments don't match.
+    AssertionError
+        If the data dimensions or shape don't match those given.
+    TypeError
+        If the arguments types are incorrect.
+    ValueError
+        If the given shape and dimension arguments don't match.
 
     Returns
     -------
-    bool
+    `bool`
         True, if the given names (and shapes, if given) match the data.
     """
     dims_dict = dict(data.dims)
@@ -152,7 +153,7 @@ def get_var_stats(dataarray: xr.DataArray) -> dict:
 
     Returns
     -------
-    dict
+    `dict`
     """
     return {
         'min': dataarray.min().values.item(),

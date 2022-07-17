@@ -12,6 +12,7 @@
 <style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML'></script>
 </head>
 <body>
 <main>
@@ -38,13 +39,23 @@ _logger = logging.getLogger(__name__)
 def calc_change_in_mass(dataset: xr.Dataset,
                         varname=&#39;glmean_TMCO2_FFF&#39;, prefix=&#39;deltas_&#39;
                         ) -&gt; xr.Dataset:
-    &#34;&#34;&#34;Change in mass of $CO_2$ from timestep to timestep
-    $\Delta{mass_{CO_2}}$ - using backwards difference
+    &#34;&#34;&#34;Change in mass of \\(CO_2\\) from timestep to timestep
+    using backwards difference - \\(\\Delta{mass_{CO_2}}\\)
 
-    \begin{align*}
-        &amp;&amp; \Delta \texttt{glmean_TMCO2}_{t} = \texttt{glmean_TMCO2}_{t} - \texttt{glmean_TMCO2}_{t-1} &amp;&amp; \forall t
-    \end{align*}
+    Parameters
+    ----------
+    dataset : ``xarray.Dataset``
+    varname : `str`
+    prefix : `str`
 
+    Notes
+    -----
+    .. math::
+        \\Delta \\texttt{glmean_TMCO2}_{t} = \\texttt{glmean_TMCO2}_{t} - \\texttt{glmean_TMCO2}_{t-1} \\forall t
+
+    Returns
+    -------
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     dataset[prefix + varname] = xr.DataArray(calc_var_deltas(dataset[varname]),
                                              coords={&#39;time&#39;: dataset[&#39;time&#39;]},
@@ -54,23 +65,40 @@ def calc_change_in_mass(dataset: xr.Dataset,
 
 def calc_global_weighted_means(dataset: xr.Dataset,
                                variable_list=None,
-                               prefix=&#39;glmean_&#39;, weighting_var=&#39;area_p&#39;, averaging_dims=(&#39;ncol&#39;)
+                               prefix=&#39;glmean_&#39;,
+                               weighting_var=&#39;area_p&#39;,
+                               averaging_dims=&#39;ncol&#39;
                                ) -&gt; xr.Dataset:
     &#34;&#34;&#34;Global means with weighting by area
 
-    xarray has recently introduced a weighting method (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
+    Parameters
+    ----------
+    dataset
+    variable_list
+    prefix
+    weighting_var
+    averaging_dims
+
+    Notes
+    -----
+    xarray has recently introduced a weighting method
+        (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
     The area of each grid cell for the ne4pg2/ne30pg2 grids is called “area_p”.
     For the ne4/ne30 grids it is just called “area”.  Not sure why they changed it.
 
-    \begin{align*}
-        &amp;&amp; \texttt{glmean_CO2var}_{t}= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{CO2var}_{i,j,t} * \texttt{area}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{area}_{i,j}}     &amp;&amp;\forall t, \\
-        with\,units: &amp;&amp; \{kg/m^2\}_t= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{kg/{m^2}\}_{i,j,t} * \{m^2/m^2\}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{m^2/m^2\}_{i,j}}     &amp;&amp;\forall t. \\
-    \end{align*}
+    .. math::
+        \\texttt{glmean_CO2var}_{t}= \\frac{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\texttt{CO2var}_{i,j,t} * \\texttt{area}_{i,j}}{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\texttt{area}_{i,j}}
+            \\forall t,
+        with\\,units: \\{kg/m^2\\}_t= &amp; \\frac{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\{kg/{m^2}\\}_{i,j,t} * \\{m^2/m^2\\}_{i,j}}{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\{m^2/m^2\\}_{i,j}}
+            \\forall t.
 
-    *notes:*
-    - we would need to multiply by the radius of Earth ($R^2_{E}$ in units of $\{m^2\}$) to get to $kg$ because `area` is in steradians rather than $m^2$.
-    - the above multiplication by `area` ($m^2/m^2$) is taken care of in the xarray.DataArray.weighted() method.
+    We would need to multiply by the radius of Earth (\\(R^2_{E}\\) in units of \\(\\{m^2\\}\\))
+        to get to \\(kg\\) because `area` is in steradians rather than \\(m^2\\).
+    The above multiplication by `area` (\\(m^2/m^2\\)) is taken care of in the xarray.DataArray.weighted() method.
 
+    Returns
+    -------
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     dataset = add_global_mean_vars(dataset, variable_list=variable_list, prefix=prefix,
                                    weighting_var=weighting_var, averaging_dims=averaging_dims)
@@ -78,15 +106,25 @@ def calc_global_weighted_means(dataset: xr.Dataset,
 
 
 def calc_time_integrated_fluxes(dataset: xr.Dataset,
-                                prefix=&#39;timeint_&#39;
+                                prefix: str = &#39;timeint_&#39;
                                 ) -&gt; xr.Dataset:
-    &#34;&#34;&#34;Time-integrated flux of $CO_2$ from surface emissions and aircraft
-    $\int{flux_{CO_2}}$
+    &#34;&#34;&#34;Time-integrated flux of \\(CO_2\\) from surface emissions and aircraft
+    \\(\\int{flux_{CO_2}}\\)
 
-    \begin{align*}
-        &amp;&amp; \int_{t-1}^{t} \texttt{SFCO2} \approx &amp; \texttt{glmean_SFCO2}_{t} &amp; * &amp; \quad (time_t - time_{t-1})    &amp;&amp;\forall t, \\
-        with\,units: &amp;&amp; \{kg/m^2\}_t= &amp; \{kg/m^2/s\}_t&amp; * &amp; \quad \{s\}_{t}    &amp;&amp;\forall t. \\
-    \end{align*}
+    .. math::
+        \\int_{t-1}^{t} \\texttt{SFCO2} \\approx \\texttt{glmean_SFCO2}_{t} * \\quad (time_t - time_{t-1})
+            \\forall t,
+        with\\,units: \\{kg/m^2\\}_t= \\{kg/m^2/s\\}_t * \\quad \\{s\\}_{t}
+            \\forall t.
+
+    Parameters
+    ----------
+    dataset : ``xarray.Dataset``
+    prefix : str
+
+    Returns
+    -------
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     dtime = calc_time_deltas(dataset)
     #
@@ -179,15 +217,22 @@ def getPINT(hyai, hybi, P0, PS):
 <span>def <span class="ident">calc_change_in_mass</span></span>(<span>dataset: xarray.core.dataset.Dataset, varname='glmean_TMCO2_FFF', prefix='deltas_') -> xarray.core.dataset.Dataset</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Change in mass of $CO_2$ from timestep to timestep
-$\Delta{mass_{CO_2}}$ - using backwards difference</p>
-<p>egin{align<em>}
-&amp;&amp; \Delta
-exttt{glmean_TMCO2}<em t>{t} =
-exttt{glmean_TMCO2}</em> -
-exttt{glmean_TMCO2}_{t-1} &amp;&amp;
-orall t
-\end{align</em>}</p></div>
+<div class="desc"><p>Change in mass of <span><span class="MathJax_Preview">CO_2</span><script type="math/tex">CO_2</script></span> from timestep to timestep
+using backwards difference - <span><span class="MathJax_Preview">\Delta{mass_{CO_2}}</span><script type="math/tex">\Delta{mass_{CO_2}}</script></span></p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>varname</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p><span><span class="MathJax_Preview"> \Delta \texttt{glmean_TMCO2}_{t} = \texttt{glmean_TMCO2}_{t} - \texttt{glmean_TMCO2}_{t-1} \forall t </span><script type="math/tex; mode=display"> \Delta \texttt{glmean_TMCO2}_{t} = \texttt{glmean_TMCO2}_{t} - \texttt{glmean_TMCO2}_{t-1} \forall t </script></span>
+Returns</p>
+<hr>
+<p><code>xarray.Dataset</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -195,13 +240,23 @@ orall t
 <pre><code class="python">def calc_change_in_mass(dataset: xr.Dataset,
                         varname=&#39;glmean_TMCO2_FFF&#39;, prefix=&#39;deltas_&#39;
                         ) -&gt; xr.Dataset:
-    &#34;&#34;&#34;Change in mass of $CO_2$ from timestep to timestep
-    $\Delta{mass_{CO_2}}$ - using backwards difference
+    &#34;&#34;&#34;Change in mass of \\(CO_2\\) from timestep to timestep
+    using backwards difference - \\(\\Delta{mass_{CO_2}}\\)
 
-    \begin{align*}
-        &amp;&amp; \Delta \texttt{glmean_TMCO2}_{t} = \texttt{glmean_TMCO2}_{t} - \texttt{glmean_TMCO2}_{t-1} &amp;&amp; \forall t
-    \end{align*}
+    Parameters
+    ----------
+    dataset : ``xarray.Dataset``
+    varname : `str`
+    prefix : `str`
 
+    Notes
+    -----
+    .. math::
+        \\Delta \\texttt{glmean_TMCO2}_{t} = \\texttt{glmean_TMCO2}_{t} - \\texttt{glmean_TMCO2}_{t-1} \\forall t
+
+    Returns
+    -------
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     dataset[prefix + varname] = xr.DataArray(calc_var_deltas(dataset[varname]),
                                              coords={&#39;time&#39;: dataset[&#39;time&#39;]},
@@ -214,48 +269,77 @@ orall t
 </code></dt>
 <dd>
 <div class="desc"><p>Global means with weighting by area</p>
-<p>xarray has recently introduced a weighting method (<a href="http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html">http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html</a>).
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dataset</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>variable_list</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>prefix</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>weighting_var</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>averaging_dims</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>xarray has recently introduced a weighting method
+(<a href="http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html">http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html</a>).
 The area of each grid cell for the ne4pg2/ne30pg2 grids is called “area_p”.
 For the ne4/ne30 grids it is just called “area”.
 Not sure why they changed it.</p>
-<p>egin{align<em>}
-&amp;&amp;
-exttt{glmean_CO2var}<em i="1">{t}= &amp;
-rac{\sum</em>^{nlat}\sum_{j=1}^{nlon}
-exttt{CO2var}<em i_j="i,j">{i,j,t} *
-exttt{area}</em>}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon}
-exttt{area}<em i="1">{i,j}}
-&amp;&amp;orall t, \
-with\,units: &amp;&amp; {kg/m^2}_t= &amp;
-rac{\sum</em>^{nlat}\sum_{j=1}^{nlon} {kg/{m^2}}<em i_j="i,j">{i,j,t} * {m^2/m^2}</em>}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} {m^2/m^2}_{i,j}}
-&amp;&amp;orall t. \
-\end{align</em>}</p>
-<p><em>notes:</em>
-- we would need to multiply by the radius of Earth ($R^2_{E}$ in units of ${m^2}$) to get to $kg$ because <code>area</code> is in steradians rather than $m^2$.
-- the above multiplication by <code>area</code> ($m^2/m^2$) is taken care of in the xarray.DataArray.weighted() method.</p></div>
+<p><span><span class="MathJax_Preview"> \texttt{glmean_CO2var}_{t}= \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{CO2var}_{i,j,t} * \texttt{area}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{area}_{i,j}}
+\forall t,
+with\,units: \{kg/m^2\}_t= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{kg/{m^2}\}_{i,j,t} * \{m^2/m^2\}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{m^2/m^2\}_{i,j}}
+\forall t. </span><script type="math/tex; mode=display"> \texttt{glmean_CO2var}_{t}= \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{CO2var}_{i,j,t} * \texttt{area}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{area}_{i,j}}
+\forall t,
+with\,units: \{kg/m^2\}_t= & \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{kg/{m^2}\}_{i,j,t} * \{m^2/m^2\}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{m^2/m^2\}_{i,j}}
+\forall t. </script></span>
+We would need to multiply by the radius of Earth ((R^2_{E}) in units of <span><span class="MathJax_Preview">\{m^2\}</span><script type="math/tex">\{m^2\}</script></span>)
+to get to <span><span class="MathJax_Preview">kg</span><script type="math/tex">kg</script></span> because <code>area</code> is in steradians rather than <span><span class="MathJax_Preview">m^2</span><script type="math/tex">m^2</script></span>.
+The above multiplication by <code>area</code> ((m^2/m^2)) is taken care of in the xarray.DataArray.weighted() method.</p>
+<h2 id="returns">Returns</h2>
+<p><code>xarray.Dataset</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def calc_global_weighted_means(dataset: xr.Dataset,
                                variable_list=None,
-                               prefix=&#39;glmean_&#39;, weighting_var=&#39;area_p&#39;, averaging_dims=(&#39;ncol&#39;)
+                               prefix=&#39;glmean_&#39;,
+                               weighting_var=&#39;area_p&#39;,
+                               averaging_dims=&#39;ncol&#39;
                                ) -&gt; xr.Dataset:
     &#34;&#34;&#34;Global means with weighting by area
 
-    xarray has recently introduced a weighting method (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
+    Parameters
+    ----------
+    dataset
+    variable_list
+    prefix
+    weighting_var
+    averaging_dims
+
+    Notes
+    -----
+    xarray has recently introduced a weighting method
+        (http://xarray.pydata.org/en/stable/examples/area_weighted_temperature.html).
     The area of each grid cell for the ne4pg2/ne30pg2 grids is called “area_p”.
     For the ne4/ne30 grids it is just called “area”.  Not sure why they changed it.
 
-    \begin{align*}
-        &amp;&amp; \texttt{glmean_CO2var}_{t}= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{CO2var}_{i,j,t} * \texttt{area}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \texttt{area}_{i,j}}     &amp;&amp;\forall t, \\
-        with\,units: &amp;&amp; \{kg/m^2\}_t= &amp; \frac{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{kg/{m^2}\}_{i,j,t} * \{m^2/m^2\}_{i,j}}{\sum_{i=1}^{nlat}\sum_{j=1}^{nlon} \{m^2/m^2\}_{i,j}}     &amp;&amp;\forall t. \\
-    \end{align*}
+    .. math::
+        \\texttt{glmean_CO2var}_{t}= \\frac{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\texttt{CO2var}_{i,j,t} * \\texttt{area}_{i,j}}{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\texttt{area}_{i,j}}
+            \\forall t,
+        with\\,units: \\{kg/m^2\\}_t= &amp; \\frac{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\{kg/{m^2}\\}_{i,j,t} * \\{m^2/m^2\\}_{i,j}}{\\sum_{i=1}^{nlat}\\sum_{j=1}^{nlon} \\{m^2/m^2\\}_{i,j}}
+            \\forall t.
 
-    *notes:*
-    - we would need to multiply by the radius of Earth ($R^2_{E}$ in units of $\{m^2\}$) to get to $kg$ because `area` is in steradians rather than $m^2$.
-    - the above multiplication by `area` ($m^2/m^2$) is taken care of in the xarray.DataArray.weighted() method.
+    We would need to multiply by the radius of Earth (\\(R^2_{E}\\) in units of \\(\\{m^2\\}\\))
+        to get to \\(kg\\) because `area` is in steradians rather than \\(m^2\\).
+    The above multiplication by `area` (\\(m^2/m^2\\)) is taken care of in the xarray.DataArray.weighted() method.
 
+    Returns
+    -------
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     dataset = add_global_mean_vars(dataset, variable_list=variable_list, prefix=prefix,
                                    weighting_var=weighting_var, averaging_dims=averaging_dims)
@@ -280,33 +364,52 @@ rac{\sum</em>^{nlat}\sum_{j=1}^{nlon} {kg/{m^2}}<em i_j="i,j">{i,j,t} * {m^2/m^2
 </details>
 </dd>
 <dt id="gdess.data_source.models.e3sm.calculation.calc_time_integrated_fluxes"><code class="name flex">
-<span>def <span class="ident">calc_time_integrated_fluxes</span></span>(<span>dataset: xarray.core.dataset.Dataset, prefix='timeint_') -> xarray.core.dataset.Dataset</span>
+<span>def <span class="ident">calc_time_integrated_fluxes</span></span>(<span>dataset: xarray.core.dataset.Dataset, prefix: str = 'timeint_') -> xarray.core.dataset.Dataset</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Time-integrated flux of $CO_2$ from surface emissions and aircraft
-$\int{flux_{CO_2}}$</p>
-<p>egin{align<em>}
-&amp;&amp; \int_{t-1}^{t}
-exttt{SFCO2} pprox &amp;
-exttt{glmean_SFCO2}<em t-1>{t} &amp; * &amp; \quad (time_t - time</em>)
-&amp;&amp;orall t, \
-with\,units: &amp;&amp; {kg/m^2}<em t>t= &amp; {kg/m^2/s}_t&amp; * &amp; \quad {s}</em>
-&amp;&amp;orall t. \
-\end{align</em>}</p></div>
+<div class="desc"><p>Time-integrated flux of <span><span class="MathJax_Preview">CO_2</span><script type="math/tex">CO_2</script></span> from surface emissions and aircraft
+<span><span class="MathJax_Preview">\int{flux_{CO_2}}</span><script type="math/tex">\int{flux_{CO_2}}</script></span></p>
+<p><span><span class="MathJax_Preview"> \int_{t-1}^{t} \texttt{SFCO2} \approx \texttt{glmean_SFCO2}_{t} * \quad (time_t - time_{t-1})
+\forall t,
+with\,units: \{kg/m^2\}_t= \{kg/m^2/s\}_t * \quad \{s\}_{t}
+\forall t. </span><script type="math/tex; mode=display"> \int_{t-1}^{t} \texttt{SFCO2} \approx \texttt{glmean_SFCO2}_{t} * \quad (time_t - time_{t-1})
+\forall t,
+with\,units: \{kg/m^2\}_t= \{kg/m^2/s\}_t * \quad \{s\}_{t}
+\forall t. </script></span>
+Parameters</p>
+<hr>
+<dl>
+<dt><strong><code>dataset</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p><code>xarray.Dataset</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def calc_time_integrated_fluxes(dataset: xr.Dataset,
-                                prefix=&#39;timeint_&#39;
+                                prefix: str = &#39;timeint_&#39;
                                 ) -&gt; xr.Dataset:
-    &#34;&#34;&#34;Time-integrated flux of $CO_2$ from surface emissions and aircraft
-    $\int{flux_{CO_2}}$
+    &#34;&#34;&#34;Time-integrated flux of \\(CO_2\\) from surface emissions and aircraft
+    \\(\\int{flux_{CO_2}}\\)
 
-    \begin{align*}
-        &amp;&amp; \int_{t-1}^{t} \texttt{SFCO2} \approx &amp; \texttt{glmean_SFCO2}_{t} &amp; * &amp; \quad (time_t - time_{t-1})    &amp;&amp;\forall t, \\
-        with\,units: &amp;&amp; \{kg/m^2\}_t= &amp; \{kg/m^2/s\}_t&amp; * &amp; \quad \{s\}_{t}    &amp;&amp;\forall t. \\
-    \end{align*}
+    .. math::
+        \\int_{t-1}^{t} \\texttt{SFCO2} \\approx \\texttt{glmean_SFCO2}_{t} * \\quad (time_t - time_{t-1})
+            \\forall t,
+        with\\,units: \\{kg/m^2\\}_t= \\{kg/m^2/s\\}_t * \\quad \\{s\\}_{t}
+            \\forall t.
+
+    Parameters
+    ----------
+    dataset : ``xarray.Dataset``
+    prefix : str
+
+    Returns
+    -------
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     dtime = calc_time_deltas(dataset)
     #

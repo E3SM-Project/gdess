@@ -12,6 +12,7 @@
 <style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML'></script>
 </head>
 <body>
 <main>
@@ -24,10 +25,11 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import datetime as pydt
+<pre><code class="python">import cftime
+import logging
+import datetime as pydt
 from datetime import timedelta
-from typing import Sequence, Union
-import cftime, logging
+from typing import Sequence, Union, List
 
 import numpy as np
 import pandas as pd
@@ -42,11 +44,11 @@ def ensure_dataset_datetime64(dataset: xr.Dataset
 
     Parameters
     ----------
-    dataset : xarray.Dataset
+    dataset : ``xarray.Dataset``
 
     Returns
     -------
-    xarray.Dataset
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     dataset = xr.decode_cf(dataset)
     dataset[&#39;time&#39;] = ensure_datetime64_array(dataset[&#39;time&#39;])
@@ -66,11 +68,11 @@ def to_datetimeindex(dataset: xr.Dataset) -&gt; xr.Dataset:
 
     Parameters
     ----------
-    dataset : xarray.Dataset
+    dataset : ``xarray.Dataset``
 
     Returns
     -------
-    xarray.Dataset
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     # Check if it&#39;s already a datetimeindex
     if isinstance(dataset.indexes[&#39;time&#39;], pd.core.indexes.datetimes.DatetimeIndex):
@@ -85,12 +87,16 @@ def ensure_datetime64_array(time: Sequence) -&gt; Sequence:
 
     Parameters
     ----------
-    time
+    time: Sequence
 
     Raises
     ------
     ValueError
         if unable to cast array to numpy.datetime64
+
+    Returns
+    -------
+    Sequence
     &#34;&#34;&#34;
     if isinstance(time, xr.DataArray):
         time = time.indexes[&#34;time&#34;]
@@ -110,11 +116,12 @@ def ensure_cftime_array(time: Sequence) -&gt; Sequence:
 
     Parameters
     ----------
-    time : Sequence
+    time : `Sequence`
 
     Returns
     -------
-    Python&#39;s datetime are converted to cftime.DatetimeGregorian.
+    `Sequence`
+        Python&#39;s datetime are converted to cftime.DatetimeGregorian.
 
     Raises
     ------
@@ -139,29 +146,31 @@ def ensure_dataset_cftime(dataset):
 
 
 def select_between(dataset: xr.Dataset,
-                   timestart,
-                   timeend,
-                   varlist=None,
-                   drop=True,
-                   drop_dups=True) -&gt; xr.Dataset:
+                   timestart: Union[cftime.DatetimeGregorian, np.datetime64],
+                   timeend: Union[cftime.DatetimeGregorian, np.datetime64],
+                   varlist: List[str] = None,
+                   drop: bool = True,
+                   drop_dups: bool = True
+                   ) -&gt; xr.Dataset:
     &#34;&#34;&#34;Select part of a dataset between two times
 
     Parameters
     ----------
-    dataset : xarray.Dataset
-    timestart
+    dataset : ``xarray.Dataset``
+    timestart : ``cftime.DatetimeGregorian`` or ``numpy.datetime64``
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
-    timeend
+    timeend : ``cftime.DatetimeGregorian`` or ``numpy.datetime64``
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
-    varlist
-    drop : bool, default True
-    drop_dups : bool, default True
+    varlist : `list` of `str`
+    drop : `bool`, default `True`
+    drop_dups : `bool`, default `True`
 
     Returns
     -------
-    a subset of the original dataset with only times between timestart and timeend
+    ``xarray.Dataset``
+        a subset of the original dataset with only times between timestart and timeend
     &#34;&#34;&#34;
     if varlist is None:
         ds_sub = dataset.copy()
@@ -185,16 +194,16 @@ def monthlist(dates: list) -&gt; list:
 
     Parameters
     ----------
-    dates : list
+    dates : `list`
         Of length==2, with a start and end date, in the format of &#34;%Y-%m-%d&#34;
 
     Returns
     -------
-    A list containing months (as numpy.datetime64 objects for the first day of each month)
+    `list`
+        Contains months (as numpy.datetime64 objects for the first day of each month)
 
     Example
     _______
-
     &gt;&gt;&gt; monthlist_fast([&#39;2017-01-01&#39;, &#39;2017-04-01&#39;])
     [numpy.datetime64(&#39;2017-01-01&#39;),
      numpy.datetime64(&#39;2017-02-01&#39;),
@@ -213,7 +222,21 @@ def monthlist(dates: list) -&gt; list:
 
 def dt2t(year: int, month: int, day: int,
          h: int = 0, m: int = 0, s: int = 0) -&gt; float:
-    &#34;&#34;&#34;Convert a DT.datetime to a float&#34;&#34;&#34;
+    &#34;&#34;&#34;Convert parts of a DT.datetime to a float
+
+    Parameters
+    ----------
+    year : `int`
+    month : `int`
+    day : `int`
+    h : `int`
+    m : `int`
+    s : `int`
+
+    Returns
+    -------
+    `float`
+    &#34;&#34;&#34;
     year_seconds = (pydt.datetime(year, 12, 31, 23, 59, 59, 999999) -
                     pydt.datetime(year, 1, 1, 0, 0, 0)).total_seconds()
     second_of_year = (pydt.datetime(year, month, day, h, m, s) -
@@ -224,8 +247,16 @@ def dt2t(year: int, month: int, day: int,
 def t2dt(atime: float) -&gt; pydt.datetime:
     &#34;&#34;&#34;Convert a time (a float) to DT.datetime
 
-    This is the inverse of dt2t.
-    assert dt2t(t2dt(atime)) == atime
+    This is the inverse of dt2t, i.e.
+        assert dt2t(t2dt(atime)) == atime
+
+    Parameters
+    ----------
+    atime : `float`
+
+    Returns
+    -------
+    datetime.datetime
     &#34;&#34;&#34;
     year = int(atime)
     remainder = atime - year
@@ -246,14 +277,45 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 <span>def <span class="ident">dt2t</span></span>(<span>year: int, month: int, day: int, h: int = 0, m: int = 0, s: int = 0) -> float</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Convert a DT.datetime to a float</p></div>
+<div class="desc"><p>Convert parts of a DT.datetime to a float</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>year</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>month</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>day</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>h</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>m</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>s</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p><code>float</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dt2t(year: int, month: int, day: int,
          h: int = 0, m: int = 0, s: int = 0) -&gt; float:
-    &#34;&#34;&#34;Convert a DT.datetime to a float&#34;&#34;&#34;
+    &#34;&#34;&#34;Convert parts of a DT.datetime to a float
+
+    Parameters
+    ----------
+    year : `int`
+    month : `int`
+    day : `int`
+    h : `int`
+    m : `int`
+    s : `int`
+
+    Returns
+    -------
+    `float`
+    &#34;&#34;&#34;
     year_seconds = (pydt.datetime(year, 12, 31, 23, 59, 59, 999999) -
                     pydt.datetime(year, 1, 1, 0, 0, 0)).total_seconds()
     second_of_year = (pydt.datetime(year, month, day, h, m, s) -
@@ -272,7 +334,8 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 <dd>&nbsp;</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>Python's datetime are converted to cftime.DatetimeGregorian.</p>
+<p><code>Sequence</code>
+Python's datetime are converted to cftime.DatetimeGregorian.</p>
 <h2 id="raises">Raises</h2>
 <p>ValueError when unable to cast the input.</p></div>
 <details class="source">
@@ -284,11 +347,12 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 
     Parameters
     ----------
-    time : Sequence
+    time : `Sequence`
 
     Returns
     -------
-    Python&#39;s datetime are converted to cftime.DatetimeGregorian.
+    `Sequence`
+        Python&#39;s datetime are converted to cftime.DatetimeGregorian.
 
     Raises
     ------
@@ -332,10 +396,7 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 <dd>&nbsp;</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>xarray.Dataset</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p><code>xarray.Dataset</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -346,11 +407,11 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 
     Parameters
     ----------
-    dataset : xarray.Dataset
+    dataset : ``xarray.Dataset``
 
     Returns
     -------
-    xarray.Dataset
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     dataset = xr.decode_cf(dataset)
     dataset[&#39;time&#39;] = ensure_datetime64_array(dataset[&#39;time&#39;])
@@ -365,13 +426,18 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 <div class="desc"><p>Convert an input 1D array to an array of numpy.datetime64 objects</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>time</code></strong></dt>
+<dt><strong><code>time</code></strong> :&ensp;<code>Sequence</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>ValueError</code></dt>
 <dd>if unable to cast array to numpy.datetime64</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Sequence</code></dt>
+<dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -382,12 +448,16 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 
     Parameters
     ----------
-    time
+    time: Sequence
 
     Raises
     ------
     ValueError
         if unable to cast array to numpy.datetime64
+
+    Returns
+    -------
+    Sequence
     &#34;&#34;&#34;
     if isinstance(time, xr.DataArray):
         time = time.indexes[&#34;time&#34;]
@@ -413,9 +483,9 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 <dd>Of length==2, with a start and end date, in the format of "%Y-%m-%d"</dd>
 </dl>
 <h2 id="returns">Returns</h2>
+<p><code>list</code>
+Contains months (as numpy.datetime64 objects for the first day of each month)</p>
 <dl>
-<dt><code>A list containing months (as numpy.datetime64 objects for the first day</code> of <code>each month)</code></dt>
-<dd>&nbsp;</dd>
 <dt><code>Example</code></dt>
 <dd>&nbsp;</dd>
 <dt><code>_______</code></dt>
@@ -436,16 +506,16 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 
     Parameters
     ----------
-    dates : list
+    dates : `list`
         Of length==2, with a start and end date, in the format of &#34;%Y-%m-%d&#34;
 
     Returns
     -------
-    A list containing months (as numpy.datetime64 objects for the first day of each month)
+    `list`
+        Contains months (as numpy.datetime64 objects for the first day of each month)
 
     Example
     _______
-
     &gt;&gt;&gt; monthlist_fast([&#39;2017-01-01&#39;, &#39;2017-04-01&#39;])
     [numpy.datetime64(&#39;2017-01-01&#39;),
      numpy.datetime64(&#39;2017-02-01&#39;),
@@ -463,7 +533,7 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 </details>
 </dd>
 <dt id="gdess.operations.time.select_between"><code class="name flex">
-<span>def <span class="ident">select_between</span></span>(<span>dataset: xarray.core.dataset.Dataset, timestart, timeend, varlist=None, drop=True, drop_dups=True) -> xarray.core.dataset.Dataset</span>
+<span>def <span class="ident">select_between</span></span>(<span>dataset: xarray.core.dataset.Dataset, timestart: Union[cftime._cftime.DatetimeGregorian, numpy.datetime64], timeend: Union[cftime._cftime.DatetimeGregorian, numpy.datetime64], varlist: List[str] = None, drop: bool = True, drop_dups: bool = True) -> xarray.core.dataset.Dataset</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Select part of a dataset between two times</p>
@@ -471,13 +541,13 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 <dl>
 <dt><strong><code>dataset</code></strong> :&ensp;<code>xarray.Dataset</code></dt>
 <dd>&nbsp;</dd>
-<dt><strong><code>timestart</code></strong></dt>
+<dt><strong><code>timestart</code></strong> :&ensp;<code>cftime.DatetimeGregorian</code> or <code>numpy.datetime64</code></dt>
 <dd>must be of appropriate type for comparison with dataset.time type
 (e.g. cftime.DatetimeGregorian or numpy.datetime64)</dd>
-<dt><strong><code>timeend</code></strong></dt>
+<dt><strong><code>timeend</code></strong> :&ensp;<code>cftime.DatetimeGregorian</code> or <code>numpy.datetime64</code></dt>
 <dd>must be of appropriate type for comparison with dataset.time type
 (e.g. cftime.DatetimeGregorian or numpy.datetime64)</dd>
-<dt><strong><code>varlist</code></strong></dt>
+<dt><strong><code>varlist</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>drop</code></strong> :&ensp;<code>bool</code>, default <code>True</code></dt>
 <dd>&nbsp;</dd>
@@ -485,38 +555,38 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 <dd>&nbsp;</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>a subset</code> of <code>the original dataset with only times between timestart and timeend</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p><code>xarray.Dataset</code>
+a subset of the original dataset with only times between timestart and timeend</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def select_between(dataset: xr.Dataset,
-                   timestart,
-                   timeend,
-                   varlist=None,
-                   drop=True,
-                   drop_dups=True) -&gt; xr.Dataset:
+                   timestart: Union[cftime.DatetimeGregorian, np.datetime64],
+                   timeend: Union[cftime.DatetimeGregorian, np.datetime64],
+                   varlist: List[str] = None,
+                   drop: bool = True,
+                   drop_dups: bool = True
+                   ) -&gt; xr.Dataset:
     &#34;&#34;&#34;Select part of a dataset between two times
 
     Parameters
     ----------
-    dataset : xarray.Dataset
-    timestart
+    dataset : ``xarray.Dataset``
+    timestart : ``cftime.DatetimeGregorian`` or ``numpy.datetime64``
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
-    timeend
+    timeend : ``cftime.DatetimeGregorian`` or ``numpy.datetime64``
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
-    varlist
-    drop : bool, default True
-    drop_dups : bool, default True
+    varlist : `list` of `str`
+    drop : `bool`, default `True`
+    drop_dups : `bool`, default `True`
 
     Returns
     -------
-    a subset of the original dataset with only times between timestart and timeend
+    ``xarray.Dataset``
+        a subset of the original dataset with only times between timestart and timeend
     &#34;&#34;&#34;
     if varlist is None:
         ds_sub = dataset.copy()
@@ -540,8 +610,18 @@ def t2dt(atime: float) -&gt; pydt.datetime:
 </code></dt>
 <dd>
 <div class="desc"><p>Convert a time (a float) to DT.datetime</p>
-<p>This is the inverse of dt2t.
-assert dt2t(t2dt(atime)) == atime</p></div>
+<p>This is the inverse of dt2t, i.e.
+assert dt2t(t2dt(atime)) == atime</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>atime</code></strong> :&ensp;<code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>datetime.datetime</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -549,8 +629,16 @@ assert dt2t(t2dt(atime)) == atime</p></div>
 <pre><code class="python">def t2dt(atime: float) -&gt; pydt.datetime:
     &#34;&#34;&#34;Convert a time (a float) to DT.datetime
 
-    This is the inverse of dt2t.
-    assert dt2t(t2dt(atime)) == atime
+    This is the inverse of dt2t, i.e.
+        assert dt2t(t2dt(atime)) == atime
+
+    Parameters
+    ----------
+    atime : `float`
+
+    Returns
+    -------
+    datetime.datetime
     &#34;&#34;&#34;
     year = int(atime)
     remainder = atime - year
@@ -571,10 +659,7 @@ assert dt2t(t2dt(atime)) == atime</p></div>
 <dd>&nbsp;</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>xarray.Dataset</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p><code>xarray.Dataset</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -584,11 +669,11 @@ assert dt2t(t2dt(atime)) == atime</p></div>
 
     Parameters
     ----------
-    dataset : xarray.Dataset
+    dataset : ``xarray.Dataset``
 
     Returns
     -------
-    xarray.Dataset
+    ``xarray.Dataset``
     &#34;&#34;&#34;
     # Check if it&#39;s already a datetimeindex
     if isinstance(dataset.indexes[&#39;time&#39;], pd.core.indexes.datetimes.DatetimeIndex):

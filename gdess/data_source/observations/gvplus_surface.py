@@ -50,9 +50,9 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        verbose : Union[bool, str]
+        verbose : `bool` or `str`, default `False`
             Can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        options : dict
+        options : `dict`
             Contains zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 station_code (str): 'mlo' is default
@@ -98,9 +98,9 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        verbose : Union[bool, str]
+        verbose : `bool` or `str`, default `False`
             can be either True, False, or a string for level such as "INFO, DEBUG, etc."
-        options : dict
+        options : `dict`
             Contains zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 start_yr (str): '1960' s default
@@ -155,7 +155,7 @@ class Collection(Multiset):
         Parameters
         ----------
         datadir : `str`
-        station_name : Union[str, list]
+        station_name : `str` or `list`
         """
         _logger.debug("Preprocessing...")
         if not station_name:
@@ -237,12 +237,12 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datadir
+        datadir : `str`
             directory containing the Globalview+ NetCDF files.
 
         Returns
         -------
-        dict
+        `dict`
             Names, latitudes, longitudes, and altitudes of each station
         """
         # --- Go through files and extract all 'surface' sampled files ---
@@ -258,13 +258,13 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        station_dict
-        datadir
+        station_dict : `dict`
+        datadir : `str`
             directory containing the Globalview+ NetCDF files.
 
         Returns
         -------
-        dict
+        `dict`
             Names, latitudes, longitudes, and altitudes of each station
         """
         ds_obs_dict = {}
@@ -325,6 +325,10 @@ class Collection(Multiset):
     def plot_station_time_series(self, stationshortname: str) -> (plt.Figure, plt.Axes, tuple):
         """Make timeseries plot of co2 concentration for each surface observing station.
 
+        Parameters
+        ----------
+        stationshortname : `str`
+
         Returns
         -------
         matplotlib figure
@@ -375,8 +379,8 @@ class Collection(Multiset):
 
         return fig, ax, bbox_artists
 
-    def __repr__(self):
-        """ String representation is built."""
+    def __repr__(self) -> str:
+        """Build a string representation of this object"""
         strrep = f"-- Obspack Surface Station Collection -- \n" \
                  f"Datasets:" \
                  f"\n\t" + \
@@ -394,7 +398,7 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
     Parameters
     ----------
-    parser
+    parser : argparse.ArgumentParser
     """
     add_shared_arguments_for_recipes(parser)
     parser.add_argument('--station_code', default='mlo',

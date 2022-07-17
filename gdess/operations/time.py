@@ -17,11 +17,11 @@ def ensure_dataset_datetime64(dataset: xr.Dataset
 
     Parameters
     ----------
-    dataset : xarray.Dataset
+    dataset : ``xarray.Dataset``
 
     Returns
     -------
-    xarray.Dataset
+    ``xarray.Dataset``
     """
     dataset = xr.decode_cf(dataset)
     dataset['time'] = ensure_datetime64_array(dataset['time'])
@@ -41,11 +41,11 @@ def to_datetimeindex(dataset: xr.Dataset) -> xr.Dataset:
 
     Parameters
     ----------
-    dataset : xarray.Dataset
+    dataset : ``xarray.Dataset``
 
     Returns
     -------
-    xarray.Dataset
+    ``xarray.Dataset``
     """
     # Check if it's already a datetimeindex
     if isinstance(dataset.indexes['time'], pd.core.indexes.datetimes.DatetimeIndex):
@@ -60,12 +60,16 @@ def ensure_datetime64_array(time: Sequence) -> Sequence:
 
     Parameters
     ----------
-    time
+    time: Sequence
 
     Raises
     ------
     ValueError
         if unable to cast array to numpy.datetime64
+
+    Returns
+    -------
+    Sequence
     """
     if isinstance(time, xr.DataArray):
         time = time.indexes["time"]
@@ -85,11 +89,11 @@ def ensure_cftime_array(time: Sequence) -> Sequence:
 
     Parameters
     ----------
-    time : Sequence
+    time : `Sequence`
 
     Returns
     -------
-    Sequence
+    `Sequence`
         Python's datetime are converted to cftime.DatetimeGregorian.
 
     Raises
@@ -125,20 +129,20 @@ def select_between(dataset: xr.Dataset,
 
     Parameters
     ----------
-    dataset : xarray.Dataset
-    timestart : Union[cftime.DatetimeGregorian, numpy.datetime64]
+    dataset : ``xarray.Dataset``
+    timestart : ``cftime.DatetimeGregorian`` or ``numpy.datetime64``
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
-    timeend : Union[cftime.DatetimeGregorian, numpy.datetime64]
+    timeend : ``cftime.DatetimeGregorian`` or ``numpy.datetime64``
         must be of appropriate type for comparison with dataset.time type
         (e.g. cftime.DatetimeGregorian or numpy.datetime64)
-    varlist
-    drop : `bool`, default True
-    drop_dups : `bool`, default True
+    varlist : `list` of `str`
+    drop : `bool`, default `True`
+    drop_dups : `bool`, default `True`
 
     Returns
     -------
-    xr.Dataset
+    ``xarray.Dataset``
         a subset of the original dataset with only times between timestart and timeend
     """
     if varlist is None:
@@ -168,12 +172,11 @@ def monthlist(dates: list) -> list:
 
     Returns
     -------
-    list
+    `list`
         Contains months (as numpy.datetime64 objects for the first day of each month)
 
     Example
     _______
-
     >>> monthlist_fast(['2017-01-01', '2017-04-01'])
     [numpy.datetime64('2017-01-01'),
      numpy.datetime64('2017-02-01'),
@@ -217,8 +220,8 @@ def dt2t(year: int, month: int, day: int,
 def t2dt(atime: float) -> pydt.datetime:
     """Convert a time (a float) to DT.datetime
 
-    This is the inverse of dt2t.
-    assert dt2t(t2dt(atime)) == atime
+    This is the inverse of dt2t, i.e.
+        assert dt2t(t2dt(atime)) == atime
 
     Parameters
     ----------

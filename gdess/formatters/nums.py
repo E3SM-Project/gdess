@@ -2,7 +2,7 @@ import math
 
 
 def numstr(number, decimalpoints: int) -> str:
-    """Print big numbers nicely.
+    """Print big numbers nicely
     Add commas, and restrict decimal places
 
     Parameters

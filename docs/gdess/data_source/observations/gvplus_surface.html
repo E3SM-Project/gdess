@@ -12,6 +12,7 @@
 <style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML'></script>
 </head>
 <body>
 <main>
@@ -24,7 +25,15 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from gdess import set_verbose, load_stations_dict, load_config_file, benchmark_recipe
+<pre><code class="python">from typing import Union
+import os, re, glob, argparse, logging
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
+
+from gdess import set_verbose, load_stations_dict, load_config_file, benchmark_recipe
 from gdess.data_source.observations.load import load_data_with_regex, dataset_from_filelist
 from gdess.data_source.multiset import Multiset
 from gdess.operations.datasetdict import DatasetDict
@@ -34,12 +43,6 @@ from gdess.graphics.single_source_plots import plot_annual_series
 from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from gdess.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
 from gdess.formatters import append_before_extension
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter
-from typing import Union
-import os, re, glob, argparse, logging
 
 _logger = logging.getLogger(&#34;{0}.{1}&#34;.format(__name__, &#34;loader&#34;))
 
@@ -48,12 +51,12 @@ station_dict = load_stations_dict()
 
 
 class Collection(Multiset):
-    def __init__(self, verbose: Union[bool, str]=False):
+    def __init__(self, verbose: Union[bool, str] = False):
         &#34;&#34;&#34;Instantiate an Obspack Surface Station Collection object.
 
         Parameters
         ----------
-        verbose: Union[bool, str]
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
         &#34;&#34;&#34;
         set_verbose(_logger, verbose)
@@ -74,10 +77,10 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        verbose: Union[bool, str]
-            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
-        options
-            A dictionary with zero or more of these parameter keys:
+        verbose : `bool` or `str`, default `False`
+            Can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        options : `dict`
+            Contains zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 station_code (str): &#39;mlo&#39; is default
                 start_yr (str): &#39;1960&#39; is default
@@ -85,7 +88,8 @@ class Collection(Multiset):
 
         Returns
         -------
-        Collection object for Obspack that was used to generate the diagnostic
+        Collection
+            object for Obspack that was used to generate the diagnostic
         &#34;&#34;&#34;
         set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
@@ -121,17 +125,18 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        verbose
+        verbose : `bool` or `str`, default `False`
             can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
-        options
-            A dictionary with zero or more of these parameter keys:
+        options : `dict`
+            Contains zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 start_yr (str): &#39;1960&#39; s default
                 end_yr (str): None is default
 
         Returns
         -------
-        Collection object for Obspack that was used to generate the diagnostic
+        Collection
+            object for Obspack that was used to generate the diagnostic
         &#34;&#34;&#34;
         set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
@@ -176,8 +181,8 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datadir
-        station_name
+        datadir : `str`
+        station_name : `str` or `list`
         &#34;&#34;&#34;
         _logger.debug(&#34;Preprocessing...&#34;)
         if not station_name:
@@ -206,13 +211,14 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        dataset_obs
+        dataset_obs : xr.Dataset
         timestart
         timeend
 
         Returns
         -------
-        A pandas.DataFrame with columnds of time, original data, and resampled data
+        pd.DataFrame
+            Contains columns of time, original data, and resampled data
         &#34;&#34;&#34;
         _logger.debug(&#39;Resampling obspack observations..&#39;)
         # --- OBSERVATIONS ---
@@ -258,12 +264,12 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        datadir
+        datadir : `str`
             directory containing the Globalview+ NetCDF files.
 
         Returns
         -------
-        dict
+        `dict`
             Names, latitudes, longitudes, and altitudes of each station
         &#34;&#34;&#34;
         # --- Go through files and extract all &#39;surface&#39; sampled files ---
@@ -279,13 +285,13 @@ class Collection(Multiset):
 
         Parameters
         ----------
-        station_dict
-        datadir
+        station_dict : `dict`
+        datadir : `str`
             directory containing the Globalview+ NetCDF files.
 
         Returns
         -------
-        dict
+        `dict`
             Names, latitudes, longitudes, and altitudes of each station
         &#34;&#34;&#34;
         ds_obs_dict = {}
@@ -346,6 +352,10 @@ class Collection(Multiset):
     def plot_station_time_series(self, stationshortname: str) -&gt; (plt.Figure, plt.Axes, tuple):
         &#34;&#34;&#34;Make timeseries plot of co2 concentration for each surface observing station.
 
+        Parameters
+        ----------
+        stationshortname : `str`
+
         Returns
         -------
         matplotlib figure
@@ -396,8 +406,8 @@ class Collection(Multiset):
 
         return fig, ax, bbox_artists
 
-    def __repr__(self):
-        &#34;&#34;&#34; String representation is built.&#34;&#34;&#34;
+    def __repr__(self) -&gt; str:
+        &#34;&#34;&#34;Build a string representation of this object&#34;&#34;&#34;
         strrep = f&#34;-- Obspack Surface Station Collection -- \n&#34; \
                  f&#34;Datasets:&#34; \
                  f&#34;\n\t&#34; + \
@@ -415,7 +425,7 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
     Parameters
     ----------
-    parser
+    parser : argparse.ArgumentParser
     &#34;&#34;&#34;
     add_shared_arguments_for_recipes(parser)
     parser.add_argument(&#39;--station_code&#39;, default=&#39;mlo&#39;,
@@ -436,7 +446,7 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 <div class="desc"><p>Add recipe arguments to a parser object</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>parser</code></strong></dt>
+<dt><strong><code>parser</code></strong> :&ensp;<code>argparse.ArgumentParser</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
@@ -448,7 +458,7 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
     Parameters
     ----------
-    parser
+    parser : argparse.ArgumentParser
     &#34;&#34;&#34;
     add_shared_arguments_for_recipes(parser)
     parser.add_argument(&#39;--station_code&#39;, default=&#39;mlo&#39;,
@@ -477,12 +487,12 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Collection(Multiset):
-    def __init__(self, verbose: Union[bool, str]=False):
+    def __init__(self, verbose: Union[bool, str] = False):
         &#34;&#34;&#34;Instantiate an Obspack Surface Station Collection object.
 
         Parameters
         ----------
-        verbose: Union[bool, str]
+        verbose : Union[bool, str]
             can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
         &#34;&#34;&#34;
         set_verbose(_logger, verbose)
@@ -503,10 +513,10 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
         Parameters
         ----------
-        verbose: Union[bool, str]
-            can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
-        options
-            A dictionary with zero or more of these parameter keys:
+        verbose : `bool` or `str`, default `False`
+            Can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
+        options : `dict`
+            Contains zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 station_code (str): &#39;mlo&#39; is default
                 start_yr (str): &#39;1960&#39; is default
@@ -514,7 +524,8 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
         Returns
         -------
-        Collection object for Obspack that was used to generate the diagnostic
+        Collection
+            object for Obspack that was used to generate the diagnostic
         &#34;&#34;&#34;
         set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
@@ -550,17 +561,18 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
         Parameters
         ----------
-        verbose
+        verbose : `bool` or `str`, default `False`
             can be either True, False, or a string for level such as &#34;INFO, DEBUG, etc.&#34;
-        options
-            A dictionary with zero or more of these parameter keys:
+        options : `dict`
+            Contains zero or more of these parameter keys:
                 ref_data (str): directory containing the NOAA Obspack NetCDF files
                 start_yr (str): &#39;1960&#39; s default
                 end_yr (str): None is default
 
         Returns
         -------
-        Collection object for Obspack that was used to generate the diagnostic
+        Collection
+            object for Obspack that was used to generate the diagnostic
         &#34;&#34;&#34;
         set_verbose(_logger, verbose)
         opts = parse_recipe_options(options, add_surface_station_collection_args_to_parser)
@@ -605,8 +617,8 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
         Parameters
         ----------
-        datadir
-        station_name
+        datadir : `str`
+        station_name : `str` or `list`
         &#34;&#34;&#34;
         _logger.debug(&#34;Preprocessing...&#34;)
         if not station_name:
@@ -635,13 +647,14 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
         Parameters
         ----------
-        dataset_obs
+        dataset_obs : xr.Dataset
         timestart
         timeend
 
         Returns
         -------
-        A pandas.DataFrame with columnds of time, original data, and resampled data
+        pd.DataFrame
+            Contains columns of time, original data, and resampled data
         &#34;&#34;&#34;
         _logger.debug(&#39;Resampling obspack observations..&#39;)
         # --- OBSERVATIONS ---
@@ -687,12 +700,12 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
         Parameters
         ----------
-        datadir
+        datadir : `str`
             directory containing the Globalview+ NetCDF files.
 
         Returns
         -------
-        dict
+        `dict`
             Names, latitudes, longitudes, and altitudes of each station
         &#34;&#34;&#34;
         # --- Go through files and extract all &#39;surface&#39; sampled files ---
@@ -708,13 +721,13 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
         Parameters
         ----------
-        station_dict
-        datadir
+        station_dict : `dict`
+        datadir : `str`
             directory containing the Globalview+ NetCDF files.
 
         Returns
         -------
-        dict
+        `dict`
             Names, latitudes, longitudes, and altitudes of each station
         &#34;&#34;&#34;
         ds_obs_dict = {}
@@ -775,6 +788,10 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
     def plot_station_time_series(self, stationshortname: str) -&gt; (plt.Figure, plt.Axes, tuple):
         &#34;&#34;&#34;Make timeseries plot of co2 concentration for each surface observing station.
 
+        Parameters
+        ----------
+        stationshortname : `str`
+
         Returns
         -------
         matplotlib figure
@@ -825,8 +842,8 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 
         return fig, ax, bbox_artists
 
-    def __repr__(self):
-        &#34;&#34;&#34; String representation is built.&#34;&#34;&#34;
+    def __repr__(self) -&gt; str:
+        &#34;&#34;&#34;Build a string representation of this object&#34;&#34;&#34;
         strrep = f&#34;-- Obspack Surface Station Collection -- \n&#34; \
                  f&#34;Datasets:&#34; \
                  f&#34;\n\t&#34; + \
@@ -851,7 +868,7 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 <div class="desc"><p>Get data resampled at monthly intervals</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>dataset_obs</code></strong></dt>
+<dt><strong><code>dataset_obs</code></strong> :&ensp;<code>xr.Dataset</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>timestart</code></strong></dt>
 <dd>&nbsp;</dd>
@@ -860,8 +877,8 @@ def add_surface_station_collection_args_to_parser(parser: argparse.ArgumentParse
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>A pandas.DataFrame with columnds</code> of <code>time, original data, and resampled data</code></dt>
-<dd>&nbsp;</dd>
+<dt><code>pd.DataFrame</code></dt>
+<dd>Contains columns of time, original data, and resampled data</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -875,13 +892,14 @@ def get_resampled_dataframe(dataset_obs,
 
     Parameters
     ----------
-    dataset_obs
+    dataset_obs : xr.Dataset
     timestart
     timeend
 
     Returns
     -------
-    A pandas.DataFrame with columnds of time, original data, and resampled data
+    pd.DataFrame
+        Contains columns of time, original data, and resampled data
     &#34;&#34;&#34;
     _logger.debug(&#39;Resampling obspack observations..&#39;)
     # --- OBSERVATIONS ---
@@ -971,6 +989,11 @@ def get_resampled_dataframe(dataset_obs,
 </code></dt>
 <dd>
 <div class="desc"><p>Make timeseries plot of co2 concentration for each surface observing station.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>stationshortname</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>matplotlib figure</code></dt>
@@ -986,6 +1009,10 @@ def get_resampled_dataframe(dataset_obs,
 </summary>
 <pre><code class="python">def plot_station_time_series(self, stationshortname: str) -&gt; (plt.Figure, plt.Axes, tuple):
     &#34;&#34;&#34;Make timeseries plot of co2 concentration for each surface observing station.
+
+    Parameters
+    ----------
+    stationshortname : `str`
 
     Returns
     -------
@@ -1045,9 +1072,9 @@ def get_resampled_dataframe(dataset_obs,
 <div class="desc"><p>Set up the dataset that is common to every diagnostic</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>datadir</code></strong></dt>
+<dt><strong><code>datadir</code></strong> :&ensp;<code>str</code></dt>
 <dd>&nbsp;</dd>
-<dt><strong><code>station_name</code></strong></dt>
+<dt><strong><code>station_name</code></strong> :&ensp;<code>str</code> or <code>list</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
@@ -1061,8 +1088,8 @@ def get_resampled_dataframe(dataset_obs,
 
     Parameters
     ----------
-    datadir
-    station_name
+    datadir : `str`
+    station_name : `str` or `list`
     &#34;&#34;&#34;
     _logger.debug(&#34;Preprocessing...&#34;)
     if not station_name:

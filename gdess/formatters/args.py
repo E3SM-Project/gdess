@@ -25,7 +25,8 @@ def options_to_args(options: dict) -> list:
 
 
 def is_some_none(val) -> bool:
-    """Check if value is either a Python None object or the case-insensitive string 'None' """
+    """Check if value is either a Python None object or the case-insensitive string 'None'
+    """
     if val is None:
         return True
     elif isinstance(val, str) and (val.lower() == 'none'):

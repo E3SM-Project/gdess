@@ -20,12 +20,12 @@ def closest(data: list,
 
     Parameters
     ----------
-    data
-    v
+    data: `list`
+    v: `dict`
 
     Returns
     -------
-    dict
+    `dict`
     """
     min_entry = min(data, key=lambda p: distance(v['lat'], v['lon'], p['lat'], p['lon']))
 
@@ -51,9 +51,9 @@ def get_closest_mdl_cell_dict(dataset: xr.Dataset,
 
     Parameters
     ----------
-    dataset
-    lat
-    lon
+    dataset : ``xarray.Dataset``
+    lat : `float`
+    lon : `float`
     coords_as_dimensions
         True for dataset variables as independent dimensions, e.g.
             lat = -90, -89,...,0, 1,... ,90
@@ -64,7 +64,7 @@ def get_closest_mdl_cell_dict(dataset: xr.Dataset,
 
     Returns
     -------
-    dict
+    `dict`
         With lat, lon, and index in Dataset
         For example, {'lat': 19.5, 'lon': 204.375, 'index': 31555}
     """
