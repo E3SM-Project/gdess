@@ -29,7 +29,7 @@ class Multiset:
 
         Parameters
         ----------
-        verbose : {`bool`, `str`}, default False
+        verbose : `bool` or `str`, default `False`
             either True, False, or a string for level such as "INFO, DEBUG, etc."
         """
         self.stepA_original_datasets: Union[DatasetDict, None] = None
