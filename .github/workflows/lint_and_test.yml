@@ -7,9 +7,9 @@ on:
   #  push:
   #    branches:
   #      - main
-  #  pull_request:
-  #    branches:
-  #      - main
+  pull_request:
+    branches:
+      - test
   workflow_dispatch:
     inputs:
       debug_enabled:
@@ -24,8 +24,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]  # macOS-latest, windows-latest
-        python-version: [3.8]  # 3.9
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        python-version: [3.8, 3.9]
     env:
       GDESS_REPO: ${{ github.workspace }}
       GDESS_CMIP_DATA: ${{ github.workspace }}/tests/test_data/cmip/
