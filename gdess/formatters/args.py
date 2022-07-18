@@ -1,3 +1,4 @@
+import pathlib
 import argparse, logging, os, shlex, tempfile
 from typing import Union
 
@@ -108,7 +109,7 @@ def valid_year_string(y: Union[str, int]) -> Union[None, str]:
     raise argparse.ArgumentTypeError('Year must be a string or integer whose value is between 0 and 10,000.')
 
 
-def valid_existing_path(p: Union[str, os.PathLike]
+def valid_existing_path(p: Union[str, os.PathLike, pathlib.Path]
                         ) -> Union[str, os.PathLike]:
     """Validate a filepath argument passed in as a recipe option
 
@@ -127,9 +128,14 @@ def valid_existing_path(p: Union[str, os.PathLike]
     str or os.PathLike
     """
     try:
-        if os.path.exists(p):
-            if os.access(p, os.R_OK):
-                return p
+        if isinstance(p, pathlib.PurePath):
+            if p.exists():
+                if os.access(p.resolve(), os.R_OK):
+                    return p
+        else:
+            if os.path.exists(p):
+                if os.access(p, os.R_OK):
+                    return p
     except TypeError:
         pass
     raise argparse.ArgumentTypeError('Path must exist and be readable. <%s> is not.' % p)
