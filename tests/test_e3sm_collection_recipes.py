@@ -1,5 +1,5 @@
 import pytest
-from pathlib import Path, PurePath
+from pathlib import Path
 
 from gdess.data_source.models.e3sm import Collection as co2e3sm
 from gdess.operations.datasetdict import DatasetDict
@@ -11,8 +11,8 @@ def newEmptyE3SMCollection():
     return myE3SMInstance
 
 @pytest.fixture
-def e3sm_test_data_path(rootdir: PurePath) -> str:
-    return str(rootdir / 'test_data' / 'test_co2_hist_files_ne4pg2_2yrbudget_record.CO2.nc')
+def e3sm_test_data_path(root_testdir) -> Path:
+    return (root_testdir / 'test_data' / 'test_co2_hist_files_ne4pg2_2yrbudget_record.CO2.nc').resolve()
 
 
 def test_obj_attributes_return_type(newEmptyE3SMCollection):

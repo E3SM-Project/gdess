@@ -3,5 +3,9 @@ import pytest
 
 
 @pytest.fixture
-def rootdir():
-    return Path(PurePath(__file__).parent).resolve()
+def root_testdir():
+    return Path(PurePath(__file__)).parent
+
+@pytest.fixture
+def root_outputdir():
+    return Path(PurePath(__file__)).parents[2] / 'outputs'

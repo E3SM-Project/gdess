@@ -75,11 +75,11 @@ def test_nullable_integer_bad_type():
         nullable_int([])
 
 
-def test_nonexistent_path_does_not_exist(rootdir: Path):
+def test_nonexistent_path_does_not_exist(root_testdir):
     with pytest.raises(Exception):
-        valid_existing_path(rootdir / 'nonexistent')
+        valid_existing_path((root_testdir / 'nonexistent').resolve())
 
 
-def test_valid_path_is_writable(rootdir: Path):
-    p = rootdir / 'footest'
+def test_valid_path_is_writable(root_testdir):
+    p = (root_testdir / 'footest').resolve()
     assert valid_writable_path(p) == p

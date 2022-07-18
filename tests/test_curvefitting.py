@@ -1,6 +1,8 @@
 import pytest
-from pathlib import Path, PurePath
-import datetime, tempfile
+import datetime
+import tempfile
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import datacompy
@@ -9,14 +11,15 @@ from ccgcrv.ccgcrv import ccgcrv
 from ccgcrv.ccg_dates import datesOk, intDate, \
     getDate, toMonthDay, getDatetime, getTime, dec2date,\
     dateFromDecimalDate, datetimeFromDateAndTime
+from gdess.graphics.single_source_plots import plot_filter_components
 
 
 @pytest.fixture
-def curvefilter(rootdir: PurePath):
-    mlotestdata_path = str(rootdir / 'test_data' / 'mlotestdata.txt')
+def curvefilter(root_testdir):
+    mlotestdata_path = (root_testdir / 'test_data' / 'mlotestdata.txt').resolve()
 
     with tempfile.TemporaryDirectory() as td:
-        output_file_name = str(PurePath(td) / 'curvefitting_test_results_mlo.txt')
+        output_file_name = (Path(td) / 'curvefitting_test_results_mlo.txt').resolve()
 
         options = {'npoly': 2,
                    'nharm': 2,
@@ -37,8 +40,8 @@ def curvefilter(rootdir: PurePath):
     return filt, df_filter_output
 
 
-def test_curvefitting_results_remain_the_same(rootdir, curvefilter):
-    expected_results_path = rootdir / 'test_data' / 'expected_curvefit_results.txt'
+def test_curvefitting_results_remain_the_same(root_testdir, curvefilter):
+    expected_results_path = (root_testdir / 'test_data' / 'expected_curvefit_results.txt').resolve()
     df_expected = pd.read_csv(expected_results_path, sep='\s+')
 
     filt, df_filter_output = curvefilter
@@ -81,6 +84,12 @@ def test_curve_fitting_results_process_with_no_error(curvefilter):
     except Exception as exc:
         assert False, f"'run_recipe_for_timeseries' raised an exception {exc}"
 
+def test_plotting_components_no_error(curvefilter):
+    filt, df_filter_output = curvefilter
+    try:
+        plot_filter_components(filter_object=filt)
+    except Exception as exc:
+        assert False, f"'plot_filter_components' raised an exception {exc}"
 
 def test_dates_ok_bad_month():
     with pytest.raises(ValueError):

@@ -20,8 +20,8 @@ def newEmptySurfaceStation():
     return mySurfaceInstance
 
 @pytest.fixture
-def globalview_test_data_path(rootdir: Path):
-    return rootdir / 'test_data' / 'globalview'
+def globalview_test_data_path(root_testdir):
+    return (root_testdir / 'test_data' / 'globalview').resolve()
 
 @pytest.fixture
 def globalview_datasetdict(globalview_test_data_path):

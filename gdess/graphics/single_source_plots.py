@@ -96,9 +96,9 @@ def plot_zonal_mean(darray: xr.DataArray,
     return fig, ax, bbox_artists
 
 
-def plot_filter_components(filter_object, original_x, original_y,
+def plot_filter_components(filter_object, original_x=None, original_y=None,
                            figure_title='', savepath=None) -> None:
-    """
+    """Make plot of curve filtering parts
 
     Parameters
     ----------
@@ -118,8 +118,9 @@ def plot_filter_components(filter_object, original_x, original_y,
             color=[x / 255 for x in [44, 160, 44]], alpha=1, linewidth=2.5, )
     # ax.plot(x0, y3, label='Smooth values',
     #        alpha=1, linewidth=2.5, )
-    ax.plot(original_x, original_y, label='original',
-            marker='.', linestyle='none', color='gray', zorder=-10, alpha=0.2)
+    if original_x and original_y:
+        ax.plot(original_x, original_y, label='original',
+                marker='.', linestyle='none', color='gray', zorder=-10, alpha=0.2)
     ax.set_ylabel("$CO_2$ (ppm)")
     ax.set_xlabel("year")
     #

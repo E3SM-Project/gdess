@@ -5,53 +5,53 @@ from gdess.recipes import meridional_gradient
 
 
 @pytest.fixture
-def globalview_test_data_path(rootdir: pathlib.Path):
-    return rootdir / 'test_data' / 'globalview'
+def globalview_test_data_path(root_testdir: pathlib.Path):
+    return (root_testdir / 'test_data' / 'globalview').resolve()
 
 
-def test_recipe_input_year_error(globalview_test_data_path):
+def test_recipe_input_year_error(globalview_test_data_path, root_outputdir):
     recipe_options = {
         'ref_data': globalview_test_data_path,
         'model_name': 'BCC.esm-hist',
         'start_yr': "198012",
         'end_yr': "201042",
-        'figure_savepath': './outputs',
+        'figure_savepath': root_outputdir,
         'station_list': 'mlo'}
     with pytest.raises(SystemExit):
         meridional_gradient(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_model_error(globalview_test_data_path):
+def test_recipe_input_model_error(globalview_test_data_path, root_outputdir):
     recipe_options = {
         'ref_data': globalview_test_data_path,
         'model_name': 'BCasdasdjkhgC',
         'start_yr': "1980",
         'end_yr': "2010",
-        'figure_savepath': './outputs',
+        'figure_savepath': root_outputdir,
         'station_list': 'mlo'}
     with pytest.raises(SystemExit):
         meridional_gradient(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_input_stationcode_error(globalview_test_data_path):
+def test_recipe_input_stationcode_error(globalview_test_data_path, root_outputdir):
     recipe_options = {
         'ref_data': globalview_test_data_path,
         'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
         'end_yr': "2010",
-        'figure_savepath': './outputs',
+        'figure_savepath': root_outputdir,
         'station_list': 'asdkjhfasg'}
     with pytest.raises(SystemExit):
         meridional_gradient(verbose='DEBUG', options=recipe_options)
 
 
-def test_recipe_completes_with_no_errors(globalview_test_data_path):
+def test_recipe_completes_with_no_errors(globalview_test_data_path, root_outputdir):
     recipe_options = {
         'ref_data': globalview_test_data_path,
         'model_name': 'BCC.esm-hist',
         'start_yr': "1980",
         'end_yr': "2010",
-        'figure_savepath': './outputs',
+        'figure_savepath': root_outputdir,
         'station_list': 'mlo'}
     try:
         data_dict = meridional_gradient(verbose='DEBUG', options=recipe_options)
@@ -59,13 +59,13 @@ def test_recipe_completes_with_no_errors(globalview_test_data_path):
         assert False, f"'seasonal_cycles' raised an exception {exc}"
 
 
-def test_recipe_bin_multiple_stations_completes_with_no_errors(globalview_test_data_path):
+def test_recipe_bin_multiple_stations_completes_with_no_errors(globalview_test_data_path, root_outputdir):
     recipe_options = {
         'ref_data': globalview_test_data_path,
         'latitude_bin_size': 30,
         'start_yr': "1980",
         'end_yr': "2010",
-        'figure_savepath': './outputs',
+        'figure_savepath': root_outputdir,
         'station_list': 'mlo smo'}
     try:
         data_dict = meridional_gradient(verbose='DEBUG', options=recipe_options)
