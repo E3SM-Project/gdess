@@ -1,6 +1,6 @@
 import pytest
-import pathlib
-import os, datetime, tempfile
+from pathlib import Path
+import datetime, tempfile
 import numpy as np
 import pandas as pd
 import datacompy
@@ -12,11 +12,11 @@ from ccgcrv.ccg_dates import datesOk, intDate, \
 
 
 @pytest.fixture
-def curvefilter(rootdir: pathlib.Path):
+def curvefilter(rootdir: Path):
     mlotestdata_path = rootdir / 'test_data' / 'mlotestdata.txt'
 
     with tempfile.TemporaryDirectory() as td:
-        output_file_name = os.path.join(td, 'curvefitting_test_results_mlo.txt')
+        output_file_name = Path(td).resolve() / 'curvefitting_test_results_mlo.txt'
 
         options = {'npoly': 2,
                    'nharm': 2,
