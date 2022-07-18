@@ -12,7 +12,7 @@ from ccgcrv.ccg_dates import datesOk, intDate, \
 
 
 @pytest.fixture
-def curvefilter(rootdir: Path):
+def curvefilter(rootdir: PurePath):
     mlotestdata_path = str(rootdir / 'test_data' / 'mlotestdata.txt')
 
     with tempfile.TemporaryDirectory() as td:

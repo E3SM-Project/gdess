@@ -34,6 +34,9 @@ def test_valid_form_but_incorrect_expid_returns_unchanged_input():
 
 def test_simplest_loading(newEmptyCMIPCollection):
     newEmptyCMIPCollection._load_data(method='pangeo')
+    print("testing print...")
+    print(newEmptyCMIPCollection)
+    print("test print complete.")
     assert isinstance(newEmptyCMIPCollection.stepA_original_datasets, DatasetDict)
 
 

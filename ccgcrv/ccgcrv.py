@@ -90,8 +90,8 @@ def export_data(options, filt):
 			xdates = [float(line.split()[0]) for line in f]
 			f.close()
 
-
 		export_dates(options, fp, filt, xdates)
+		fp.close()
 
 
 ##########################################################################
