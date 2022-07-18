@@ -67,6 +67,10 @@ def test_recipe_bin_multiple_stations_completes_with_no_errors(globalview_test_d
         'end_yr': "2010",
         'figure_savepath': './outputs',
         'station_list': 'mlo smo'}
+    print('beebop')
+    print(globalview_test_data_path)
+    print(type(globalview_test_data_path))
+    print(globalview_test_data_path.exists())
     try:
         data_dict = seasonal_cycles(verbose='DEBUG', options=recipe_options)
     except Exception as exc:
