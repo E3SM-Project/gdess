@@ -1,5 +1,5 @@
 import pytest
-from pathlib import Path
+from pathlib import Path, PurePath
 
 from gdess.data_source.models.e3sm import Collection as co2e3sm
 from gdess.operations.datasetdict import DatasetDict
@@ -11,8 +11,8 @@ def newEmptyE3SMCollection():
     return myE3SMInstance
 
 @pytest.fixture
-def e3sm_test_data_path(rootdir: Path):
-    return rootdir / 'test_data' / 'test_co2_hist_files_ne4pg2_2yrbudget_record.CO2.nc'
+def e3sm_test_data_path(rootdir: PurePath) -> str:
+    return str(rootdir / 'test_data' / 'test_co2_hist_files_ne4pg2_2yrbudget_record.CO2.nc')
 
 
 def test_obj_attributes_return_type(newEmptyE3SMCollection):
@@ -39,7 +39,9 @@ def test_recipe_error_when_passed_invalid_date_option(e3sm_test_data_path):
         'ref_data': e3sm_test_data_path,
         'start_yr': "1970"}  # Note: The test output from e3sm only goes from 1950 to 1952.
     with pytest.raises(ValueError):
-        co2e3sm.run_recipe_for_timeseries(pickle_file=False, verbose='INFO', options=recipe_options)
+        co2e3sm.run_recipe_for_timeseries(pickle_file=False,
+                                          verbose='INFO',
+                                          options=recipe_options)
 
 
 def test_recipe_completes_with_no_errors(e3sm_test_data_path):

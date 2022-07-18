@@ -5,7 +5,7 @@ from gdess.recipes import surface_trends
 
 
 @pytest.fixture
-def globalview_test_data_path(rootdir: pathlib.Path):
+def globalview_test_data_path(rootdir: pathlib.PurePath):
     return rootdir / 'test_data' / 'globalview'
 
 

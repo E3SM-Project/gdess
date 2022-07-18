@@ -1,9 +1,9 @@
 import os
-from pathlib import Path
+from pathlib import PurePath
 import pytest
 
 
 @pytest.fixture
 def rootdir():
-    return Path(__file__).parent.resolve()
+    return PurePath(__file__).parent
         # os.path.dirname(os.path.abspath(__file__))
