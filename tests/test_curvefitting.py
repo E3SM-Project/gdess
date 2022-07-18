@@ -1,4 +1,5 @@
 import pytest
+import pathlib
 import os, datetime, tempfile
 import numpy as np
 import pandas as pd
@@ -11,8 +12,8 @@ from ccgcrv.ccg_dates import datesOk, intDate, \
 
 
 @pytest.fixture
-def curvefilter(rootdir):
-    mlotestdata_path = os.path.join(rootdir, 'test_data', 'mlotestdata.txt')
+def curvefilter(rootdir: pathlib.Path):
+    mlotestdata_path = rootdir / 'test_data' / 'mlotestdata.txt'
 
     with tempfile.TemporaryDirectory() as td:
         output_file_name = os.path.join(td, 'curvefitting_test_results_mlo.txt')
@@ -37,7 +38,7 @@ def curvefilter(rootdir):
 
 
 def test_curvefitting_results_remain_the_same(rootdir, curvefilter):
-    expected_results_path = os.path.join(rootdir, 'test_data', 'expected_curvefit_results.txt')
+    expected_results_path = rootdir / 'test_data' / 'expected_curvefit_results.txt'
     df_expected = pd.read_csv(expected_results_path, sep='\s+')
 
     filt, df_filter_output = curvefilter

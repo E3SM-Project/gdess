@@ -1,12 +1,12 @@
-import os
 import pytest
+import pathlib
 
 from gdess.recipes import seasonal_cycles
 
 
 @pytest.fixture
-def globalview_test_data_path(rootdir):
-    return os.path.join(rootdir, 'test_data', 'globalview')
+def globalview_test_data_path(rootdir: pathlib.Path):
+    return rootdir / 'test_data' / 'globalview'
 
 
 def test_recipe_input_year_error(globalview_test_data_path):
