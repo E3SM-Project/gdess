@@ -128,10 +128,11 @@ def valid_existing_path(p: Union[str, os.PathLike, pathlib.Path]
     str or os.PathLike
     """
     try:
-        if isinstance(p, pathlib.PurePath):
-            if p.exists():
-                if os.access(p.resolve(), os.R_OK):
-                    return p
+        if isinstance(p, pathlib.Path) or isinstance(p, pathlib.PurePath):
+            pp = pathlib.PurePath(p)
+            concrete_path = pathlib.Path(pp)
+            if concrete_path.exists():
+                return concrete_path.resolve()
         else:
             if os.path.exists(p):
                 if os.access(p, os.R_OK):
