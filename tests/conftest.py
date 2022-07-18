@@ -1,7 +1,7 @@
-from pathlib import PurePath
+from pathlib import PurePath, Path
 import pytest
 
 
 @pytest.fixture
 def rootdir():
-    return PurePath(__file__).parent
+    return Path(PurePath(__file__).parent).resolve()

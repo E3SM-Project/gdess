@@ -133,13 +133,18 @@ def valid_existing_path(p: Union[str, os.PathLike, pathlib.Path]
             concrete_path = pathlib.Path(pp)
             if concrete_path.exists():
                 return concrete_path.resolve()
+            else:
+                raise argparse.ArgumentTypeError('Concrete path must exist. <%s> does not.' % p)
         else:
             if os.path.exists(p):
                 if os.access(p, os.R_OK):
                     return p
+                else:
+                    raise argparse.ArgumentTypeError('Path must be readable. <%s> is not.' % p)
+            else:
+                raise argparse.ArgumentTypeError('Path must exist. <%s> does not.' % p)
     except TypeError:
         pass
-    raise argparse.ArgumentTypeError('Path must exist and be readable. <%s> is not.' % p)
 
 
 def valid_writable_path(p: Union[str, os.PathLike]
