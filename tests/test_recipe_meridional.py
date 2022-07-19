@@ -1,12 +1,6 @@
 import pytest
-import pathlib
 
 from gdess.recipes import meridional_gradient
-
-
-@pytest.fixture
-def globalview_test_data_path(root_testdir: pathlib.Path):
-    return (root_testdir / 'test_data' / 'globalview').resolve()
 
 
 def test_recipe_input_year_error(globalview_test_data_path, root_outputdir):

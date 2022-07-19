@@ -1,7 +1,6 @@
 import os
 import re
 import pytest
-from pathlib import Path
 
 import numpy as np
 import xarray as xr
@@ -18,10 +17,6 @@ from gdess.data_source.observations.gvplus_name_utils import \
 def newEmptySurfaceStation():
     mySurfaceInstance = Collection()
     return mySurfaceInstance
-
-@pytest.fixture
-def globalview_test_data_path(root_testdir):
-    return (root_testdir / 'test_data' / 'globalview').resolve()
 
 @pytest.fixture
 def globalview_datasetdict(globalview_test_data_path):

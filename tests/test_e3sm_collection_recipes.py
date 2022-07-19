@@ -12,7 +12,7 @@ def newEmptyE3SMCollection():
 
 @pytest.fixture
 def e3sm_test_data_path(root_testdir) -> Path:
-    return (root_testdir / 'test_data' / 'test_co2_hist_files_ne4pg2_2yrbudget_record.CO2.nc').resolve()
+    return root_testdir / 'test_data' / 'test_co2_hist_files_ne4pg2_2yrbudget_record.CO2.nc'
 
 
 def test_obj_attributes_return_type(newEmptyE3SMCollection):

@@ -3,11 +3,6 @@ import pytest
 from gdess.recipes import surface_trends
 
 
-@pytest.fixture
-def globalview_test_data_path(root_testdir):
-    return (root_testdir / 'test_data' / 'globalview').resolve()
-
-
 def test_recipe_input_year_error(globalview_test_data_path, root_outputdir):
     recipe_options = {
         'ref_data': globalview_test_data_path,
