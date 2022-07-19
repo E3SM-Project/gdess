@@ -1,8 +1,14 @@
 import pathlib
+from platform import system
 import argparse, logging, os, shlex, tempfile
 from typing import Union
 
 _logger = logging.getLogger(__name__)
+
+if system().lower() == "windows":
+    pather = pathlib.PureWindowsPath
+else:
+    pather = pathlib.PurePosixPath
 
 
 def options_to_args(options: dict) -> list:
@@ -22,7 +28,11 @@ def options_to_args(options: dict) -> list:
     -------
     list
     """
-    return shlex.split(' '.join([f"--{k} {v}" for k, v in options.items()]))
+    stringable_arg_list = []
+    for k, v in options.items():
+        print(f"--{k} {v}")
+        stringable_arg_list.append(f"--{k} {v}")
+    return shlex.split(' '.join(stringable_arg_list))
 
 
 def is_some_none(val) -> bool:
@@ -128,7 +138,7 @@ def valid_existing_path(p: Union[str, os.PathLike, pathlib.Path]
     str or os.PathLike
     """
     try:
-        concrete_path = pathlib.Path(pathlib.PurePath(p))
+        concrete_path = pathlib.Path(pather(p))
         if concrete_path.exists():
             resolved_path = concrete_path.resolve()
             if os.access(resolved_path, os.R_OK):

@@ -56,7 +56,7 @@ def parse_recipe_options(options: Union[dict, argparse.Namespace],
         params = options_to_args(options)
         if '--ref_data' in params:
             params.remove('--ref_data')  # remove this key because it is handled as a positional argument, not a kwarg.
-        _logger.debug('Parameter argument string == %s', params)
+        print('Parameter argument string == %s', params)
         args = parser.parse_args(params)
     elif isinstance(options, argparse.Namespace):
         # In this case, the options have been parsed previously.
