@@ -7,8 +7,10 @@ _logger = logging.getLogger(__name__)
 
 if system().lower() == "windows":
     pather = pathlib.PureWindowsPath
+    use_posix = False
 else:
     pather = pathlib.PurePosixPath
+    use_posix = True
 
 
 def options_to_args(options: dict) -> list:
@@ -30,9 +32,8 @@ def options_to_args(options: dict) -> list:
     """
     stringable_arg_list = []
     for k, v in options.items():
-        print(f"--{k} {v}")
         stringable_arg_list.append(f"--{k} {v}")
-    return shlex.split(' '.join(stringable_arg_list))
+    return shlex.split(' '.join(stringable_arg_list), posix=use_posix)
 
 
 def is_some_none(val) -> bool:
