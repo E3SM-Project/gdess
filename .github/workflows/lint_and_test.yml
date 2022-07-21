@@ -109,3 +109,17 @@ jobs:
           env_vars: OS,PYTHON
           fail_ci_if_error: false
           verbose: true # optional (default = false)
+
+      - name: run-notebook
+        uses: yaananth/run-notebook@v1
+        with:
+          notebook: "notebooks/demo/graphics/trends_recipe.ipynb"
+      - name: run-notebook
+        uses: yaananth/run-notebook@v1
+        with:
+          notebook: "notebooks/demo/graphics/seasonal_cycle_recipe.ipynb"
+      - name: run-notebook
+        uses: yaananth/run-notebook@v1
+        with:
+          notebook: "notebooks/demo/graphics/meridional_recipe.ipynb"
+
