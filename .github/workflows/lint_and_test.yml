@@ -113,13 +113,13 @@ jobs:
       - name: run-notebook
         uses: yaananth/run-notebook@v1
         with:
-          notebook: "notebooks/demo/graphics/trends_recipe.ipynb"
+          notebook: "notebooks/demo/trends_recipe.ipynb"
       - name: run-notebook
         uses: yaananth/run-notebook@v1
         with:
-          notebook: "notebooks/demo/graphics/seasonal_cycle_recipe.ipynb"
+          notebook: "notebooks/demo/seasonal_cycle_recipe.ipynb"
       - name: run-notebook
         uses: yaananth/run-notebook@v1
         with:
-          notebook: "notebooks/demo/graphics/meridional_recipe.ipynb"
+          notebook: "notebooks/demo/meridional_recipe.ipynb"
 
