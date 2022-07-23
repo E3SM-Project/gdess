@@ -120,5 +120,5 @@ jobs:
         with:
           author_name: Plot update bot
           message: "Update Notebooks"
-          add: "['meridional_recipe.ipynb', 'seasonal_cycle_recipe.ipynb', 'trends_recipe.ipynb']"
+          add: "['notebooks/templates/meridional_recipe.ipynb', 'notebooks/templates/seasonal_cycle_recipe.ipynb', 'notebooks/templates/trends_recipe.ipynb']"
 
