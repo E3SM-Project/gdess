@@ -111,6 +111,7 @@ jobs:
           verbose: true # optional (default = false)
 
       - name: Update demo notebooks
+        shell: bash -l {0}
         run: |
           python -m pip install jupyter nbconvert nbformat
           for i in notebooks/templates/*recipe.ipynb; do python -m nbconvert --to notebook --ExecutePreprocessor.kernel_name=python3 --execute $i; done;
