@@ -110,19 +110,6 @@ jobs:
           fail_ci_if_error: false
           verbose: true # optional (default = false)
 
-      - name: run-notebook
-        uses: yaananth/run-notebook@v1
-        with:
-          notebook: "notebooks/demo/trends_recipe.ipynb"
-      - name: run-notebook
-        uses: yaananth/run-notebook@v1
-        with:
-          notebook: "notebooks/demo/seasonal_cycle_recipe.ipynb"
-      - name: run-notebook
-        uses: yaananth/run-notebook@v1
-        with:
-          notebook: "notebooks/demo/meridional_recipe.ipynb"
-
       - name: Update analysis notebook
         run: |
           python -m pip install jupyter nbconvert nbformat
