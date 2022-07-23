@@ -1,5 +1,7 @@
 import os
 import re
+
+import netCDF4
 import pytest
 
 import numpy as np
@@ -7,7 +9,8 @@ import xarray as xr
 
 from gdess import load_stations_dict
 from gdess.data_source.observations.load import load_data_with_regex
-from gdess.data_source.observations.subset import binTimeLat, binLonLat, by_datetime
+from gdess.data_source.observations.subset import binTimeLat, binLonLat, \
+    by_datetime, bin_by_year_and_vertical, by_decimalyear
 from gdess.data_source.observations.gvplus_surface import Collection
 from gdess.data_source.observations.gvplus_name_utils import \
     get_dict_of_all_station_filenames, get_dict_of_station_codes_and_names
@@ -51,6 +54,17 @@ def test_return_type_from_datetime_binning(globalview_datasetdict):
                          start=np.datetime64("2000-01-01"),
                          end=np.datetime64("2000-03-01"))
     assert isinstance(binned, xr.Dataset)
+
+def test_return_type_from_binning_by_year_and_vertical(globalview_datasetdict):
+    ds_out = bin_by_year_and_vertical(globalview_datasetdict['mlo'],
+                                      my_year=2010, my_vertical_edges=np.array([10, 50]),
+                                      n_latitude=10, n_longitude=10)
+    assert isinstance(ds_out, xr.Dataset)
+
+def test_return_type_from_binning_by_decimalyear(globalview_datasetdict):
+    ds_out = by_decimalyear(globalview_datasetdict['mlo'],
+                            start=2017.1, end=2017.6)
+    assert isinstance(ds_out, xr.Dataset)
 
 def test_simplest_preprocessed_type(globalview_test_data_path, newEmptySurfaceStation):
     newEmptySurfaceStation.preprocess(datadir=globalview_test_data_path, station_name='mlo')
