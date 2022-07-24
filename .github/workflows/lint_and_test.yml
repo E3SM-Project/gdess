@@ -117,7 +117,7 @@ jobs:
         shell: bash -l {0}
         run: |
           python -m pip install jupyter nbconvert nbformat
-          for i in notebooks/templates/*recipe_template.ipynb; do filename=${i##*/}; python -m nbconvert --to notebook --ExecutePreprocessor.kernel_name=python3 --execute $i --output ${filename%_template.ipynb}.ipynb; done;
+          for i in notebooks/templates/*recipe_template.ipynb; do filename=${i##*/}; python -m nbconvert --to notebook --ExecutePreprocessor.kernel_name=python3 --execute $i --output notebooks/demo/${filename%_template.ipynb}.ipynb; done;
 
       - name: Commit updated notebooks
         if: (matrix.os == 'ubuntu-latest') && (matrix.python-version == '3.9')
@@ -125,5 +125,5 @@ jobs:
         with:
           author_name: Plot update bot
           message: "Update Notebooks"
-          add: "['notebooks/templates/meridional_recipe.ipynb', 'notebooks/templates/seasonal_cycle_recipe.ipynb', 'notebooks/templates/trends_recipe.ipynb']"
+          add: "['notebooks/demo/meridional_recipe.ipynb', 'notebooks/demo/seasonal_cycle_recipe.ipynb', 'notebooks/demo/trends_recipe.ipynb']"
 
