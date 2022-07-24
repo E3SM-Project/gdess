@@ -18,8 +18,14 @@ Three diagnostic recipes currently implemented examine multidecadal trends, seas
 
 #### Motivation
 
-There is a need to evaluate atmospheric CO<sub>2</sub> for continuing development of U.S. Department of Energy's Energy Exascale Earth System Model (E3SM)
-&mdash; particularly the v2 campaign focused on simulations of global biogeochemistry.
+Model intercomparisons and benchmarking is critical for Earth System Models.
+By comparing the values of variables, such as CO<sub>2</sub>,
+in these simulations against observed values, one can discover the needs and means for 
+refining model components, and learn much about Earth system dynamics in the process.
+
+Development of `gdess` was initiated by a need to evaluate atmospheric CO<sub>2</sub> 
+for the U.S. Department of Energy's Energy Exascale Earth System Model (E3SM)
+and its campaign focused on simulations of global biogeochemistry.
 
 #### Problem to solve
 
