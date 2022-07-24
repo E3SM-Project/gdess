@@ -22,7 +22,7 @@ jobs:
     name:  Test1 (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
         python-version: [3.8, 3.9]
@@ -35,6 +35,8 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v2
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
           lfs: true
         #      - name: Set up Python ${{ matrix.python-version }}
         #        uses: actions/setup-python@v2
@@ -109,3 +111,19 @@ jobs:
           env_vars: OS,PYTHON
           fail_ci_if_error: false
           verbose: true # optional (default = false)
+
+      - name: Update demo notebooks
+        if: (matrix.os == 'ubuntu-latest') && (matrix.python-version == '3.9')
+        shell: bash -l {0}
+        run: |
+          python -m pip install jupyter nbconvert nbformat
+          for i in notebooks/templates/*recipe_template.ipynb; do filename=${i##*/}; python -m nbconvert --to notebook --ExecutePreprocessor.kernel_name=python3 --execute $i --output-dir notebooks/demo --output ${filename%_template.ipynb}.ipynb; done;
+
+      - name: Commit updated notebooks
+        if: (matrix.os == 'ubuntu-latest') && (matrix.python-version == '3.9')
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: Plot update bot
+          message: "Update Notebooks"
+          add: "['notebooks/demo/meridional_recipe.ipynb', 'notebooks/demo/seasonal_cycle_recipe.ipynb', 'notebooks/demo/trends_recipe.ipynb']"
+

@@ -1,7 +1,16 @@
+import pathlib
+from platform import system
 import argparse, logging, os, shlex, tempfile
 from typing import Union
 
 _logger = logging.getLogger(__name__)
+
+if system().lower() == "windows":
+    pather = pathlib.PureWindowsPath
+    use_posix = False
+else:
+    pather = pathlib.PurePosixPath
+    use_posix = True
 
 
 def options_to_args(options: dict) -> list:
@@ -21,7 +30,10 @@ def options_to_args(options: dict) -> list:
     -------
     list
     """
-    return shlex.split(' '.join([f"--{k} {v}" for k, v in options.items()]))
+    stringable_arg_list = []
+    for k, v in options.items():
+        stringable_arg_list.append(f"--{k} {v}")
+    return shlex.split(' '.join(stringable_arg_list), posix=use_posix)
 
 
 def is_some_none(val) -> bool:
@@ -108,7 +120,7 @@ def valid_year_string(y: Union[str, int]) -> Union[None, str]:
     raise argparse.ArgumentTypeError('Year must be a string or integer whose value is between 0 and 10,000.')
 
 
-def valid_existing_path(p: Union[str, os.PathLike]
+def valid_existing_path(p: Union[str, os.PathLike, pathlib.Path]
                         ) -> Union[str, os.PathLike]:
     """Validate a filepath argument passed in as a recipe option
 
@@ -120,19 +132,24 @@ def valid_existing_path(p: Union[str, os.PathLike]
     Raises
     ------
     argparse.ArgumentTypeError
-        if the input path does not exist and/or is not writable
+        if the input path does not exist and/or is not readable
 
     Returns
     -------
     str or os.PathLike
     """
     try:
-        if os.path.exists(p):
-            if os.access(p, os.R_OK):
+        concrete_path = pathlib.Path(pather(p))
+        if concrete_path.exists():
+            resolved_path = concrete_path.resolve()
+            if os.access(resolved_path, os.R_OK):
                 return p
-    except TypeError:
-        pass
-    raise argparse.ArgumentTypeError('Path must exist and be readable. <%s> is not.' % p)
+            else:
+                raise argparse.ArgumentTypeError('Path must be readable. <%s> is not.' % p)
+        else:
+            raise argparse.ArgumentTypeError('Concrete path must exist. <%s> does not.' % p)
+    except Exception as err:
+        raise err
 
 
 def valid_writable_path(p: Union[str, os.PathLike]

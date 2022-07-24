@@ -1,21 +1,25 @@
 import pytest
-import os, datetime, tempfile
+import datetime
+import tempfile
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import datacompy
 
 from ccgcrv.ccgcrv import ccgcrv
 from ccgcrv.ccg_dates import datesOk, intDate, \
-    getDate, toMonthDay, getDatetime, getTime, dec2date,\
+    getDate, toMonthDay, getDatetime, getTime, dec2date, \
     dateFromDecimalDate, datetimeFromDateAndTime
+from gdess.graphics.single_source_plots import plot_filter_components
 
 
 @pytest.fixture
-def curvefilter(rootdir):
-    mlotestdata_path = os.path.join(rootdir, 'test_data', 'mlotestdata.txt')
+def curvefilter(root_testdir):
+    mlotestdata_path = (root_testdir / 'test_data' / 'mlotestdata.txt').resolve()
 
     with tempfile.TemporaryDirectory() as td:
-        output_file_name = os.path.join(td, 'curvefitting_test_results_mlo.txt')
+        output_file_name = (Path(td) / 'curvefitting_test_results_mlo.txt').resolve()
 
         options = {'npoly': 2,
                    'nharm': 2,
@@ -31,14 +35,14 @@ def curvefilter(rootdir):
                    "mm": '',
                    "annual": ''}
         filt = ccgcrv(options, mlotestdata_path)
-        df_filter_output = pd.read_csv(output_file_name, sep='\s+')
+        df_filter_output = pd.read_csv(output_file_name, sep=r'\s+')
 
     return filt, df_filter_output
 
 
-def test_curvefitting_results_remain_the_same(rootdir, curvefilter):
-    expected_results_path = os.path.join(rootdir, 'test_data', 'expected_curvefit_results.txt')
-    df_expected = pd.read_csv(expected_results_path, sep='\s+')
+def test_curvefitting_results_remain_the_same(root_testdir, curvefilter):
+    expected_results_path = (root_testdir / 'test_data' / 'expected_curvefit_results.txt').resolve()
+    df_expected = pd.read_csv(expected_results_path, sep=r'\s+')
 
     filt, df_filter_output = curvefilter
     # Test that results are the same to within a millionth of a percent difference
@@ -79,6 +83,14 @@ def test_curve_fitting_results_process_with_no_error(curvefilter):
         filt.stats()
     except Exception as exc:
         assert False, f"'run_recipe_for_timeseries' raised an exception {exc}"
+
+
+def test_plotting_components_no_error(curvefilter):
+    filt, df_filter_output = curvefilter
+    try:
+        plot_filter_components(filter_object=filt)
+    except Exception as exc:
+        assert False, f"'plot_filter_components' raised an exception {exc}"
 
 
 def test_dates_ok_bad_month():

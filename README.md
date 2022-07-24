@@ -1,8 +1,8 @@
 # Greenhouse gas Diagnostics for Earth System Simulations
 
 <!-- Information badges -->
-[![test status](https://github.com/dkauf42/gdess/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/dkauf42/gdess/actions/workflows/lint_and_test.yml)
-[![codecov](https://codecov.io/gh/dkauf42/gdess/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/dkauf42/gdess)
+[![test status](https://github.com/E3SM-Project/gdess/actions/workflows/lint_and_test.yml/badge.svg)](https://github.com/E3SM-Project/gdess/actions/workflows/lint_and_test.yml)
+[![codecov](https://codecov.io/gh/E3SM-Project/gdess/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/E3SM-Project/gdess)
 [![Python 3.8|3.9](https://img.shields.io/badge/python-3.8|3.9-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![status](https://joss.theoj.org/papers/6cc7ba8d3c09f66974550161f740e176/status.svg)](https://joss.theoj.org/papers/6cc7ba8d3c09f66974550161f740e176)
 
@@ -18,8 +18,14 @@ Three diagnostic recipes currently implemented examine multidecadal trends, seas
 
 #### Motivation
 
-There is a need to evaluate atmospheric CO<sub>2</sub> for continuing development of U.S. Department of Energy's Energy Exascale Earth System Model (E3SM)
-&mdash; particularly the v2 campaign focused on simulations of global biogeochemistry.
+Model intercomparisons and benchmarking is critical for Earth System Models.
+By comparing the values of variables, such as CO<sub>2</sub>,
+in these simulations against observed values, one can discover the needs and means for 
+refining model components, and learn much about Earth system dynamics in the process.
+
+Development of `gdess` was initiated by a need to evaluate atmospheric CO<sub>2</sub> 
+for the U.S. Department of Energy's Energy Exascale Earth System Model (E3SM)
+and its campaign focused on simulations of global biogeochemistry.
 
 #### Problem to solve
 
@@ -77,7 +83,8 @@ git clone https://github.com/E3SM-Project/gdess.git ~/gdess
 cd ~/gdess
 ```
 
-🌍 Create conda environment and install dependencies. 
+🌍 Using [conda](https://docs.conda.io/projects/conda/en/latest/index.html#), 
+create a runtime or development environment and install dependencies. 
 *Note: Replace “myenv” with the preferred name of your environment, e.g. "gdess_env". 
 From here on we’ll use “myenv” to refer to our environment.*
 

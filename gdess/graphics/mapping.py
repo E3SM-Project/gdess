@@ -1,4 +1,4 @@
-__all__ = ['make_my_base_map']
+__all__ = ['make_my_base_map', 'add_site_labels']
 
 from collections.abc import Sequence
 

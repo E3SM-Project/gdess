@@ -26,7 +26,7 @@ def valid_surface_stations(station_arg: str) -> str:
     return station_arg
 
 
-def get_dict_of_all_station_filenames(datadir):
+def get_dict_of_all_station_filenames(datadir: str) -> dict:
     """Build a dictionary that contains a key for each station code,
        and with a list of filenames for each key.
 
@@ -37,7 +37,8 @@ def get_dict_of_all_station_filenames(datadir):
 
     Returns
     -------
-    A dictionary with (keys) three-letter station codes, and for each station (values) a list of data filenames
+    dict
+        Contains (keys) three-letter station codes, and for each station (values) a list of data filenames
     """
     filepath_list = glob.glob(datadir + '*surface*.nc')
     filenames = [os.path.basename(x) for x in filepath_list]
@@ -56,7 +57,7 @@ def get_dict_of_all_station_filenames(datadir):
     return dict_to_build
 
 
-def get_dict_of_station_codes_and_names(datadir):
+def get_dict_of_station_codes_and_names(datadir: str) -> dict:
     stations_dict = get_dict_of_all_station_filenames(datadir)
     return {k: {'name': xr.open_dataset(os.path.join(datadir, stations_dict[k][0])).attrs['site_name']}
             for k, v

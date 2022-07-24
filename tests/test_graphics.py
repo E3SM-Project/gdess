@@ -4,7 +4,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 
 from gdess.graphics.utils import limits_with_zero, get_colormap
-from gdess.graphics.mapping import make_my_base_map
+from gdess.graphics.mapping import make_my_base_map, add_site_labels, determine_tick_step
 
 
 def test_limits_with_zero():
@@ -32,6 +32,12 @@ def test_limits_bad_input_size():
     with pytest.raises(ValueError):
         limits_with_zero((3, -7, 9))
 
+def test_tick_size_steps():
+    test_coverages = [360, 90, 45, 25, 5]
+    expected_tick_steps = [60, 30, 10, 5, 1]
+    results = [determine_tick_step(degrees_covered=c) for c in test_coverages]
+    assert results == expected_tick_steps
+
 
 def test_no_name_gets_a_default_colormap():
     assert isinstance(get_colormap(), LinearSegmentedColormap)
@@ -52,6 +58,10 @@ def test_base_map_returns_correct_types():
     assert isinstance(fig, plt.Figure) & isinstance(ax, plt.Axes)
 
 
-def test_base_map_returns_correct_types():
+def test_adding_site_labels_raises_no_errors():
     fig, ax = make_my_base_map()
-    assert isinstance(fig, plt.Figure) & isinstance(ax, plt.Axes)
+
+    try:
+        add_site_labels(ax=ax, labels=['test1', 'test2'], lons=[23, 47, -10], lats=[67, -45, 27])
+    except Exception as exc:
+        assert False, f"'add_site_labels' raised an exception {exc}"

@@ -1,5 +1,4 @@
 import pytest
-import os
 
 from gdess.formatters.args import options_to_args, is_some_none, nullable_int, nullable_str, valid_year_string, \
     valid_existing_path, valid_writable_path
@@ -75,11 +74,11 @@ def test_nullable_integer_bad_type():
         nullable_int([])
 
 
-def test_nonexistent_path_does_not_exist(rootdir):
+def test_nonexistent_path_does_not_exist(root_testdir):
     with pytest.raises(Exception):
-        valid_existing_path(os.path.join(rootdir, 'nonexistent'))
+        valid_existing_path((root_testdir / 'nonexistent').resolve())
 
 
-def test_valid_path_is_writable(rootdir):
-    p = os.path.join(rootdir, 'footest')
+def test_valid_path_is_writable(root_testdir):
+    p = (root_testdir / 'footest').resolve()
     assert valid_writable_path(p) == p
