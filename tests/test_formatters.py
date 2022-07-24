@@ -26,5 +26,5 @@ def test_rounding_to_nearest_bad_direction():
 
 
 def test_escaping_tex():
-    assert tex_escape('\$ \_ >') == \
+    assert tex_escape(r'\$ \_ >') == \
            "\\textbackslash{}\\$ \\textbackslash{}\\_ \\textgreater{}"
