@@ -77,7 +77,8 @@ git clone https://github.com/E3SM-Project/gdess.git ~/gdess
 cd ~/gdess
 ```
 
-🌍 Create conda environment and install dependencies. 
+🌍 Using [conda](https://docs.conda.io/projects/conda/en/latest/index.html#), 
+create a runtime or development environment and install dependencies. 
 *Note: Replace “myenv” with the preferred name of your environment, e.g. "gdess_env". 
 From here on we’ll use “myenv” to refer to our environment.*
 
