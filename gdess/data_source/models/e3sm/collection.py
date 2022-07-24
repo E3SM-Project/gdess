@@ -1,3 +1,10 @@
+import argparse, logging
+from typing import Union
+from pathlib import Path
+
+import xarray as xr
+import matplotlib.pyplot as plt
+
 from gdess import set_verbose, benchmark_recipe
 from gdess.data_source.models.e3sm.calculation import getPMID
 from gdess.data_source.multiset import Multiset
@@ -7,10 +14,6 @@ from gdess.operations.convert import co2_kgfrac_to_ppm
 from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig
 from gdess.formatters import append_before_extension
 from gdess.recipe_parsers import add_shared_arguments_for_recipes, parse_recipe_options
-import xarray as xr
-import matplotlib.pyplot as plt
-from typing import Union
-import argparse, logging
 
 _logger = logging.getLogger("{0}.{1}".format(__name__, "loader"))
 
@@ -148,7 +151,7 @@ class Collection(Multiset):
                    )
         return dataset
 
-    def preprocess(self, filepath: str) -> None:
+    def preprocess(self, filepath: Union[str, Path]) -> None:
         """Set up the dataset that are common to every diagnostic
 
         Parameters

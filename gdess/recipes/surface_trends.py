@@ -1,27 +1,32 @@
-""" This produces a plot of multidecadal trends of atmospheric CO2
+"""Produce a plot of multidecadal trends of atmospheric CO2
+
+Note
+----
 This function parses:
  - observational data from Globalview+ surface stations
  - model output from CMIP6
-================================================================================
 """
+import logging
+import argparse
+from typing import Union
+
+import matplotlib.pyplot as plt
+from dask.diagnostics import ProgressBar
+
 from gdess import set_verbose, benchmark_recipe
 from gdess.graphics.utils import aesthetic_grid_no_spines, mysavefig, limits_with_zero
 from gdess.recipe_parsers import parse_recipe_options, add_surface_trends_args_to_parser
 from gdess.recipes.recipe_utils import populate_station_list
 from gdess.operations.Confrontation import Confrontation, load_cmip_model_output
 from gdess.formatters import append_before_extension
-import matplotlib.pyplot as plt
-from dask.diagnostics import ProgressBar
-from typing import Union
-import logging
 
 _logger = logging.getLogger(__name__)
 
 
 @benchmark_recipe
-def surface_trends(options: dict,
+def surface_trends(options: Union[dict, argparse.Namespace],
                    verbose: Union[bool, str] = False,
-                   ):
+                   ) -> dict:
     """Execute a series of preprocessing steps and generate a diagnostic result.
 
     Relevant gdess collections are instantiated and processed.
@@ -51,7 +56,8 @@ def surface_trends(options: dict,
 
     Returns
     -------
-    A dictionary containing the data that were plotted.
+    dict
+        The data that were plotted.
     """
     set_verbose(_logger, verbose)
     if verbose:

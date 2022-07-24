@@ -1,44 +1,46 @@
 # -*- coding: utf-8 -*-
-"""
+"""A collection of tools for use with the CO2 diagnostics development.
+Most of the routines are designed to work with xarray.DataArray types.
+
 Created September 2020
-
 @author: Daniel E. Kaufman
-
-This code is meant to serve as a collection of tools for use with the CO2 diagnostics development
-Most of the routines are designed to work with xarray.DataArray types
 """
-import xarray as xr
+__all__ = ['print_var_summary', 'get_var_stats']
+
+import os
+import logging
 from typing import Union, Sequence
-import os, logging
+
+import pandas as pd
+import xarray as xr
 
 _logger = logging.getLogger(__name__)
 
-# Define functions to be imported by *, e.g. from the local __init__ file
-#   (also to avoid adding above imports to other namespaces)
-__all__ = ['print_var_summary', 'get_var_stats']
 
-
-def where_am_i():
+def where_am_i() -> str:
     return os.path.dirname(os.path.abspath(__file__))
 
 
-def pipe_df_head(dataf, n_rows=5):
+def pipe_df_head(dataf: pd.DataFrame, n_rows: int = 5):
     print(f"print_dataf: {dataf.head(n_rows)}")
     return dataf
 
 
-def print_var_summary(dataset: xr.Dataset, varname='CO2', return_dataset=False):
-    """Brief stats for a dataset variable are printed
+def print_var_summary(dataset: xr.Dataset,
+                      varname: str = 'CO2',
+                      return_dataset: bool = False
+                      ) -> Union[None, xr.Dataset]:
+    """Print brief stats for a dataset variable
 
     Parameters
     ----------
     dataset : xarray.Dataset
-    varname : str, default 'CO2'
-    return_dataset : bool, default False
+    varname : `str`, default 'CO2'
+    return_dataset : `bool`, default False
 
     Returns
     -------
-    Either None or an xarray.Dataset
+    None or an xarray.Dataset
     """
     # We check if there are units specified for this variable
     vu = None
@@ -72,7 +74,7 @@ def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
                                optional_dims: Sequence[str] = None,
                                expected_shape: Union[dict, list] = None
                                ) -> bool:
-    """Raises an AssertionError if data dimensions don't match the given names or shape.
+    """Raise an AssertionError if data dimensions don't match the given names or shape
 
     If an expected_shape argument isn't provided, we ignore the shapes (dim lengths).
 
@@ -89,13 +91,17 @@ def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
 
     Raises
     ------
-    AssertionError, if the data dimensions or shape don't match those given.
-    TypeError, if the arguments types are incorrect.
-    ValueError, if the given shape and dimension arguments don't match.
+    AssertionError
+        If the data dimensions or shape don't match those given.
+    TypeError
+        If the arguments types are incorrect.
+    ValueError
+        If the given shape and dimension arguments don't match.
 
     Returns
     -------
-    True, if the given names (and shapes, if given) match the data.
+    `bool`
+        True, if the given names (and shapes, if given) match the data.
     """
     dims_dict = dict(data.dims)
 
@@ -139,7 +145,7 @@ def assert_expected_dimensions(data: Union[xr.Dataset, xr.DataArray],
 
 
 def get_var_stats(dataarray: xr.DataArray) -> dict:
-    """ Provides a dictionary with summary statistics
+    """Retrieve a dictionary with summary statistics
 
     Parameters
     ----------
@@ -147,7 +153,7 @@ def get_var_stats(dataarray: xr.DataArray) -> dict:
 
     Returns
     -------
-    dict
+    `dict`
     """
     return {
         'min': dataarray.min().values.item(),

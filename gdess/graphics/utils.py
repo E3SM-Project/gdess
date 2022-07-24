@@ -1,14 +1,17 @@
-from gdess.formatters import append_before_extension
-from matplotlib import cm
-from matplotlib.colors import LinearSegmentedColormap
-import numpy as np
-from datetime import datetime
 import os
+from datetime import datetime
+
+import numpy as np
+from matplotlib import cm
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+
+from gdess.formatters import append_before_extension
 
 colormap_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'colormaps')
 
 
-def aesthetic_grid_no_spines(axis) -> None:
+def aesthetic_grid_no_spines(axis: plt.Axes) -> None:
     """Add dashed grid lines and remove axis spines
 
     Parameters
@@ -20,7 +23,10 @@ def aesthetic_grid_no_spines(axis) -> None:
         spine.set_visible(False)
 
 
-def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs) -> None:
+def mysavefig(fig: plt.Figure,
+              results_dir='',
+              plot_save_name='test',
+              **kwargs) -> None:
     """Append today's date to the file path and save with a tight bbox
 
     Parameters
@@ -29,11 +35,11 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs) -> None:
     results_dir : str
     plot_save_name : str, default 'test'
     kwargs
-        keyword arguments to pass to savefig
+        Additional keyword arguments that are passed to `savefig`
     """
     path = os.path.join(results_dir, plot_save_name)
     # If the path doesn't have an extension, we will default to png.
-    if not path.lower().endswith(('.png', '.pdf', '.tif', '.tiff', '.jpg', '.jpeg')):
+    if not path.lower().endswith(('.png', '.pdf', '.tif', '.tiff', '.jpg', '.jpeg', '.svg', '.eps')):
         path += '.png'
     # A datetime stamp is added immediately before the extension.
     path_with_datetime = append_before_extension(path, datetime.today().strftime('%Y-%m-%dT%H%M%S.%f'))
@@ -41,9 +47,14 @@ def mysavefig(fig, results_dir='', plot_save_name='test', **kwargs) -> None:
     fig.savefig(path_with_datetime, **kwargs)
 
 
-def limits_with_zero(t: tuple):
+def limits_with_zero(t: tuple) -> tuple:
     """Take a 2-tuple of axis limits
     If zero is not between them, then replace the one closest to zero with zero.
+
+    Raises
+    ------
+    ValueError
+    TypeError
     """
     if (not t) | (len(t) > 2):
         raise ValueError("Unexpected input size. Should be a tuple of length 2.")
@@ -70,7 +81,8 @@ def limits_with_zero(t: tuple):
         raise ValueError("Unexpected condition")
 
 
-def get_colormap(colormap=None, colormap_search_dir=None) -> LinearSegmentedColormap:
+def get_colormap(colormap=None,
+                 colormap_search_dir=None) -> LinearSegmentedColormap:
     """
 
     Parameters

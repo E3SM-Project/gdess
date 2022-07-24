@@ -10,6 +10,7 @@ dependencies:
   - dask>=2021
   - cftime>=1.4
   - matplotlib>=3.3
+  - pillow
   - cartopy>=0.18
   - adjusttext>=0.7.3
   - intake>=0.6

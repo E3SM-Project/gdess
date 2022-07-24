@@ -2,7 +2,7 @@ import math
 
 
 def numstr(number, decimalpoints: int) -> str:
-    """ Print big numbers nicely.
+    """Print big numbers nicely
     Add commas, and restrict decimal places
 
     Parameters
@@ -20,7 +20,9 @@ def numstr(number, decimalpoints: int) -> str:
     return fmtstr.format(number)
 
 
-def my_round(x, nearest=10, direction: str = 'up'
+def my_round(x,
+             nearest=10,
+             direction: str = 'up'
              ) -> int:
     """Round to the nearest specified whole number
 

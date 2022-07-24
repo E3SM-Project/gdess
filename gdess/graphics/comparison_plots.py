@@ -1,4 +1,3 @@
-from gdess.formatters.nums import my_round
 import pandas as pd
 from cycler import cycler
 import matplotlib as mpl
@@ -6,6 +5,7 @@ from matplotlib import pyplot as plt, dates as mdates, ticker, colors as mcolors
 # import mpl_toolkits
 # from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+from gdess.formatters.nums import my_round
 from gdess.graphics import aesthetic_grid_no_spines, mysavefig
 
 
