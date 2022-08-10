@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/E3SM-Project/gdess/branch/main/graph/badge.svg?token=UFKDMQ9KCM)](https://codecov.io/gh/E3SM-Project/gdess)
 [![Python 3.8|3.9](https://img.shields.io/badge/python-3.8|3.9-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![status](https://joss.theoj.org/papers/6cc7ba8d3c09f66974550161f740e176/status.svg)](https://joss.theoj.org/papers/6cc7ba8d3c09f66974550161f740e176)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6981643.svg)](https://doi.org/10.5281/zenodo.6981643)
 
 [comment]: <> ([![latest version]&#40;https://img.shields.io/badge/Current%20version-0.01a1-brightgreen.svg&#41;]&#40;https://github.com/dkauf42/gdess/releases/tag/0.01b1&#41;)
 
